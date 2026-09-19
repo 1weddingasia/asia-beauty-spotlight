@@ -1,239 +1,222 @@
 "use client";
-import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  Clock,
-  Globe,
-  Mail,
-  MapPin,
-  Phone,
-  Quote,
-  Sparkles,
-  Star,
-  Ticket,
-  X,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { BusinessCard } from "@/components/site/BusinessCard";
+
 import { PageShell } from "@/components/site/Layout";
-import { businesses, getBusiness, getCategory, getLocation } from "@/data/directory";
-import { cn } from "@/lib/utils";
+import { BusinessCard } from "@/components/site/BusinessCard";
+import { categories, locations } from "@/data/directory";
+import { 
+  BadgeCheck, Clock, Globe, Mail, MapPin, 
+  MessageCircle, Phone, Share2, Sparkles, 
+  Star, Ticket, X, CheckCircle2 
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function BusinessPageClient({ business: b }: { business: any }) {
-  const category = getCategory(b.category);
-  const location = getLocation(b.location);
-  const slides = [b.cover, ...b.gallery].slice(0, 3);
-  const [index, setIndex] = useState(0);
-  const [offer, setOffer] = useState<(typeof b.offers)[number] | null>(null);
-  const [service, setService] = useState<(typeof b.services)[number] | null>(null);
+  const [activeTab, setActiveTab] = useState("about");
+  const [service, setService] = useState<any>(null);
+  const [offer, setOffer] = useState<any>(null);
 
-  useEffect(() => {
-    setIndex(0);
-    const id = setInterval(() => setIndex((i) => (i + 1) % slides.length), 6000);
-    return () => clearInterval(id);
-  }, [b.slug, slides.length]);
-
-  const related = businesses
-    .filter((x: any) => x.slug !== b.slug && x.category === b.category)
-    .slice(0, 3);
+  const category = categories.find((c) => c.slug === b.category_slug);
+  const location = locations.find((l) => l.slug === b.location_slug);
+  const related: any[] = []; // Tạm thời để trống hoặc query từ DB sau
 
   return (
     <PageShell solidHeader={false}>
-      {/* Hero 3 slide */}
-      <section className="relative min-h-[72vh] w-full overflow-hidden bg-ink">
-        {slides.map((src, i) => (
-          <div
-            key={`${src}-${i}`}
-            className={cn(
-              "absolute inset-0 transition-opacity duration-1000",
-              i === index ? "opacity-100" : "opacity-0",
-            )}
-            aria-hidden={i !== index}
-          >
-            <img src={src} alt={`${b.name} ${i + 1}`} className="size-full object-cover" />
-            <div className="absolute inset-0 bg-ink/60" />
-          </div>
-        ))}
-
-        <div className="relative mx-auto flex min-h-[72vh] max-w-6xl flex-col justify-end gap-6 px-6 pt-32 pb-14">
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="font-display grid size-16 place-items-center rounded-2xl border border-gold/50 bg-background/95 text-lg tracking-widest text-ink">
-              {b.logoText}
-            </span>
-            <div>
-              <p className="text-xs tracking-[0.3em] text-gold uppercase">{category?.name}</p>
-              <h1 className="mt-2 flex items-center gap-2 text-3xl text-background md:text-5xl">
+      {/* Hero Header */}
+      <div className="relative h-[50vh] min-h-[400px] w-full bg-ink">
+        <Image
+          src={b.cover_image || "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80"}
+          alt={b.name}
+          fill
+          className="object-cover opacity-50 mix-blend-overlay"
+          priority
+        />
+        <div className="overlay-ink absolute inset-0" />
+        <div className="absolute inset-x-0 bottom-0">
+          <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 pb-12 md:flex-row md:items-end md:gap-8">
+            <div className="relative size-32 shrink-0 overflow-hidden rounded-full border-4 border-background bg-card md:size-40">
+              <Image
+                src={b.logo_url || "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80"}
+                alt={b.name}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="text-center md:mb-4 md:text-left">
+              <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
+                <span className="rounded-full border border-gold-soft bg-champagne px-3 py-1 text-xs font-semibold tracking-widest text-ink uppercase">
+                  {category?.name}
+                </span>
+                {b.is_featured && (
+                  <span className="flex items-center gap-1 rounded-full bg-gold/20 px-3 py-1 text-xs font-semibold tracking-widest text-gold uppercase backdrop-blur-md">
+                    <BadgeCheck className="size-3.5" /> Nổi bật
+                  </span>
+                )}
+                {b.plan_tier && b.plan_tier !== "free" && (
+                  <span className="flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-xs font-semibold tracking-widest text-gold uppercase border border-gold">
+                    <Sparkles className="size-3.5" /> Đối tác {b.plan_tier}
+                  </span>
+                )}
+              </div>
+              <h1 className="mt-4 font-display text-4xl text-background md:text-5xl lg:text-6xl">
                 {b.name}
-                {b.verified && <BadgeCheck className="size-6 text-gold" />}
               </h1>
+              <p className="mt-3 text-lg text-background/80 md:text-xl">
+                {b.tagline}
+              </p>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-background/80 md:justify-start">
+                <span className="flex items-center gap-1">
+                  <Star className="size-4 fill-gold text-gold" />
+                  <span className="font-medium text-background">{b.rating}</span>
+                  <span>({b.reviews} đánh giá)</span>
+                </span>
+                <span className="hidden size-1 rounded-full bg-background/20 md:block" />
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="size-4" />
+                  {location?.name}
+                </span>
+              </div>
+            </div>
+            <div className="md:mb-4 md:ml-auto md:flex md:gap-3">
+              <button className="grid size-12 place-items-center rounded-full border border-background/20 bg-background/10 text-background backdrop-blur-md transition-colors hover:bg-background/20 hover:text-gold">
+                <Share2 className="size-5" />
+              </button>
             </div>
           </div>
-          <p className="max-w-2xl text-background/80">{b.tagline}</p>
-          <div className="flex flex-wrap gap-5 text-sm text-background/80">
-            <span className="flex items-center gap-1.5">
-              <Star className="size-4 fill-gold text-gold" />
-              {b.rating.toFixed(1)} · {b.reviews} đánh giá
-            </span>
-            <span className="flex items-center gap-1.5">
-              <MapPin className="size-4 text-gold" />
-              {location?.name}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="size-4 text-gold" />
-              {b.hours}
-            </span>
-          </div>
-          <div className="flex gap-2">
-            {slides.map((s, i) => (
-              <button
-                key={s}
-                onClick={() => setIndex(i)}
-                aria-label={`Ảnh ${i + 1}`}
-                className={cn("h-0.5 w-12", i === index ? "bg-gradient-gold" : "bg-background/30")}
-              />
-            ))}
-          </div>
         </div>
-      </section>
+      </div>
 
-      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[1.7fr_1fr]">
+      {/* Tabs */}
+      <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl gap-8 px-6">
+          {[
+            { id: "about", label: "Tổng quan" },
+            { id: "services", label: "Dịch vụ" },
+            { id: "offers", label: "Ưu đãi" },
+            { id: "reviews", label: "Đánh giá" },
+          ].map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`border-b-2 py-5 text-sm font-medium transition-colors ${
+                activeTab === t.id
+                  ? "border-gold text-ink"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-12 lg:grid-cols-[1fr_340px]">
         <div className="space-y-16">
-          {/* Giới thiệu */}
-          <section>
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Giới thiệu</p>
+          {/* Về chúng tôi */}
+          <section id="about" className={activeTab !== "about" ? "hidden" : "block"}>
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Về chúng tôi</p>
             <div className="rule-gold mt-3" />
-            <h2 className="mt-5 text-2xl md:text-3xl">Về {b.name}</h2>
-            <p className="mt-4 leading-relaxed text-muted-foreground">{b.about}</p>
-            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {b.highlights.map((h: any) => (
-                <li key={h} className="flex items-start gap-2 text-sm">
-                  <BadgeCheck className="mt-0.5 size-4 shrink-0 text-gold" />
-                  {h}
-                </li>
+            <h2 className="mt-5 text-2xl md:text-3xl">Câu chuyện thương hiệu</h2>
+            <div className="mt-6 space-y-4 text-muted-foreground leading-relaxed">
+              {b.about?.split("\n").map((p: string, i: number) => (
+                <p key={i}>{p}</p>
               ))}
-            </ul>
+            </div>
+
+            {/* Gallery (Nếu có) */}
+            {b.gallery && b.gallery.length > 0 && (
+              <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3">
+                {b.gallery.map((img: string, i: number) => (
+                  <div key={i} className="relative aspect-square rounded-2xl overflow-hidden">
+                    <Image src={img} alt={`Gallery ${i}`} fill className="object-cover hover:scale-105 transition-transform duration-500" />
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* Dịch vụ */}
-          <section>
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Dịch vụ</p>
+          <section id="services" className={activeTab !== "services" && activeTab !== "about" ? "hidden" : "block"}>
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Bảng giá</p>
             <div className="rule-gold mt-3" />
-            <h2 className="mt-5 text-2xl md:text-3xl">Bảng dịch vụ & giá</h2>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
-              {b.services.map((s: any) => (
-                <button
+            <h2 className="mt-5 text-2xl md:text-3xl">Dịch vụ nổi bật</h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {b.services?.map((s: any) => (
+                <div
                   key={s.name}
                   onClick={() => setService(s)}
-                  className="group shadow-card hover:shadow-luxe flex flex-col rounded-2xl border border-border bg-card p-6 text-left transition-all duration-300 hover:-translate-y-0.5"
+                  className="group cursor-pointer rounded-2xl border border-border bg-card p-5 transition-all hover:border-gold hover:shadow-card"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-lg">{s.name}</h3>
-                    <span className="grid size-9 shrink-0 place-items-center rounded-full border border-gold-soft bg-champagne">
-                      <Sparkles className="size-4 text-gold" />
-                    </span>
-                  </div>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {s.description}
-                  </p>
-                  <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-4">
-                    <span className="flex items-center gap-1.5 text-xs tracking-widest text-muted-foreground uppercase">
-                      <Clock className="size-3.5 text-gold" />
-                      {s.duration}
-                    </span>
-                    <p className="text-gradient-gold font-display text-lg whitespace-nowrap">
+                    <div>
+                      <h3 className="font-medium group-hover:text-gold transition-colors">{s.name}</h3>
+                      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                        {s.description}
+                      </p>
+                      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
+                        <Clock className="size-3" /> {s.duration}
+                      </span>
+                    </div>
+                    <span className="text-gradient-gold font-display font-semibold whitespace-nowrap">
                       {s.price}
-                    </p>
+                    </span>
                   </div>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.15em] text-gold uppercase">
-                    Xem chi tiết
-                    <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
-                  </span>
-                </button>
+                </div>
               ))}
             </div>
           </section>
 
           {/* Ưu đãi */}
-          <section>
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Ưu đãi</p>
+          <section id="offers" className={activeTab !== "offers" && activeTab !== "about" ? "hidden" : "block"}>
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Khuyến mãi</p>
             <div className="rule-gold mt-3" />
-            <h2 className="mt-5 text-2xl md:text-3xl">Ưu đãi của doanh nghiệp</h2>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
-              {b.offers.map((o: any) => (
-                <button
+            <h2 className="mt-5 text-2xl md:text-3xl">Ưu đãi hiện có</h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {b.offers?.map((o: any) => (
+                <div
                   key={o.title}
                   onClick={() => setOffer(o)}
-                  className="group shadow-card hover:shadow-luxe rounded-2xl border border-gold-soft bg-champagne p-6 text-left transition-all duration-300 hover:-translate-y-0.5"
+                  className="group relative cursor-pointer overflow-hidden rounded-2xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
-                      {o.discount}
-                    </span>
-                    <Ticket className="size-4 text-gold" />
-                  </div>
-                  <h3 className="mt-4 text-lg">{o.title}</h3>
-                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                  <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
+                    {o.discount}
+                  </span>
+                  <h3 className="mt-4 font-display text-xl">{o.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
                     {o.description}
                   </p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.15em] text-gold uppercase">
-                    Xem ưu đãi
-                    <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
-                  </span>
-                </button>
-              ))}
-            </div>
-          </section>
-
-          {/* Bộ sưu tập */}
-          <section>
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Không gian</p>
-            <div className="rule-gold mt-3" />
-            <h2 className="mt-5 text-2xl md:text-3xl">Bộ sưu tập hình ảnh</h2>
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {[b.cover, ...b.gallery].map((src, i) => (
-                <img
-                  key={`${src}-${i}`}
-                  src={src}
-                  alt={`${b.name} không gian ${i + 1}`}
-                  loading="lazy"
-                  className="aspect-[4/3] w-full rounded-2xl object-cover"
-                />
-              ))}
-            </div>
-          </section>
-
-          {/* Đội ngũ */}
-          <section>
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Đội ngũ</p>
-            <div className="rule-gold mt-3" />
-            <h2 className="mt-5 text-2xl md:text-3xl">Chuyên gia phụ trách</h2>
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {b.team.map((t: any) => (
-                <div key={t.name} className="rounded-2xl border border-border bg-card p-5">
-                  <p className="font-display text-lg">{t.name}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{t.role}</p>
+                  <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                    <Clock className="size-3.5" /> Có hiệu lực đến: {o.validUntil}
+                  </div>
                 </div>
               ))}
             </div>
           </section>
 
           {/* Đánh giá */}
-          <section>
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Đánh giá</p>
+          <section id="reviews" className={activeTab !== "reviews" ? "hidden" : "block"}>
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Phản hồi</p>
             <div className="rule-gold mt-3" />
-            <h2 className="mt-5 text-2xl md:text-3xl">Khách hàng nói gì</h2>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
-              {b.testimonials.map((t: any) => (
-                <blockquote key={t.name} className="rounded-2xl border border-border bg-card p-6">
-                  <Quote className="size-5 text-gold" />
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">“{t.text}”</p>
-                  <footer className="mt-4 flex items-center justify-between text-sm">
-                    <span className="font-medium">{t.name}</span>
-                    <span className="flex items-center gap-1">
-                      <Star className="size-3.5 fill-gold text-gold" />
-                      {t.rating.toFixed(1)}
-                    </span>
+            <h2 className="mt-5 text-2xl md:text-3xl">Đánh giá từ khách hàng</h2>
+            <div className="mt-8 grid gap-6 md:grid-cols-2">
+              {b.reviewsList?.map((r: any, i: number) => (
+                <blockquote key={i} className="rounded-2xl border border-border bg-card p-6">
+                  <div className="flex gap-1">
+                    {[...Array(r.rating)].map((_, i) => (
+                      <Star key={i} className="size-4 fill-gold text-gold" />
+                    ))}
+                  </div>
+                  <p className="mt-4 text-sm leading-relaxed">"{r.comment}"</p>
+                  <footer className="mt-4 flex items-center gap-3">
+                    <div className="grid size-8 place-items-center rounded-full bg-secondary text-xs font-medium uppercase">
+                      {r.author.slice(0, 2)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">{r.author}</div>
+                      <div className="text-xs text-muted-foreground">{r.date}</div>
+                    </div>
                   </footer>
                 </blockquote>
               ))}
@@ -246,9 +229,9 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
             <div className="rule-gold mt-3" />
             <h2 className="mt-5 text-2xl md:text-3xl">Câu hỏi thường gặp</h2>
             <div className="mt-6 divide-y divide-border rounded-2xl border border-border bg-card">
-              {b.faqs.map((f: any) => (
+              {b.faqs?.map((f: any) => (
                 <details key={f.q} className="group p-5">
-                  <summary className="cursor-pointer list-none text-base font-medium">
+                  <summary className="cursor-pointer list-none text-base font-medium hover:text-gold transition-colors">
                     {f.q}
                   </summary>
                   <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
@@ -284,8 +267,19 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
           <div className="border-t border-border pt-4 text-sm text-muted-foreground">
             Hoạt động từ {b.since} · {category?.name} · {location?.name}
           </div>
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {b.tags.map((t: any) => (
+          
+          {/* Uy tín (Trust Signals) cho Landing Page */}
+          <div className="mt-4 bg-champagne rounded-xl p-4 space-y-2 border border-gold-soft">
+            <p className="flex items-center gap-2 text-xs font-medium text-ink">
+              <CheckCircle2 className="size-4 text-gold" /> Đối tác xác thực của 1Beauty
+            </p>
+            <p className="flex items-center gap-2 text-xs font-medium text-ink">
+              <CheckCircle2 className="size-4 text-gold" /> Cam kết chất lượng dịch vụ
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 pt-3">
+            {b.tags?.map((t: any) => (
               <span
                 key={t}
                 className="rounded-full border border-border bg-secondary px-2.5 py-1 text-[11px]"
@@ -296,7 +290,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
           </div>
           <Link
             href="/lien-he"
-            className="bg-gradient-gold mt-2 block rounded-full px-6 py-3 text-center text-xs font-semibold tracking-[0.2em] text-ink uppercase"
+            className="bg-gradient-gold mt-4 block rounded-full px-6 py-3 text-center text-sm font-semibold tracking-[0.1em] text-ink uppercase hover:opacity-90 transition-opacity"
           >
             Liên hệ đặt lịch
           </Link>
@@ -363,7 +357,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
             </div>
             <Link
               href="/lien-he"
-              className="bg-gradient-gold mt-6 block rounded-full px-6 py-3 text-center text-xs font-semibold tracking-[0.2em] text-ink uppercase"
+              className="bg-gradient-gold mt-6 block rounded-full px-6 py-3 text-center text-sm font-semibold tracking-[0.1em] text-ink uppercase"
             >
               Đặt lịch ngay
             </Link>
@@ -412,9 +406,9 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
             </p>
             <Link
               href="/lien-he"
-              className="bg-gradient-gold mt-6 block rounded-full px-6 py-3 text-center text-xs font-semibold tracking-[0.2em] text-ink uppercase"
+              className="bg-gradient-gold mt-6 block rounded-full px-6 py-3 text-center text-sm font-semibold tracking-[0.1em] text-ink uppercase"
             >
-              Đặt lịch ngay
+              Lấy mã ngay
             </Link>
           </div>
         </div>

@@ -30,23 +30,28 @@ export default async function Index() {
             </div>
             <Link
               href="/tim-kiem"
-              className="inline-flex items-center gap-2 text-xs tracking-[0.2em] text-gold uppercase"
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-gold"
             >
               Xem tất cả <ArrowRight className="size-4" />
             </Link>
           </div>
-
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((c: any) => {
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((c) => {
+              const Icon = c.icon;
               return (
                 <Link
                   key={c.slug}
                   href={`/danh-muc/${c.slug}`}
-                  className="shadow-card hover:shadow-luxe group rounded-sm border border-border/70 bg-card p-6 transition-all duration-500 hover:-translate-y-1"
+                  className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all hover:border-gold hover:shadow-card"
                 >
-                  <Sparkles className="size-5 text-gold" />
-                  <h3 className="mt-4 text-xl">{c.name}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{c.description}</p>
+                  <div className="absolute top-0 right-0 p-6 opacity-5 transition-opacity group-hover:opacity-10">
+                    <Icon className="size-24" />
+                  </div>
+                  <Icon className="size-8 text-gold" />
+                  <h3 className="mt-4 font-display text-xl">{c.name}</h3>
+                  <p className="mt-2 max-w-[200px] text-sm text-muted-foreground">
+                    {c.description}
+                  </p>
                 </Link>
               );
             })}
@@ -54,19 +59,24 @@ export default async function Index() {
         </section>
 
         {/* Featured */}
-        <section className="bg-champagne/40 border-y border-border/60">
+        <section className="border-t border-border bg-champagne/40">
           <div className="mx-auto max-w-6xl px-6 py-20">
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Tuyển chọn</p>
-            <div className="rule-gold mt-3" />
-            <h2 className="mt-5 text-3xl md:text-4xl">Doanh nghiệp nổi bật</h2>
-            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {featured.map((b) => (
-                <BusinessCard key={b.slug} business={b as any} />
-              ))}
-              {featured.length === 0 && (
-                <p className="col-span-3 text-center text-muted-foreground py-10">Chưa có doanh nghiệp nổi bật nào.</p>
-              )}
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="text-xs tracking-[0.3em] text-gold uppercase">Tuyển chọn</p>
+                <div className="rule-gold mt-3" />
+                <h2 className="mt-5 text-3xl md:text-4xl">Doanh nghiệp nổi bật</h2>
+              </div>
             </div>
+            {featured.length > 0 ? (
+              <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {featured.map((b) => (
+                  <BusinessCard key={b.slug} business={b} />
+                ))}
+              </div>
+            ) : (
+              <p className="mt-10 text-muted-foreground">Chưa có doanh nghiệp nổi bật nào.</p>
+            )}
           </div>
         </section>
 
@@ -80,63 +90,79 @@ export default async function Index() {
             </div>
             <Link
               href="/uu-dai"
-              className="inline-flex items-center gap-2 text-xs tracking-[0.2em] text-gold uppercase"
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-gold"
             >
               Tất cả ưu đãi <ArrowRight className="size-4" />
             </Link>
           </div>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
             {offers.map((o) => (
               <Link
-                key={`${o.business.slug}-${o.title}`}
+                key={o.title}
                 href={`/doanh-nghiep/${o.business.slug}`}
-                className="shadow-card hover:shadow-luxe flex flex-col rounded-sm border border-border/70 bg-card p-6 transition-all duration-500 hover:-translate-y-1"
+                className="group relative overflow-hidden rounded-2xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8"
               >
-                <span className="bg-gradient-gold w-fit rounded-sm px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
-                  {o.discount}
-                </span>
-                <h3 className="mt-4 text-xl">{o.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{o.description}</p>
-                <p className="mt-4 flex items-center gap-1.5 text-sm">
-                  <Ticket className="size-4 text-gold" /> {o.business.name}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">HSD: {o.validUntil}</p>
+                <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
+                  <Ticket className="size-32 text-gold" />
+                </div>
+                <div className="relative">
+                  <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
+                    {o.discount}
+                  </span>
+                  <h3 className="mt-5 max-w-[280px] font-display text-2xl md:text-3xl">
+                    {o.title}
+                  </h3>
+                  <p className="mt-3 text-sm text-muted-foreground">{o.description}</p>
+                  <div className="mt-6 flex flex-wrap items-center gap-4 text-xs font-medium uppercase tracking-wider text-ink">
+                    <span className="flex items-center gap-1.5">
+                      <Sparkles className="size-3.5 text-gold" />
+                      {o.business.name}
+                    </span>
+                    <span className="text-muted-foreground">HSD: {o.validUntil}</span>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
         </section>
 
         {/* Locations */}
-        <section className="bg-ink text-background">
-          <div className="mx-auto max-w-6xl px-6 py-20">
+        <section className="border-t border-border bg-ink text-background">
+          <div className="mx-auto max-w-6xl px-6 py-20 text-center">
             <p className="text-xs tracking-[0.3em] text-gold uppercase">Địa điểm</p>
-            <div className="rule-gold mt-3" />
-            <h2 className="mt-5 text-3xl text-background md:text-4xl">Có mặt khắp châu Á</h2>
-            <div className="mt-8 flex flex-wrap gap-3">
-              {locations.map((l: any) => (
+            <div className="rule-gold mx-auto mt-3" />
+            <h2 className="mt-5 font-display text-3xl md:text-4xl">Có mặt khắp châu Á</h2>
+            <div className="mt-12 flex flex-wrap justify-center gap-3">
+              {locations.map((l) => (
                 <Link
                   key={l.slug}
                   href={`/tim-kiem?location=${l.slug}`}
-                  className="rounded-sm border border-background/20 px-5 py-2.5 text-sm transition-colors hover:border-gold hover:text-gold"
+                  className="rounded-full border border-background/20 bg-background/5 px-6 py-2.5 text-sm transition-colors hover:bg-gold hover:text-ink hover:border-gold"
                 >
                   {l.name}
                 </Link>
               ))}
             </div>
+          </div>
+        </section>
 
-            <div className="mt-14 flex flex-wrap items-center justify-between gap-6 border-t border-background/10 pt-10">
-              <p className="flex items-center gap-2 text-lg">
-                <BadgeCheck className="size-5 text-gold" />
-                Bạn sở hữu một thương hiệu làm đẹp?
-              </p>
-              <Link
-                href="/lien-he"
-                className="bg-gradient-gold rounded-sm px-7 py-3 text-xs font-semibold tracking-[0.2em] text-ink uppercase"
-              >
-                Đăng ký doanh nghiệp
-              </Link>
-            </div>
+        {/* CTA */}
+        <section className="border-t border-border bg-champagne">
+          <div className="mx-auto max-w-4xl px-6 py-24 text-center">
+            <BadgeCheck className="mx-auto size-12 text-gold" />
+            <h2 className="mt-6 font-display text-3xl md:text-5xl">
+              Bạn sở hữu một thương hiệu làm đẹp?
+            </h2>
+            <p className="mt-6 text-muted-foreground md:text-lg">
+              Tham gia 1Beauty.Asia ngay hôm nay để tiếp cận hàng ngàn khách hàng tiềm năng.
+              Khởi tạo hồ sơ doanh nghiệp miễn phí chỉ trong 5 phút.
+            </p>
+            <Link
+              href="/lien-he"
+              className="bg-gradient-gold mx-auto mt-10 flex w-fit items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold tracking-[0.2em] text-ink uppercase transition-opacity hover:opacity-90"
+            >
+              Đăng ký doanh nghiệp <ArrowRight className="size-4" />
+            </Link>
           </div>
         </section>
       </main>
