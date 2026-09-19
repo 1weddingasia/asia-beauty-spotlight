@@ -1,14 +1,14 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { categories } from "@/data/directory";
 
 const navLinks = [
-  { to: "/", label: "Trang chủ" },
-  { to: "/tim-kiem", label: "Danh bạ" },
-  { to: "/uu-dai", label: "Ưu đãi" },
-  { to: "/lien-he", label: "Liên hệ" },
+  { to: "/", label: "Trang chħ" },
+  { to: "/tim-kiem", label: "Danh bá" },
+  { to: "/uu-dai", label: "Ưu đãi'" },
+  { to: "/lien-he", label: "Liên hǇ" },
 ] as const;
 
 export function SiteHeader({ solid = false }: { solid?: boolean }) {
@@ -24,7 +24,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="flex items-baseline gap-1">
-          <span className={ont-display text-2xl }>
+          <span className={`font-display text-2xl ${solid ? "text-foreground" : "text-background"}`}>
             1Beauty
           </span>
           <span className="text-gradient-gold font-display text-2xl">.Asia</span>
@@ -35,7 +35,9 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
             <Link
               key={l.to}
               href={l.to}
-              className={	ext-xs tracking-[0.18em] uppercase transition-colors hover:text-gold }
+              className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${
+                solid ? "text-foreground" : "text-background/85"
+              }`}
             >
               {l.label}
             </Link>
@@ -45,7 +47,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
         <button
           onClick={() => setOpen(!open)}
           aria-label="Menu"
-          className={md:hidden }
+          className={`md:hidden ${solid ? "text-foreground" : "text-background"}`}
         >
           {open ? <X className="size-6" /> : <Menu className="size-6" />}
         </button>
@@ -78,7 +80,7 @@ export function SiteFooter() {
             1Beauty<span className="text-gradient-gold">.Asia</span>
           </p>
           <p className="mt-4 max-w-sm text-sm">
-            Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm mỹ viện, salon và
+            Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm myõ viện, salon v��
             học viện uy tín trên khắp châu Á.
           </p>
         </div>
@@ -88,7 +90,7 @@ export function SiteFooter() {
             {categories.slice(0, 5).map((c) => (
               <li key={c.slug}>
                 <Link
-                  href={/danh-muc/}
+                  href={`/danh-muc/${c.slug}`}
                   className="transition-colors hover:text-gold"
                 >
                   {c.name}
