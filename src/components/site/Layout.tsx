@@ -5,10 +5,10 @@ import { useState, type ReactNode } from "react";
 import { categories } from "@/data/directory";
 
 const navLinks = [
-  { to: "/", label: "Trang chħ" },
-  { to: "/tim-kiem", label: "Danh bá" },
-  { to: "/uu-dai", label: "Ưu đãi'" },
-  { to: "/lien-he", label: "Liên hǇ" },
+  { to: "/", label: "Trang chủ" },
+  { to: "/tim-kiem", label: "Danh bạ" },
+  { to: "/uu-dai", label: "Ưu đãi" },
+  { to: "/lien-he", label: "Liên hệ" },
 ] as const;
 
 export function SiteHeader({ solid = false }: { solid?: boolean }) {
@@ -80,8 +80,7 @@ export function SiteFooter() {
             1Beauty<span className="text-gradient-gold">.Asia</span>
           </p>
           <p className="mt-4 max-w-sm text-sm">
-            Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm myõ viện, salon v��
-            học viện uy tín trên khắp châu Á.
+            Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm mỹ viện, salon và học viện uy tín trên khắp châu Á.
           </p>
         </div>
         <div>
