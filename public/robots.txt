@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+
+# Host
+Host: https://1beauty.asia
+
+# Sitemaps
+Sitemap: https://1beauty.asia/sitemap.xml

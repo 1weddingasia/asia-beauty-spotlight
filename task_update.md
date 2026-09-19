@@ -1,0 +1,8 @@
+﻿- [x] Chuyển đổi CSS và thiết lập Tailwind v4 cho Next.js
+- [x] Trích xuất Layout, Header, Footer từ Lovable
+- [x] Trích xuất trang chủ Index.tsx sang Server Component
+- [x] Trích xuất các UI components (BusinessCard, HeroSlider, SearchBar)
+- [x] Thay thế React Router bằng Next.js App Router (next/link, next/navigation)
+- [x] Cấu hình Supabase Next.js 15 (await cookies)
+- [x] Liên kết UI trang chủ với hàm getPublishedBusinesses()
+- [x] Xử lý các lỗi Build và TypeScript
