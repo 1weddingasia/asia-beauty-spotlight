@@ -19,20 +19,27 @@ export default async function EditBusinessPage({
     return <BusinessEditorClient business={null} categories={categories || []} locations={locations || []} />;
   }
 
-  // Fetch business with junction tables
-  const { data: business } = await supabase
+  // Fetch business with junction tables — properly formatted for editor
+  const { data: rawBusiness } = await supabase
     .from("businesses")
     .select(`
       *,
-      business_categories ( category_id ),
-      business_locations ( location_id )
+      business_categories ( category_id, directory_categories (id, name) ),
+      business_locations ( location_id, directory_locations (id, name) )
     `)
     .eq("id", id)
     .single();
 
-  if (!business) {
+  if (!rawBusiness) {
     notFound();
   }
+
+  // Format so BusinessEditorClient can read categories_list and locations_list
+  const business = {
+    ...rawBusiness,
+    categories_list: rawBusiness.business_categories?.map((bc: any) => bc.directory_categories).filter(Boolean) || [],
+    locations_list: rawBusiness.business_locations?.map((bl: any) => bl.directory_locations).filter(Boolean) || [],
+  };
 
   return <BusinessEditorClient business={business} categories={categories || []} locations={locations || []} />;
 }

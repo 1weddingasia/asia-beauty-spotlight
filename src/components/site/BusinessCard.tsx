@@ -4,13 +4,19 @@ import { BadgeCheck, MapPin, Star } from "lucide-react";
 
 export function BusinessCard({ business: dbBusiness }: { business: any }) {
   // Merge db properties and page_content json
-  const business = { ...dbBusiness, ...(dbBusiness.page_content || {}) };
+  const pc = dbBusiness.page_content || {};
+  const business = { ...dbBusiness, ...pc };
 
   const firstCategory = business.categories_list?.[0]?.name || business.category_slug || "Làm đẹp";
   const firstLocation = business.locations_list?.[0]?.name || business.location_slug || "Việt Nam";
   const offer = business.offers && business.offers.length > 0 ? business.offers[0] : null;
   const rating = business.rating || 5.0;
   const reviewsCount = business.reviews || 0;
+
+  // Cover image: banners[0] > logo_url fallback > placeholder
+  const coverImage = (pc.banners || []).filter(Boolean)[0] 
+    || pc.hero_image 
+    || "https://images.pexels.com/photos/3997989/pexels-photo-3997989.jpeg?auto=compress&cs=tinysrgb&w=800";
 
   return (
     <Link
@@ -19,7 +25,7 @@ export function BusinessCard({ business: dbBusiness }: { business: any }) {
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
-          src={business.cover_image || business.hero_image || "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80"}
+          src={coverImage}
           alt={business.name}
           loading="lazy"
           className="size-full object-cover transition-transform duration-700 group-hover:scale-105"

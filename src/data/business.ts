@@ -32,7 +32,11 @@ export async function getPublishedBusinesses(limit = 20): Promise<Business[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('businesses')
-    .select('*')
+    .select(`
+      *,
+      business_categories ( directory_categories (id, name, slug) ),
+      business_locations ( directory_locations (id, name, slug) )
+    `)
     .eq('status', 'published')
     .order('is_featured', { ascending: false })
     .order('created_at', { ascending: false })
@@ -43,7 +47,11 @@ export async function getPublishedBusinesses(limit = 20): Promise<Business[]> {
     return [];
   }
 
-  return data as Business[];
+  return (data || []).map((b: any) => ({
+    ...b,
+    categories_list: b.business_categories?.map((bc: any) => bc.directory_categories).filter(Boolean) || [],
+    locations_list: b.business_locations?.map((bl: any) => bl.directory_locations).filter(Boolean) || [],
+  })) as Business[];
 }
 
 export async function searchBusinessesDB({ q, category, location }: { q: string, category: string, location: string }): Promise<Business[]> {
