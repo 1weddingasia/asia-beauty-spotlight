@@ -14,8 +14,8 @@ export async function generateMetadata({
   if (!dbBusiness) return { title: "Không tìm thấy" };
 
   const b = { ...dbBusiness, ...(dbBusiness.page_content as any) };
-  const title = b ? `${b.name} — ${b.tagline}` : "Doanh nghiệp | 1Beauty.Asia";
-  const desc = b?.about?.slice(0, 155) ?? "Thông tin doanh nghiệp làm đẹp trên 1Beauty.Asia.";
+  const title = b ? `${b.name} - ${b.tagline || '1Beauty.Asia'}` : "Doanh nghiệp | 1Beauty.Asia";
+  const desc = b?.description?.slice(0, 155) ?? "Thông tin doanh nghiệp làm đẹp trên 1Beauty.Asia.";
   
   return {
     title,
@@ -33,7 +33,15 @@ export default async function Page({
   if (!dbBusiness) notFound();
 
   // merge db fields and JSON page_content
-  const b = { ...dbBusiness, ...(dbBusiness.page_content as any) };
+  const b = { 
+    ...dbBusiness, 
+    ...(dbBusiness.page_content as any),
+    services: (dbBusiness.page_content as any)?.services_list || [],
+    offers: (dbBusiness.page_content as any)?.offers || [],
+    gallery: (dbBusiness.page_content as any)?.gallery || [],
+    about: dbBusiness.description || '',
+    hours: (dbBusiness.page_content as any)?.working_hours_text || ''
+  };
 
   return <BusinessPageClient business={b} />;
 }
