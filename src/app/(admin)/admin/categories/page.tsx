@@ -22,6 +22,8 @@ export default function DirectoryCategoriesClient() {
   const router = useRouter();
   const supabase = createClient();
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+
   const fetchCategories = async () => {
     setFetching(true);
     const { data, error } = await supabase.from('directory_categories').select('*').order('created_at', { ascending: false });
@@ -37,19 +39,42 @@ export default function DirectoryCategoriesClient() {
     fetchCategories();
   }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const openCreateModal = () => {
+    setEditingId(null);
+    setName("");
+    setSlug("");
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (cat: any) => {
+    setEditingId(cat.id);
+    setName(cat.name);
+    setSlug(cat.slug);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.from('directory_categories').insert({ name, slug });
+      let error;
+      if (editingId) {
+        const res = await supabase.from('directory_categories').update({ name, slug }).eq('id', editingId);
+        error = res.error;
+      } else {
+        const res = await supabase.from('directory_categories').insert({ name, slug });
+        error = res.error;
+      }
+
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success("Tạo danh mục thành công!");
+        toast.success(editingId ? "Cập nhật thành công!" : "Tạo danh mục thành công!");
         setIsModalOpen(false);
         setName("");
         setSlug("");
+        setEditingId(null);
         fetchCategories();
       }
     } catch (err: any) {
@@ -89,7 +114,7 @@ export default function DirectoryCategoriesClient() {
             <p className="text-muted-foreground mt-2">Quản lý các danh mục làm đẹp (vd: Spa, Clinic).</p>
           </div>
         </div>
-        <Button onClick={() => setIsModalOpen(true)} className="bg-gold text-ink hover:bg-gold/90">
+        <Button onClick={openCreateModal} className="bg-gold text-ink hover:bg-gold/90">
           <Plus className="mr-2 size-4" /> Thêm danh mục
         </Button>
       </div>
@@ -113,7 +138,10 @@ export default function DirectoryCategoriesClient() {
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">{c.name}</TableCell>
                   <TableCell className="text-muted-foreground">{c.slug}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right flex items-center justify-end gap-2">
+                    <Button variant="ghost" size="sm" onClick={() => openEditModal(c)} className="text-blue-500 hover:bg-blue-50">
+                      Sửa
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id, c.name)} className="text-red-500 hover:bg-red-50">
                       <Trash2 className="size-4" />
                     </Button>
@@ -131,8 +159,8 @@ export default function DirectoryCategoriesClient() {
             <button onClick={() => setIsModalOpen(false)} className="absolute right-4 top-4 rounded-full p-1 hover:bg-muted">
               <X className="size-5" />
             </button>
-            <h3 className="text-xl font-bold mb-4">Thêm Danh Mục Mới</h3>
-            <form onSubmit={handleCreate} className="space-y-4">
+            <h3 className="text-xl font-bold mb-4">{editingId ? "Sửa Danh Mục" : "Thêm Danh Mục Mới"}</h3>
+            <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-2">
                 <Label>Tên danh mục</Label>
                 <Input type="text" required value={name} onChange={e => handleNameChange(e.target.value)} placeholder="vd: Clinic" />
@@ -142,7 +170,7 @@ export default function DirectoryCategoriesClient() {
                 <Input type="text" required value={slug} onChange={e => setSlug(e.target.value)} />
               </div>
               <Button type="submit" className="w-full bg-gold text-ink hover:bg-gold/90 mt-4" disabled={loading}>
-                {loading ? "Đang lưu..." : "Lưu danh mục"}
+                {loading ? "Đang lưu..." : (editingId ? "Lưu thay đổi" : "Lưu danh mục")}
               </Button>
             </form>
           </div>

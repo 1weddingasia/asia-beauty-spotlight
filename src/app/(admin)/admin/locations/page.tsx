@@ -22,6 +22,8 @@ export default function DirectoryLocationsClient() {
   const router = useRouter();
   const supabase = createClient();
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+
   const fetchLocations = async () => {
     setFetching(true);
     const { data, error } = await supabase.from('directory_locations').select('*').order('created_at', { ascending: false });
@@ -37,19 +39,42 @@ export default function DirectoryLocationsClient() {
     fetchLocations();
   }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const openCreateModal = () => {
+    setEditingId(null);
+    setName("");
+    setSlug("");
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (loc: any) => {
+    setEditingId(loc.id);
+    setName(loc.name);
+    setSlug(loc.slug);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.from('directory_locations').insert({ name, slug });
+      let error;
+      if (editingId) {
+        const res = await supabase.from('directory_locations').update({ name, slug }).eq('id', editingId);
+        error = res.error;
+      } else {
+        const res = await supabase.from('directory_locations').insert({ name, slug });
+        error = res.error;
+      }
+
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success("Tạo địa điểm thành công!");
+        toast.success(editingId ? "Cập nhật thành công!" : "Tạo địa điểm thành công!");
         setIsModalOpen(false);
         setName("");
         setSlug("");
+        setEditingId(null);
         fetchLocations();
       }
     } catch (err: any) {
@@ -89,7 +114,7 @@ export default function DirectoryLocationsClient() {
             <p className="text-muted-foreground mt-2">Quản lý các địa điểm hoạt động (vd: TP.HCM, Hà Nội).</p>
           </div>
         </div>
-        <Button onClick={() => setIsModalOpen(true)} className="bg-gold text-ink hover:bg-gold/90">
+        <Button onClick={openCreateModal} className="bg-gold text-ink hover:bg-gold/90">
           <Plus className="mr-2 size-4" /> Thêm địa điểm
         </Button>
       </div>
@@ -113,7 +138,10 @@ export default function DirectoryLocationsClient() {
                 <TableRow key={loc.id}>
                   <TableCell className="font-medium">{loc.name}</TableCell>
                   <TableCell className="text-muted-foreground">{loc.slug}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right flex items-center justify-end gap-2">
+                    <Button variant="ghost" size="sm" onClick={() => openEditModal(loc)} className="text-blue-500 hover:bg-blue-50">
+                      Sửa
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(loc.id, loc.name)} className="text-red-500 hover:bg-red-50">
                       <Trash2 className="size-4" />
                     </Button>
@@ -131,8 +159,8 @@ export default function DirectoryLocationsClient() {
             <button onClick={() => setIsModalOpen(false)} className="absolute right-4 top-4 rounded-full p-1 hover:bg-muted">
               <X className="size-5" />
             </button>
-            <h3 className="text-xl font-bold mb-4">Thêm Địa Điểm Mới</h3>
-            <form onSubmit={handleCreate} className="space-y-4">
+            <h3 className="text-xl font-bold mb-4">{editingId ? "Sửa Địa Điểm" : "Thêm Địa Điểm Mới"}</h3>
+            <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-2">
                 <Label>Tên địa điểm</Label>
                 <Input type="text" required value={name} onChange={e => handleNameChange(e.target.value)} placeholder="vd: TP.HCM" />
@@ -142,7 +170,7 @@ export default function DirectoryLocationsClient() {
                 <Input type="text" required value={slug} onChange={e => setSlug(e.target.value)} />
               </div>
               <Button type="submit" className="w-full bg-gold text-ink hover:bg-gold/90 mt-4" disabled={loading}>
-                {loading ? "Đang lưu..." : "Lưu địa điểm"}
+                {loading ? "Đang lưu..." : (editingId ? "Lưu thay đổi" : "Lưu địa điểm")}
               </Button>
             </form>
           </div>

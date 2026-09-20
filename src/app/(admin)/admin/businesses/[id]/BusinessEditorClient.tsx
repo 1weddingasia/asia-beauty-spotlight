@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function BusinessEditorClient({ business, categories, locations }: { business: any, categories: any[], locations: any[] }) {
   const router = useRouter();
@@ -28,6 +29,20 @@ export default function BusinessEditorClient({ business, categories, locations }
     is_featured: business?.is_featured || false,
     page_content: JSON.stringify(business?.page_content || {}, null, 2),
   });
+
+  const [logoUrl, setLogoUrl] = useState<string>(business?.page_content?.logo_url || "");
+  const [heroImage, setHeroImage] = useState<string>(business?.page_content?.hero_image || "");
+
+  // Update page_content JSON when images change
+  const updatePageContentImage = (key: string, url: string) => {
+    try {
+      const parsed = JSON.parse(formData.page_content || "{}");
+      parsed[key] = url;
+      setFormData(prev => ({ ...prev, page_content: JSON.stringify(parsed, null, 2) }));
+    } catch(e) {
+      console.error(e);
+    }
+  };
 
   const [selectedCats, setSelectedCats] = useState<string[]>(initialCatIds);
   const [selectedLocs, setSelectedLocs] = useState<string[]>(initialLocIds);
@@ -198,6 +213,28 @@ export default function BusinessEditorClient({ business, categories, locations }
               className="rounded border-gray-300 text-gold focus:ring-gold"
             />
             <Label htmlFor="is_featured">Doanh nghiệp nổi bật (Featured)</Label>
+          </div>
+        </div>
+
+        <div className="space-y-6 rounded-xl border bg-card p-6 shadow-sm">
+          <h3 className="font-semibold text-lg border-b pb-2">Hình ảnh hiển thị</h3>
+          
+          <div className="space-y-4">
+            <Label>Logo Doanh Nghiệp</Label>
+            <ImageUpload 
+              value={logoUrl} 
+              onChange={(url) => { setLogoUrl(url); updatePageContentImage('logo_url', url); }} 
+            />
+            <p className="text-xs text-muted-foreground">Khuyên dùng ảnh vuông 1:1, dung lượng nhỏ gọn.</p>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t">
+            <Label>Hình Ảnh Hero / Bìa</Label>
+            <ImageUpload 
+              value={heroImage} 
+              onChange={(url) => { setHeroImage(url); updatePageContentImage('hero_image', url); }} 
+            />
+            <p className="text-xs text-muted-foreground">Khuyên dùng ảnh ngang (tỷ lệ 16:9) để hiển thị đẹp nhất.</p>
           </div>
         </div>
 
