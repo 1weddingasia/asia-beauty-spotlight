@@ -1,66 +1,82 @@
-import { BusinessCard } from "@/components/site/BusinessCard";
 import { PageShell } from "@/components/site/Layout";
-import { SearchBar } from "@/components/site/SearchBar";
-import { getCategory, getLocation } from "@/data/directory";
-import { searchBusinessesDB } from "@/data/business";
-import { Metadata } from "next";
+import { categories, locations } from "@/data/directory";
+import { Search, SlidersHorizontal } from "lucide-react";
+import SearchClient from "./SearchClient";
 
-export const metadata: Metadata = {
-  title: "Tìm kiếm doanh nghiệp làm đẹp | 1Beauty.Asia",
-  description: "Tìm spa, thẩm mỹ viện, salon, nail và học viện làm đẹp theo từ khoá, danh mục hoặc địa điểm trên 1Beauty.Asia.",
+export const metadata = {
+  title: "Tìm kiếm | 1Beauty.Asia",
+  description: "Tìm kiếm spa, thẩm mỹ viện và salon làm đẹp tại châu Á.",
 };
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-  const resolvedParams = await searchParams;
-  const q = typeof resolvedParams.q === "string" ? resolvedParams.q : "";
-  const category = typeof resolvedParams.category === "string" ? resolvedParams.category : "all";
-  const location = typeof resolvedParams.location === "string" ? resolvedParams.location : "all";
-
-  const results = await searchBusinessesDB({ q, category, location });
-
+export default function SearchPage() {
   return (
     <PageShell>
-      <section className="border-b border-border bg-champagne/40">
-        <div className="mx-auto max-w-6xl px-6 py-14">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">Danh bạ</p>
-          <div className="rule-gold mt-3" />
-          <h1 className="mt-5 text-3xl md:text-4xl">Tìm kiếm doanh nghiệp làm đẹp</h1>
-          <div className="mt-8">
-            <SearchBar
-              key={`${q}-${category}-${location}`}
-              variant="compact"
-              defaultQ={q}
-              defaultCategory={category}
-              defaultLocation={location}
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto max-w-6xl px-6 py-12 text-center md:py-16">
+          <h1 className="font-display text-4xl md:text-5xl">Tìm kiếm</h1>
+          <p className="mt-4 text-muted-foreground md:text-lg">
+            Khám phá hàng ngàn địa điểm làm đẹp uy tín trên khắp châu Á.
+          </p>
+        </div>
+      </div>
+
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-12 lg:flex-row">
+        <aside className="w-full shrink-0 lg:w-64">
+          <div className="sticky top-24 space-y-8">
+            <div>
+              <div className="flex items-center gap-2 font-medium">
+                <SlidersHorizontal className="size-4" /> Bộ lọc
+              </div>
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+                    Danh mục
+                  </label>
+                  <div className="mt-3 space-y-2">
+                    <label className="flex items-center gap-2 text-sm">
+                      <input type="checkbox" className="rounded border-border" /> Tất cả
+                    </label>
+                    {categories.map((c) => (
+                      <label key={c.slug} className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" className="rounded border-border" /> {c.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="pt-4">
+                  <label className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+                    Khu vực
+                  </label>
+                  <div className="mt-3 space-y-2">
+                    <label className="flex items-center gap-2 text-sm">
+                      <input type="checkbox" className="rounded border-border" /> Tất cả
+                    </label>
+                    {locations.map((l) => (
+                      <label key={l.slug} className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" className="rounded border-border" /> {l.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <div className="flex-1">
+          <div className="relative mb-8">
+            <Search className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Tên doanh nghiệp, dịch vụ..."
+              className="w-full rounded-full border border-border bg-card py-4 pr-6 pl-12 text-sm outline-none transition-colors focus:border-gold"
             />
           </div>
+          
+          <SearchClient />
         </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-14">
-        <p className="text-sm text-muted-foreground">
-          {results.length} kết quả
-          {q ? ` cho “${q}”` : ""}
-          {category !== "all" ? ` — ${getCategory(category)?.name ?? ""}` : ""}
-          {location !== "all" ? ` — ${getLocation(location)?.name ?? ""}` : ""}
-        </p>
-
-        {results.length === 0 ? (
-          <p className="mt-10 rounded-sm border border-border bg-card p-10 text-center text-muted-foreground">
-            Không tìm thấy doanh nghiệp phù hợp. Hãy thử từ khoá khác.
-          </p>
-        ) : (
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {results.map((b) => (
-              <BusinessCard key={b.slug} business={b as any} />
-            ))}
-          </div>
-        )}
-      </section>
+      </div>
     </PageShell>
   );
 }

@@ -1,66 +1,88 @@
-import Link from "next/link";
-import { Ticket } from "lucide-react";
 import { PageShell } from "@/components/site/Layout";
-import { getPublishedBusinesses } from "@/data/business";
-import { Metadata } from "next";
+import { Sparkles, Ticket } from "lucide-react";
+import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Ưu đãi làm đẹp độc quyền | 1Beauty.Asia",
-  description: "Tổng hợp ưu đãi, voucher và mã giảm giá từ các spa, thẩm mỹ viện và salon uy tín trên 1Beauty.Asia.",
+export const metadata = {
+  title: "Ưu đãi | 1Beauty.Asia",
+  description: "Tổng hợp các chương trình khuyến mãi, ưu đãi độc quyền từ các spa và thẩm mỹ viện.",
 };
 
-export default async function OffersPage() {
-  const businesses = await getPublishedBusinesses(50);
-  
-  // extract offers from page_content (JSON)
-  const offers = businesses.flatMap((b) => {
-    const content = b.page_content as any;
-    const bizOffers = content?.offers || [];
-    return bizOffers.map((o: any) => ({ ...o, business: { ...b, ...content } }));
-  });
+const offers = [
+  {
+    title: "Giảm 20% Dịch vụ Spa",
+    description: "Áp dụng cho khách hàng mới lần đầu sử dụng dịch vụ tại Luxury Spa. Không áp dụng cùng các CTKM khác.",
+    discount: "-20%",
+    validUntil: "30/10/2026",
+    code: "LUX20",
+    business: { slug: "spa-1", name: "Luxury Spa" },
+  },
+  {
+    title: "Mua 1 Tặng 1 Chăm sóc da",
+    description: "Mua liệu trình chăm sóc da chuyên sâu 60 phút, tặng ngay 1 buổi massage cổ vai gáy 30 phút.",
+    discount: "MUA 1 TẶNG 1",
+    validUntil: "15/11/2026",
+    code: "SKIN11",
+    business: { slug: "clinic-1", name: "Seoul Clinic" },
+  },
+  {
+    title: "Voucher 500k Làm Tóc",
+    description: "Tặng voucher 500k cho hóa đơn từ 2 triệu đồng (cắt, uốn, nhuộm, phục hồi).",
+    discount: "500K",
+    validUntil: "31/12/2026",
+    code: "HAIR500",
+    business: { slug: "salon-1", name: "Tokyo Hair Salon" },
+  }
+];
 
+export default function OffersPage() {
   return (
     <PageShell>
-      <section className="border-b border-border bg-champagne/40">
-        <div className="mx-auto max-w-6xl px-6 py-14">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">Đặc quyền</p>
-          <div className="rule-gold mt-3" />
-          <h1 className="mt-5 text-3xl md:text-4xl">Ưu đãi đang diễn ra</h1>
-          <p className="mt-4 max-w-xl text-muted-foreground">
-            {offers.length} ưu đãi từ các thương hiệu làm đẹp được tuyển chọn.
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto grid max-w-6xl gap-6 px-6 py-14 md:grid-cols-2 lg:grid-cols-3">
-        {offers.map((o: any) => (
-          <div
-            key={`${o.business.slug}-${o.title}`}
-            className="shadow-card flex flex-col rounded-sm border border-border/70 bg-card p-6"
-          >
-            <span className="bg-gradient-gold w-fit rounded-sm px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
-              {o.discount}
-            </span>
-            <h2 className="mt-4 text-xl">{o.title}</h2>
-            <p className="mt-2 text-sm text-muted-foreground">{o.description}</p>
-            {o.code && (
-              <p className="mt-4 rounded-sm border border-dashed border-gold-soft bg-champagne px-3 py-2 text-sm">
-                Mã: <span className="font-semibold tracking-widest">{o.code}</span>
-              </p>
-            )}
-            <p className="mt-3 text-xs text-muted-foreground">HSD: {o.validUntil}</p>
-            <Link
-              href={`/doanh-nghiep/${o.business.slug}`}
-              className="mt-auto flex items-center gap-1.5 pt-5 text-sm text-gold"
-            >
-              <Ticket className="size-4" /> {o.business.name}
-            </Link>
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+          <div className="max-w-2xl">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl">Ưu đãi</h1>
+            <p className="mt-6 text-lg text-muted-foreground">
+              Khám phá những chương trình khuyến mãi và đặc quyền tốt nhất từ các đối tác của 1Beauty.Asia.
+            </p>
           </div>
-        ))}
-        {offers.length === 0 && (
-          <p className="col-span-3 text-muted-foreground">Chưa có ưu đãi nào.</p>
-        )}
-      </section>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {offers.map((o, i) => (
+            <Link
+              key={i}
+              href={`/doanh-nghiep/${o.business.slug}`}
+              className="group relative flex flex-col overflow-hidden rounded-3xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8"
+            >
+              <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
+                <Ticket className="size-32 text-gold" />
+              </div>
+              <div className="relative flex-1">
+                <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
+                  {o.discount}
+                </span>
+                <h3 className="mt-5 max-w-[280px] font-display text-2xl">
+                  {o.title}
+                </h3>
+                <p className="mt-3 text-sm text-muted-foreground">{o.description}</p>
+              </div>
+              <div className="relative mt-8 border-t border-gold-soft pt-6">
+                <div className="flex flex-wrap items-center gap-4 text-xs font-medium uppercase tracking-wider text-ink">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="size-3.5 text-gold" />
+                    {o.business.name}
+                  </span>
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground">
+                  HSD: {o.validUntil}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
     </PageShell>
   );
 }
