@@ -5,6 +5,7 @@ import { HeroSlider } from "@/components/site/HeroSlider";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { getPublishedBusinesses } from "@/data/business";
 import { categories, locations } from "@/data/directory";
+import React from "react";
 
 export default async function Index() {
   const businesses = await getPublishedBusinesses(6);
@@ -37,7 +38,7 @@ export default async function Index() {
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((c) => {
-              const Icon = c.icon;
+              const Icon = c.icon as any;
               return (
                 <Link
                   key={c.slug}
