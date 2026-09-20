@@ -114,9 +114,9 @@ export function SiteFooter() {
   );
 }
 
-export function PageShell({ children, solidHeader = true }: { children: ReactNode; solidHeader?: boolean }) {
+export function PageShell({ children, solidHeader = true, className }: { children: ReactNode; solidHeader?: boolean; className?: string }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={`flex min-h-screen flex-col ${className || ""}`}>
       <SiteHeader solid={solidHeader} />
       <main className="flex-1">{children}</main>
       <SiteFooter />
