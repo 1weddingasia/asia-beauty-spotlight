@@ -49,7 +49,7 @@ async function runIngestion(targetUrl) {
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 900 });
 
-    await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 180000 });
     
     console.log(`[1] Đang cuộn toàn bộ trang để kích hoạt Lazy Loading (Vui lòng chờ)...`);
     await autoScroll(page);
@@ -192,6 +192,29 @@ ${data.images.join('\n')}
     
     const parsedData = JSON.parse(jsonStr.trim());
     console.log(`    -> AI đã bóc tách xong Cấu trúc Dữ liệu cho: ${parsedData.name}`);
+
+    // Bơm hình ảnh dự phòng (Fallback) nếu AI không tìm được ảnh tốt
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const fallbackPath = path.join(__dirname, '../src/data/fallback_images.json');
+      if (fs.existsSync(fallbackPath)) {
+        const fallbacks = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
+        // random shuffle fallbacks
+        const shuffled = fallbacks.sort(() => 0.5 - Math.random());
+        
+        if (!parsedData.page_content.banners || parsedData.page_content.banners.length < 3) {
+          console.log(`    -> [Fallback] Đang bơm ảnh dự phòng chất lượng cao cho Hero Banner...`);
+          parsedData.page_content.banners = shuffled.slice(0, 3);
+        }
+        if (!parsedData.page_content.gallery || parsedData.page_content.gallery.length < 4) {
+          console.log(`    -> [Fallback] Đang bơm ảnh dự phòng chất lượng cao cho Không Gian...`);
+          parsedData.page_content.gallery = shuffled.slice(3, 9);
+        }
+      }
+    } catch (e) {
+      console.log('Không load được fallback images:', e.message);
+    }
 
     // Bổ sung dữ liệu mặc định hệ thống
     parsedData.status = 'published';
