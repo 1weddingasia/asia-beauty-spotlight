@@ -20,6 +20,8 @@ const fadeUp: any = {
 export default function BusinessPageClient({ business: b }: { business: any }) {
   const category = categories.find((c) => c.slug === b.category_slug);
   
+  // Embla Carousels
+  const [heroRef, heroApi] = useEmblaCarousel({ loop: true });
   const [galleryRef, galleryApi] = useEmblaCarousel({ loop: true, align: "start" });
   const [servicesRef, servicesApi] = useEmblaCarousel({ loop: false, align: "start" });
   
@@ -35,6 +37,15 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
   // State for Back to Top Button
   const [showTopBtn, setShowTopBtn] = useState(false);
 
+  // Auto-play Hero Carousel
+  useEffect(() => {
+    if (!heroApi) return;
+    const interval = setInterval(() => {
+      heroApi.scrollNext();
+    }, 4000); // 4 seconds per slide
+    return () => clearInterval(interval);
+  }, [heroApi]);
+
   useEffect(() => {
     const handleScroll = () => {
       setShowTopBtn(window.scrollY > 500);
@@ -46,6 +57,10 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const heroSlides = b.banners?.length > 0 
+    ? b.banners 
+    : (b.gallery?.length >= 3 ? b.gallery.slice(0,3) : [b.hero_image, b.cover_image, b.hero_image].filter(Boolean));
 
   const galleryItems = b.gallery && b.gallery.length > 0 
     ? b.gallery 
@@ -68,39 +83,49 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const y = element.getBoundingClientRect().top + window.scrollY - 80; // offset for sticky nav
+      const y = element.getBoundingClientRect().top + window.scrollY - 80;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
 
   return (
     <PageShell solidHeader={false}>
-      {/* 1. HERO BANNER */}
+      {/* 1. HERO BANNER (3 SLIDES) */}
       <section className="relative w-full bg-champagne">
-        <div className="relative h-[45vh] min-h-[350px] w-full md:h-[65vh] md:min-h-[550px]">
-          {b.hero_image || b.cover_image ? (
-            <Image
-              src={b.hero_image || b.cover_image}
-              alt={b.name}
-              fill
-              className="object-cover opacity-80 mix-blend-overlay"
-              priority
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-tr from-champagne via-gold/10 to-secondary/30 opacity-80" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="relative h-[45vh] min-h-[350px] w-full md:h-[65vh] md:min-h-[550px] overflow-hidden" ref={heroRef}>
+          <div className="flex h-full touch-pan-y">
+            {heroSlides.length > 0 ? (
+              heroSlides.map((slideUrl: string, index: number) => (
+                <div key={index} className="relative flex-[0_0_100%] h-full">
+                  <Image
+                    src={slideUrl}
+                    alt={`${b.name} Banner ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                  />
+                  {/* Clean gradient overlay for readability, removed mix-blend-overlay to keep image crisp */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-90" />
+                </div>
+              ))
+            ) : (
+              <div className="relative flex-[0_0_100%] h-full">
+                <div className="absolute inset-0 bg-gradient-to-tr from-champagne via-gold/10 to-secondary/30 opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+              </div>
+            )}
+          </div>
         </div>
         
         {/* LOGO & HEADER TITTLE */}
-        <div className="mx-auto max-w-6xl px-6 relative -mt-24 md:-mt-32 z-10">
-          <div className="flex flex-col items-center md:items-end md:flex-row gap-6">
+        <div className="mx-auto max-w-6xl px-6 relative -mt-24 md:-mt-32 z-10 pointer-events-none">
+          <div className="flex flex-col items-center md:items-end md:flex-row gap-6 pointer-events-auto">
             <motion.div 
               initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}
               className="relative size-32 md:size-48 shrink-0 overflow-hidden rounded-full border-4 border-background bg-white shadow-luxe flex items-center justify-center"
             >
               {b.logo_url ? (
-                <Image src={b.logo_url} alt={b.name} fill className="object-contain p-4" />
+                <Image src={b.logo_url} alt={b.name} fill className="object-contain p-4 bg-white" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-champagne text-5xl font-display text-gold">
                   {b.name.substring(0, 1)}
@@ -121,7 +146,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                 {/* 2. Multiple Categories (Danh mục ngành nghề) */}
                 {(b.categories?.length > 0 ? b.categories : [
                   { name: category?.name || "Làm Đẹp", slug: category?.slug || "lam-dep" },
-                  { name: "Chăm sóc da", slug: "cham-soc-da" } // Fallback demo for multiple categories
+                  { name: "Chăm sóc da", slug: "cham-soc-da" }
                 ]).map((cat: any, i: number) => (
                   <Link key={i} href={`/danh-muc/${cat.slug}`} className="rounded-full border border-gold-soft bg-champagne px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest text-ink uppercase hover:bg-gold/20 hover:border-gold transition-colors">
                     {cat.name}
@@ -139,7 +164,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                 {b.name}
               </h1>
               {b.tagline && (
-                <p className="text-base md:text-xl text-muted-foreground font-light italic px-4 md:px-0">
+                <p className="text-base md:text-xl text-muted-foreground font-light italic px-4 md:px-0 drop-shadow-sm">
                   "{b.tagline}"
                 </p>
               )}
