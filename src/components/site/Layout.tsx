@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 const navLinks = [
   { to: "/", label: "Trang chủ" },
   { to: "/tim-kiem", label: "Danh bạ" },
+  { to: "/bang-gia", label: "Bảng giá" },
   { to: "/uu-dai", label: "Ưu đãi" },
   { to: "/lien-he", label: "Liên hệ" },
 ] as const;
