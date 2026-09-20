@@ -215,9 +215,20 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                 <Phone className="size-4 md:size-5 text-gold shrink-0" />
                 <span className="text-xs md:text-sm font-medium">{b.phone || "Đang cập nhật"}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <Clock className="size-4 md:size-5 text-gold shrink-0" />
-                <span className="text-xs md:text-sm text-muted-foreground">{b.hours || "Đang cập nhật"}</span>
+              <div className="flex items-start gap-3">
+                <Clock className="size-4 md:size-5 text-gold shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-1">
+                  {Array.isArray(b.hours) ? (
+                    b.hours.map((wh: any, idx: number) => (
+                      <div key={idx} className="flex justify-between text-[11px] md:text-[13px]">
+                        <span className="text-muted-foreground">{wh.day}</span>
+                        <span className="font-medium text-foreground">{wh.hours}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <span className="text-xs md:text-sm text-muted-foreground">{b.hours || "Đang cập nhật"}</span>
+                  )}
+                </div>
               </div>
             </div>
             <button
@@ -258,10 +269,16 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                     className="bg-card border border-border rounded-2xl overflow-hidden h-full flex flex-col hover:border-gold hover:shadow-luxe transition-all cursor-pointer group"
                   >
                     <div className="w-full h-40 md:h-48 bg-secondary relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-tr from-champagne to-secondary opacity-50 group-hover:scale-110 transition-transform duration-700" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Sparkles className="size-8 text-gold/40" />
-                      </div>
+                      {s.image ? (
+                        <Image src={s.image} alt={s.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                      ) : (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-tr from-champagne to-secondary opacity-50 group-hover:scale-110 transition-transform duration-700" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Sparkles className="size-8 text-gold/40" />
+                          </div>
+                        </>
+                      )}
                     </div>
                     <div className="p-5 md:p-6 flex flex-col flex-1">
                       <h3 className="text-lg md:text-xl font-display mb-2 group-hover:text-gold transition-colors">{s.name}</h3>

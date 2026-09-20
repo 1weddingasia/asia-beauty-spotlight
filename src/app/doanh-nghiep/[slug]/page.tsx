@@ -32,14 +32,16 @@ export default async function Page({
   if (!dbBusiness) notFound();
 
   // merge db fields and JSON page_content
+  const pageContent = dbBusiness.page_content || {};
   const b = { 
     ...dbBusiness, 
-    ...(dbBusiness.page_content as any),
-    services: (dbBusiness.page_content as any)?.services_list || [],
-    offers: (dbBusiness.page_content as any)?.offers || [],
-    gallery: (dbBusiness.page_content as any)?.gallery || [],
-    about: dbBusiness.description || '',
-    hours: (dbBusiness.page_content as any)?.working_hours_text || ''
+    ...pageContent,
+    services: pageContent.services || [],
+    offers: pageContent.offers || [],
+    gallery: pageContent.gallery || [],
+    banners: pageContent.banners || [],
+    about: pageContent.description || dbBusiness.description || '',
+    hours: pageContent.working_hours || []
   };
 
   return <BusinessPageClient business={b} />;
