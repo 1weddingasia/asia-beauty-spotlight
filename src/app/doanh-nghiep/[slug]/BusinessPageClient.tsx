@@ -52,33 +52,34 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
   return (
     <PageShell solidHeader={false}>
       {/* 1. HERO BANNER */}
-      <section className="relative w-full bg-ink">
+      <section className="relative w-full bg-champagne">
         <div className="relative h-[45vh] min-h-[350px] w-full md:h-[65vh] md:min-h-[550px]">
           {b.hero_image || b.cover_image ? (
             <Image
               src={b.hero_image || b.cover_image}
               alt={b.name}
               fill
-              className="object-cover opacity-60 mix-blend-overlay"
+              className="object-cover opacity-80 mix-blend-overlay"
               priority
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-tr from-ink to-secondary opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-champagne via-gold/10 to-secondary/30 opacity-80" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         </div>
         
-        {/* LOGO & HEADER TITTLE */}
         <div className="mx-auto max-w-6xl px-6 relative -mt-24 md:-mt-32 z-10">
           <div className="flex flex-col items-center md:items-end md:flex-row gap-6">
             <motion.div 
               initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}
-              className="relative size-32 md:size-48 shrink-0 overflow-hidden rounded-full border-4 border-background bg-white shadow-luxe p-2"
+              className="relative size-32 md:size-48 shrink-0 overflow-hidden rounded-full border-4 border-background bg-white shadow-luxe flex items-center justify-center"
             >
               {b.logo_url ? (
-                <Image src={b.logo_url} alt={b.name} fill className="object-contain p-2" />
+                <Image src={b.logo_url} alt={b.name} fill className="object-contain p-4" />
               ) : (
-                <div className="flex h-full items-center justify-center bg-secondary text-4xl font-display text-gold">{b.name.substring(0,1)}</div>
+                <div className="flex h-full w-full items-center justify-center bg-champagne text-5xl font-display text-gold">
+                  {b.name.substring(0, 1)}
+                </div>
               )}
             </motion.div>
             
