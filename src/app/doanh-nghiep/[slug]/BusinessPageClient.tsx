@@ -148,8 +148,8 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         </div>
       </section>
 
-      {/* STICKY NAVIGATION BAR */}
-      <div className="sticky top-[64px] z-40 w-full bg-background/90 backdrop-blur-md border-y border-border/50 shadow-sm">
+      {/* NAVIGATION BAR (NON-STICKY) */}
+      <div className="relative w-full bg-background border-y border-border/50">
         <div className="mx-auto flex max-w-6xl items-center gap-8 overflow-x-auto px-6 py-4 no-scrollbar whitespace-nowrap">
           <a href="#about" onClick={(e) => handleNavClick(e, 'about')} className="text-xs md:text-sm font-semibold text-foreground hover:text-gold uppercase tracking-widest transition-colors">Giới thiệu</a>
           <a href="#services" onClick={(e) => handleNavClick(e, 'services')} className="text-xs md:text-sm font-semibold text-foreground hover:text-gold uppercase tracking-widest transition-colors">Bảng giá</a>
