@@ -8,11 +8,18 @@ export default function ContactPage() {
 
   return (
     <PageShell>
-      <section className="border-b border-border bg-champagne/40">
-        <div className="mx-auto max-w-6xl px-6 py-14">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">Liên hệ</p>
-          <div className="rule-gold mt-3" />
-          <h1 className="mt-5 text-3xl md:text-4xl">Đăng ký doanh nghiệp của bạn</h1>
+      <section className="relative border-b border-border">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
+        >
+          <div className="absolute inset-0 bg-ink/70"></div>
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:py-24 text-center">
+          <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">Liên hệ</p>
+          <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display tracking-tight">Đăng ký doanh nghiệp</h1>
         </div>
       </section>
 

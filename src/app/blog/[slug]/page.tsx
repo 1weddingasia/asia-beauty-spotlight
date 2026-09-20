@@ -33,20 +33,31 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader solid />
-      <main className="flex-grow pt-24 pb-16">
-        <article className="container mx-auto px-4 md:px-6 max-w-4xl">
-          <header className="mb-10 text-center">
-            <h1 className="text-3xl md:text-5xl font-bold font-display tracking-tight mb-4">
+      <main className="flex-grow pt-16 pb-16">
+        <section className="relative border-b border-border mb-12">
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url("${blog.cover_image || 'https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920'}")` }}
+          >
+            <div className="absolute inset-0 bg-ink/70 backdrop-blur-[2px]"></div>
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-4xl px-6 py-16 md:py-24 text-center">
+            <h1 className="text-3xl md:text-5xl font-bold font-display tracking-tight mb-6 text-white drop-shadow-md">
               {blog.title}
             </h1>
-            <div className="text-muted-foreground">
+            <div className="text-gray-200 drop-shadow-md">
               {new Date(blog.published_at || blog.created_at).toLocaleDateString("vi-VN", {
                 day: "numeric",
                 month: "long",
                 year: "numeric"
               })}
             </div>
-          </header>
+          </div>
+        </section>
+
+        <article className="container mx-auto px-4 md:px-6 max-w-4xl">
 
           {blog.cover_image && (
             <div className="relative aspect-video w-full mb-12 rounded-2xl overflow-hidden bg-muted">

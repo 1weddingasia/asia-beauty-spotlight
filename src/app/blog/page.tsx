@@ -15,14 +15,26 @@ export default async function BlogIndexPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader solid />
-      <main className="flex-grow pt-24 pb-16">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold font-display tracking-tight mb-4">Góc Chia Sẻ</h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+      <main className="flex-grow pt-16 pb-16">
+        <section className="relative border-b border-border mb-12">
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: 'url("https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
+          >
+            <div className="absolute inset-0 bg-ink/70"></div>
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:py-24 text-center">
+            <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">Tin tức</p>
+            <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display tracking-tight">Góc Chia Sẻ</h1>
+            <p className="mt-6 text-lg text-gray-200 drop-shadow-md max-w-2xl mx-auto">
               Những kiến thức làm đẹp, kinh nghiệm chăm sóc da và xu hướng thẩm mỹ mới nhất từ các chuyên gia.
             </p>
           </div>
+        </section>
+
+        <div className="container mx-auto px-4 md:px-6">
 
           {!blogs || blogs.length === 0 ? (
             <div className="text-center py-20 bg-card rounded-2xl border">
