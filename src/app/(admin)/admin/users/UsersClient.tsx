@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, Plus, X, Building } from "lucide-react";
+import { Shield, Plus, X, Building, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -46,6 +46,23 @@ export default function UsersClient({ initialProfiles, businesses }: { initialPr
     }
   };
 
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa tài khoản này? Hành động này không thể hoàn tác.")) return;
+    
+    try {
+      const res = await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        toast.success("Đã xóa tài khoản!");
+        router.refresh();
+      }
+    } catch (err: any) {
+      toast.error("Lỗi khi xóa!");
+    }
+  };
+
   return (
     <div className="space-y-6 relative">
       <div className="flex items-center justify-between">
@@ -66,16 +83,16 @@ export default function UsersClient({ initialProfiles, businesses }: { initialPr
               <TableHead>Vai trò (Role)</TableHead>
               <TableHead>Doanh nghiệp sở hữu</TableHead>
               <TableHead>Ngày tham gia</TableHead>
+              <TableHead className="text-right">Hành động</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {!initialProfiles || initialProfiles.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">Không có dữ liệu.</TableCell>
+                <TableCell colSpan={5} className="h-24 text-center">Không có dữ liệu.</TableCell>
               </TableRow>
             ) : (
               initialProfiles.map((p) => {
-                // Find associated business
                 const ownedBusiness = businesses.find(b => b.owner_id === p.id);
                 
                 return (
@@ -97,6 +114,13 @@ export default function UsersClient({ initialProfiles, businesses }: { initialPr
                       )}
                     </TableCell>
                     <TableCell>{new Date(p.created_at).toLocaleDateString("vi-VN")}</TableCell>
+                    <TableCell className="text-right">
+                      {p.role !== 'admin' && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(p.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                          <Trash2 className="size-4" />
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 );
               })
@@ -105,7 +129,6 @@ export default function UsersClient({ initialProfiles, businesses }: { initialPr
         </Table>
       </div>
 
-      {/* Modal Tạo Tài Khoản */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-ink/80 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-md rounded-2xl border bg-card p-6 shadow-2xl">
