@@ -35,9 +35,15 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10">
+            <Link href="/admin/categories">Danh mục</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10">
+            <Link href="/admin/locations">Địa điểm</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10">
             <Link href="/admin/businesses/import">
               <Upload className="mr-2 size-4" />
-              Nạp dữ liệu (Import)
+              Nạp dữ liệu
             </Link>
           </Button>
           <Button asChild className="bg-gold text-ink hover:bg-gold/90">

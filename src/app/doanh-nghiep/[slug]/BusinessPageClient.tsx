@@ -138,16 +138,15 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
               className="text-center md:text-left pb-4 md:pb-8 flex-1"
             >
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
-                {/* 1. Location Badge (Địa điểm) */}
-                <Link href={`/tim-kiem?location=${b.city || "ho-chi-minh"}`} className="flex items-center gap-1.5 rounded-full bg-ink text-gold px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase hover:bg-ink/80 transition-colors shadow-sm">
-                  <Navigation className="size-3.5" /> {b.city || b.province || "TP. Hồ Chí Minh"}
-                </Link>
+                {/* 1. Location Badges (Địa điểm) */}
+                {displayLocations.map((loc: any, i: number) => (
+                  <Link key={i} href={`/tim-kiem?location=${loc.slug}`} className="flex items-center gap-1.5 rounded-full bg-ink text-gold px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase hover:bg-ink/80 transition-colors shadow-sm">
+                    <Navigation className="size-3.5" /> {loc.name}
+                  </Link>
+                ))}
 
                 {/* 2. Multiple Categories (Danh mục ngành nghề) */}
-                {(b.categories?.length > 0 ? b.categories : [
-                  { name: category?.name || "Làm Đẹp", slug: category?.slug || "lam-dep" },
-                  { name: "Chăm sóc da", slug: "cham-soc-da" }
-                ]).map((cat: any, i: number) => (
+                {displayCategories.map((cat: any, i: number) => (
                   <Link key={i} href={`/danh-muc/${cat.slug}`} className="rounded-full border border-gold-soft bg-champagne px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest text-ink uppercase hover:bg-gold/20 hover:border-gold transition-colors">
                     {cat.name}
                   </Link>

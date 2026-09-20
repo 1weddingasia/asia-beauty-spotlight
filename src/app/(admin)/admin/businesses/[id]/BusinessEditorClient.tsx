@@ -12,52 +12,73 @@ import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-export default function BusinessEditorClient({ business }: { business: any }) {
+export default function BusinessEditorClient({ business, categories, locations }: { business: any, categories: any[], locations: any[] }) {
   const router = useRouter();
   const supabase = createClient();
   const [saving, setSaving] = useState(false);
   
-  // Flatten out fields for simple editing
+  // Extract initial selections from junction tables
+  const initialCatIds = business?.business_categories?.map((bc: any) => bc.category_id) || [];
+  const initialLocIds = business?.business_locations?.map((bl: any) => bl.location_id) || [];
+
   const [formData, setFormData] = useState({
     name: business?.name || "",
     slug: business?.slug || "",
     status: business?.status || "draft",
-    category: business?.category || "",
-    location: business?.location || "",
     is_featured: business?.is_featured || false,
     page_content: JSON.stringify(business?.page_content || {}, null, 2),
   });
+
+  const [selectedCats, setSelectedCats] = useState<string[]>(initialCatIds);
+  const [selectedLocs, setSelectedLocs] = useState<string[]>(initialLocIds);
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleCheckboxChange = (id: string, list: string[], setList: any) => {
+    if (list.includes(id)) {
+      setList(list.filter(x => x !== id));
+    } else {
+      setList([...list, id]);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      // parse JSON just to ensure validity before saving
       const parsedContent = JSON.parse(formData.page_content);
       
       const payload = {
         name: formData.name,
         slug: formData.slug,
         status: formData.status,
-        category: formData.category,
-        location: formData.location,
         is_featured: formData.is_featured,
         page_content: parsedContent,
       };
 
-      let error;
-      if (business?.id) {
-        const res = await supabase.from("businesses").update(payload).eq("id", business.id);
-        error = res.error;
+      let businessId = business?.id;
+      
+      if (businessId) {
+        const { error } = await supabase.from("businesses").update(payload).eq("id", businessId);
+        if (error) throw error;
       } else {
-        const res = await supabase.from("businesses").insert(payload);
-        error = res.error;
+        const { data, error } = await supabase.from("businesses").insert(payload).select().single();
+        if (error) throw error;
+        businessId = data.id;
       }
 
-      if (error) throw error;
+      // Update junction tables by deleting old and inserting new
+      await supabase.from("business_categories").delete().eq("business_id", businessId);
+      if (selectedCats.length > 0) {
+        await supabase.from("business_categories").insert(selectedCats.map(cat_id => ({ business_id: businessId, category_id: cat_id })));
+      }
+
+      await supabase.from("business_locations").delete().eq("business_id", businessId);
+      if (selectedLocs.length > 0) {
+        await supabase.from("business_locations").insert(selectedLocs.map(loc_id => ({ business_id: businessId, location_id: loc_id })));
+      }
+
       toast.success("Đã lưu thành công");
       router.push("/admin/businesses");
       router.refresh();
@@ -99,15 +120,14 @@ export default function BusinessEditorClient({ business }: { business: any }) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-4 rounded-xl border bg-card p-6 shadow-sm">
-          <h3 className="font-semibold text-lg">Thông tin cơ bản (Cơ sở dữ liệu)</h3>
+        <div className="space-y-6 rounded-xl border bg-card p-6 shadow-sm">
+          <h3 className="font-semibold text-lg">Thông tin cơ bản</h3>
           
           <div className="space-y-2">
             <Label>Tên doanh nghiệp</Label>
             <Input 
               value={formData.name} 
               onChange={(e) => handleChange("name", e.target.value)} 
-              placeholder="Ví dụ: L'Occitane Spa"
             />
           </div>
           
@@ -116,7 +136,6 @@ export default function BusinessEditorClient({ business }: { business: any }) {
             <Input 
               value={formData.slug} 
               onChange={(e) => handleChange("slug", e.target.value)} 
-              placeholder="vi-du-loccitane-spa"
             />
           </div>
 
@@ -134,26 +153,43 @@ export default function BusinessEditorClient({ business }: { business: any }) {
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Danh mục</Label>
-              <Input 
-                value={formData.category} 
-                onChange={(e) => handleChange("category", e.target.value)} 
-                placeholder="spa"
-              />
+          <div className="space-y-2 border-t pt-4">
+            <Label>Danh mục (Chọn nhiều)</Label>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {categories.map(c => (
+                <label key={c.id} className="flex items-center space-x-2 text-sm cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedCats.includes(c.id)} 
+                    onChange={() => handleCheckboxChange(c.id, selectedCats, setSelectedCats)}
+                    className="rounded border-gray-300 text-gold focus:ring-gold"
+                  />
+                  <span>{c.name}</span>
+                </label>
+              ))}
             </div>
-            <div className="space-y-2">
-              <Label>Địa điểm</Label>
-              <Input 
-                value={formData.location} 
-                onChange={(e) => handleChange("location", e.target.value)} 
-                placeholder="hcm"
-              />
+            {categories.length === 0 && <span className="text-xs text-muted-foreground">Chưa có danh mục nào. Hãy tạo trong Quản lý Danh mục.</span>}
+          </div>
+
+          <div className="space-y-2 border-t pt-4">
+            <Label>Khu vực / Địa điểm (Chọn nhiều)</Label>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {locations.map(l => (
+                <label key={l.id} className="flex items-center space-x-2 text-sm cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedLocs.includes(l.id)} 
+                    onChange={() => handleCheckboxChange(l.id, selectedLocs, setSelectedLocs)}
+                    className="rounded border-gray-300 text-gold focus:ring-gold"
+                  />
+                  <span>{l.name}</span>
+                </label>
+              ))}
             </div>
+            {locations.length === 0 && <span className="text-xs text-muted-foreground">Chưa có địa điểm nào. Hãy tạo trong Quản lý Địa điểm.</span>}
           </div>
           
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-2 border-t pt-4">
             <input 
               type="checkbox" 
               id="is_featured"
@@ -171,7 +207,7 @@ export default function BusinessEditorClient({ business }: { business: any }) {
             <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded">Advanced</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Chỉnh sửa toàn bộ cấu trúc dữ liệu Landing Page của doanh nghiệp ở định dạng JSON. Tính năng Visual Editor sẽ ra mắt ở Phase 7.
+            Chỉnh sửa toàn bộ cấu trúc dữ liệu Landing Page của doanh nghiệp ở định dạng JSON.
           </p>
           <Textarea
             value={formData.page_content}

@@ -1,11 +1,15 @@
 import { createClient, createAdminClient } from '../utils/supabase/server';
 import { Business } from '../types/business';
 
-export async function getBusinessBySlug(slug: string): Promise<Business | null> {
+export async function getBusinessBySlug(slug: string): Promise<any | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('businesses')
-    .select('*')
+    .select(`
+      *,
+      business_categories ( directory_categories (id, name, slug) ),
+      business_locations ( directory_locations (id, name, slug) )
+    `)
     .eq('slug', slug)
     .single();
 
@@ -14,7 +18,14 @@ export async function getBusinessBySlug(slug: string): Promise<Business | null> 
     return null;
   }
 
-  return data as Business;
+  // Format array for easier frontend access
+  const formattedData = {
+    ...data,
+    categories_list: data.business_categories?.map((bc: any) => bc.directory_categories) || [],
+    locations_list: data.business_locations?.map((bl: any) => bl.directory_locations) || []
+  };
+
+  return formattedData;
 }
 
 export async function getPublishedBusinesses(limit = 20): Promise<Business[]> {
