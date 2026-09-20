@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
@@ -77,21 +78,20 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="logo">Link Ảnh Logo (URL)</Label>
+              <Label>Logo Ứng Dụng</Label>
               <div className="flex gap-4 items-start">
-                {settings.logo_url && (
-                  <div className="p-2 border rounded-md bg-white w-32 h-32 flex items-center justify-center shrink-0">
-                    <img src={settings.logo_url} alt="Logo" className="max-w-full max-h-full object-contain" />
-                  </div>
-                )}
-                <div className="flex-1 space-y-2">
-                  <Input 
-                    id="logo" 
-                    placeholder="https://..." 
-                    value={settings.logo_url} 
-                    onChange={(e) => handleChange("logo_url", e.target.value)} 
-                  />
-                  <p className="text-xs text-muted-foreground">Nhập đường dẫn hình ảnh Logo của nền tảng. Khuyên dùng định dạng PNG trong suốt (Transparent).</p>
+                <ImageUpload 
+                  value={settings.logo_url} 
+                  onChange={(url) => handleChange("logo_url", url)} 
+                  folder="settings"
+                />
+                <div className="flex-1 space-y-2 mt-4">
+                  <p className="text-sm font-medium">Lưu ý khi tải Logo:</p>
+                  <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-1">
+                    <li>Khuyên dùng định dạng PNG trong suốt (Transparent).</li>
+                    <li>Kích thước hiển thị tốt nhất là hình chữ nhật hoặc vuông cân đối.</li>
+                    <li>Dung lượng tối đa 5MB.</li>
+                  </ul>
                 </div>
               </div>
             </div>

@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
-import { categories } from "@/data/directory";
 import { createClient } from "@/utils/supabase/client";
 
 const navLinks = [
@@ -88,11 +87,15 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
 
 export function SiteFooter() {
   const [settings, setSettings] = useState<any>(null);
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.from('site_settings').select('value').eq('key', 'global').single().then(({ data }) => {
       if (data && data.value) setSettings(data.value);
+    });
+    supabase.from('directory_categories').select('*').limit(5).then(({ data }) => {
+      if (data) setCategories(data);
     });
   }, []);
 
@@ -114,10 +117,10 @@ export function SiteFooter() {
         <div>
           <p className="text-xs tracking-[0.25em] text-gold uppercase">Danh mục</p>
           <ul className="mt-4 space-y-2 text-sm">
-            {categories.slice(0, 5).map((c) => (
+            {categories.map((c) => (
               <li key={c.slug}>
                 <Link
-                  href={`/danh-muc/${c.slug}`}
+                  href={`/tim-kiem?category=${c.slug}`}
                   className="transition-colors hover:text-gold"
                 >
                   {c.name}

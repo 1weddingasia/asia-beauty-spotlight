@@ -1,19 +1,43 @@
 import { PageShell } from "@/components/site/Layout";
-import { categories, locations } from "@/data/directory";
 import { Search, SlidersHorizontal } from "lucide-react";
+import { getCategoriesAction, getLocationsAction, searchBusinessesAction } from "../actions/search";
+import { BusinessCard } from "@/components/site/BusinessCard";
+import Link from "next/link";
 
 export const metadata = {
   title: "Tìm kiếm | 1Beauty.Asia",
   description: "Tìm kiếm spa, thẩm mỹ viện và salon làm đẹp tại châu Á.",
 };
 
-export default function SearchPage() {
+export default async function SearchPage(props: {
+  searchParams: Promise<{ q?: string; category?: string; location?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const q = searchParams.q || "";
+  const category = searchParams.category || "all";
+  const location = searchParams.location || "all";
+
+  const [categories, locations, results] = await Promise.all([
+    getCategoriesAction(),
+    getLocationsAction(),
+    searchBusinessesAction(q, category, location)
+  ]);
+
   return (
     <PageShell>
-      <div className="border-b border-border bg-card">
-        <div className="mx-auto max-w-6xl px-6 py-12 text-center md:py-16">
-          <h1 className="font-display text-4xl md:text-5xl">Tìm kiếm</h1>
-          <p className="mt-4 text-muted-foreground md:text-lg">
+      <div className="relative border-b border-border">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
+        >
+          <div className="absolute inset-0 bg-ink/70"></div>
+        </div>
+        
+        {/* Content */}
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 text-center md:py-24">
+          <h1 className="font-display text-4xl md:text-5xl text-white">Tìm kiếm</h1>
+          <p className="mt-4 text-gray-200 md:text-lg">
             Khám phá hàng ngàn địa điểm làm đẹp uy tín trên khắp châu Á.
           </p>
         </div>
@@ -24,7 +48,7 @@ export default function SearchPage() {
           <div className="sticky top-24 space-y-8">
             <div>
               <div className="flex items-center gap-2 font-medium">
-                <SlidersHorizontal className="size-4" /> Bộ lọc
+                <SlidersHorizontal className="size-4" /> BỘ LỌC
               </div>
               <div className="mt-6 space-y-4">
                 <div>
@@ -32,13 +56,20 @@ export default function SearchPage() {
                     Danh mục
                   </label>
                   <div className="mt-3 space-y-2">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" className="rounded border-border" /> Tất cả
-                    </label>
+                    <Link
+                      href={`/tim-kiem?q=${q}&location=${location}&category=all`}
+                      className={`block text-sm transition-colors hover:text-gold ${category === 'all' ? 'text-gold font-bold' : ''}`}
+                    >
+                      Tất cả
+                    </Link>
                     {categories.map((c) => (
-                      <label key={c.slug} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" className="rounded border-border" /> {c.name}
-                      </label>
+                      <Link
+                        key={c.slug}
+                        href={`/tim-kiem?q=${q}&location=${location}&category=${c.slug}`}
+                        className={`block text-sm transition-colors hover:text-gold ${category === c.slug ? 'text-gold font-bold' : ''}`}
+                      >
+                        {c.name}
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -48,13 +79,20 @@ export default function SearchPage() {
                     Khu vực
                   </label>
                   <div className="mt-3 space-y-2">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" className="rounded border-border" /> Tất cả
-                    </label>
+                    <Link
+                      href={`/tim-kiem?q=${q}&category=${category}&location=all`}
+                      className={`block text-sm transition-colors hover:text-gold ${location === 'all' ? 'text-gold font-bold' : ''}`}
+                    >
+                      Tất cả
+                    </Link>
                     {locations.map((l) => (
-                      <label key={l.slug} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" className="rounded border-border" /> {l.name}
-                      </label>
+                      <Link
+                        key={l.slug}
+                        href={`/tim-kiem?q=${q}&category=${category}&location=${l.slug}`}
+                        className={`block text-sm transition-colors hover:text-gold ${location === l.slug ? 'text-gold font-bold' : ''}`}
+                      >
+                        {l.name}
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -64,18 +102,33 @@ export default function SearchPage() {
         </aside>
 
         <div className="flex-1">
-          <div className="relative mb-8">
+          <form action="/tim-kiem" method="GET" className="relative mb-8">
+            <input type="hidden" name="category" value={category} />
+            <input type="hidden" name="location" value={location} />
             <Search className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
+              name="q"
+              defaultValue={q}
               placeholder="Tên doanh nghiệp, dịch vụ..."
-              className="w-full rounded-full border border-border bg-card py-4 pr-6 pl-12 text-sm outline-none transition-colors focus:border-gold"
+              className="w-full rounded-full border border-border bg-card py-4 pr-32 pl-12 text-sm outline-none transition-colors focus:border-gold"
             />
-          </div>
+            <button type="submit" className="absolute top-1.5 right-1.5 rounded-full bg-gold px-6 py-2.5 text-xs font-bold text-ink uppercase tracking-wide hover:bg-gold/90">
+              Tìm
+            </button>
+          </form>
           
-          <div className="text-center py-20 text-muted-foreground">
-            Sắp ra mắt tính năng tìm kiếm nâng cao
-          </div>
+          {results.length > 0 ? (
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+              {results.map((b: any) => (
+                <BusinessCard key={b.slug} business={b} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 text-muted-foreground">
+              Không tìm thấy doanh nghiệp nào phù hợp với điều kiện tìm kiếm.
+            </div>
+          )}
         </div>
       </div>
     </PageShell>

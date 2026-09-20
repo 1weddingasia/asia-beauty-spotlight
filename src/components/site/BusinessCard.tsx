@@ -1,14 +1,13 @@
 "use client";
 import Link from "next/link";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
-import { categories, locations } from "@/data/directory";
 
 export function BusinessCard({ business: dbBusiness }: { business: any }) {
   // Merge db properties and page_content json
   const business = { ...dbBusiness, ...(dbBusiness.page_content || {}) };
 
-  const category = categories.find(c => c.slug === (business.category_slug || business.category));
-  const location = locations.find(l => l.slug === (business.location_slug || business.location));
+  const firstCategory = business.categories_list?.[0]?.name || business.category_slug || "Làm đẹp";
+  const firstLocation = business.locations_list?.[0]?.name || business.location_slug || "Việt Nam";
   const offer = business.offers && business.offers.length > 0 ? business.offers[0] : null;
   const rating = business.rating || 5.0;
   const reviewsCount = business.reviews || 0;
@@ -33,7 +32,7 @@ export function BusinessCard({ business: dbBusiness }: { business: any }) {
         )}
         <div className="absolute right-4 bottom-4 left-4 flex items-end justify-between gap-3">
           <span className="text-xs tracking-[0.2em] text-background/80 uppercase">
-            {category?.name || "Làm đẹp"}
+            {firstCategory}
           </span>
           <span className="flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold">
             <Star className="size-3 fill-gold text-gold" />
@@ -63,7 +62,7 @@ export function BusinessCard({ business: dbBusiness }: { business: any }) {
 
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <MapPin className="size-3.5 text-gold" />
-          {location?.name || "Việt Nam"} · {reviewsCount} đánh giá
+          {firstLocation} · {reviewsCount} đánh giá
         </p>
 
         <div className="mt-auto flex flex-wrap gap-1.5 pt-2">

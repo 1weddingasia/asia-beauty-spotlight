@@ -2,7 +2,6 @@ import { getBusinessBySlug } from "@/data/business";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import BusinessPageClient from "./BusinessPageClient";
-import { getCategory } from "@/data/directory";
 
 export async function generateMetadata({
   params,

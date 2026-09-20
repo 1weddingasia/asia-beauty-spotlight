@@ -1,10 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MapPin, Search, Tag } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
-import { categories, locations } from "@/data/directory";
-import { suggest } from "@/lib/search";
+import { MapPin, Search, Tag, Loader2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { getCategoriesAction, getLocationsAction } from "@/app/actions/search";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -24,26 +23,32 @@ export function SearchBar({
   const [q, setQ] = useState(defaultQ);
   const [category, setCategory] = useState(defaultCategory);
   const [location, setLocation] = useState(defaultLocation);
-  const [open, setOpen] = useState(false);
-  const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const [categories, setCategories] = useState<any[]>([]);
+  const [locations, setLocations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const suggestions = useMemo(() => suggest(q), [q]);
+  useEffect(() => {
+    async function load() {
+      const [cats, locs] = await Promise.all([
+        getCategoriesAction(),
+        getLocationsAction()
+      ]);
+      setCategories(cats);
+      setLocations(locs);
+      setLoading(false);
+    }
+    load();
+  }, []);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setOpen(false);
     router.push("/tim-kiem?q=" + q + "&category=" + category + "&location=" + location);
   };
 
   return (
     <form
       onSubmit={submit}
-      onBlur={() => {
-        blurTimer.current = setTimeout(() => setOpen(false), 120);
-      }}
-      onFocus={() => {
-        if (blurTimer.current) clearTimeout(blurTimer.current);
-      }}
       className={cn(
         "relative w-full rounded-sm border border-border/70 bg-card/95 backdrop-blur",
         variant === "hero" ? "shadow-luxe p-2" : "shadow-card p-1.5",
@@ -54,45 +59,54 @@ export function SearchBar({
           <Search className="size-4 shrink-0 text-gold" />
           <input
             value={q}
-            onChange={(e) => {
-              setQ(e.target.value);
-              setOpen(true);
-            }}
-            placeholder="Từ khoá, tên doanh nghiệp, dịch vụ, ưu đãi…"
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Từ khoá, tên doanh nghiệp, dịch vụ..."
             className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
         </label>
 
         <label className="flex items-center gap-2 border-border/70 px-3 py-2.5 md:border-l">
           <Tag className="size-4 shrink-0 text-gold" />
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none"
-          >
-            <option value="all">Tất cả danh mục</option>
-            {categories.map((c) => (
-              <option key={c.slug} value={c.slug}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          {loading ? (
+            <div className="flex w-full items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="size-3 animate-spin" /> Đang tải...
+            </div>
+          ) : (
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full bg-transparent text-sm outline-none"
+            >
+              <option value="all">Tất cả danh mục</option>
+              {categories.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
 
         <label className="flex items-center gap-2 border-border/70 px-3 py-2.5 md:border-l">
           <MapPin className="size-4 shrink-0 text-gold" />
-          <select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none"
-          >
-            <option value="all">Mọi địa điểm</option>
-            {locations.map((l) => (
-              <option key={l.slug} value={l.slug}>
-                {l.name}
-              </option>
-            ))}
-          </select>
+          {loading ? (
+            <div className="flex w-full items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="size-3 animate-spin" /> Đang tải...
+            </div>
+          ) : (
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full bg-transparent text-sm outline-none"
+            >
+              <option value="all">Mọi địa điểm</option>
+              {locations.map((l) => (
+                <option key={l.slug} value={l.slug}>
+                  {l.name}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
 
         <button
@@ -102,53 +116,6 @@ export function SearchBar({
           Tìm kiếm
         </button>
       </div>
-
-      {open && suggestions.length > 0 && (
-        <ul className="shadow-luxe absolute top-full right-0 left-0 z-40 mt-2 overflow-hidden rounded-sm border border-border bg-popover">
-          {suggestions.map((s) => {
-            const inner = (
-              <>
-                <span className="font-medium">{s.label}</span>
-                <span className="truncate text-xs text-muted-foreground">{s.sub}</span>
-              </>
-            );
-            const cls =
-              "flex items-center justify-between gap-4 px-4 py-3 text-sm transition-colors hover:bg-secondary";
-            return (
-              <li key={`${s.kind}-${s.slug}`}>
-                {s.kind === "business" ? (
-                  <Link
-                    href="/doanh-nghiep/$slug"
-                     
-                    onClick={() => setOpen(false)}
-                    className={cls}
-                  >
-                    {inner}
-                  </Link>
-                ) : s.kind === "category" ? (
-                  <Link
-                    href="/danh-muc/$slug"
-                     
-                    onClick={() => setOpen(false)}
-                    className={cls}
-                  >
-                    {inner}
-                  </Link>
-                ) : (
-                  <Link
-                    href="/tim-kiem"
-                    
-                    onClick={() => setOpen(false)}
-                    className={cls}
-                  >
-                    {inner}
-                  </Link>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
     </form>
   );
 }

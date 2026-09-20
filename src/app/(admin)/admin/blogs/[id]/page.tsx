@@ -12,6 +12,7 @@ import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { use } from "react";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function BlogEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -208,11 +209,11 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Link Ảnh Bìa (Cover Image URL)</Label>
-              <Input 
+              <Label>Ảnh Bìa (Cover Image)</Label>
+              <ImageUpload 
                 value={formData.cover_image} 
-                onChange={(e) => setFormData(p => ({ ...p, cover_image: e.target.value }))} 
-                placeholder="https://..."
+                onChange={(url) => setFormData(p => ({ ...p, cover_image: url }))} 
+                folder="blogs"
               />
             </div>
             <div className="space-y-2">

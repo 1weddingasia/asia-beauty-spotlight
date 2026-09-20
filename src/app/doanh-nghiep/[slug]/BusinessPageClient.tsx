@@ -1,7 +1,6 @@
 "use client";
 
 import { PageShell } from "@/components/site/Layout";
-import { categories, locations } from "@/data/directory";
 import { 
   BadgeCheck, Clock, Globe, MapPin, 
   Phone, Sparkles, Star, ChevronLeft, ChevronRight, CheckCircle2, X, Ticket, Image as ImageIcon, ArrowUp, Navigation
@@ -18,7 +17,8 @@ const fadeUp: any = {
 };
 
 export default function BusinessPageClient({ business: b }: { business: any }) {
-  const category = categories.find((c) => c.slug === b.category_slug);
+  const displayCategories = b.categories_list || [];
+  const displayLocations = b.locations_list || [];
   
   // Embla Carousels
   const [heroRef, heroApi] = useEmblaCarousel({ loop: true });

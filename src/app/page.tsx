@@ -4,11 +4,17 @@ import { BusinessCard } from "@/components/site/BusinessCard";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { getPublishedBusinesses } from "@/data/business";
-import { categories, locations } from "@/data/directory";
+import { getCategoriesAction, getLocationsAction } from "@/app/actions/search";
 import React from "react";
+import * as LucideIcons from "lucide-react";
 
 export default async function Index() {
-  const businesses = await getPublishedBusinesses(6);
+  const [businesses, categories, locations] = await Promise.all([
+    getPublishedBusinesses(6),
+    getCategoriesAction(),
+    getLocationsAction()
+  ]);
+  
   const featured = businesses.filter((b) => b.is_featured).slice(0, 6);
   
   const offers = [
@@ -38,11 +44,11 @@ export default async function Index() {
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((c) => {
-              const Icon = c.icon as any;
+              const Icon = (LucideIcons as any)[c.icon || "Sparkles"] || LucideIcons.Sparkles;
               return (
                 <Link
                   key={c.slug}
-                  href={`/danh-muc/${c.slug}`}
+                  href={`/tim-kiem?category=${c.slug}`}
                   className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all hover:border-gold hover:shadow-card"
                 >
                   <div className="absolute top-0 right-0 p-6 opacity-5 transition-opacity group-hover:opacity-10">
@@ -51,7 +57,7 @@ export default async function Index() {
                   <Icon className="size-8 text-gold" />
                   <h3 className="mt-4 font-display text-xl">{c.name}</h3>
                   <p className="mt-2 max-w-[200px] text-sm text-muted-foreground">
-                    {c.description}
+                    {c.description || "Khám phá danh mục này"}
                   </p>
                 </Link>
               );

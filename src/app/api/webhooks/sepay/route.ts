@@ -67,8 +67,55 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    // [TƯƠNG LAI]: Xử lý logic cấp phát membership gói nếu `payload.content` chứa cú pháp "UPGRADE {USER_ID}"
-    // VD: parse content tìm keyword và tự động update users hoặc plans.
+    // Xử lý logic cấp phát membership gói VIP
+    // VD cú pháp chuyển khoản: "UPGRADE [SLUG]" hoặc "VIP [SLUG]"
+    const contentUpper = payload.content.toUpperCase();
+    if (contentUpper.includes('UPGRADE') || contentUpper.includes('VIP')) {
+      // Trích xuất slug từ memo (nằm sau chữ UPGRADE hoặc VIP)
+      const match = contentUpper.match(/(?:UPGRADE|VIP)\s+([A-Z0-9-]+)/);
+      if (match && match[1]) {
+        const targetSlug = match[1].toLowerCase();
+        
+        // 1. Tìm Business ID bằng slug
+        const { data: business } = await supabase
+          .from('businesses')
+          .select('id, name')
+          .eq('slug', targetSlug)
+          .single();
+
+        if (business) {
+          // 2. Lấy ID của gói VIP (ví dụ gói có tên 'VIP' hoặc gói có giá > 0 đầu tiên)
+          const { data: plan } = await supabase
+            .from('plans')
+            .select('id')
+            .eq('is_active', true)
+            .ilike('name', '%VIP%')
+            .limit(1)
+            .single();
+
+          if (plan) {
+            // 3. Tạo membership mới
+            const expiresAt = new Date();
+            expiresAt.setMonth(expiresAt.getMonth() + 1); // 1 tháng
+
+            await supabase.from('memberships').insert({
+              business_id: business.id,
+              plan_id: plan.id,
+              status: 'active',
+              starts_at: new Date().toISOString(),
+              expires_at: expiresAt.toISOString(),
+            });
+
+            // 4. Update Business hiển thị "is_featured"
+            await supabase.from('businesses')
+              .update({ is_featured: true, plan_tier: 'VIP' })
+              .eq('id', business.id);
+
+            console.log(`Successfully upgraded business ${targetSlug} to VIP via SePay transaction ${payload.id}`);
+          }
+        }
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
