@@ -45,7 +45,7 @@ export function BusinessCard({ business: dbBusiness }: { business: any }) {
       <div className="flex flex-1 flex-col gap-3 p-6">
         <div className="flex items-start gap-3">
           {business.logo_url ? (
-            <img src={business.logo_url} alt="logo" className="size-11 shrink-0 rounded-xl border border-gold-soft object-cover" />
+            <img src={business.logo_url} alt="logo" className="size-11 shrink-0 rounded-xl border border-gold-soft object-contain bg-white p-1" />
           ) : (
             <span className="font-display grid size-11 shrink-0 place-items-center rounded-xl border border-gold-soft bg-champagne text-sm tracking-widest text-ink">
               {business.name.substring(0, 2).toUpperCase()}

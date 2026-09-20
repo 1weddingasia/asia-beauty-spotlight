@@ -35,13 +35,13 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         <div className="overlay-ink absolute inset-0" />
         <div className="absolute inset-x-0 bottom-0">
           <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 pb-12 md:flex-row md:items-end md:gap-8">
-            <div className="relative size-32 shrink-0 overflow-hidden rounded-full border-4 border-background bg-card md:size-40">
-              <Image
-                src={b.logo_url || "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80"}
-                alt={b.name}
-                fill
-                className="object-cover"
-              />
+              <div className="relative size-32 shrink-0 overflow-hidden rounded-full border-4 border-background bg-white md:size-40 p-2">
+                <Image
+                  src={b.logo_url || "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80"}
+                  alt={b.name}
+                  fill
+                  className="object-contain p-2"
+                />
             </div>
             <div className="text-center md:mb-4 md:text-left">
               <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
