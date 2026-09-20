@@ -27,10 +27,17 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
     excerpt: "",
     content: "",
     cover_image: "",
+    category_id: "",
   });
+  
+  const [categories, setCategories] = useState<any[]>([]);
 
-  // Simplified fetch for edit mode
+  // Fetch data
   useState(() => {
+    supabase.from("blog_categories").select("*").then(({ data, error }) => {
+      if (!error && data) setCategories(data);
+    });
+
     if (!isNew) {
       supabase.from("blogs").select("*").eq("id", id).single().then(({ data }) => {
         if (data) setFormData({
@@ -40,6 +47,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
           excerpt: data.excerpt || "",
           content: data.content || "",
           cover_image: data.cover_image || "",
+          category_id: data.category_id || "",
         });
       });
     }
@@ -49,6 +57,10 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
     setSaving(true);
     try {
       const payload: any = { ...formData };
+      if (payload.category_id === "") {
+        payload.category_id = null;
+      }
+
       if (formData.status === 'published' && isNew) {
         payload.published_at = new Date().toISOString();
       }
@@ -113,6 +125,22 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
                 placeholder="url-bai-viet"
               />
             </div>
+            <div className="space-y-2">
+              <Label>Danh mục</Label>
+              <Select 
+                value={formData.category_id} 
+                onValueChange={(v) => setFormData(p => ({ ...p, category_id: v }))}
+              >
+                <SelectTrigger><SelectValue placeholder="Chọn danh mục" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">-- Không phân loại --</SelectItem>
+                  {categories.map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-2">
               <Label>Trạng thái</Label>
               <Select value={formData.status} onValueChange={(v) => setFormData(p => ({ ...p, status: v }))}>

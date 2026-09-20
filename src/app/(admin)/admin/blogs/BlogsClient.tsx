@@ -31,11 +31,18 @@ export default function BlogsClient({ initialBlogs }: { initialBlogs: any[] }) {
           <h2 className="text-3xl font-bold tracking-tight">Bài viết (Blog)</h2>
           <p className="text-muted-foreground mt-2">Quản lý nội dung SEO, tin tức.</p>
         </div>
-        <Button asChild className="bg-gold text-ink hover:bg-gold/90">
-          <Link href="/admin/blogs/new">
-            <Plus className="mr-2 size-4" /> Viết bài mới
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10">
+            <Link href="/admin/blogs/categories">
+              Danh mục
+            </Link>
+          </Button>
+          <Button asChild className="bg-gold text-ink hover:bg-gold/90">
+            <Link href="/admin/blogs/new">
+              <Plus className="mr-2 size-4" /> Viết bài mới
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-md border bg-card">
