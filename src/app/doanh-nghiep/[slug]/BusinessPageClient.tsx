@@ -112,17 +112,30 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
               initial="hidden" animate="visible" variants={fadeUp}
               className="text-center md:text-left pb-4 md:pb-8 flex-1"
             >
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
-                <span className="rounded-full border border-gold-soft bg-champagne px-3 py-1 text-xs font-semibold tracking-widest text-ink uppercase">
-                  {category?.name || "Làm Đẹp"}
-                </span>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
+                {/* 1. Location Badge (Địa điểm) */}
+                <Link href={`/tim-kiem?location=${b.city || "ho-chi-minh"}`} className="flex items-center gap-1.5 rounded-full bg-ink text-gold px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase hover:bg-ink/80 transition-colors shadow-sm">
+                  <MapPin className="size-3.5" /> {b.city || b.province || "TP. Hồ Chí Minh"}
+                </Link>
+
+                {/* 2. Multiple Categories (Danh mục ngành nghề) */}
+                {(b.categories?.length > 0 ? b.categories : [
+                  { name: category?.name || "Làm Đẹp", slug: category?.slug || "lam-dep" },
+                  { name: "Chăm sóc da", slug: "cham-soc-da" } // Fallback demo for multiple categories
+                ]).map((cat: any, i: number) => (
+                  <Link key={i} href={`/danh-muc/${cat.slug}`} className="rounded-full border border-gold-soft bg-champagne px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest text-ink uppercase hover:bg-gold/20 hover:border-gold transition-colors">
+                    {cat.name}
+                  </Link>
+                ))}
+
+                {/* 3. Verified Badge (Xác thực) */}
                 {b.is_featured && (
-                  <span className="flex items-center gap-1 rounded-full bg-gold px-3 py-1 text-xs font-semibold tracking-widest text-ink uppercase">
+                  <span className="flex items-center gap-1 rounded-full bg-gradient-gold px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest text-ink uppercase shadow-sm">
                     <BadgeCheck className="size-3.5" /> Xác Thực
                   </span>
                 )}
               </div>
-              <h1 className="font-display text-3xl md:text-5xl lg:text-6xl text-foreground mb-2 px-2 md:px-0">
+              <h1 className="font-display text-3xl md:text-5xl lg:text-6xl text-foreground mb-2 px-2 md:px-0 leading-tight">
                 {b.name}
               </h1>
               {b.tagline && (
