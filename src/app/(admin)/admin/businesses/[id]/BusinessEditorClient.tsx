@@ -82,10 +82,20 @@ export default function BusinessEditorClient({ business }: { business: any }) {
             {business ? "Chỉnh sửa doanh nghiệp" : "Thêm doanh nghiệp mới"}
           </h2>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90">
-          <Save className="mr-2 size-4" />
-          {saving ? "Đang lưu..." : "Lưu thay đổi"}
-        </Button>
+        <div className="flex gap-2">
+          {business?.id && (
+            <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10">
+              <Link href={`/admin/businesses/${business.id}/upgrade`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Nâng cấp Gói
+              </Link>
+            </Button>
+          )}
+          <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90">
+            <Save className="mr-2 size-4" />
+            {saving ? "Đang lưu..." : "Lưu thay đổi"}
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
