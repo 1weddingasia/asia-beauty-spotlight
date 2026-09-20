@@ -32,12 +32,21 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
 
-  const hasGallery = b.gallery && b.gallery.length > 0;
-  const hasServices = b.services && b.services.length > 0;
+  const galleryItems = b.gallery && b.gallery.length > 0 
+    ? b.gallery 
+    : [null, null, null, null]; // 4 placeholders
+
+  const servicesItems = b.services && b.services.length > 0 
+    ? b.services 
+    : [
+        { name: "Dịch vụ đang cập nhật", description: "Vui lòng liên hệ trực tiếp với cơ sở để biết thêm chi tiết về dịch vụ này.", price: "Liên hệ" },
+        { name: "Dịch vụ đang cập nhật", description: "Vui lòng liên hệ trực tiếp với cơ sở để biết thêm chi tiết về dịch vụ này.", price: "Liên hệ" },
+        { name: "Dịch vụ đang cập nhật", description: "Vui lòng liên hệ trực tiếp với cơ sở để biết thêm chi tiết về dịch vụ này.", price: "Liên hệ" }
+      ];
   
   // Dummy offers if none exist to show the luxury layout
   const offers = b.offers?.length > 0 ? b.offers : [
-    { title: "Giảm 20% Lần Đầu", description: "Áp dụng cho khách hàng mới trải nghiệm dịch vụ.", discount: "-20%", code: "NEW20" }
+    { title: "Giảm 20% Lần Đầu", description: "Áp dụng cho khách hàng mới trải nghiệm dịch vụ. (Đang chờ doanh nghiệp cập nhật mã thật)", discount: "-20%", code: "NEW20" }
   ];
 
   return (
@@ -114,34 +123,28 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
               <div className="h-px bg-gold flex-1" />
             </div>
             <p className="text-lg leading-relaxed text-foreground font-medium">
-              {b.short_description}
+              {b.short_description || "Đang cập nhật giới thiệu..."}
             </p>
             <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {b.about || b.description}
+              {b.about || b.description || "Nội dung đang được hệ thống hoặc doanh nghiệp cập nhật thêm."}
             </p>
           </div>
           
           <div className="bg-card rounded-3xl p-8 border border-border shadow-card h-fit space-y-6">
             <h3 className="font-display text-xl border-b border-border pb-4">Thông tin liên hệ</h3>
             <div className="space-y-4">
-              {b.address && (
-                <div className="flex items-start gap-3">
-                  <MapPin className="size-5 text-gold shrink-0 mt-0.5" />
-                  <span className="text-sm text-muted-foreground">{b.address}</span>
-                </div>
-              )}
-              {b.phone && (
-                <div className="flex items-center gap-3">
-                  <Phone className="size-5 text-gold shrink-0" />
-                  <span className="text-sm font-medium">{b.phone}</span>
-                </div>
-              )}
-              {b.hours && (
-                <div className="flex items-center gap-3">
-                  <Clock className="size-5 text-gold shrink-0" />
-                  <span className="text-sm text-muted-foreground">{b.hours}</span>
-                </div>
-              )}
+              <div className="flex items-start gap-3">
+                <MapPin className="size-5 text-gold shrink-0 mt-0.5" />
+                <span className="text-sm text-muted-foreground">{b.address || "Đang cập nhật"}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone className="size-5 text-gold shrink-0" />
+                <span className="text-sm font-medium">{b.phone || "Đang cập nhật"}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock className="size-5 text-gold shrink-0" />
+                <span className="text-sm text-muted-foreground">{b.hours || "Đang cập nhật"}</span>
+              </div>
             </div>
             <button
               className="w-full block bg-gradient-gold rounded-full px-6 py-4 text-center text-sm font-semibold tracking-[0.1em] text-ink uppercase hover:opacity-90 transition-opacity"
@@ -152,60 +155,57 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         </motion.section>
 
         {/* 3. DỊCH VỤ NỔI BẬT (PRODUCT CARDS) */}
-        {hasServices && (
-          <motion.section 
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
-            className="bg-secondary/30 -mx-6 px-6 py-16 md:rounded-[3rem] md:mx-0 md:px-12 border border-border/50"
-          >
-            <div className="flex items-end justify-between mb-10">
-              <div>
-                <p className="text-xs tracking-[0.3em] text-gold uppercase mb-3">Bảng giá</p>
-                <h2 className="font-display text-3xl md:text-4xl">Dịch vụ nổi bật</h2>
-              </div>
-              <div className="hidden md:flex gap-2">
-                <button onClick={scrollPrevServices} className="grid size-10 place-items-center rounded-full border border-border bg-background hover:border-gold hover:text-gold transition-colors">
-                  <ChevronLeft className="size-5" />
-                </button>
-                <button onClick={scrollNextServices} className="grid size-10 place-items-center rounded-full border border-border bg-background hover:border-gold hover:text-gold transition-colors">
-                  <ChevronRight className="size-5" />
-                </button>
-              </div>
+        <motion.section 
+          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
+          className="bg-secondary/30 -mx-6 px-6 py-16 md:rounded-[3rem] md:mx-0 md:px-12 border border-border/50"
+        >
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <p className="text-xs tracking-[0.3em] text-gold uppercase mb-3">Bảng giá</p>
+              <h2 className="font-display text-3xl md:text-4xl">Dịch vụ nổi bật</h2>
             </div>
+            <div className="hidden md:flex gap-2">
+              <button onClick={scrollPrevServices} className="grid size-10 place-items-center rounded-full border border-border bg-background hover:border-gold hover:text-gold transition-colors">
+                <ChevronLeft className="size-5" />
+              </button>
+              <button onClick={scrollNextServices} className="grid size-10 place-items-center rounded-full border border-border bg-background hover:border-gold hover:text-gold transition-colors">
+                <ChevronRight className="size-5" />
+              </button>
+            </div>
+          </div>
 
-            <div className="overflow-hidden -mx-4 px-4 md:mx-0 md:px-0" ref={servicesRef}>
-              <div className="flex gap-4 md:gap-6">
-                {b.services.map((s: any, idx: number) => (
-                  <div key={idx} className="flex-[0_0_85%] md:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
-                    <div 
-                      onClick={() => setSelectedService(s)}
-                      className="bg-card border border-border rounded-2xl overflow-hidden h-full flex flex-col hover:border-gold hover:shadow-luxe transition-all cursor-pointer group"
-                    >
-                      {/* Product Image Placeholder */}
-                      <div className="w-full h-48 bg-secondary relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-champagne to-secondary opacity-50 group-hover:scale-110 transition-transform duration-700" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Sparkles className="size-8 text-gold/40" />
-                        </div>
+          <div className="overflow-hidden -mx-4 px-4 md:mx-0 md:px-0" ref={servicesRef}>
+            <div className="flex gap-4 md:gap-6">
+              {servicesItems.map((s: any, idx: number) => (
+                <div key={idx} className="flex-[0_0_85%] md:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
+                  <div 
+                    onClick={() => setSelectedService(s)}
+                    className="bg-card border border-border rounded-2xl overflow-hidden h-full flex flex-col hover:border-gold hover:shadow-luxe transition-all cursor-pointer group"
+                  >
+                    <div className="w-full h-48 bg-secondary relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-tr from-champagne to-secondary opacity-50 group-hover:scale-110 transition-transform duration-700" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Sparkles className="size-8 text-gold/40" />
                       </div>
-                      <div className="p-6 flex flex-col flex-1">
-                        <h3 className="text-xl font-display mb-2 group-hover:text-gold transition-colors">{s.name}</h3>
-                        <p className="text-sm text-muted-foreground flex-1 line-clamp-2 mb-4">
-                          {s.description}
-                        </p>
-                        <div className="pt-4 border-t border-border/50 flex items-center justify-between">
-                          <span className="font-semibold text-gold text-lg">
-                            {s.price || s.price_min || "Liên hệ"}
-                          </span>
-                          <span className="text-xs uppercase tracking-wider text-muted-foreground group-hover:text-gold transition-colors">Chi tiết &rarr;</span>
-                        </div>
+                    </div>
+                    <div className="p-6 flex flex-col flex-1">
+                      <h3 className="text-xl font-display mb-2 group-hover:text-gold transition-colors">{s.name}</h3>
+                      <p className="text-sm text-muted-foreground flex-1 line-clamp-2 mb-4">
+                        {s.description}
+                      </p>
+                      <div className="pt-4 border-t border-border/50 flex items-center justify-between">
+                        <span className="font-semibold text-gold text-lg">
+                          {s.price || s.price_min || "Liên hệ"}
+                        </span>
+                        <span className="text-xs uppercase tracking-wider text-muted-foreground group-hover:text-gold transition-colors">Chi tiết &rarr;</span>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          </motion.section>
-        )}
+          </div>
+        </motion.section>
 
         {/* 4. ƯU ĐÃI ĐỘC QUYỀN (OFFERS) */}
         <motion.section 
@@ -240,41 +240,46 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         </motion.section>
 
         {/* 5. KHÔNG GIAN (GALLERY) */}
-        {hasGallery && (
-          <motion.section 
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
-          >
-            <div className="flex items-end justify-between mb-8">
-              <div>
-                <p className="text-xs tracking-[0.3em] text-gold uppercase mb-3">Trải nghiệm</p>
-                <h2 className="font-display text-3xl md:text-4xl">Không gian & Cơ sở</h2>
-              </div>
-              <div className="hidden md:flex gap-2">
-                <button onClick={scrollPrevGallery} className="grid size-10 place-items-center rounded-full border border-border hover:border-gold hover:text-gold transition-colors">
-                  <ChevronLeft className="size-5" />
-                </button>
-                <button onClick={scrollNextGallery} className="grid size-10 place-items-center rounded-full border border-border hover:border-gold hover:text-gold transition-colors">
-                  <ChevronRight className="size-5" />
-                </button>
-              </div>
+        <motion.section 
+          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
+        >
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <p className="text-xs tracking-[0.3em] text-gold uppercase mb-3">Trải nghiệm</p>
+              <h2 className="font-display text-3xl md:text-4xl">Không gian & Cơ sở</h2>
             </div>
-            
-            <div className="overflow-hidden" ref={galleryRef}>
-              <div className="flex gap-4 md:gap-6">
-                {b.gallery.map((img: string, idx: number) => (
-                  <div key={idx} className="relative flex-[0_0_85%] md:flex-[0_0_40%] lg:flex-[0_0_30%] h-[300px] md:h-[400px] rounded-2xl overflow-hidden group">
+            <div className="hidden md:flex gap-2">
+              <button onClick={scrollPrevGallery} className="grid size-10 place-items-center rounded-full border border-border hover:border-gold hover:text-gold transition-colors">
+                <ChevronLeft className="size-5" />
+              </button>
+              <button onClick={scrollNextGallery} className="grid size-10 place-items-center rounded-full border border-border hover:border-gold hover:text-gold transition-colors">
+                <ChevronRight className="size-5" />
+              </button>
+            </div>
+          </div>
+          
+          <div className="overflow-hidden" ref={galleryRef}>
+            <div className="flex gap-4 md:gap-6">
+              {galleryItems.map((img: string | null, idx: number) => (
+                <div key={idx} className="relative flex-[0_0_85%] md:flex-[0_0_40%] lg:flex-[0_0_30%] h-[300px] md:h-[400px] rounded-2xl overflow-hidden group bg-secondary">
+                  {img ? (
                     <Image
                       src={img}
                       alt={`Gallery ${idx}`}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                  </div>
-                ))}
-              </div>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground/50">
+                      <ImageIcon className="size-12 mb-3" />
+                      <span className="text-sm font-medium">Đang cập nhật hình ảnh</span>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          </motion.section>
-        )}
+          </div>
+        </motion.section>
 
       </main>
 
