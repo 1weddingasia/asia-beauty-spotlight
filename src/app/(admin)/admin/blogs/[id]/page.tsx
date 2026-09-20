@@ -28,9 +28,13 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
     content: "",
     cover_image: "",
     category_id: "",
+    published_at: "", // Added published_at
   });
   
   const [categories, setCategories] = useState<any[]>([]);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
   // Fetch data
   useState(() => {
@@ -40,18 +44,58 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
 
     if (!isNew) {
       supabase.from("blogs").select("*").eq("id", id).single().then(({ data }) => {
-        if (data) setFormData({
-          title: data.title || "",
-          slug: data.slug || "",
-          status: data.status || "draft",
-          excerpt: data.excerpt || "",
-          content: data.content || "",
-          cover_image: data.cover_image || "",
-          category_id: data.category_id || "",
-        });
+        if (data) {
+          // Format date for datetime-local input
+          let formattedDate = "";
+          if (data.published_at) {
+            const date = new Date(data.published_at);
+            formattedDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+          }
+          
+          setFormData({
+            title: data.title || "",
+            slug: data.slug || "",
+            status: data.status || "draft",
+            excerpt: data.excerpt || "",
+            content: data.content || "",
+            cover_image: data.cover_image || "",
+            category_id: data.category_id || "",
+            published_at: formattedDate,
+          });
+        }
       });
     }
   });
+
+  const handleGenerateAI = async () => {
+    if (!aiPrompt) return toast.error("Vui lòng nhập chủ đề!");
+    setIsAiLoading(true);
+    try {
+      const res = await fetch("/api/ai/write-blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: aiPrompt })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      setFormData(p => ({
+        ...p,
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        cover_image: data.cover_image,
+        slug: data.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "")
+      }));
+      toast.success("AI đã viết xong bài!");
+      setIsAiModalOpen(false);
+      setAiPrompt("");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -61,8 +105,10 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
         payload.category_id = null;
       }
 
-      if (formData.status === 'published' && isNew) {
+      if (formData.status === 'published' && isNew && !formData.published_at) {
         payload.published_at = new Date().toISOString();
+      } else if (formData.published_at) {
+        payload.published_at = new Date(formData.published_at).toISOString();
       }
 
       let error;
@@ -99,10 +145,16 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
             {isNew ? "Viết bài mới" : "Chỉnh sửa bài viết"}
           </h2>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90">
-          <Save className="mr-2 size-4" />
-          {saving ? "Đang lưu..." : "Lưu thay đổi"}
-        </Button>
+        <div className="flex gap-2">
+          <Button type="button" onClick={() => setIsAiModalOpen(true)} className="bg-purple-600 text-white hover:bg-purple-700">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+            Viết bằng AI
+          </Button>
+          <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90">
+            <Save className="mr-2 size-4" />
+            {saving ? "Đang lưu..." : "Lưu thay đổi"}
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6">
@@ -154,13 +206,23 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Link Ảnh Bìa (Cover Image URL)</Label>
-            <Input 
-              value={formData.cover_image} 
-              onChange={(e) => setFormData(p => ({ ...p, cover_image: e.target.value }))} 
-              placeholder="https://..."
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Link Ảnh Bìa (Cover Image URL)</Label>
+              <Input 
+                value={formData.cover_image} 
+                onChange={(e) => setFormData(p => ({ ...p, cover_image: e.target.value }))} 
+                placeholder="https://..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Ngày xuất bản (Hẹn giờ đăng)</Label>
+              <Input 
+                type="datetime-local"
+                value={formData.published_at} 
+                onChange={(e) => setFormData(p => ({ ...p, published_at: e.target.value }))} 
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -176,7 +238,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label>Nội dung (HTML Rich Text)</Label>
-              <span className="text-xs text-muted-foreground">Bạn có thể copy paste HTML từ Google Docs vào đây.</span>
+              <span className="text-xs text-muted-foreground">Bạn có thể copy paste HTML hoặc nhờ AI viết. Hỗ trợ thẻ &lt;img src="..."&gt;.</span>
             </div>
             <Textarea 
               value={formData.content} 
@@ -187,6 +249,42 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
           </div>
         </div>
       </div>
+
+      {/* Modal AI Writer */}
+      {isAiModalOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-ink/80 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-lg rounded-2xl border bg-card p-6 shadow-2xl">
+            <button
+              onClick={() => setIsAiModalOpen(false)}
+              className="absolute right-4 top-4 rounded-full p-1 hover:bg-muted"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+              Trợ lý AI viết bài (DeepSeek)
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Nhập chủ đề bạn muốn viết, AI sẽ tự động lập dàn ý, viết bài chuẩn SEO, và tự động tìm kiếm hình ảnh minh họa trên Pexels chèn vào bài.
+            </p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Chủ đề / Yêu cầu viết bài</Label>
+                <Textarea 
+                  value={aiPrompt} 
+                  onChange={e => setAiPrompt(e.target.value)} 
+                  placeholder="vd: Viết bài 5 mẹo chăm sóc da mụn tại nhà chuẩn spa..."
+                  className="h-32"
+                />
+              </div>
+
+              <Button onClick={handleGenerateAI} className="w-full bg-purple-600 text-white hover:bg-purple-700 mt-4" disabled={isAiLoading}>
+                {isAiLoading ? "Đang viết (có thể mất 15-30s)..." : "Bắt đầu viết"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
