@@ -33,6 +33,7 @@ export default function BusinessEditorClient({ business, categories, locations }
     description: "",
     address: "",
     phone: "",
+    email: "",
     website: "",
     facebook: "",
     instagram: "",
@@ -45,8 +46,13 @@ export default function BusinessEditorClient({ business, categories, locations }
     services: [],
     offers: [],
     working_hours: [
-      { day: "Thứ 2 - Thứ 6", hours: "09:00 - 20:00" },
-      { day: "Thứ 7 - CN", hours: "09:00 - 21:00" }
+      { day: "Thứ 2", hours: "09:00 - 20:00" },
+      { day: "Thứ 3", hours: "09:00 - 20:00" },
+      { day: "Thứ 4", hours: "09:00 - 20:00" },
+      { day: "Thứ 5", hours: "09:00 - 20:00" },
+      { day: "Thứ 6", hours: "09:00 - 20:00" },
+      { day: "Thứ 7", hours: "09:00 - 21:00" },
+      { day: "Chủ nhật", hours: "09:00 - 21:00" }
     ]
   });
 
@@ -246,18 +252,54 @@ export default function BusinessEditorClient({ business, categories, locations }
             
             <div className="grid md:grid-cols-2 gap-6 pt-4 border-t">
               <div className="space-y-2">
+                <Label>Email</Label>
+                <div className="relative">
+                  <LinkIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input value={pageContent.email || ""} onChange={(e) => handlePageContentChange("email", e.target.value)} className="pl-9" placeholder="contact@spa.com" />
+                </div>
+              </div>
+              <div className="space-y-2">
                 <Label>Website</Label>
                 <div className="relative">
                   <LinkIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input value={pageContent.website || ""} onChange={(e) => handlePageContentChange("website", e.target.value)} className="pl-9" placeholder="https://" />
                 </div>
               </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 pt-4 border-t">
               <div className="space-y-2">
                 <Label>Facebook</Label>
-                <div className="relative">
-                  <LinkIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input value={pageContent.facebook || ""} onChange={(e) => handlePageContentChange("facebook", e.target.value)} className="pl-9" placeholder="https://facebook.com/..." />
-                </div>
+                <Input value={pageContent.facebook || ""} onChange={(e) => handlePageContentChange("facebook", e.target.value)} placeholder="Link Fanpage" />
+              </div>
+              <div className="space-y-2">
+                <Label>Instagram</Label>
+                <Input value={pageContent.instagram || ""} onChange={(e) => handlePageContentChange("instagram", e.target.value)} placeholder="Link IG" />
+              </div>
+              <div className="space-y-2">
+                <Label>TikTok</Label>
+                <Input value={pageContent.tiktok || ""} onChange={(e) => handlePageContentChange("tiktok", e.target.value)} placeholder="Link TikTok" />
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-6 border-t">
+              <Label className="text-base font-semibold">Giờ mở cửa (7 ngày trong tuần)</Label>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(pageContent.working_hours || []).map((wh: any, i: number) => (
+                  <div key={i} className="flex flex-col space-y-1 bg-gray-50 p-3 rounded-lg border">
+                    <Label className="text-xs font-bold text-gold">{wh.day}</Label>
+                    <Input 
+                      value={wh.hours} 
+                      onChange={(e) => {
+                        const newWh = [...pageContent.working_hours];
+                        newWh[i].hours = e.target.value;
+                        handlePageContentChange("working_hours", newWh);
+                      }} 
+                      placeholder="09:00 - 20:00" 
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
