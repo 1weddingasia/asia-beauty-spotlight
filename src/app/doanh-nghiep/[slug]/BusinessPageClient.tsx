@@ -4,7 +4,7 @@ import { PageShell } from "@/components/site/Layout";
 import { categories, locations } from "@/data/directory";
 import { 
   BadgeCheck, Clock, Globe, MapPin, 
-  Phone, Sparkles, Star, ChevronLeft, ChevronRight, CheckCircle2, X, Ticket, Image as ImageIcon, ArrowUp
+  Phone, Sparkles, Star, ChevronLeft, ChevronRight, CheckCircle2, X, Ticket, Image as ImageIcon, ArrowUp, Navigation
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -115,7 +115,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
                 {/* 1. Location Badge (Địa điểm) */}
                 <Link href={`/tim-kiem?location=${b.city || "ho-chi-minh"}`} className="flex items-center gap-1.5 rounded-full bg-ink text-gold px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase hover:bg-ink/80 transition-colors shadow-sm">
-                  <MapPin className="size-3.5" /> {b.city || b.province || "TP. Hồ Chí Minh"}
+                  <Navigation className="size-3.5" /> {b.city || b.province || "TP. Hồ Chí Minh"}
                 </Link>
 
                 {/* 2. Multiple Categories (Danh mục ngành nghề) */}
