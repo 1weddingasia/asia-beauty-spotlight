@@ -43,14 +43,20 @@ export async function updateSession(request: NextRequest) {
     // Kiểm tra quyền hạn Chủ Doanh Nghiệp (Owner)
     const role = user.user_metadata?.role;
     if (role === 'owner') {
-      // Nếu owner cố gắng vào trang admin chung, chặn lại
-      // Lấy id doanh nghiệp mà họ sở hữu (tạm giả lập URL hoặc chặn hoàn toàn)
       if (request.nextUrl.pathname === '/admin' || 
           request.nextUrl.pathname.startsWith('/admin/users') || 
           request.nextUrl.pathname.startsWith('/admin/settings')) {
-        url.pathname = '/'; // Tạm thời đẩy về trang chủ hoặc hiện thông báo
+        url.pathname = '/dashboard'; 
         return NextResponse.redirect(url);
       }
+    }
+  }
+
+  // Bảo vệ route /dashboard cho doanh nghiệp
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    if (!user) {
+      url.pathname = '/login';
+      return NextResponse.redirect(url);
     }
   }
 
@@ -58,7 +64,7 @@ export async function updateSession(request: NextRequest) {
   if (request.nextUrl.pathname === '/login' && user) {
     const role = user.user_metadata?.role;
     if (role === 'owner') {
-       url.pathname = '/'; // Sau này sẽ trỏ về `/admin/businesses/[id]`
+       url.pathname = '/dashboard'; 
     } else {
        url.pathname = '/admin';
     }
