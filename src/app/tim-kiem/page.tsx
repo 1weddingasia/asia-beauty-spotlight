@@ -1,7 +1,6 @@
 import { PageShell } from "@/components/site/Layout";
 import { categories, locations } from "@/data/directory";
 import { Search, SlidersHorizontal } from "lucide-react";
-import SearchClient from "./SearchClient";
 
 export const metadata = {
   title: "Tìm kiếm | 1Beauty.Asia",
@@ -74,7 +73,9 @@ export default function SearchPage() {
             />
           </div>
           
-          <SearchClient />
+          <div className="text-center py-20 text-muted-foreground">
+            Sắp ra mắt tính năng tìm kiếm nâng cao
+          </div>
         </div>
       </div>
     </PageShell>

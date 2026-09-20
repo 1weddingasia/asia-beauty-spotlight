@@ -1,5 +1,9 @@
-const fs = require('fs');
-let c = fs.readFileSync('src/components/site/Layout.tsx', 'utf8');
-c = c.replace(/href="\/danh-muc\/\"/g, 'href={/danh-muc/}');
-c = c.replace(/\{\.\.\.\(l\.to === "\/tim-kiem"[^}]+\}\s*:\s*\{\}\)\}/g, '');
-fs.writeFileSync('src/components/site/Layout.tsx', c);
+﻿const fs = require('fs');
+let code = fs.readFileSync('src/components/site/Layout.tsx', 'utf8');
+
+code = code.replace(
+  /<span className=\{ont-display text-2xl \}>/g,
+  '<span className={ont-display text-2xl }>'
+);
+
+fs.writeFileSync('src/components/site/Layout.tsx', code, 'utf8');
