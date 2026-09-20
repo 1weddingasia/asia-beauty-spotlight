@@ -39,13 +39,29 @@ export async function updateSession(request: NextRequest) {
       url.pathname = '/login';
       return NextResponse.redirect(url);
     }
-    // We should ideally check role = 'admin', but for now, any logged in user can access
-    // since we only invite admins.
+    
+    // Kiểm tra quyền hạn Chủ Doanh Nghiệp (Owner)
+    const role = user.user_metadata?.role;
+    if (role === 'owner') {
+      // Nếu owner cố gắng vào trang admin chung, chặn lại
+      // Lấy id doanh nghiệp mà họ sở hữu (tạm giả lập URL hoặc chặn hoàn toàn)
+      if (request.nextUrl.pathname === '/admin' || 
+          request.nextUrl.pathname.startsWith('/admin/users') || 
+          request.nextUrl.pathname.startsWith('/admin/settings')) {
+        url.pathname = '/'; // Tạm thời đẩy về trang chủ hoặc hiện thông báo
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   // Redirect away from login if already logged in
   if (request.nextUrl.pathname === '/login' && user) {
-    url.pathname = '/admin';
+    const role = user.user_metadata?.role;
+    if (role === 'owner') {
+       url.pathname = '/'; // Sau này sẽ trỏ về `/admin/businesses/[id]`
+    } else {
+       url.pathname = '/admin';
+    }
     return NextResponse.redirect(url);
   }
 
