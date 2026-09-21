@@ -1,7 +1,7 @@
 import { PageShell } from "@/components/site/Layout";
 import { Sparkles, Ticket } from "lucide-react";
 import Link from "next/link";
-import { getPublishedBusinesses } from "@/data/business";
+import { createStaticClient } from "@/utils/supabase/server";
 
 export const metadata = {
   title: "Ưu đãi | 1Beauty.Asia",
@@ -11,16 +11,52 @@ export const metadata = {
 export const revalidate = 3600; // Revalidate mỗi 1 tiếng
 
 export default async function OffersPage() {
-  // Lấy tất cả businesses từ DB và extract offers thực
-  const allBusinesses = await getPublishedBusinesses(100);
+  const supabase = createStaticClient();
+  
+  // Lấy các doanh nghiệp Premium (có plan_id)
+  const { data: businesses } = await supabase
+    .from("businesses")
+    .select("slug, name, page_content, plan_id")
+    .eq("status", "published")
+    .not("plan_id", "is", null);
 
-  const allOffers = allBusinesses.flatMap((b: any) => {
-    const pc = b.page_content || {};
-    return (pc.offers || []).map((o: any) => ({
-      ...o,
-      business: { slug: b.slug, name: b.name },
-    }));
-  });
+  const now = new Date();
+
+  // Extract offers, filter expired ones, and sort by newest
+  const allOffers = (businesses || [])
+    .flatMap((b: any) => {
+      const pc = b.page_content || {};
+      return (pc.offers || []).map((o: any) => ({
+        ...o,
+        business: { slug: b.slug, name: b.name },
+      }));
+    })
+    .filter((o: any) => {
+      // Bỏ qua nếu chưa tới ngày bắt đầu
+      if (o.validFrom) {
+        let startDate = new Date(`${o.validFrom}T00:00:00`);
+        if (startDate && startDate > now) return false;
+      }
+      
+      // Bỏ qua nếu đã hết hạn
+      if (o.validUntil) {
+        let endDate;
+        if (o.validUntil.includes('/')) {
+          const parts = o.validUntil.split('/');
+          if (parts.length === 3) endDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
+        } else {
+          endDate = new Date(`${o.validUntil}T23:59:59`); // For YYYY-MM-DD
+        }
+        
+        if (endDate && endDate < now) return false;
+      }
+      return true;
+    })
+    .sort((a: any, b: any) => {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return dateB - dateA;
+    });
 
   return (
     <PageShell>
@@ -77,7 +113,11 @@ export default async function OffersPage() {
                   </div>
                   {o.validUntil && (
                     <div className="mt-2 text-xs text-muted-foreground">
-                      HSD: {o.validUntil}
+                      HSD: {
+                        o.validUntil.includes('-') 
+                          ? new Date(o.validUntil).toLocaleDateString('vi-VN') 
+                          : o.validUntil
+                      }
                     </div>
                   )}
                 </div>

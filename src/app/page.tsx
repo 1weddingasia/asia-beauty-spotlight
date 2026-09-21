@@ -56,13 +56,33 @@ export default async function Index() {
   ].slice(0, 6);
 
   // --- OFFERS: Extract real offers from all businesses, rotate daily ---
-  const allOffers = allBusinesses.flatMap((b: any) => {
-    const pc = b.page_content || {};
-    return (pc.offers || []).map((o: any) => ({
-      ...o,
-      business: { slug: b.slug, name: b.name },
-    }));
-  });
+  const allOffers = allBusinesses
+    .filter((b: any) => b.plan_id) // Only premium businesses
+    .flatMap((b: any) => {
+      const pc = b.page_content || {};
+      return (pc.offers || []).map((o: any) => ({
+        ...o,
+        business: { slug: b.slug, name: b.name },
+      }));
+    })
+    .filter((o: any) => {
+      const now = new Date();
+      if (o.validFrom) {
+        let startDate = new Date(`${o.validFrom}T00:00:00`);
+        if (startDate && startDate > now) return false;
+      }
+      if (o.validUntil) {
+        let endDate;
+        if (o.validUntil.includes('/')) {
+          const parts = o.validUntil.split('/');
+          if (parts.length === 3) endDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
+        } else {
+          endDate = new Date(`${o.validUntil}T23:59:59`);
+        }
+        if (endDate && endDate < now) return false;
+      }
+      return true;
+    });
   const rotatedOffers = seededShuffle(allOffers, dateSeed + 2).slice(0, 4);
 
   return (
@@ -212,7 +232,7 @@ export default async function Index() {
                       </span>
                       {o.validUntil && (
                         <span className="text-muted-foreground">
-                          HSD: {o.validUntil}
+                          HSD: {o.validUntil.includes('-') ? new Date(o.validUntil).toLocaleDateString('vi-VN') : o.validUntil}
                         </span>
                       )}
                       {o.code && (

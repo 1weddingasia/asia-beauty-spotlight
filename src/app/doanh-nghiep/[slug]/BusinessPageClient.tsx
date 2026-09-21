@@ -61,8 +61,35 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         { name: "Dịch vụ đang cập nhật", description: "Vui lòng liên hệ trực tiếp với cơ sở để biết thêm chi tiết về dịch vụ này.", price: "Liên hệ" }
       ];
   
+  const now = new Date();
+  
   // Only show offers if they actually exist, remove dummy "NEW20"
-  const offers = b.offers?.length > 0 ? b.offers : [];
+  const offers = (b.offers || [])
+    .filter((o: any) => {
+      // Check start date
+      if (o.validFrom) {
+        let startDate = new Date(`${o.validFrom}T00:00:00`);
+        if (startDate && startDate > now) return false;
+      }
+      
+      // Check end date
+      if (o.validUntil) {
+        let endDate;
+        if (o.validUntil.includes('/')) {
+          const parts = o.validUntil.split('/');
+          if (parts.length === 3) endDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
+        } else {
+          endDate = new Date(`${o.validUntil}T23:59:59`);
+        }
+        if (endDate && endDate < now) return false;
+      }
+      return true;
+    })
+    .sort((a: any, b: any) => {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return dateB - dateA;
+    });
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -326,6 +353,12 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                       {o.title}
                     </h3>
                     <p className="mt-2 md:mt-3 text-xs md:text-sm text-muted-foreground line-clamp-2 leading-relaxed">{o.description}</p>
+                    
+                    {o.validUntil && (
+                      <div className="mt-4 text-xs font-medium text-gold/80">
+                        HSD: {o.validUntil.includes('-') ? new Date(o.validUntil).toLocaleDateString('vi-VN') : o.validUntil}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

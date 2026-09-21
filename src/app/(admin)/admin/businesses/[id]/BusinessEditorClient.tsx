@@ -159,7 +159,15 @@ export default function BusinessEditorClient({ business, categories, locations }
   const addOffer = () => {
     setPageContent((prev: any) => ({
       ...prev,
-      offers: [...(prev.offers || []), { title: "", discount: "", code: "", validUntil: "", description: "" }]
+      offers: [...(prev.offers || []), { 
+        title: "", 
+        discount: "", 
+        code: "", 
+        validFrom: new Date().toISOString().split('T')[0], 
+        validUntil: "", 
+        description: "",
+        created_at: new Date().toISOString()
+      }]
     }));
   };
 
@@ -449,14 +457,18 @@ export default function BusinessEditorClient({ business, categories, locations }
                       <Input value={offer.code || ""} onChange={e => updateOffer(i, "code", e.target.value)} placeholder="NEW20" />
                     </div>
                   </div>
-                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div className="grid md:grid-cols-3 gap-4 mb-4">
                     <div className="space-y-1">
                       <Label className="text-xs">Nhãn Nổi Bật (VD: -20%)</Label>
                       <Input value={offer.discount || ""} onChange={e => updateOffer(i, "discount", e.target.value)} placeholder="-20%" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Hạn sử dụng</Label>
-                      <Input value={offer.validUntil || ""} onChange={e => updateOffer(i, "validUntil", e.target.value)} placeholder="31/12/2026" />
+                      <Label className="text-xs">Ngày Bắt đầu</Label>
+                      <Input type="date" value={offer.validFrom || ""} onChange={e => updateOffer(i, "validFrom", e.target.value)} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Ngày Kết thúc</Label>
+                      <Input type="date" value={offer.validUntil || ""} onChange={e => updateOffer(i, "validUntil", e.target.value)} />
                     </div>
                   </div>
                   <div className="space-y-1 mb-2">

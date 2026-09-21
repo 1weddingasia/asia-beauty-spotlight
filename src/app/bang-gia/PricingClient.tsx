@@ -64,6 +64,10 @@ export default function PricingClient({ plans }: { plans: any[] }) {
                       <Check className="size-5 text-gold shrink-0" />
                       <span className="text-sm">Hỗ trợ SEO từ khóa khu vực</span>
                     </li>
+                    <li className="flex gap-3">
+                      <Check className="size-5 text-gold shrink-0" />
+                      <span className="text-sm">Đăng tải & Quản lý Ưu đãi/Khuyến mãi</span>
+                    </li>
                   </>
                 )}
               </ul>
