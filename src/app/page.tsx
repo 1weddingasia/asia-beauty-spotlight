@@ -88,13 +88,13 @@ export default async function Index() {
           </div>
 
           {categories.length > 0 ? (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {categories.map((c: any) => {
                 const categoryIcons: Record<string, string> = {
-                  'spa-thu-gian': 'Flower2',
-                  'clinic-tham-my': 'Stethoscope',
+                  'spa-thu-gian': 'Droplets',
+                  'clinic-tham-my': 'Gem',
                   'salon-toc': 'Scissors',
-                  'nails-mi': 'Sparkles',
+                  'nails-mi': 'Brush',
                   'nha-khoa': 'Smile',
                   'yoga-fitness': 'Activity'
                 };
@@ -105,22 +105,16 @@ export default async function Index() {
                   <Link
                     key={c.slug}
                     href={`/tim-kiem?category=${c.slug}`}
-                    className="group relative overflow-hidden rounded-2xl border border-gold-soft bg-champagne p-8 transition-all duration-500 hover:border-gold hover:shadow-luxe hover:-translate-y-1"
+                    className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-5 transition-all hover:border-gold hover:shadow-md"
                   >
-                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] transition-transform duration-700 group-hover:scale-125 group-hover:opacity-10">
-                      <Icon className="size-32 text-ink" />
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-champagne text-gold transition-colors group-hover:bg-gold group-hover:text-ink">
+                      <Icon className="size-5" strokeWidth={2} />
                     </div>
-                    <div className="relative z-10 flex flex-col h-full">
-                      <div className="mb-6 grid size-12 place-items-center rounded-full bg-white shadow-sm border border-gold/20 text-gold transition-transform duration-500 group-hover:scale-110">
-                        <Icon className="size-5" />
-                      </div>
-                      <h3 className="font-display text-2xl text-ink transition-colors group-hover:text-gold">{c.name}</h3>
-                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground flex-grow">
-                        {c.description || "Khám phá các dịch vụ hàng đầu trong danh mục này"}
+                    <div>
+                      <h3 className="font-display text-lg font-bold text-ink transition-colors group-hover:text-gold">{c.name}</h3>
+                      <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                        {c.description || "Khám phá danh mục này"}
                       </p>
-                      <div className="mt-6 flex items-center text-xs font-semibold uppercase tracking-widest text-gold opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        Khám phá ngay <ArrowRight className="ml-2 size-3" />
-                      </div>
                     </div>
                   </Link>
                 );
