@@ -57,6 +57,7 @@ export default async function SearchPage(props: {
                   </label>
                   <div className="mt-3 space-y-2">
                     <Link
+                      scroll={false}
                       href={`/tim-kiem?${new URLSearchParams({ q, location, category: 'all' }).toString()}`}
                       className={`block text-sm transition-colors hover:text-gold ${category === 'all' ? 'text-gold font-bold' : ''}`}
                     >
@@ -65,6 +66,7 @@ export default async function SearchPage(props: {
                     {categories.map((c) => (
                       <Link
                         key={c.slug}
+                        scroll={false}
                         href={`/tim-kiem?${new URLSearchParams({ q, location, category: c.slug }).toString()}`}
                         className={`block text-sm transition-colors hover:text-gold ${category === c.slug ? 'text-gold font-bold' : ''}`}
                       >
@@ -80,6 +82,7 @@ export default async function SearchPage(props: {
                   </label>
                   <div className="mt-3 space-y-2">
                     <Link
+                      scroll={false}
                       href={`/tim-kiem?${new URLSearchParams({ q, category, location: 'all' }).toString()}`}
                       className={`block text-sm transition-colors hover:text-gold ${location === 'all' ? 'text-gold font-bold' : ''}`}
                     >
@@ -88,6 +91,7 @@ export default async function SearchPage(props: {
                     {locations.map((l) => (
                       <Link
                         key={l.slug}
+                        scroll={false}
                         href={`/tim-kiem?${new URLSearchParams({ q, category, location: l.slug }).toString()}`}
                         className={`block text-sm transition-colors hover:text-gold ${location === l.slug ? 'text-gold font-bold' : ''}`}
                       >
