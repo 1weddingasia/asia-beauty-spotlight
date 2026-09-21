@@ -56,14 +56,34 @@ export async function getPublishedBusinesses(limit = 20): Promise<Business[]> {
 
 export async function searchBusinessesDB({ q, category, location }: { q: string, category: string, location: string }): Promise<Business[]> {
   const supabase = createStaticClient();
-  let query = supabase.from('businesses').select('*').eq('status', 'published');
+  
+  // Base select with outer joins for fetching all categories/locations of the resulting businesses
+  let selectStr = `
+    *,
+    business_categories ( directory_categories (id, name, slug) ),
+    business_locations ( directory_locations (id, name, slug) )
+  `;
+
+  // If we need to filter, we must use !inner join to restrict the businesses returned.
+  // Unfortunately, Supabase JS client doesn't allow dynamic !inner joins in the select string easily without duplicating the relation.
+  // A cleaner approach for multiple many-to-many filters is to fetch all matching IDs first, or use a database function.
+  // Alternatively, we can construct the select string dynamically:
+  let catJoin = category && category !== 'all' 
+    ? `business_categories!inner ( directory_categories!inner (id, name, slug) )`
+    : `business_categories ( directory_categories (id, name, slug) )`;
+    
+  let locJoin = location && location !== 'all'
+    ? `business_locations!inner ( directory_locations!inner (id, name, slug) )`
+    : `business_locations ( directory_locations (id, name, slug) )`;
+
+  let query = supabase.from('businesses').select(`*, ${catJoin}, ${locJoin}`).eq('status', 'published');
   
   if (category && category !== 'all') {
-    query = query.eq('category', category);
+    query = query.eq('business_categories.directory_categories.slug', category);
   }
   
   if (location && location !== 'all') {
-    query = query.eq('location', location);
+    query = query.eq('business_locations.directory_locations.slug', location);
   }
 
   if (q) {
@@ -76,5 +96,10 @@ export async function searchBusinessesDB({ q, category, location }: { q: string,
     console.error('Error searching businesses:', error);
     return [];
   }
-  return data as Business[];
+  
+  return (data || []).map((b: any) => ({
+    ...b,
+    categories_list: b.business_categories?.map((bc: any) => bc.directory_categories).filter(Boolean) || [],
+    locations_list: b.business_locations?.map((bl: any) => bl.directory_locations).filter(Boolean) || [],
+  })) as Business[];
 }

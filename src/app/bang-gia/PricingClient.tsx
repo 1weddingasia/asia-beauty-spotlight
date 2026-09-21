@@ -5,45 +5,23 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 
 export default function PricingClient({ plans }: { plans: any[] }) {
-  const [isYearly, setIsYearly] = useState(false);
+  const isYearly = true; // Always true as requested by user
 
   return (
     <div>
-      {/* Toggle */}
-      <div className="flex justify-center mb-12">
-        <div className="relative flex items-center p-1 bg-gray-100 rounded-full border border-gray-200">
-          <button
-            onClick={() => setIsYearly(false)}
-            className={`relative z-10 w-32 py-2 text-sm font-medium transition-colors rounded-full ${
-              !isYearly ? "text-ink shadow-sm bg-white" : "text-muted-foreground"
-            }`}
-          >
-            Thanh toán Tháng
-          </button>
-          <button
-            onClick={() => setIsYearly(true)}
-            className={`relative z-10 w-32 py-2 text-sm font-medium transition-colors rounded-full ${
-              isYearly ? "text-ink shadow-sm bg-white" : "text-muted-foreground"
-            }`}
-          >
-            Thanh toán Năm
-          </button>
-        </div>
-      </div>
-
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
         {plans.map((plan) => {
-          const isPremium = plan.price_monthly > 0;
-          const price = isYearly ? plan.price_yearly : plan.price_monthly;
-          const originalPrice = isYearly ? plan.price_monthly * 12 : null;
+          const isPremium = plan.price_yearly > 0;
+          const price = plan.price_yearly;
+          const originalPrice = plan.price_monthly * 12; // Just for display
           
           return (
             <div 
               key={plan.id} 
-              className={`relative flex flex-col rounded-2xl border ${isPremium ? 'border-gold shadow-lg shadow-gold/10' : 'border-border shadow-sm'} bg-card p-8`}
+              className={`relative flex flex-col rounded-2xl border ${isPremium ? 'border-gold shadow-lg shadow-gold/10 scale-[1.02]' : 'border-border shadow-sm'} bg-card p-8`}
             >
               {isPremium && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gold text-ink text-xs font-bold uppercase tracking-widest py-1 px-4 rounded-full">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gold text-ink text-xs font-bold uppercase tracking-widest py-1 px-4 rounded-full shadow-sm">
                   Phổ biến nhất
                 </div>
               )}
@@ -54,13 +32,13 @@ export default function PricingClient({ plans }: { plans: any[] }) {
               </p>
               
               <div className="mt-6 text-center">
-                {isYearly && originalPrice && originalPrice > price && (
+                {isPremium && originalPrice > price && (
                   <div className="text-sm text-muted-foreground line-through mb-1">
                     {Number(originalPrice).toLocaleString('vi-VN')} đ
                   </div>
                 )}
                 <span className="text-4xl font-bold">{Number(price).toLocaleString('vi-VN')} đ</span>
-                <span className="text-muted-foreground">/{isYearly ? 'năm' : 'tháng'}</span>
+                <span className="text-muted-foreground">/năm</span>
               </div>
               
               <ul className="mt-8 flex-1 space-y-4">

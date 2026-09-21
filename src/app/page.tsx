@@ -90,23 +90,38 @@ export default async function Index() {
           {categories.length > 0 ? (
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {categories.map((c: any) => {
-                const Icon =
-                  (LucideIcons as any)[c.icon || "Sparkles"] ||
-                  LucideIcons.Sparkles;
+                const categoryIcons: Record<string, string> = {
+                  'spa-thu-gian': 'Flower2',
+                  'clinic-tham-my': 'Stethoscope',
+                  'salon-toc': 'Scissors',
+                  'nails-mi': 'Sparkles',
+                  'nha-khoa': 'Smile',
+                  'yoga-fitness': 'Activity'
+                };
+                const iconName = c.icon || categoryIcons[c.slug] || "Sparkles";
+                const Icon = (LucideIcons as any)[iconName] || LucideIcons.Sparkles;
+                
                 return (
                   <Link
                     key={c.slug}
                     href={`/tim-kiem?category=${c.slug}`}
-                    className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all hover:border-gold hover:shadow-card"
+                    className="group relative overflow-hidden rounded-2xl border border-gold-soft bg-champagne p-8 transition-all duration-500 hover:border-gold hover:shadow-luxe hover:-translate-y-1"
                   >
-                    <div className="absolute top-0 right-0 p-6 opacity-5 transition-opacity group-hover:opacity-10">
-                      <Icon className="size-24" />
+                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] transition-transform duration-700 group-hover:scale-125 group-hover:opacity-10">
+                      <Icon className="size-32 text-ink" />
                     </div>
-                    <Icon className="size-8 text-gold" />
-                    <h3 className="mt-4 font-display text-xl">{c.name}</h3>
-                    <p className="mt-2 max-w-[200px] text-sm text-muted-foreground">
-                      {c.description || "Khám phá danh mục này"}
-                    </p>
+                    <div className="relative z-10 flex flex-col h-full">
+                      <div className="mb-6 grid size-12 place-items-center rounded-full bg-white shadow-sm border border-gold/20 text-gold transition-transform duration-500 group-hover:scale-110">
+                        <Icon className="size-5" />
+                      </div>
+                      <h3 className="font-display text-2xl text-ink transition-colors group-hover:text-gold">{c.name}</h3>
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground flex-grow">
+                        {c.description || "Khám phá các dịch vụ hàng đầu trong danh mục này"}
+                      </p>
+                      <div className="mt-6 flex items-center text-xs font-semibold uppercase tracking-widest text-gold opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        Khám phá ngay <ArrowRight className="ml-2 size-3" />
+                      </div>
+                    </div>
                   </Link>
                 );
               })}
