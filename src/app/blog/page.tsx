@@ -23,7 +23,7 @@ export default async function BlogIndexPage() {
           {/* Background Image */}
           <div 
             className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url("https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
+            style={{ backgroundImage: 'url("https://images.pexels.com/photos/3752834/pexels-photo-3752834.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
           >
             <div className="absolute inset-0 bg-ink/70"></div>
           </div>
