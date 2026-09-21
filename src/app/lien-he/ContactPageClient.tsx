@@ -46,9 +46,12 @@ export default function ContactPageClient({ address, phone, email }: ContactPage
           <div className="absolute inset-0 bg-ink/70"></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:py-24 text-center">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[35vh]">
           <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">Liên hệ</p>
-          <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display tracking-tight">Đăng ký doanh nghiệp</h1>
+          <h1 className="mt-5 font-display text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md tracking-tight">Đăng ký doanh nghiệp</h1>
+          <p className="mt-4 text-gray-200 md:text-lg max-w-2xl mx-auto">
+            Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn đưa doanh nghiệp lên nền tảng 1Beauty.Asia.
+          </p>
         </div>
       </section>
 

@@ -33,7 +33,7 @@ export default async function OffersPage() {
           <div className="absolute inset-0 bg-ink/70"></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:py-24 text-center">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[35vh]">
           <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">Khuyến mãi</p>
           <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display">Ưu đãi</h1>
           <p className="mt-6 text-lg text-gray-200 drop-shadow-md max-w-2xl mx-auto">

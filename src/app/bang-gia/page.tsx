@@ -27,9 +27,9 @@ export default async function PricingPage() {
           <div className="absolute inset-0 bg-ink/70"></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:py-24 text-center">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 md:py-36 lg:py-40 text-center flex flex-col justify-center min-h-[35vh]">
           <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">Thành Viên</p>
-          <h1 className="mt-5 text-4xl md:text-5xl text-white drop-shadow-md font-display">Bảng Giá Dịch Vụ</h1>
+          <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display">Bảng Giá Dịch Vụ</h1>
           <p className="mt-4 max-w-2xl mx-auto text-gray-200 drop-shadow-md text-lg">
             Nâng tầm doanh nghiệp của bạn, tiếp cận hàng ngàn khách hàng tiềm năng mỗi ngày với các gói thành viên linh hoạt từ 1Beauty.Asia.
           </p>

@@ -2,6 +2,8 @@ import { createStaticClient } from "@/utils/supabase/server";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -44,17 +46,29 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
             <div className="absolute inset-0 bg-ink/70 backdrop-blur-[2px]"></div>
           </div>
 
-          <div className="relative z-10 mx-auto max-w-4xl px-6 py-16 md:py-24 text-center">
-            <h1 className="text-3xl md:text-5xl font-bold font-display tracking-tight mb-6 text-white drop-shadow-md">
+          <div className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[40vh]">
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20 mb-8 self-center"
+            >
+              <ArrowLeft className="size-3" /> Trở lại Blog
+            </Link>
+            
+            <div className="mb-4 flex items-center justify-center gap-3 text-sm text-gold">
+              <span className="uppercase tracking-widest">{blog.category}</span>
+              <span className="size-1 rounded-full bg-gold/50"></span>
+              <time className="text-gray-300">
+                {new Date(blog.published_at || blog.created_at).toLocaleDateString('vi-VN')}
+              </time>
+            </div>
+            
+            <h1 className="font-display text-3xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
               {blog.title}
             </h1>
-            <div className="text-gray-200 drop-shadow-md">
-              {new Date(blog.published_at || blog.created_at).toLocaleDateString("vi-VN", {
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-              })}
-            </div>
+            
+            <p className="mt-6 text-lg text-gray-200">
+              {blog.excerpt}
+            </p>
           </div>
         </section>
 

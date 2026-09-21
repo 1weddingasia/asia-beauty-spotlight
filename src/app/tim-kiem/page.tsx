@@ -35,8 +35,8 @@ export default async function SearchPage(props: {
         </div>
         
         {/* Content */}
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 text-center md:py-24">
-          <h1 className="font-display text-4xl md:text-5xl text-white">Tìm kiếm</h1>
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[35vh]">
+          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-white">Tìm kiếm</h1>
           <p className="mt-4 text-gray-200 md:text-lg">
             Khám phá hàng ngàn địa điểm làm đẹp uy tín trên khắp Việt Nam.
           </p>

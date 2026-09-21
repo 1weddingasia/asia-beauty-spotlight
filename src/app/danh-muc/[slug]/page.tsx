@@ -51,11 +51,12 @@ export default async function CategoryPage({
           <div className="absolute inset-0 bg-ink/70"></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 md:py-36 lg:py-40 flex flex-col justify-center min-h-[35vh]">
           <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">Danh mục</p>
-          <div className="mt-3 h-[2px] w-12 bg-gold" />
-          <h1 className="mt-5 text-3xl md:text-5xl text-white drop-shadow-md">{category.name}</h1>
-          <p className="mt-4 max-w-xl text-gray-200 drop-shadow-md">{category.description}</p>
+          <h1 className="mt-3 font-display text-4xl md:text-5xl lg:text-6xl text-white">Danh mục: {category.name}</h1>
+          <p className="mt-4 text-gray-200 md:text-lg max-w-2xl">
+            {category.description || `Tìm kiếm các địa điểm ${category.name.toLowerCase()} tốt nhất tại Việt Nam.`}
+          </p>
         </div>
       </section>
 
