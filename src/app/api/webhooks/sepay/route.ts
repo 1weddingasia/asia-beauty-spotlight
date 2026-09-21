@@ -89,14 +89,14 @@ export async function POST(request: Request) {
             .from('plans')
             .select('id')
             .eq('is_active', true)
-            .ilike('name', '%VIP%')
+            .ilike('name', '%Premium%')
             .limit(1)
             .single();
 
           if (plan) {
-            // 3. Tạo membership mới
+            // 3. Tạo membership mới (1 năm)
             const expiresAt = new Date();
-            expiresAt.setMonth(expiresAt.getMonth() + 1); // 1 tháng
+            expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 năm
 
             await supabase.from('memberships').insert({
               business_id: business.id,

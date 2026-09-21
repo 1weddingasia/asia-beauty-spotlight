@@ -33,7 +33,7 @@ export default function UpgradePage() {
   const UPGRADE_AMOUNT = 399000;
   const SEPAY_ACC = "0918731411";
   const SEPAY_BANK = "TPBank";
-  const TRANSFER_CONTENT = `UPGRADE ${business.id.split('-')[0].toUpperCase()}`; 
+  const TRANSFER_CONTENT = `UPGRADE ${business.slug.toUpperCase()}`; 
   const QR_URL = `https://qr.sepay.vn/img?acc=${SEPAY_ACC}&bank=${SEPAY_BANK}&amount=${UPGRADE_AMOUNT}&des=${TRANSFER_CONTENT}`;
 
   const handleCheckPayment = async () => {
