@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Store, Users, Settings, LogOut, Package, FileText, MapPin, List, CreditCard } from "lucide-react";
+import { LayoutDashboard, Store, Users, Settings, LogOut, Package, FileText, MapPin, List, CreditCard, MessageCircle } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -24,6 +24,7 @@ const items = [
   { title: "Gói thành viên", url: "/admin/plans", icon: Package },
   { title: "Thành viên", url: "/admin/users", icon: Users },
   { title: "Bài viết (Blog)", url: "/admin/blogs", icon: FileText },
+  { title: "Liên hệ & Tin nhắn", url: "/admin/contacts", icon: MessageCircle },
   { title: "Giao dịch", url: "/admin/transactions", icon: CreditCard },
   { title: "Cài đặt", url: "/admin/settings", icon: Settings },
 ];

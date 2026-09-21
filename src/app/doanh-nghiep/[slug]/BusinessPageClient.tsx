@@ -58,9 +58,11 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const heroSlides = b.banners?.length > 0 
+  let heroSlides = b.banners?.length > 0 
     ? b.banners 
-    : (b.gallery?.length >= 3 ? b.gallery.slice(0,3) : [b.hero_image, b.cover_image, b.hero_image].filter(Boolean));
+    : (b.gallery?.length > 0 ? b.gallery : [b.hero_image, b.cover_image].filter(Boolean));
+  if (heroSlides.length > 3) heroSlides = heroSlides.slice(0, 3);
+  if (heroSlides.length === 0) heroSlides = ['https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920'];
 
   const galleryItems = b.gallery && b.gallery.length > 0 
     ? b.gallery 
@@ -74,10 +76,8 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         { name: "Dịch vụ đang cập nhật", description: "Vui lòng liên hệ trực tiếp với cơ sở để biết thêm chi tiết về dịch vụ này.", price: "Liên hệ" }
       ];
   
-  // Dummy offers if none exist to show the luxury layout
-  const offers = b.offers?.length > 0 ? b.offers : [
-    { title: "Giảm 20% Lần Đầu", description: "Áp dụng cho khách hàng mới trải nghiệm dịch vụ. (Đang chờ doanh nghiệp cập nhật mã thật)", discount: "-20%", code: "NEW20" }
-  ];
+  // Only show offers if they actually exist, remove dummy "NEW20"
+  const offers = b.offers?.length > 0 ? b.offers : [];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -87,6 +87,10 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
+
+  // Zalo link calculation
+  const zaloNumber = b.zalo || (b.phone ? b.phone.replace(/[^0-9]/g, '') : '');
+  const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
 
   return (
     <PageShell solidHeader={false}>
@@ -164,7 +168,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
               </h1>
               {b.tagline && (
                 <p className="text-base md:text-xl text-muted-foreground font-light italic px-4 md:px-0 drop-shadow-sm">
-                  "{b.tagline}"
+                  &ldquo;{b.tagline}&rdquo;
                 </p>
               )}
             </motion.div>
@@ -177,7 +181,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         <div className="mx-auto flex max-w-6xl items-center gap-8 overflow-x-auto px-6 py-4 no-scrollbar whitespace-nowrap">
           <a href="#about" onClick={(e) => handleNavClick(e, 'about')} className="text-xs md:text-sm font-semibold text-foreground hover:text-gold uppercase tracking-widest transition-colors">Giới thiệu</a>
           <a href="#services" onClick={(e) => handleNavClick(e, 'services')} className="text-xs md:text-sm font-semibold text-foreground hover:text-gold uppercase tracking-widest transition-colors">Bảng giá</a>
-          <a href="#offers" onClick={(e) => handleNavClick(e, 'offers')} className="text-xs md:text-sm font-semibold text-foreground hover:text-gold uppercase tracking-widest transition-colors">Khuyến mãi</a>
+          {offers.length > 0 && <a href="#offers" onClick={(e) => handleNavClick(e, 'offers')} className="text-xs md:text-sm font-semibold text-foreground hover:text-gold uppercase tracking-widest transition-colors">Khuyến mãi</a>}
           <a href="#gallery" onClick={(e) => handleNavClick(e, 'gallery')} className="text-xs md:text-sm font-semibold text-foreground hover:text-gold uppercase tracking-widest transition-colors">Không gian</a>
         </div>
       </div>
@@ -204,7 +208,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
             </p>
           </div>
           
-          <div className="bg-card rounded-3xl p-6 md:p-8 border border-border shadow-card h-fit space-y-6">
+            <div className="bg-card rounded-3xl p-6 md:p-8 border border-border shadow-card h-fit space-y-6">
             <h3 className="font-display text-lg md:text-xl border-b border-border pb-4">Thông tin liên hệ</h3>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
@@ -215,6 +219,12 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                 <Phone className="size-4 md:size-5 text-gold shrink-0" />
                 <span className="text-xs md:text-sm font-medium">{b.phone || "Đang cập nhật"}</span>
               </div>
+              {zaloNumber && (
+                <div className="flex items-center gap-3">
+                  <div className="size-4 md:size-5 text-gold shrink-0 font-bold text-[10px] md:text-xs flex items-center justify-center border border-gold rounded-full">Z</div>
+                  <span className="text-xs md:text-sm font-medium">{zaloNumber}</span>
+                </div>
+              )}
               <div className="flex items-start gap-3">
                 <Clock className="size-4 md:size-5 text-gold shrink-0 mt-0.5" />
                 <div className="flex-1 space-y-1">
@@ -231,11 +241,14 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                 </div>
               </div>
             </div>
-            <button
+            <a
+              href={zaloLink}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full block bg-gradient-gold rounded-full px-6 py-4 text-center text-xs md:text-sm font-semibold tracking-[0.1em] text-ink uppercase hover:opacity-90 transition-opacity"
             >
-              Đặt Lịch Ngay
-            </button>
+              Liên Hệ Zalo
+            </a>
           </div>
         </motion.section>
 
@@ -300,38 +313,40 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         </motion.section>
 
         {/* 4. ƯU ĐÃI ĐỘC QUYỀN (OFFERS) */}
-        <motion.section 
-          id="offers"
-          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
-          className="scroll-mt-24"
-        >
-          <div className="text-center mb-8 md:mb-10">
-            <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase mb-2 md:mb-3">Khuyến mãi</p>
-            <h2 className="font-display text-2xl md:text-4xl">Ưu Đãi Đặc Quyền</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-            {offers.map((o: any, idx: number) => (
-              <div 
-                key={idx} 
-                onClick={() => setSelectedOffer(o)}
-                className="group relative overflow-hidden rounded-2xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8 cursor-pointer"
-              >
-                <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
-                  <Ticket className="size-24 md:size-32 text-gold" />
+        {offers.length > 0 && (
+          <motion.section 
+            id="offers"
+            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
+            className="scroll-mt-24"
+          >
+            <div className="text-center mb-8 md:mb-10">
+              <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase mb-2 md:mb-3">Khuyến mãi</p>
+              <h2 className="font-display text-2xl md:text-4xl">Ưu Đãi Đặc Quyền</h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+              {offers.map((o: any, idx: number) => (
+                <div 
+                  key={idx} 
+                  onClick={() => setSelectedOffer(o)}
+                  className="group relative overflow-hidden rounded-2xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8 cursor-pointer"
+                >
+                  <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
+                    <Ticket className="size-24 md:size-32 text-gold" />
+                  </div>
+                  <div className="relative">
+                    <span className="bg-gradient-gold rounded-full px-3 py-1 text-[10px] md:text-[11px] font-semibold tracking-widest text-ink uppercase">
+                      {o.discount}
+                    </span>
+                    <h3 className="mt-4 md:mt-5 max-w-[240px] md:max-w-[280px] font-display text-xl md:text-3xl group-hover:text-gold transition-colors leading-tight">
+                      {o.title}
+                    </h3>
+                    <p className="mt-2 md:mt-3 text-xs md:text-sm text-muted-foreground line-clamp-2 leading-relaxed">{o.description}</p>
+                  </div>
                 </div>
-                <div className="relative">
-                  <span className="bg-gradient-gold rounded-full px-3 py-1 text-[10px] md:text-[11px] font-semibold tracking-widest text-ink uppercase">
-                    {o.discount}
-                  </span>
-                  <h3 className="mt-4 md:mt-5 max-w-[240px] md:max-w-[280px] font-display text-xl md:text-3xl group-hover:text-gold transition-colors leading-tight">
-                    {o.title}
-                  </h3>
-                  <p className="mt-2 md:mt-3 text-xs md:text-sm text-muted-foreground line-clamp-2 leading-relaxed">{o.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.section>
+              ))}
+            </div>
+          </motion.section>
+        )}
 
         {/* 5. KHÔNG GIAN (GALLERY) */}
         <motion.section 
@@ -414,9 +429,14 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                     {selectedService.price || selectedService.price_min || "Liên hệ"}
                   </span>
                 </div>
-                <button className="w-full bg-gradient-gold rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity">
-                  Đặt Lịch Tư Vấn
-                </button>
+                <a
+                  href={zaloLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center w-full bg-gradient-gold rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity"
+                >
+                  Liên Hệ Zalo Tư Vấn
+                </a>
               </div>
             </motion.div>
           </motion.div>
@@ -450,15 +470,15 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
               <p className="text-xs md:text-sm text-ink/70 leading-relaxed mb-6 md:mb-8">
                 {selectedOffer.description}
               </p>
-              {selectedOffer.code && (
-                <div className="mb-6 md:mb-8 p-3 md:p-4 border-2 border-dashed border-gold rounded-xl bg-white/50">
-                  <p className="text-[10px] md:text-xs uppercase tracking-widest text-ink/70 mb-1">Mã Khuyến Mãi</p>
-                  <p className="font-display text-xl md:text-2xl tracking-widest text-ink">{selectedOffer.code}</p>
-                </div>
-              )}
-              <button className="w-full bg-ink rounded-full py-3.5 md:py-4 text-gold text-xs md:text-sm font-semibold uppercase tracking-widest hover:bg-ink/90 transition-colors">
-                Lưu Mã Ưu Đãi
-              </button>
+              
+              <a
+                href={zaloLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full bg-ink rounded-full py-3.5 md:py-4 text-gold text-xs md:text-sm font-semibold uppercase tracking-widest hover:bg-ink/90 transition-colors"
+              >
+                Liên Hệ Zalo Nhận Ưu Đãi
+              </a>
             </motion.div>
           </motion.div>
         )}

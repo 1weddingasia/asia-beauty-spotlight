@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import Link from "next/link";
 
 export default function PricingClient({ plans }: { plans: any[] }) {
   const [isYearly, setIsYearly] = useState(false);
@@ -89,15 +90,16 @@ export default function PricingClient({ plans }: { plans: any[] }) {
                 )}
               </ul>
               
-              <button 
-                className={`mt-8 w-full rounded-full py-3 text-sm font-bold transition-all ${
+              <Link 
+                href="/lien-he"
+                className={`mt-8 block text-center w-full rounded-full py-3 text-sm font-bold transition-all ${
                   isPremium 
                     ? "bg-gold text-ink hover:bg-gold/90 shadow-md" 
                     : "bg-gray-100 text-ink hover:bg-gray-200"
                 }`}
               >
                 Đăng ký ngay
-              </button>
+              </Link>
             </div>
           );
         })}

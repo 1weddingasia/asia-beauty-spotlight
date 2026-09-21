@@ -3,6 +3,9 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /login
+Disallow: /api
+Disallow: /auth
+Disallow: /dashboard
 
 # Host
 Host: https://1beauty.asia

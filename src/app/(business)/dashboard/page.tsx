@@ -9,7 +9,7 @@ export default async function BusinessDashboardPage() {
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("*")
+    .select("*, plans(name)")
     .eq("owner_id", user?.id)
     .single();
 
@@ -25,8 +25,9 @@ export default async function BusinessDashboardPage() {
     );
   }
 
-  // Giả lập dữ liệu thống kê
-  const views = Math.floor(Math.random() * 5000) + 500;
+  // In the future, fetch real stats from an analytics table. For now, show placeholder.
+  const views = "---";
+  const clicks = "---";
   
   return (
     <div className="space-y-8">
@@ -44,8 +45,8 @@ export default async function BusinessDashboardPage() {
             <Eye className="size-4 text-muted-foreground" />
           </div>
           <div>
-            <div className="text-2xl font-bold">{views.toLocaleString('vi-VN')}</div>
-            <p className="text-xs text-green-500 font-medium">+12% so với tháng trước</p>
+            <div className="text-2xl font-bold text-muted-foreground">{views}</div>
+            <p className="text-xs text-muted-foreground">Đang thu thập dữ liệu...</p>
           </div>
         </div>
         
@@ -55,8 +56,8 @@ export default async function BusinessDashboardPage() {
             <TrendingUp className="size-4 text-muted-foreground" />
           </div>
           <div>
-            <div className="text-2xl font-bold">{Math.floor(views * 0.08)}</div>
-            <p className="text-xs text-muted-foreground">Tỉ lệ chuyển đổi 8%</p>
+            <div className="text-2xl font-bold text-muted-foreground">{clicks}</div>
+            <p className="text-xs text-muted-foreground">Đang thu thập dữ liệu...</p>
           </div>
         </div>
         
@@ -66,10 +67,12 @@ export default async function BusinessDashboardPage() {
             <Sparkles className="size-4 text-gold" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-gold">FREE</div>
-            <p className="text-xs text-muted-foreground mb-4">Gói cơ bản</p>
+            <div className="text-2xl font-bold text-gold uppercase">{business.plans?.name || 'FREE'}</div>
+            <p className="text-xs text-muted-foreground mb-4">
+              {business.plan_id ? 'Đang kích hoạt' : 'Gói cơ bản'}
+            </p>
             <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
-              <Link href="/dashboard/upgrade">Nâng cấp Standard</Link>
+              <Link href="/dashboard/upgrade">Nâng cấp Gói</Link>
             </Button>
           </div>
         </div>

@@ -1,16 +1,20 @@
 "use client";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MapPin, Search, Tag, Loader2 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
-import { getCategoriesAction, getLocationsAction } from "@/app/actions/search";
+import { MapPin, Search, Tag } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+
+type Category = { slug: string; name: string };
+type Location = { slug: string; name: string };
 
 type Props = {
   variant?: "hero" | "compact";
   defaultQ?: string;
   defaultCategory?: string;
   defaultLocation?: string;
+  // Nhận data từ server — tránh double-fetch Supabase
+  categories?: Category[];
+  locations?: Location[];
 };
 
 export function SearchBar({
@@ -18,32 +22,19 @@ export function SearchBar({
   defaultQ = "",
   defaultCategory = "all",
   defaultLocation = "all",
+  categories = [],
+  locations = [],
 }: Props) {
   const router = useRouter();
   const [q, setQ] = useState(defaultQ);
   const [category, setCategory] = useState(defaultCategory);
   const [location, setLocation] = useState(defaultLocation);
-  
-  const [categories, setCategories] = useState<any[]>([]);
-  const [locations, setLocations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      const [cats, locs] = await Promise.all([
-        getCategoriesAction(),
-        getLocationsAction()
-      ]);
-      setCategories(cats);
-      setLocations(locs);
-      setLoading(false);
-    }
-    load();
-  }, []);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/tim-kiem?q=" + q + "&category=" + category + "&location=" + location);
+    // FIX #9: Dùng URLSearchParams để encode đúng tiếng Việt & ký tự đặc biệt
+    const params = new URLSearchParams({ q, category, location });
+    router.push(`/tim-kiem?${params.toString()}`);
   };
 
   return (
@@ -67,46 +58,34 @@ export function SearchBar({
 
         <label className="flex items-center gap-2 border-border/70 px-3 py-2.5 md:border-l">
           <Tag className="size-4 shrink-0 text-gold" />
-          {loading ? (
-            <div className="flex w-full items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-3 animate-spin" /> Đang tải...
-            </div>
-          ) : (
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-transparent text-sm outline-none"
-            >
-              <option value="all">Tất cả danh mục</option>
-              {categories.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          )}
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full bg-transparent text-sm outline-none"
+          >
+            <option value="all">Tất cả danh mục</option>
+            {categories.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.name}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className="flex items-center gap-2 border-border/70 px-3 py-2.5 md:border-l">
           <MapPin className="size-4 shrink-0 text-gold" />
-          {loading ? (
-            <div className="flex w-full items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-3 animate-spin" /> Đang tải...
-            </div>
-          ) : (
-            <select
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full bg-transparent text-sm outline-none"
-            >
-              <option value="all">Mọi địa điểm</option>
-              {locations.map((l) => (
-                <option key={l.slug} value={l.slug}>
-                  {l.name}
-                </option>
-              ))}
-            </select>
-          )}
+          <select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full bg-transparent text-sm outline-none"
+          >
+            <option value="all">Mọi địa điểm</option>
+            {locations.map((l) => (
+              <option key={l.slug} value={l.slug}>
+                {l.name}
+              </option>
+            ))}
+          </select>
         </label>
 
         <button

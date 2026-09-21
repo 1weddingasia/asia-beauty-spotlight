@@ -1,16 +1,19 @@
 import { createClient } from "@/utils/supabase/server";
-import { SiteHeader } from "@/components/site/Layout";
-import { SiteFooter } from "@/components/site/Layout";
+import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import Link from "next/link";
 import Image from "next/image";
 
 export default async function BlogIndexPage() {
   const supabase = await createClient();
-  const { data: blogs } = await supabase
+  const { data: blogs, error } = await supabase
     .from("blogs")
-    .select("*")
+    .select("id, title, slug, excerpt, cover_image, published_at, created_at")
     .eq("status", "published")
     .order("published_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to fetch blogs:", error);
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

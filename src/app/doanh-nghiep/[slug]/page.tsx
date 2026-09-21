@@ -12,7 +12,8 @@ export async function generateMetadata({
   const dbBusiness = await getBusinessBySlug(resolvedParams.slug);
   if (!dbBusiness) return { title: "Không tìm thấy" };
 
-  const b = { ...dbBusiness, ...(dbBusiness.page_content as any) };
+  const pageContent = (dbBusiness.page_content as any) || {};
+  const b = { ...pageContent, ...dbBusiness }; // DB fields take precedence over page_content
   const title = b ? `${b.name} - ${b.tagline || '1Beauty.Asia'}` : "Doanh nghiệp | 1Beauty.Asia";
   const desc = b?.description?.slice(0, 155) ?? "Thông tin doanh nghiệp làm đẹp trên 1Beauty.Asia.";
   
@@ -29,18 +30,18 @@ export default async function Page({
 }) {
   const resolvedParams = await params;
   const dbBusiness = await getBusinessBySlug(resolvedParams.slug);
-  if (!dbBusiness) notFound();
+  if (!dbBusiness) return notFound();
 
-  // merge db fields and JSON page_content
+  // merge db fields and JSON page_content, db fields take precedence
   const pageContent = dbBusiness.page_content || {};
   const b = { 
-    ...dbBusiness, 
     ...pageContent,
+    ...dbBusiness, 
     services: pageContent.services || [],
     offers: pageContent.offers || [],
     gallery: pageContent.gallery || [],
     banners: pageContent.banners || [],
-    about: pageContent.description || dbBusiness.description || '',
+    about: dbBusiness.description || pageContent.description || '',
     hours: pageContent.working_hours || []
   };
 

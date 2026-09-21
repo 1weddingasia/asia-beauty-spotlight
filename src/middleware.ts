@@ -1,8 +1,16 @@
 import { type NextRequest } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
 
+/**
+ * Next.js 16 route protection.
+ *
+ * NOTE: Turbopack hiện vẫn yêu cầu tên export là "middleware".
+ * Khi Next.js hoàn toàn bỏ "middleware" thì chạy:
+ *   npx @next/codemod@canary middleware-to-proxy .
+ * để tự động đổi sang "proxy".
+ */
 export async function middleware(request: NextRequest) {
-  // update user's auth session
+  // Refresh auth session + bảo vệ /admin và /dashboard
   return await updateSession(request)
 }
 
@@ -13,7 +21,6 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
      */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],

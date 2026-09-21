@@ -1,11 +1,21 @@
 "use client";
 import Link from "next/link";
+import NextImage from "next/image";
 import { useEffect, useState } from "react";
+
 import { heroSlides } from "@/data/directory";
 import { cn } from "@/lib/utils";
 import { SearchBar } from "./SearchBar";
 
-export function HeroSlider() {
+type Category = { slug: string; name: string };
+type Location = { slug: string; name: string };
+
+type Props = {
+  categories?: Category[];
+  locations?: Location[];
+};
+
+export function HeroSlider({ categories = [], locations = [] }: Props) {
   const [index, setIndex] = useState(0);
   const active = heroSlides[index]!;
 
@@ -25,16 +35,18 @@ export function HeroSlider() {
           )}
           aria-hidden={i !== index}
         >
-          <img
+          <NextImage
             src={slide.image}
             alt={slide.title}
-            width={1920}
-            height={1080}
+            fill
+            priority={i === 0}
+            sizes="100vw"
             className={cn(
-              "size-full object-cover transition-transform duration-[7000ms] ease-out",
+              "object-cover transition-transform duration-[7000ms] ease-out",
               i === index ? "scale-105" : "scale-100",
             )}
           />
+
           <div className="absolute inset-0 bg-ink/55" />
           <div className="overlay-ink absolute inset-0" />
         </div>
@@ -54,14 +66,14 @@ export function HeroSlider() {
           </p>
           <Link
             href="/tim-kiem"
-            
             className="mt-8 inline-flex rounded-sm border border-gold/60 px-7 py-3 text-xs font-semibold tracking-[0.2em] text-gold uppercase transition-colors hover:bg-gold hover:text-ink"
           >
             {active.cta}
           </Link>
         </div>
 
-        <SearchBar />
+        {/* SearchBar nhận categories/locations từ server (không fetch lại) */}
+        <SearchBar categories={categories} locations={locations} />
 
         <div className="flex gap-2">
           {heroSlides.map((s, i) => (

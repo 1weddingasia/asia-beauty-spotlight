@@ -1,6 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { SiteHeader } from "@/components/site/Layout";
-import { SiteFooter } from "@/components/site/Layout";
+import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 
@@ -27,7 +26,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
     .single();
 
   if (!blog) {
-    notFound();
+    return notFound();
   }
 
   return (

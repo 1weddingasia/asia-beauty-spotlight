@@ -12,15 +12,52 @@ const navLinks = [
   { to: "/lien-he", label: "Liên hệ" },
 ] as const;
 
+// FIX #7: Module-level cache để tránh re-fetch mỗi lần render
+// Cache tồn tại trong phiên trình duyệt hiện tại
+let _settingsCache: any = null;
+let _settingsCacheTime = 0;
+const SETTINGS_TTL = 5 * 60 * 1000; // 5 phút
+
+let _categoriesCache: any[] | null = null;
+let _categoriesCacheTime = 0;
+
+async function getSettings() {
+  const now = Date.now();
+  if (_settingsCache && now - _settingsCacheTime < SETTINGS_TTL) {
+    return _settingsCache;
+  }
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "global")
+    .single();
+  _settingsCache = data?.value || null;
+  _settingsCacheTime = now;
+  return _settingsCache;
+}
+
+async function getFooterCategories() {
+  const now = Date.now();
+  if (_categoriesCache && now - _categoriesCacheTime < SETTINGS_TTL) {
+    return _categoriesCache;
+  }
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("directory_categories")
+    .select("*")
+    .limit(5);
+  _categoriesCache = data || [];
+  _categoriesCacheTime = now;
+  return _categoriesCache;
+}
+
 export function SiteHeader({ solid = false }: { solid?: boolean }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<any>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.from('site_settings').select('value').eq('key', 'global').single().then(({ data }) => {
-      if (data && data.value) setSettings(data.value);
-    });
+    getSettings().then(setSettings);
   }, []);
 
   return (
@@ -91,13 +128,8 @@ export function SiteFooter() {
   const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.from('site_settings').select('value').eq('key', 'global').single().then(({ data }) => {
-      if (data && data.value) setSettings(data.value);
-    });
-    supabase.from('directory_categories').select('*').limit(5).then(({ data }) => {
-      if (data) setCategories(data);
-    });
+    getSettings().then(setSettings);
+    getFooterCategories().then(setCategories);
   }, []);
 
   return (
@@ -108,7 +140,7 @@ export function SiteFooter() {
             <img src={settings.logo_url} alt={settings?.site_name || "1Beauty.Asia"} className="h-10 w-auto object-contain brightness-0 invert" />
           ) : (
             <p className="font-display text-2xl text-background">
-              {settings?.site_name?.split('.')[0] || "1Beauty"}<span className="text-gradient-gold">.{settings?.site_name?.split('.')[1] || "Asia"}</span>
+              {settings?.site_name?.split(".")[0] || "1Beauty"}<span className="text-gradient-gold">.{settings?.site_name?.split(".")[1] || "Asia"}</span>
             </p>
           )}
           <p className="mt-4 max-w-sm text-sm">
@@ -133,9 +165,10 @@ export function SiteFooter() {
         <div>
           <p className="text-xs tracking-[0.25em] text-gold uppercase">Liên hệ</p>
           <ul className="mt-4 space-y-2 text-sm">
+            {/* FIX #12: Lấy từ site_settings thay vì hardcode */}
             <li>{settings?.contact_email || "contact@1beauty.asia"}</li>
-            <li>+84 28 7300 1988</li>
-            <li>TP. Hồ Chí Minh, Việt Nam</li>
+            <li>{settings?.contact_phone || "+84 28 7300 1988"}</li>
+            <li>{settings?.contact_address || "TP. Hồ Chí Minh, Việt Nam"}</li>
           </ul>
         </div>
       </div>

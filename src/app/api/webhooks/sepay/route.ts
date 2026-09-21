@@ -106,9 +106,9 @@ export async function POST(request: Request) {
               expires_at: expiresAt.toISOString(),
             });
 
-            // 4. Update Business hiển thị "is_featured"
+            // 4. Update Business hiển thị "is_featured" và cập nhật plan_id
             await supabase.from('businesses')
-              .update({ is_featured: true, plan_tier: 'VIP' })
+              .update({ is_featured: true, plan_id: plan.id })
               .eq('id', business.id);
 
             console.log(`Successfully upgraded business ${targetSlug} to VIP via SePay transaction ${payload.id}`);

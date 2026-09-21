@@ -2,6 +2,7 @@ import { PageShell } from "@/components/site/Layout";
 import { Check, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import { Metadata } from "next";
+import PricingClient from "./PricingClient";
 
 export const metadata: Metadata = {
   title: "Bảng giá & Gói thành viên | 1Beauty.Asia",
@@ -48,6 +49,3 @@ export default async function PricingPage() {
     </PageShell>
   );
 }
-
-// We extract the client component to handle the monthly/yearly toggle
-import PricingClient from "./PricingClient";

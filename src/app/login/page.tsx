@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +29,12 @@ export default function LoginPage() {
       setLoading(false);
     } else {
       toast.success("Đăng nhập thành công!");
-      router.push("/admin");
+      const role = data.user?.user_metadata?.role;
+      if (role === "admin" || role === "superadmin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     }
   };
 
@@ -40,9 +45,9 @@ export default function LoginPage() {
           <div className="flex size-12 items-center justify-center rounded-full bg-champagne">
             <Shield className="size-6 text-gold" />
           </div>
-          <h2 className="mt-4 text-2xl font-bold tracking-tight text-ink">Admin Portal</h2>
+          <h2 className="mt-4 text-2xl font-bold tracking-tight text-ink">Đăng nhập</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Đăng nhập hệ thống quản trị
+            Truy cập hệ thống quản trị
           </p>
         </div>
 
@@ -63,6 +68,13 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             className="h-12"
           />
+          
+          <div className="flex justify-end">
+            <a href="/lien-he" className="text-xs text-muted-foreground hover:text-gold transition-colors">
+              Quên mật khẩu?
+            </a>
+          </div>
+
           <Button
             type="submit"
             className="h-12 w-full bg-gold text-ink hover:bg-gold/90 font-semibold tracking-wide"

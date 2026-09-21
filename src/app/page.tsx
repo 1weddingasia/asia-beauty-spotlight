@@ -67,7 +67,7 @@ export default async function Index() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="flex-1">
-        <HeroSlider />
+        <HeroSlider categories={categories} locations={locations} />
 
         {/* --- SECTION 1: DANH MỤC (DB thật) --- */}
         <section className="mx-auto max-w-6xl px-6 py-20">

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
 
 export function BusinessCard({ business: dbBusiness }: { business: any }) {
@@ -24,11 +25,12 @@ export function BusinessCard({ business: dbBusiness }: { business: any }) {
       className="group shadow-card hover:shadow-luxe relative flex flex-col overflow-hidden rounded-2xl border border-border/70 bg-card transition-all duration-500 hover:-translate-y-1"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
-        <img
+        <Image
           src={coverImage}
           alt={business.name}
-          loading="lazy"
-          className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="overlay-ink absolute inset-0" />
         {offer && (
@@ -50,7 +52,13 @@ export function BusinessCard({ business: dbBusiness }: { business: any }) {
       <div className="flex flex-1 flex-col gap-3 p-6">
         <div className="flex items-start gap-3">
           {business.logo_url ? (
-            <img src={business.logo_url} alt="logo" className="size-11 shrink-0 rounded-xl border border-gold-soft object-contain bg-white p-1" />
+            <Image 
+              src={business.logo_url} 
+              alt="logo" 
+              width={44} 
+              height={44}
+              className="shrink-0 rounded-xl border border-gold-soft object-contain bg-white p-1" 
+            />
           ) : (
             <span className="font-display grid size-11 shrink-0 place-items-center rounded-xl border border-gold-soft bg-champagne text-sm tracking-widest text-ink">
               {business.name.substring(0, 2).toUpperCase()}

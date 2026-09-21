@@ -134,7 +134,7 @@ export default function BusinessProfilePage() {
             <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center p-6 text-center border border-gold/50 rounded-xl">
               <Lock className="size-8 text-gold mb-3" />
               <h4 className="font-bold text-lg mb-2">Tính năng Cao cấp</h4>
-              <p className="text-sm text-muted-foreground mb-4">Nâng cấp gói Standard để hiển thị Số điện thoại và Zalo liên hệ trực tiếp.</p>
+              <p className="text-sm text-muted-foreground mb-4">Nâng cấp gói Standard để kích hoạt nút Gọi điện và Chat Zalo cho khách hàng.</p>
               <Button asChild className="bg-gold text-ink hover:bg-gold/90">
                 <Link href="/dashboard/upgrade">Nâng cấp 399k / Năm</Link>
               </Button>
@@ -146,17 +146,17 @@ export default function BusinessProfilePage() {
           <div className="space-y-2">
             <Label className="flex items-center gap-2"><Phone className="size-4"/> Số điện thoại (Hotline)</Label>
             <Input 
-              disabled
-              value={heroData.phone || "09xxxxxxxxx"} 
-              className="bg-muted"
+              value={formData.page_content?.phone || ""} 
+              onChange={(e) => setFormData(prev => ({ ...prev, page_content: { ...prev.page_content, phone: e.target.value } }))}
+              placeholder="VD: 0987654321"
             />
           </div>
           <div className="space-y-2">
-            <Label className="flex items-center gap-2"><MessageCircle className="size-4"/> Link Zalo OA</Label>
+            <Label className="flex items-center gap-2"><MessageCircle className="size-4"/> Số Zalo hoặc Link Zalo</Label>
             <Input 
-              disabled
-              value={heroData.zaloLink || "https://zalo.me/..."} 
-              className="bg-muted"
+              value={formData.page_content?.zalo || ""} 
+              onChange={(e) => setFormData(prev => ({ ...prev, page_content: { ...prev.page_content, zalo: e.target.value } }))}
+              placeholder="VD: 0987654321 hoặc https://zalo.me/..."
             />
           </div>
         </div>

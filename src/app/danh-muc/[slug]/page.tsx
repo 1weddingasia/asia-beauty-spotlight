@@ -33,7 +33,7 @@ export default async function CategoryPage({
 }) {
   const resolvedParams = await params;
   const category = await getCategoryFromDB(resolvedParams.slug);
-  if (!category) notFound();
+  if (!category) return notFound();
 
   // Fetch businesses for this category
   const list = await searchBusinessesAction("", category.slug, "all");
