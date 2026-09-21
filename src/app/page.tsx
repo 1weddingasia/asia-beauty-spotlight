@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Sparkles, Ticket } from "lucide-react";
+
+export const revalidate = 3600; // Cache for 1 hour
 import { BusinessCard } from "@/components/site/BusinessCard";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
@@ -229,7 +231,7 @@ export default async function Index() {
           <div className="mx-auto max-w-6xl px-6 py-20 text-center">
             <p className="text-xs tracking-[0.3em] text-gold uppercase">Địa điểm</p>
             <div className="rule-gold mx-auto mt-3" />
-            <h2 className="mt-5 font-display text-3xl md:text-4xl">Có mặt khắp châu Á</h2>
+            <h2 className="mt-5 font-display text-3xl md:text-4xl">Có mặt khắp Việt Nam</h2>
             {locations.length > 0 ? (
               <div className="mt-12 flex flex-wrap justify-center gap-3">
                 {locations.map((l: any) => (

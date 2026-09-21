@@ -1,6 +1,8 @@
 import { getBusinessBySlug } from "@/data/business";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+
+export const revalidate = 3600; // Cache for 1 hour
 import BusinessPageClient from "./BusinessPageClient";
 
 export async function generateMetadata({

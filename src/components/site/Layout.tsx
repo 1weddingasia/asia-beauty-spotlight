@@ -144,7 +144,7 @@ export function SiteFooter() {
             </p>
           )}
           <p className="mt-4 max-w-sm text-sm">
-            Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm mỹ viện, salon và học viện uy tín trên khắp châu Á.
+            Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm mỹ viện, salon và học viện uy tín trên khắp Việt Nam.
           </p>
         </div>
         <div>

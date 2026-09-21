@@ -17,7 +17,7 @@ export const heroSlides = [
   {
     image: hero1,
     kicker: "1Beauty.Asia — Danh bạ làm đẹp cao cấp",
-    title: "Nơi hội tụ tinh hoa ngành làm đẹp châu Á",
+    title: "Nơi hội tụ tinh hoa ngành làm đẹp Việt Nam",
     description:
       "Khám phá hàng trăm spa, thẩm mỹ viện, salon và học viện uy tín, được tuyển chọn kỹ lưỡng.",
     cta: "Khám phá danh bạ",

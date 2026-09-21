@@ -1,8 +1,8 @@
-import { createClient, createAdminClient } from '../utils/supabase/server';
+import { createClient, createAdminClient, createStaticClient } from '../utils/supabase/server';
 import { Business } from '../types/business';
 
 export async function getBusinessBySlug(slug: string): Promise<any | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data, error } = await supabase
     .from('businesses')
     .select(`
@@ -29,7 +29,7 @@ export async function getBusinessBySlug(slug: string): Promise<any | null> {
 }
 
 export async function getPublishedBusinesses(limit = 20): Promise<Business[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data, error } = await supabase
     .from('businesses')
     .select(`
@@ -55,7 +55,7 @@ export async function getPublishedBusinesses(limit = 20): Promise<Business[]> {
 }
 
 export async function searchBusinessesDB({ q, category, location }: { q: string, category: string, location: string }): Promise<Business[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   let query = supabase.from('businesses').select('*').eq('status', 'published');
   
   if (category && category !== 'all') {

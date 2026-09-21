@@ -1,4 +1,4 @@
-﻿import { createServerClient } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
@@ -25,6 +25,21 @@ export async function createClient() {
   )
 }
 
+import { createClient as createSupabaseJsClient } from '@supabase/supabase-js'
+
+export function createStaticClient() {
+  return createSupabaseJsClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: {
+        fetch: (url, options) => {
+          return fetch(url, { ...options, next: { revalidate: 3600 } })
+        }
+      }
+    }
+  )
+}
 export async function createAdminClient() {
   const cookieStore = await cookies()
   return createServerClient(

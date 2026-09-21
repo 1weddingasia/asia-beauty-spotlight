@@ -1,21 +1,21 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import { createStaticClient } from "@/utils/supabase/server";
 
 export async function getCategoriesAction() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase.from('directory_categories').select('*').order('name');
   return data || [];
 }
 
 export async function getLocationsAction() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase.from('directory_locations').select('*').order('name');
   return data || [];
 }
 
 export async function searchBusinessesAction(q: string, category: string, location: string) {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const filterCat = category && category !== 'all';
   const filterLoc = location && location !== 'all';
