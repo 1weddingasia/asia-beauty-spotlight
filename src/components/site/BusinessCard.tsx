@@ -61,7 +61,7 @@ export function BusinessCard({ business: dbBusiness }: { business: any }) {
             />
           ) : (
             <span className="font-display grid size-11 shrink-0 place-items-center rounded-xl border border-gold-soft bg-champagne text-sm tracking-widest text-ink">
-              {business.name.substring(0, 2).toUpperCase()}
+              {(business.name || "1B").substring(0, 2).toUpperCase()}
             </span>
           )}
           

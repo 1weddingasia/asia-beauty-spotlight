@@ -57,7 +57,7 @@ export default async function SearchPage(props: {
                   </label>
                   <div className="mt-3 space-y-2">
                     <Link
-                      href={`/tim-kiem?q=${q}&location=${location}&category=all`}
+                      href={`/tim-kiem?${new URLSearchParams({ q, location, category: 'all' }).toString()}`}
                       className={`block text-sm transition-colors hover:text-gold ${category === 'all' ? 'text-gold font-bold' : ''}`}
                     >
                       Tất cả
@@ -65,7 +65,7 @@ export default async function SearchPage(props: {
                     {categories.map((c) => (
                       <Link
                         key={c.slug}
-                        href={`/tim-kiem?q=${q}&location=${location}&category=${c.slug}`}
+                        href={`/tim-kiem?${new URLSearchParams({ q, location, category: c.slug }).toString()}`}
                         className={`block text-sm transition-colors hover:text-gold ${category === c.slug ? 'text-gold font-bold' : ''}`}
                       >
                         {c.name}
@@ -80,7 +80,7 @@ export default async function SearchPage(props: {
                   </label>
                   <div className="mt-3 space-y-2">
                     <Link
-                      href={`/tim-kiem?q=${q}&category=${category}&location=all`}
+                      href={`/tim-kiem?${new URLSearchParams({ q, category, location: 'all' }).toString()}`}
                       className={`block text-sm transition-colors hover:text-gold ${location === 'all' ? 'text-gold font-bold' : ''}`}
                     >
                       Tất cả
@@ -88,7 +88,7 @@ export default async function SearchPage(props: {
                     {locations.map((l) => (
                       <Link
                         key={l.slug}
-                        href={`/tim-kiem?q=${q}&category=${category}&location=${l.slug}`}
+                        href={`/tim-kiem?${new URLSearchParams({ q, category, location: l.slug }).toString()}`}
                         className={`block text-sm transition-colors hover:text-gold ${location === l.slug ? 'text-gold font-bold' : ''}`}
                       >
                         {l.name}
