@@ -1,10 +1,12 @@
-import { createClient } from "@/utils/supabase/server";
+import { createStaticClient } from "@/utils/supabase/server";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import Link from "next/link";
 import Image from "next/image";
 
+export const revalidate = 3600;
+
 export default async function BlogIndexPage() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data: blogs, error } = await supabase
     .from("blogs")
     .select("id, title, slug, excerpt, cover_image, published_at, created_at")

@@ -93,7 +93,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
   const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
 
   return (
-    <PageShell solidHeader={false}>
+    <PageShell solidHeader={true}>
       {/* 1. HERO BANNER (3 SLIDES) */}
       <section className="relative w-full bg-champagne">
         <div className="relative h-[45vh] min-h-[350px] w-full md:h-[65vh] md:min-h-[550px] overflow-hidden" ref={heroRef}>

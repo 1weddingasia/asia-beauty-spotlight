@@ -1,12 +1,14 @@
 import { BusinessCard } from "@/components/site/BusinessCard";
 import { PageShell } from "@/components/site/Layout";
-import { createClient } from "@/utils/supabase/server";
+import { createStaticClient } from "@/utils/supabase/server";
 import { searchBusinessesAction } from "@/app/actions/search";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
+export const revalidate = 3600;
+
 async function getCategoryFromDB(slug: string) {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase.from('directory_categories').select('*').eq('slug', slug).single();
   return data;
 }
@@ -44,7 +46,7 @@ export default async function CategoryPage({
         {/* Background Image */}
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
+          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1920&q=80")' }}
         >
           <div className="absolute inset-0 bg-ink/70"></div>
         </div>
