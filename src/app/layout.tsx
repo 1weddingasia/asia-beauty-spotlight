@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
+import { BackToTop } from '@/components/site/BackToTop';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://1beauty.asia';
 const SITE_NAME = '1Beauty.Asia';
@@ -84,6 +85,7 @@ export default function RootLayout({
       <body>
         {children}
         <Analytics />
+        <BackToTop />
       </body>
     </html>
   );

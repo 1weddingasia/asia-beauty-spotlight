@@ -34,9 +34,6 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
 
-  // State for Back to Top Button
-  const [showTopBtn, setShowTopBtn] = useState(false);
-
   // Auto-play Hero Carousel
   useEffect(() => {
     if (!heroApi) return;
@@ -45,18 +42,6 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
     }, 4000); // 4 seconds per slide
     return () => clearInterval(interval);
   }, [heroApi]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowTopBtn(window.scrollY > 500);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   let heroSlides = b.banners?.length > 0 
     ? b.banners 
@@ -484,18 +469,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         )}
       </AnimatePresence>
 
-      {/* BACK TO TOP BUTTON */}
-      <AnimatePresence>
-        {showTopBtn && (
-          <motion.button
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
-            onClick={scrollToTop}
-            className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-40 grid size-10 md:size-12 place-items-center rounded-full bg-gold text-ink shadow-lg transition-transform hover:scale-110 active:scale-95"
-          >
-            <ArrowUp className="size-5 md:size-6" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+
 
     </PageShell>
   );
