@@ -28,7 +28,7 @@ export default async function OffersPage() {
         {/* Background Image */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("https://images.pexels.com/photos/973403/pexels-photo-973403.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
+          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1920&q=80")' }}
         >
           <div className="absolute inset-0 bg-ink/70"></div>
         </div>

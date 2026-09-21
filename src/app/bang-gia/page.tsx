@@ -22,7 +22,7 @@ export default async function PricingPage() {
         {/* Background Image */}
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("https://images.pexels.com/photos/373899/pexels-photo-373899.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
+          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=1920&q=80")' }}
         >
           <div className="absolute inset-0 bg-ink/70"></div>
         </div>

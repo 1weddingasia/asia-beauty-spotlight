@@ -29,7 +29,7 @@ export default async function SearchPage(props: {
         {/* Background Image */}
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("https://images.pexels.com/photos/3737088/pexels-photo-3737088.jpeg?auto=compress&cs=tinysrgb&w=1920")' }}
+          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1920&q=80")' }}
         >
           <div className="absolute inset-0 bg-ink/70"></div>
         </div>
