@@ -9,7 +9,7 @@ import { updateSession } from '@/utils/supabase/middleware'
  *   npx @next/codemod@canary middleware-to-proxy .
  * để tự động đổi sang "proxy".
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Refresh auth session + bảo vệ /admin và /dashboard
   return await updateSession(request)
 }
