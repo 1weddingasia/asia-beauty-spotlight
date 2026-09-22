@@ -218,6 +218,19 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap">
               {b.about || b.description || "Nội dung đang được hệ thống hoặc doanh nghiệp cập nhật thêm."}
             </p>
+
+            {b.amenities && b.amenities.length > 0 && (
+              <div className="pt-6 border-t border-border mt-8">
+                <h3 className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold mb-4">Tiện Ích Không Gian</h3>
+                <div className="flex flex-wrap gap-2">
+                  {b.amenities.map((amenity: string, idx: number) => (
+                    <span key={idx} className="bg-champagne border border-gold-soft text-ink text-xs px-3 py-1.5 rounded-full">
+                      {amenity}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
             <div className="bg-card rounded-3xl p-6 md:p-8 border border-border shadow-card h-fit space-y-6">
@@ -504,6 +517,22 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
 
 
 
+
+      {/* NÚT BOOKING / GỌI ĐIỆN NỔI DÀNH CHO MOBILE */}
+      <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden flex gap-2">
+        {b.booking_url ? (
+          <a href={b.booking_url.startsWith('http') ? b.booking_url : `https://${b.booking_url}`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-gradient-gold text-ink font-bold flex items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-sm uppercase tracking-wider">
+            Đặt Lịch Ngay
+          </a>
+        ) : (
+          <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="flex-1 bg-gradient-gold text-ink font-bold flex items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-sm uppercase tracking-wider">
+            Tư Vấn Zalo
+          </a>
+        )}
+        <a href={`tel:${b.phone || ''}`} className="grid place-items-center bg-ink text-gold size-[48px] shrink-0 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-gold-soft">
+          <Phone className="size-5" />
+        </a>
+      </div>
     </PageShell>
   );
 }

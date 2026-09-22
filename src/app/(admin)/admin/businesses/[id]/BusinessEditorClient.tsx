@@ -7,93 +7,78 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, ArrowLeft, Plus, Trash2, Copy, Link as LinkIcon, MoveUp, MoveDown } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Save, Plus, Trash2, Copy, Link as LinkIcon, Lock, MapPin, CheckSquare, Square, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { ImageUpload } from "@/components/ui/image-upload";
 
-export default function BusinessEditorClient({ business, categories, locations }: { business?: any, categories: any[], locations: any[] }) {
+const AMENITY_OPTIONS = [
+  "Có chỗ đỗ xe",
+  "Thanh toán thẻ",
+  "Phòng VIP riêng",
+  "Wifi miễn phí",
+  "Nước uống miễn phí",
+  "Nhạc thư giãn",
+  "Khu vực chờ",
+  "Máy lạnh",
+  "Có phòng tắm",
+];
+
+export default function BusinessEditorClient({ 
+  business: initialBusiness,
+  categories,
+  locations 
+}: { 
+  business: any,
+  categories: any[],
+  locations: any[] 
+}) {
   const router = useRouter();
   const supabase = createClient();
   const [saving, setSaving] = useState(false);
+  const [business, setBusiness] = useState<any>(initialBusiness);
 
   const [formData, setFormData] = useState({
-    name: business?.name || "",
-    slug: business?.slug || "",
-    status: business?.status || "draft",
-    is_featured: business?.is_featured || false,
+    name: initialBusiness?.name || "",
+    address: initialBusiness?.address || "",
   });
 
-  const [selectedCats, setSelectedCats] = useState<string[]>([]);
-  const [selectedLocs, setSelectedLocs] = useState<string[]>([]);
-  
-  // Base visual structure parsed from JSON
-  const [pageContent, setPageContent] = useState<any>({
-    description: "",
-    address: "",
-    phone: "",
-    email: "",
-    website: "",
-    facebook: "",
-    instagram: "",
-    tiktok: "",
-    youtube: "",
-    logo_url: "",
-    hero_image: "",
-    banners: ["", "", ""], // 3 slides
-    gallery: [],
-    services: [],
-    offers: [],
-    working_hours: [
-      { day: "Thứ 2", hours: "09:00 - 20:00" },
-      { day: "Thứ 3", hours: "09:00 - 20:00" },
-      { day: "Thứ 4", hours: "09:00 - 20:00" },
-      { day: "Thứ 5", hours: "09:00 - 20:00" },
-      { day: "Thứ 6", hours: "09:00 - 20:00" },
-      { day: "Thứ 7", hours: "09:00 - 21:00" },
-      { day: "Chủ nhật", hours: "09:00 - 21:00" }
-    ]
-  });
-
-  useEffect(() => {
-    if (business) {
-      if (business.categories_list) setSelectedCats(business.categories_list.map((c: any) => c.id));
-      if (business.locations_list) setSelectedLocs(business.locations_list.map((l: any) => l.id));
-      
-      if (business.page_content) {
-        try {
-          const parsed = typeof business.page_content === 'string' ? JSON.parse(business.page_content) : business.page_content;
-          setPageContent((prev: any) => ({ 
-            ...prev, 
-            ...parsed,
-            phone: business.phone || parsed.phone || "",
-            email: business.email || parsed.email || "",
-            website: business.website || parsed.website || "",
-            facebook: business.socials?.facebook || parsed.facebook || "",
-            instagram: business.socials?.instagram || parsed.instagram || "",
-            tiktok: business.socials?.tiktok || parsed.tiktok || "",
-            youtube: business.socials?.youtube || parsed.youtube || "",
-            address: business.address || parsed.address || "",
-          }));
-        } catch(e) {
-          console.error("Failed to parse page_content", e);
-        }
-      } else {
-        setPageContent((prev: any) => ({
-          ...prev,
-          phone: business.phone || "",
-          email: business.email || "",
-          website: business.website || "",
-          facebook: business.socials?.facebook || "",
-          instagram: business.socials?.instagram || "",
-          tiktok: business.socials?.tiktok || "",
-          youtube: business.socials?.youtube || "",
-          address: business.address || "",
-        }));
-      }
+  const getInitialPageContent = () => {
+    if (!initialBusiness) return {
+      description: "", phone: "", email: "", website: "", zalo: "", facebook: "", instagram: "", tiktok: "", youtube: "", logo_url: "", hero_image: "", banners: ["", "", ""], gallery: [], services: [], offers: [], amenities: [], map_embed: "", booking_url: "", price_range: "", working_hours: [{ day: "Thứ 2", hours: "09:00 - 20:00" }, { day: "Thứ 3", hours: "09:00 - 20:00" }, { day: "Thứ 4", hours: "09:00 - 20:00" }, { day: "Thứ 5", hours: "09:00 - 20:00" }, { day: "Thứ 6", hours: "09:00 - 20:00" }, { day: "Thứ 7", hours: "09:00 - 21:00" }, { day: "Chủ nhật", hours: "09:00 - 21:00" }]
+    };
+    
+    if (initialBusiness.page_content) {
+      try {
+        const parsed = typeof initialBusiness.page_content === 'string' ? JSON.parse(initialBusiness.page_content) : initialBusiness.page_content;
+        return {
+          ...parsed,
+          phone: initialBusiness.phone || parsed.phone || "",
+          email: initialBusiness.email || parsed.email || "",
+          website: initialBusiness.website || parsed.website || "",
+          zalo: initialBusiness.zalo || parsed.zalo || "",
+          facebook: initialBusiness.socials?.facebook || parsed.facebook || "",
+          instagram: initialBusiness.socials?.instagram || parsed.instagram || "",
+          tiktok: initialBusiness.socials?.tiktok || parsed.tiktok || "",
+          youtube: initialBusiness.socials?.youtube || parsed.youtube || "",
+        };
+      } catch(e) {}
     }
-  }, [business]);
+    
+    return {
+      phone: initialBusiness.phone || "",
+      email: initialBusiness.email || "",
+      website: initialBusiness.website || "",
+      zalo: initialBusiness.zalo || "",
+      facebook: initialBusiness.socials?.facebook || "",
+      instagram: initialBusiness.socials?.instagram || "",
+      tiktok: initialBusiness.socials?.tiktok || "",
+      youtube: initialBusiness.socials?.youtube || "",
+    };
+  };
+
+  const [pageContent, setPageContent] = useState<any>(getInitialPageContent());
 
   const handleChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -103,21 +88,21 @@ export default function BusinessEditorClient({ business, categories, locations }
     setPageContent((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleCheckboxChange = (id: string, list: string[], setList: (l: string[]) => void) => {
-    if (list.includes(id)) {
-      setList(list.filter(item => item !== id));
+  const toggleAmenity = (amenity: string) => {
+    const current = pageContent.amenities || [];
+    if (current.includes(amenity)) {
+      handlePageContentChange("amenities", current.filter((a: string) => a !== amenity));
     } else {
-      setList([...list, id]);
+      handlePageContentChange("amenities", [...current, amenity]);
     }
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Build final payload
-      const payload = {
-        ...formData,
-        address: pageContent.address || null,
+      const { error } = await supabase.from("businesses").update({
+        name: formData.name,
+        address: formData.address,
         phone: pageContent.phone || null,
         email: pageContent.email || null,
         website: pageContent.website || null,
@@ -129,170 +114,176 @@ export default function BusinessEditorClient({ business, categories, locations }
           youtube: pageContent.youtube
         },
         page_content: pageContent
-      };
+      }).eq("id", business.id);
 
-      let businessId = business?.id;
-
-      if (businessId) {
-        const { error } = await supabase.from("businesses").update(payload).eq("id", businessId);
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase.from("businesses").insert(payload).select().single();
-        if (error) throw error;
-        businessId = data.id;
-      }
-
-      // Update junction tables by deleting old and inserting new
-      await supabase.from("business_categories").delete().eq("business_id", businessId);
-      if (selectedCats.length > 0) {
-        await supabase.from("business_categories").insert(selectedCats.map(cat_id => ({ business_id: businessId, category_id: cat_id })));
-      }
-
-      await supabase.from("business_locations").delete().eq("business_id", businessId);
-      if (selectedLocs.length > 0) {
-        await supabase.from("business_locations").insert(selectedLocs.map(loc_id => ({ business_id: businessId, location_id: loc_id })));
-      }
-
-      toast.success("Đã lưu thành công");
-      router.push("/admin/businesses");
-      router.refresh();
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || "Có lỗi xảy ra");
+      if (error) throw error;
+      toast.success("Đã lưu thông tin doanh nghiệp");
+    } catch (error: any) {
+      toast.error("Lỗi khi lưu: " + error.message);
     } finally {
       setSaving(false);
     }
   };
 
-  // --- Dynamic List Handlers ---
+  const updateBanner = (index: number, url: string) => {
+    const newBanners = [...(pageContent.banners || ["","",""])];
+    newBanners[index] = url;
+    handlePageContentChange("banners", newBanners);
+  };
+
   const addService = () => {
-    setPageContent((prev: any) => ({
-      ...prev,
-      services: [...(prev.services || []), { name: "", price: "", description: "", image: "" }]
-    }));
+    handlePageContentChange("services", [...(pageContent.services || []), { name: "", description: "", price: "", image: "" }]);
   };
-
-  const updateService = (index: number, field: string, value: string) => {
-    const updated = [...pageContent.services];
-    updated[index] = { ...updated[index], [field]: value };
-    handlePageContentChange("services", updated);
-  };
-
   const removeService = (index: number) => {
-    const updated = [...pageContent.services];
-    updated.splice(index, 1);
-    handlePageContentChange("services", updated);
+    handlePageContentChange("services", pageContent.services.filter((_: any, i: number) => i !== index));
   };
-
+  const updateService = (index: number, field: string, value: any) => {
+    const newServices = [...pageContent.services];
+    newServices[index][field] = value;
+    handlePageContentChange("services", newServices);
+  };
   const duplicateService = (index: number) => {
-    const updated = [...pageContent.services];
-    updated.splice(index + 1, 0, { ...updated[index] });
-    handlePageContentChange("services", updated);
+    const svc = pageContent.services[index];
+    handlePageContentChange("services", [...pageContent.services, { ...svc }]);
   };
 
   const addOffer = () => {
-    setPageContent((prev: any) => ({
-      ...prev,
-      offers: [...(prev.offers || []), { 
-        title: "", 
-        discount: "", 
-        code: "", 
-        validFrom: new Date().toISOString().split('T')[0], 
-        validUntil: "", 
-        description: "",
-        created_at: new Date().toISOString()
-      }]
-    }));
+    handlePageContentChange("offers", [...(pageContent.offers || []), { title: "", code: "", discount: "", description: "", validFrom: "", validUntil: "" }]);
   };
-
-  const updateOffer = (index: number, field: string, value: string) => {
-    const updated = [...pageContent.offers];
-    updated[index] = { ...updated[index], [field]: value };
-    handlePageContentChange("offers", updated);
-  };
-
   const removeOffer = (index: number) => {
-    const updated = [...pageContent.offers];
-    updated.splice(index, 1);
-    handlePageContentChange("offers", updated);
+    handlePageContentChange("offers", pageContent.offers.filter((_: any, i: number) => i !== index));
+  };
+  const updateOffer = (index: number, field: string, value: any) => {
+    const newOffers = [...pageContent.offers];
+    newOffers[index][field] = value;
+    handlePageContentChange("offers", newOffers);
   };
 
-  const updateBanner = (index: number, url: string) => {
-    const updated = [...(pageContent.banners || ["", "", ""])];
-    updated[index] = url;
-    handlePageContentChange("banners", updated);
-  };
+  if (!business) return <div className="p-10 text-center text-red-500">Lỗi: Không tìm thấy doanh nghiệp.</div>;
 
   return (
-    <div className="space-y-6 max-w-5xl pb-20 mx-auto">
-      <div className="flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur-sm z-10 py-4 border-b">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" asChild>
-            <Link href="/admin/businesses">
-              <ArrowLeft className="size-4" />
-            </Link>
-          </Button>
-          <h2 className="text-2xl font-bold tracking-tight">
-            {business ? "Chỉnh sửa doanh nghiệp" : "Thêm doanh nghiệp mới"}
-          </h2>
+    <div className="max-w-5xl mx-auto space-y-6">
+      <div className="flex items-center gap-4 mb-4">
+        <Button variant="outline" size="icon" asChild>
+          <Link href="/admin/businesses"><ChevronLeft className="size-4" /></Link>
+        </Button>
+        <h1 className="text-2xl font-bold font-display text-gold">Chỉnh sửa Doanh nghiệp (Admin)</h1>
+      </div>
+
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <p className="text-muted-foreground text-sm">Chỉnh sửa toàn diện thông tin hiển thị của {business.name}.</p>
         </div>
-        <div className="flex gap-2">
-          {business?.id && (
-            <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
-              <Link href={`/admin/businesses/${business.id}/upgrade`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                Nâng cấp Gói
-              </Link>
-            </Button>
-          )}
-          <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 shadow-md">
+        <div className="flex items-center gap-3">
+          <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
+            <Link href={`/doanh-nghiep/${business.slug}`} target="_blank">Xem Trang Khách</Link>
+          </Button>
+          <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
             <Save className="mr-2 size-4" />
             {saving ? "Đang lưu..." : "Lưu thay đổi"}
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
-        {/* LEFT COLUMN: Main Visual Editor */}
-        <div className="space-y-8">
-          
-          {/* 1. Basic Info Section */}
-          <div className="space-y-6 rounded-2xl border bg-card p-6 md:p-8 shadow-sm">
-            <h3 className="font-semibold text-xl border-b pb-4">Thông tin cơ bản</h3>
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto md:h-12 gap-2 bg-muted p-2 rounded-xl mb-6">
+          <TabsTrigger value="overview">Tổng quan</TabsTrigger>
+          <TabsTrigger value="contact">Liên hệ & Bản đồ</TabsTrigger>
+          <TabsTrigger value="media">Hình ảnh</TabsTrigger>
+          <TabsTrigger value="services">Bảng giá Dịch vụ</TabsTrigger>
+          <TabsTrigger value="offers">Khuyến mãi</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          <div className="rounded-2xl border bg-card p-6 md:p-8 shadow-sm space-y-6">
+            <h3 className="font-semibold text-xl border-b pb-4">Thông tin Cơ bản</h3>
             
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Tên doanh nghiệp / Spa</Label>
-                <Input value={formData.name} onChange={(e) => handleChange("name", e.target.value)} placeholder="Vd: Seoul Spa" />
+                <Label>Tên Doanh Nghiệp (Thương hiệu)</Label>
+                <Input value={formData.name || ""} onChange={(e) => handleChange("name", e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label>Đường dẫn (Slug)</Label>
-                <Input value={formData.slug} onChange={(e) => handleChange("slug", e.target.value)} placeholder="seoul-spa" />
+                <Label>Khoảng giá trung bình</Label>
+                <Input value={pageContent.price_range || ""} onChange={(e) => handlePageContentChange("price_range", e.target.value)} placeholder="VD: 150.000đ - 2.000.000đ" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Mô tả giới thiệu (Giới thiệu ngắn)</Label>
+              <Label>Giới thiệu tóm tắt</Label>
               <Textarea 
                 value={pageContent.description || ""} 
                 onChange={(e) => handlePageContentChange("description", e.target.value)} 
-                placeholder="Giới thiệu về dịch vụ, không gian, kinh nghiệm..."
-                rows={3}
+                rows={4}
+                placeholder="Mô tả về không gian, phong cách và thế mạnh của doanh nghiệp..."
               />
             </div>
 
+            <div className="space-y-4 pt-6 border-t">
+              <Label className="text-base font-semibold">Giờ mở cửa (7 ngày trong tuần)</Label>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {(pageContent.working_hours || []).map((wh: any, i: number) => (
+                  <div key={i} className="flex flex-col space-y-1 bg-gray-50 p-3 rounded-lg border">
+                    <Label className="text-xs font-bold text-gold">{wh.day}</Label>
+                    <Input 
+                      value={wh.hours} 
+                      onChange={(e) => {
+                        const newWh = [...pageContent.working_hours];
+                        newWh[i].hours = e.target.value;
+                        handlePageContentChange("working_hours", newWh);
+                      }} 
+                      className="h-8 text-sm bg-white"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-6 border-t">
+              <Label className="text-base font-semibold">Tiện ích Không gian</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {AMENITY_OPTIONS.map((opt) => (
+                  <div 
+                    key={opt} 
+                    onClick={() => toggleAmenity(opt)}
+                    className="flex items-center gap-2 p-3 rounded-lg border cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    {(pageContent.amenities || []).includes(opt) ? 
+                      <CheckSquare className="size-4 text-gold" /> : 
+                      <Square className="size-4 text-gray-300" />
+                    }
+                    <span className="text-sm">{opt}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="contact" className="space-y-6">
+          <div className="rounded-2xl border bg-card p-6 md:p-8 shadow-sm space-y-6">
+            <h3 className="font-semibold text-xl border-b pb-4">Liên hệ & Mạng xã hội</h3>
+            
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Địa chỉ</Label>
-                <Input value={pageContent.address || ""} onChange={(e) => handlePageContentChange("address", e.target.value)} placeholder="Số nhà, Tên đường..." />
+                <Label>Địa chỉ chi tiết</Label>
+                <Input value={formData.address || ""} onChange={(e) => handleChange("address", e.target.value)} placeholder="Số nhà, Tên đường, Phường, Quận, Thành phố..." />
               </div>
+              <div className="space-y-2">
+                <Label>Link Đặt lịch (Booking / Zalo OA)</Label>
+                <Input value={pageContent.booking_url || ""} onChange={(e) => handlePageContentChange("booking_url", e.target.value)} placeholder="https://booking.com/..." />
+              </div>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4 border-t">
               <div className="space-y-2">
                 <Label>Số điện thoại (Hotline)</Label>
                 <Input value={pageContent.phone || ""} onChange={(e) => handlePageContentChange("phone", e.target.value)} placeholder="09xxxx..." />
               </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-6 pt-4 border-t">
+              <div className="space-y-2">
+                <Label>Zalo</Label>
+                <Input value={pageContent.zalo || ""} onChange={(e) => handlePageContentChange("zalo", e.target.value)} placeholder="09xxxx..." />
+              </div>
               <div className="space-y-2">
                 <Label>Email</Label>
                 <div className="relative">
@@ -300,16 +291,13 @@ export default function BusinessEditorClient({ business, categories, locations }
                   <Input value={pageContent.email || ""} onChange={(e) => handlePageContentChange("email", e.target.value)} className="pl-9" placeholder="contact@spa.com" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Website</Label>
-                <div className="relative">
-                  <LinkIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input value={pageContent.website || ""} onChange={(e) => handlePageContentChange("website", e.target.value)} className="pl-9" placeholder="https://" />
-                </div>
-              </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 pt-4 border-t">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 border-t">
+              <div className="space-y-2">
+                <Label>Website</Label>
+                <Input value={pageContent.website || ""} onChange={(e) => handlePageContentChange("website", e.target.value)} placeholder="https://" />
+              </div>
               <div className="space-y-2">
                 <Label>Facebook</Label>
                 <Input value={pageContent.facebook || ""} onChange={(e) => handlePageContentChange("facebook", e.target.value)} placeholder="Link Fanpage" />
@@ -325,69 +313,85 @@ export default function BusinessEditorClient({ business, categories, locations }
             </div>
 
             <div className="space-y-4 pt-6 border-t">
-              <Label className="text-base font-semibold">Giờ mở cửa (7 ngày trong tuần)</Label>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(pageContent.working_hours || []).map((wh: any, i: number) => (
-                  <div key={i} className="flex flex-col space-y-1 bg-gray-50 p-3 rounded-lg border">
-                    <Label className="text-xs font-bold text-gold">{wh.day}</Label>
-                    <Input 
-                      value={wh.hours} 
-                      onChange={(e) => {
-                        const newWh = [...pageContent.working_hours];
-                        newWh[i].hours = e.target.value;
-                        handlePageContentChange("working_hours", newWh);
-                      }} 
-                      placeholder="09:00 - 20:00" 
-                      className="h-8 text-sm"
-                    />
-                  </div>
-                ))}
-              </div>
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <MapPin className="size-5 text-gold" /> Bản đồ Google Maps (Embed)
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Để lấy mã nhúng, vào Google Maps {">"} Chọn địa điểm {">"} Nút "Chia sẻ" {">"} Chuyển sang "Nhúng bản đồ" {">"} Bấm "Sao chép HTML" và dán vào đây.
+              </p>
+              <Textarea 
+                value={pageContent.map_embed || ""} 
+                onChange={(e) => handlePageContentChange("map_embed", e.target.value)} 
+                rows={4}
+                placeholder='<iframe src="https://www.google.com/maps/embed?..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>'
+              />
+              {pageContent.map_embed && pageContent.map_embed.includes('<iframe') && (
+                <div className="mt-4 rounded-xl overflow-hidden border">
+                  <div dangerouslySetInnerHTML={{ __html: pageContent.map_embed }} className="w-full h-[300px] [&>iframe]:w-full [&>iframe]:h-full" />
+                </div>
+              )}
             </div>
           </div>
+        </TabsContent>
 
-          {/* 2. Visual Media Section */}
-          <div className="space-y-6 rounded-2xl border bg-card p-6 md:p-8 shadow-sm">
-            <h3 className="font-semibold text-xl border-b pb-4">Hình ảnh & Slider</h3>
+        <TabsContent value="media" className="space-y-6">
+          <div className="rounded-2xl border bg-card p-6 md:p-8 shadow-sm space-y-6">
+            <h3 className="font-semibold text-xl border-b pb-4">Hình ảnh Nhận diện</h3>
             
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2 md:col-span-1 border rounded-xl p-4 bg-gray-50/50">
-                <Label className="text-base">Logo Thương hiệu</Label>
-                <p className="text-xs text-muted-foreground mb-4">Tỷ lệ 1:1, dung lượng nhẹ.</p>
-                <ImageUpload 
-                  value={pageContent.logo_url} 
-                  onChange={(url) => handlePageContentChange('logo_url', url)} 
-                />
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label className="font-bold">Logo Thương hiệu</Label>
+                <p className="text-xs text-muted-foreground">Tỷ lệ 1:1, dung lượng nhẹ.</p>
+                <div className="w-32 h-32">
+                  <ImageUpload 
+                    value={pageContent.logo_url} 
+                    onChange={(url) => handlePageContentChange("logo_url", url)} 
+                  />
+                </div>
               </div>
-              
-              <div className="space-y-2 md:col-span-2 border rounded-xl p-4 bg-gray-50/50">
-                <Label className="text-base">Slider Trang chủ (Tối đa 3 ảnh ngang)</Label>
-                <p className="text-xs text-muted-foreground mb-4">Upload trực tiếp để tự chạy slide trên trang của doanh nghiệp.</p>
-                <div className="grid grid-cols-3 gap-4">
-                  {[0, 1, 2].map((i) => (
-                    <div key={i} className="space-y-2">
-                      <Label className="text-xs">Slide {i + 1}</Label>
-                      <ImageUpload 
-                        value={pageContent.banners?.[i] || ""} 
-                        onChange={(url) => updateBanner(i, url)} 
-                      />
-                    </div>
-                  ))}
+              <div className="space-y-3">
+                <Label className="font-bold">Ảnh Cover Phụ (Tùy chọn)</Label>
+                <p className="text-xs text-muted-foreground">Dùng để làm hình nền phụ.</p>
+                <div className="w-full h-32 max-w-xs">
+                  <ImageUpload 
+                    value={pageContent.hero_image} 
+                    onChange={(url) => handlePageContentChange("hero_image", url)} 
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="space-y-2 pt-6 border-t">
-              <Label className="text-base">Thư viện ảnh không gian (Gallery)</Label>
-              <p className="text-xs text-muted-foreground mb-4">Tải lên các hình ảnh cơ sở vật chất, hoạt động thực tế.</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {(pageContent.gallery || []).map((url: string, i: number) => (
-                  <div key={i} className="relative group rounded-xl overflow-hidden border">
-                    <img src={url} alt={`Gallery ${i}`} className="w-full h-32 object-cover" />
+            <div className="space-y-4 pt-6 border-t">
+              <Label className="text-base font-semibold">Slider Trang chủ (Tối đa 3 ảnh Banner lớn)</Label>
+              <p className="text-xs text-muted-foreground mb-4">Tỷ lệ 16:9 ngang để đẹp nhất trên desktop & mobile.</p>
+              <div className="grid md:grid-cols-3 gap-6">
+                {[0, 1, 2].map((idx) => (
+                  <div key={idx} className="space-y-2">
+                    <Label className="text-xs">Banner {idx + 1}</Label>
+                    <div className="aspect-[16/9] w-full bg-gray-50 border border-dashed rounded-xl overflow-hidden relative group">
+                      <ImageUpload 
+                        value={pageContent.banners?.[idx] || ""} 
+                        onChange={(url) => updateBanner(idx, url)} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-6 border-t relative">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                Thư viện ảnh không gian (Gallery)
+              </Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {(pageContent.gallery || []).map((imgUrl: string, i: number) => (
+                  <div key={i} className="aspect-square relative rounded-xl overflow-hidden group border">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={imgUrl} alt="Gallery" className="object-cover w-full h-full" />
                     <button 
+                      type="button"
                       onClick={() => {
-                        const newGallery = [...pageContent.gallery];
-                        newGallery.splice(i, 1);
+                        const newGallery = pageContent.gallery.filter((_: any, index: number) => index !== i);
                         handlePageContentChange("gallery", newGallery);
                       }}
                       className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -397,8 +401,7 @@ export default function BusinessEditorClient({ business, categories, locations }
                   </div>
                 ))}
                 
-                {/* Upload new image to gallery button disguised as ImageUpload component wrapper */}
-                <div className="h-32">
+                <div className="aspect-square">
                   <ImageUpload 
                     value="" 
                     onChange={(url) => {
@@ -411,8 +414,9 @@ export default function BusinessEditorClient({ business, categories, locations }
               </div>
             </div>
           </div>
+        </TabsContent>
 
-          {/* 3. Services / Menu Section */}
+        <TabsContent value="services" className="space-y-6">
           <div className="space-y-6 rounded-2xl border bg-card p-6 md:p-8 shadow-sm">
             <div className="flex items-center justify-between border-b pb-4">
               <h3 className="font-semibold text-xl">Bảng giá Dịch vụ</h3>
@@ -463,11 +467,14 @@ export default function BusinessEditorClient({ business, categories, locations }
               ))}
             </div>
           </div>
+        </TabsContent>
 
-          {/* 4. Offers Section */}
-          <div className="space-y-6 rounded-2xl border bg-card p-6 md:p-8 shadow-sm">
+        <TabsContent value="offers" className="space-y-6">
+          <div className="space-y-6 rounded-2xl border bg-card p-6 md:p-8 shadow-sm relative">
             <div className="flex items-center justify-between border-b pb-4">
-              <h3 className="font-semibold text-xl">Chương trình Khuyến mãi / Ưu đãi</h3>
+              <h3 className="font-semibold text-xl flex items-center gap-2">
+                Chương trình Khuyến mãi / Ưu đãi
+              </h3>
               <Button onClick={addOffer} size="sm" variant="outline" className="text-gold border-gold hover:bg-gold/10">
                 <Plus className="size-4 mr-2" /> Thêm Ưu đãi
               </Button>
@@ -487,7 +494,7 @@ export default function BusinessEditorClient({ business, categories, locations }
                       <Input value={offer.title || ""} onChange={e => updateOffer(i, "title", e.target.value)} placeholder="Giảm 20% Lần Đầu" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Mã CODE (Tùy chọn)</Label>
+                      <Label className="text-xs">MÃ CODE (Tùy chọn)</Label>
                       <Input value={offer.code || ""} onChange={e => updateOffer(i, "code", e.target.value)} placeholder="NEW20" />
                     </div>
                   </div>
@@ -517,80 +524,8 @@ export default function BusinessEditorClient({ business, categories, locations }
               ))}
             </div>
           </div>
-
-        </div>
-
-        {/* RIGHT COLUMN: Settings & Metadata */}
-        <div className="space-y-6">
-          <div className="rounded-2xl border bg-card p-6 shadow-sm sticky top-24">
-            <h3 className="font-semibold text-lg border-b pb-4 mb-4">Phân loại & Hiển thị</h3>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Trạng thái</Label>
-                <Select value={formData.status} onValueChange={(v) => handleChange("status", v)}>
-                  <SelectTrigger className="bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Bản nháp (Draft)</SelectItem>
-                    <SelectItem value="published">Đã đăng (Published)</SelectItem>
-                    <SelectItem value="archived">Lưu trữ (Archived)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center gap-2 p-3 bg-champagne/30 border border-gold/20 rounded-lg">
-                <input 
-                  type="checkbox" 
-                  id="is_featured"
-                  checked={formData.is_featured}
-                  onChange={(e) => handleChange("is_featured", e.target.checked)}
-                  className="rounded border-gray-300 text-gold focus:ring-gold size-4"
-                />
-                <Label htmlFor="is_featured" className="font-bold text-gold cursor-pointer">Doanh nghiệp Nổi bật</Label>
-              </div>
-
-              <div className="space-y-2 pt-2">
-                <Label>Danh mục (Có thể chọn nhiều)</Label>
-                <div className="space-y-2 max-h-48 overflow-y-auto p-2 border rounded-md bg-gray-50/50">
-                  {categories.map(c => (
-                    <label key={c.id} className="flex items-center space-x-2 text-sm cursor-pointer hover:bg-gray-100 p-1 rounded">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedCats.includes(c.id)} 
-                        onChange={() => handleCheckboxChange(c.id, selectedCats, setSelectedCats)}
-                        className="rounded border-gray-300 text-gold focus:ring-gold"
-                      />
-                      <span>{c.name}</span>
-                    </label>
-                  ))}
-                  {categories.length === 0 && <span className="text-xs text-muted-foreground">Chưa có danh mục.</span>}
-                </div>
-              </div>
-
-              <div className="space-y-2 pt-2">
-                <Label>Khu vực (Có thể chọn nhiều)</Label>
-                <div className="space-y-2 max-h-48 overflow-y-auto p-2 border rounded-md bg-gray-50/50">
-                  {locations.map(l => (
-                    <label key={l.id} className="flex items-center space-x-2 text-sm cursor-pointer hover:bg-gray-100 p-1 rounded">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedLocs.includes(l.id)} 
-                        onChange={() => handleCheckboxChange(l.id, selectedLocs, setSelectedLocs)}
-                        className="rounded border-gray-300 text-gold focus:ring-gold"
-                      />
-                      <span>{l.name}</span>
-                    </label>
-                  ))}
-                  {locations.length === 0 && <span className="text-xs text-muted-foreground">Chưa có địa điểm.</span>}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

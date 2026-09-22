@@ -1,4 +1,4 @@
-﻿export type BusinessStatus = 'draft' | 'published' | 'suspended' | 'expired' | 'archived';
+export type BusinessStatus = 'draft' | 'published' | 'suspended' | 'expired' | 'archived';
 
 export interface BusinessContent {
   // Hero / Basic
@@ -27,6 +27,11 @@ export interface BusinessContent {
 
   // Highlights/Amenities
   amenities?: string[];
+
+  // Advanced features
+  map_embed?: string;
+  booking_url?: string;
+  price_range?: string;
 }
 
 export interface Business {
