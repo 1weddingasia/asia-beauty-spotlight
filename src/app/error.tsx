@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { Layout } from '@/components/site/Layout';
+import { PageShell } from '@/components/site/Layout';
 import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 
@@ -19,7 +19,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <Layout>
+    <PageShell>
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
         <AlertCircle className="size-20 text-red-400 mb-6" />
         <h2 className="text-2xl font-bold mb-4 font-display">Đã xảy ra lỗi hệ thống</h2>
@@ -35,6 +35,6 @@ export default function GlobalError({
           </Button>
         </div>
       </div>
-    </Layout>
+    </PageShell>
   );
 }
