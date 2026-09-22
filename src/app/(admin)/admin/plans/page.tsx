@@ -29,7 +29,7 @@ export default function PlansAdminClient() {
 
   const fetchPlans = async () => {
     setFetching(true);
-    const { data, error } = await supabase.from('plans').select('*').order('created_at', { ascending: true });
+    const { data, error } = await supabase.from('plans').select('*').order('created_at', { ascending: true }).limit(500);
     if (error) {
       toast.error("Lỗi tải gói: " + error.message);
     } else {

@@ -9,7 +9,7 @@ export default async function ContactsPage() {
   const { data: contacts, error } = await supabase
     .from("contact_requests")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false }).limit(500);
 
   return (
     <div className="space-y-6">

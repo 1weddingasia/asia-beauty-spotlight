@@ -63,7 +63,7 @@ export default function BusinessEditorClient({
           tiktok: initialBusiness.socials?.tiktok || parsed.tiktok || "",
           youtube: initialBusiness.socials?.youtube || parsed.youtube || "",
         };
-      } catch(e) {}
+      } catch (e) { console.error(e); }
     }
     
     return {

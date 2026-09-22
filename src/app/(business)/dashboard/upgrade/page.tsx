@@ -19,7 +19,7 @@ export default function UpgradePage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
-        supabase.from("businesses").select("*").eq("owner_id", user.id).single().then(({ data }) => {
+        supabase.from("businesses").select("*").limit(500).eq("owner_id", user.id).single().then(({ data }) => {
           setBusiness(data);
           setLoading(false);
         });
@@ -38,15 +38,22 @@ export default function UpgradePage() {
 
   const handleCheckPayment = async () => {
     setChecking(true);
-    // Polling mock for now. In real life, webhook updates the DB, we check DB here.
-    const { data } = await supabase.from("businesses").select("plan_id, status").eq("id", business.id).single();
-    if (data && data.plan_id) { 
-       setIsSuccess(true);
-       setTimeout(() => {
-         router.push(`/dashboard`);
-       }, 3000);
+    try {
+      // Polling mock for now. In real life, webhook updates the DB, we check DB here.
+      const { data, error } = await supabase.from("businesses").select("plan_id, status").eq("id", business.id).single();
+      if (error) {
+        console.error("Lỗi kiểm tra thanh toán:", error);
+      } else if (data && data.plan_id) { 
+         setIsSuccess(true);
+         setTimeout(() => {
+           router.push(`/dashboard`);
+         }, 3000);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setChecking(false);
     }
-    setChecking(false);
   };
 
   if (isSuccess) {

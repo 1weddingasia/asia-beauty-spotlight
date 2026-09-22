@@ -26,7 +26,7 @@ export default function DirectoryLocationsClient() {
 
   const fetchLocations = async () => {
     setFetching(true);
-    const { data, error } = await supabase.from('directory_locations').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('directory_locations').select('*').order('created_at', { ascending: false }).limit(500);
     if (error) {
       toast.error("Lỗi tải địa điểm: " + error.message);
     } else {

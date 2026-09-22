@@ -19,22 +19,27 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      toast.error("Đăng nhập thất bại: " + error.message);
-      setLoading(false);
-    } else {
-      toast.success("Đăng nhập thành công!");
-      const role = data.user?.user_metadata?.role;
-      if (role === "admin" || role === "superadmin") {
-        router.push("/admin");
+      if (error) {
+        toast.error("Đăng nhập thất bại: " + error.message);
       } else {
-        router.push("/dashboard");
+        toast.success("Đăng nhập thành công!");
+        const role = data.user?.user_metadata?.role;
+        if (role === "admin" || role === "superadmin") {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
       }
+    } catch (err: any) {
+      toast.error("Lỗi không mong muốn: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 

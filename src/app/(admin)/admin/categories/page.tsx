@@ -26,7 +26,7 @@ export default function DirectoryCategoriesClient() {
 
   const fetchCategories = async () => {
     setFetching(true);
-    const { data, error } = await supabase.from('directory_categories').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('directory_categories').select('*').order('created_at', { ascending: false }).limit(500);
     if (error) {
       toast.error("Lỗi tải danh mục: " + error.message);
     } else {

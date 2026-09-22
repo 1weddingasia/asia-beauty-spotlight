@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { use } from "react";
 import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function BlogEditorPage({ params }: { params: Promise<{ id: string }> }) {
@@ -38,13 +37,14 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
   // Fetch data
-  useState(() => {
-    supabase.from("blog_categories").select("*").then(({ data, error }) => {
+  useEffect(() => {
+    supabase.from("blog_categories").select("*").limit(500).then(({ data, error }) => {
       if (!error && data) setCategories(data);
     });
 
     if (!isNew) {
-      supabase.from("blogs").select("*").eq("id", id).single().then(({ data }) => {
+      supabase.from("blogs").select("*").limit(500).eq("id", id).single().then(({ data, error }) => {
+        if (error) { toast.error("Không thể tải bài viết"); return; }
         if (data) {
           // Format date for datetime-local input
           let formattedDate = "";
@@ -66,7 +66,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
         }
       });
     }
-  });
+  }, [id, isNew, supabase]);
 
   const handleGenerateAI = async () => {
     if (!aiPrompt) return toast.error("Vui lòng nhập chủ đề!");

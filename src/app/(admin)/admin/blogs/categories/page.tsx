@@ -24,7 +24,7 @@ export default function BlogCategoriesClient() {
 
   const fetchCategories = async () => {
     setFetching(true);
-    const { data, error } = await supabase.from('blog_categories').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('blog_categories').select('*').order('created_at', { ascending: false }).limit(500);
     if (error) {
       if (error.message.includes("relation \"public.blog_categories\" does not exist")) {
         toast.error("Vui lòng chạy file SQL để tạo bảng blog_categories trong Supabase!");

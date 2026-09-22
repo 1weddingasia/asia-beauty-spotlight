@@ -3,6 +3,8 @@ import { Sparkles, Ticket } from "lucide-react";
 import Link from "next/link";
 import { createStaticClient } from "@/utils/supabase/server";
 
+import { isOfferActive } from "@/lib/date-utils";
+
 export const metadata = {
   title: "Ưu đãi | 1Beauty.Asia",
   description: "Tổng hợp các chương trình khuyến mãi, ưu đãi độc quyền từ các spa và thẩm mỹ viện.",
@@ -14,13 +16,16 @@ export default async function OffersPage() {
   const supabase = createStaticClient();
   
   // Lấy các doanh nghiệp Premium (có plan_id)
-  const { data: businesses } = await supabase
+  const { data: businesses, error } = await supabase
     .from("businesses")
     .select("slug, name, page_content, plan_id")
     .eq("status", "published")
-    .not("plan_id", "is", null);
+    .not("plan_id", "is", null)
+    .limit(500);
 
-  const now = new Date();
+  if (error) {
+    console.error("Lỗi lấy ưu đãi:", error);
+  }
 
   // Extract offers, filter expired ones, and sort by newest
   const allOffers = (businesses || [])
@@ -31,27 +36,7 @@ export default async function OffersPage() {
         business: { slug: b.slug, name: b.name },
       }));
     })
-    .filter((o: any) => {
-      // Bỏ qua nếu chưa tới ngày bắt đầu
-      if (o.validFrom) {
-        let startDate = new Date(`${o.validFrom}T00:00:00`);
-        if (startDate && startDate > now) return false;
-      }
-      
-      // Bỏ qua nếu đã hết hạn
-      if (o.validUntil) {
-        let endDate;
-        if (o.validUntil.includes('/')) {
-          const parts = o.validUntil.split('/');
-          if (parts.length === 3) endDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
-        } else {
-          endDate = new Date(`${o.validUntil}T23:59:59`); // For YYYY-MM-DD
-        }
-        
-        if (endDate && endDate < now) return false;
-      }
-      return true;
-    })
+    .filter((o: any) => isOfferActive(o.validFrom, o.validUntil))
     .sort((a: any, b: any) => {
       const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
       const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;

@@ -4,12 +4,20 @@ import { Analytics } from '@vercel/analytics/next';
 import { BackToTop } from '@/components/site/BackToTop';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://1beauty.asia';
+let metadataBaseURL: URL;
+try {
+  metadataBaseURL = new URL(SITE_URL);
+} catch (e) {
+  console.warn(`Invalid NEXT_PUBLIC_SITE_URL: ${SITE_URL}. Falling back to default.`);
+  metadataBaseURL = new URL('https://1beauty.asia');
+}
+
 const SITE_NAME = '1Beauty.Asia';
 const SITE_DESCRIPTION =
   'Danh bạ chuyên ngành làm đẹp hàng đầu Việt Nam — khám phá spa, thẩm mỹ viện, salon và học viện uy tín được tuyển chọn kỹ lưỡng.';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: metadataBaseURL,
   title: {
     default: `${SITE_NAME} — Danh bạ làm đẹp Việt Nam`,
     template: `%s | ${SITE_NAME}`,

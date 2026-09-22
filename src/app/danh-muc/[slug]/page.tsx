@@ -9,7 +9,7 @@ export const revalidate = 3600;
 
 async function getCategoryFromDB(slug: string) {
   const supabase = createStaticClient();
-  const { data } = await supabase.from('directory_categories').select('*').eq('slug', slug).single();
+  const { data } = await supabase.from('directory_categories').select('*').limit(500).eq('slug', slug).single();
   return data;
 }
 

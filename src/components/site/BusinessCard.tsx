@@ -3,10 +3,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
 
-export function BusinessCard({ business: dbBusiness }: { business: any }) {
+import { Business, BusinessContent } from "@/types/business";
+
+type BusinessCardProps = Partial<Business> & {
+  page_content?: BusinessContent & { banners?: string[], offers?: any[], rating?: number, reviews?: number };
+  categories_list?: { name: string, slug: string }[];
+  locations_list?: { name: string, slug: string }[];
+  category_slug?: string;
+  location_slug?: string;
+  logo_url?: string;
+  services?: any[];
+  [key: string]: any;
+};
+
+export function BusinessCard({ business: dbBusiness }: { business: BusinessCardProps }) {
   // Merge db properties and page_content json
   const pc = dbBusiness.page_content || {};
-  const business = { ...dbBusiness, ...pc };
+  const business: any = { ...dbBusiness, ...pc };
 
   const firstCategory = business.categories_list?.[0]?.name || business.category_slug || "Làm đẹp";
   const firstLocation = business.locations_list?.[0]?.name || business.location_slug || "Việt Nam";
@@ -26,8 +39,8 @@ export function BusinessCard({ business: dbBusiness }: { business: any }) {
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image
-          src={coverImage}
-          alt={business.name}
+          src={coverImage as string}
+          alt={business.name || "Doanh nghiệp"}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-105"

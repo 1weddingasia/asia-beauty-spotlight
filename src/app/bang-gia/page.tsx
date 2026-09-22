@@ -13,7 +13,7 @@ export const revalidate = 60; // Cache for 60 seconds
 
 export default async function PricingPage() {
   const supabase = await createClient();
-  const { data: plans } = await supabase.from('plans').select('*').eq('is_active', true).order('price_monthly', { ascending: true });
+  const { data: plans } = await supabase.from('plans').select('*').limit(500).eq('is_active', true).order('price_monthly', { ascending: true });
 
   return (
     <PageShell>

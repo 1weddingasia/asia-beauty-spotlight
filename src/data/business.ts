@@ -21,8 +21,8 @@ export async function getBusinessBySlug(slug: string): Promise<any | null> {
   // Format array for easier frontend access
   const formattedData = {
     ...data,
-    categories_list: data.business_categories?.map((bc: any) => bc.directory_categories) || [],
-    locations_list: data.business_locations?.map((bl: any) => bl.directory_locations) || []
+    categories_list: data.business_categories?.map((bc: any) => bc.directory_categories).filter(Boolean) || [],
+    locations_list: data.business_locations?.map((bl: any) => bl.directory_locations).filter(Boolean) || []
   };
 
   return formattedData;
@@ -57,12 +57,6 @@ export async function getPublishedBusinesses(limit = 20): Promise<Business[]> {
 export async function searchBusinessesDB({ q, category, location }: { q: string, category: string, location: string }): Promise<Business[]> {
   const supabase = createStaticClient();
   
-  // Base select with outer joins for fetching all categories/locations of the resulting businesses
-  let selectStr = `
-    *,
-    business_categories ( directory_categories (id, name, slug) ),
-    business_locations ( directory_locations (id, name, slug) )
-  `;
 
   // If we need to filter, we must use !inner join to restrict the businesses returned.
   // Unfortunately, Supabase JS client doesn't allow dynamic !inner joins in the select string easily without duplicating the relation.
@@ -87,10 +81,11 @@ export async function searchBusinessesDB({ q, category, location }: { q: string,
   }
 
   if (q) {
-    query = query.ilike('name', `%${q}%`);
+    const safeQ = q.replace(/[%_]/g, '\\$&');
+    query = query.ilike('name', `%${safeQ}%`);
   }
 
-  const { data, error } = await query.order('is_featured', { ascending: false }).order('created_at', { ascending: false });
+  const { data, error } = await query.order('is_featured', { ascending: false }).order('created_at', { ascending: false }).limit(50);
 
   if (error) {
     console.error('Error searching businesses:', error);

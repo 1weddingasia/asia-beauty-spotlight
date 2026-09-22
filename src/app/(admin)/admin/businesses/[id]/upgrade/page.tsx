@@ -27,7 +27,7 @@ export default function UpgradePage({ params }: { params: Promise<{ id: string }
   const QR_URL = business ? `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${UPGRADE_AMOUNT}&des=${TRANSFER_CONTENT}` : "";
 
   useEffect(() => {
-    supabase.from("businesses").select("*").eq("id", id).single().then(({ data }) => {
+    supabase.from("businesses").select("*").limit(500).eq("id", id).single().then(({ data }) => {
       if (data) {
         setBusiness(data);
         if (data.status === 'published' && data.plan_id) { // simplified check

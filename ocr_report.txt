@@ -1,0 +1,3795 @@
+
+─── src/app/globals.css:4-4 ───
+[bug · medium] The file declares `@custom-variant dark (&:is(.dark *))` and the header comment
+instructs adding a `.dark` block with dark values, but no `.dark` block exists — only `:root`. Any
+`dark:` utility (e.g. `dark:border-destructive` in `src/components/ui/alert.tsx`) will compile to a
+selector that never matches, and users with `prefers-color-scheme: dark` get light values with no
+fallback. Either define the `.dark` token block, or remove the unused dark variant/comment so the
+design system is not misleading.
+
+
+
+─── src/app/globals.css:118-121 ───
+[maintainability · medium] `@utility font-display` hard-codes `font-weight: 500`. Call sites across
+the app combine it with weight utilities, e.g. `font-bold font-display` (src/app/page.tsx,
+PricingClient.tsx, blog/[slug]/page.tsx). Because custom `@utility` rules are emitted in the
+utilities layer, `font-display` can win over `font-bold` depending on source order, producing
+inconsistent weights. The utility should only set the family, leaving weight to dedicated utilities.
+
+  @utility font-display {
+    font-family: var(--font-display);
+-   font-weight: 500;
+  }
+
+
+─── src/app/globals.css:154-156 ───
+[maintainability · low] Applying `border-color` to the universal selector in `@layer base` sets a
+fallback border color on every element, not just those that actually render a border. This can
+unexpectedly change borders inherited from third-party components, form controls and
+ResizeObserver/print styles, and makes it hard to distinguish "no border" from "default border".
+Prefer scoping this to elements that need it (e.g. `*, ::before, ::after { border-color: ... }` only
+when a border-width is set) or rely on Tailwind preflight's existing `border-color` default.
+
+
+
+─── src/app/globals.css:158-160 ───
+[bug · medium] Body text color/background and all tokens use `oklch()` with no fallback. Older
+Safari (<15.4) and Firefox (<113) do not support `oklch()`, so the declaration is dropped entirely,
+leaving text/background unset and potentially unreadable. If broad browser support matters, provide
+a hex fallback before the `oklch()` value (or run the CSS through a build step such as
+postcss-oklab).
+
+
+
+─── src/data/fallback_images.json:2-2 ───
+[maintainability · low] The consumer (`scripts/ingest.js`, lines 206-213) takes `shuffled.slice(0,
+3)` for hero banners and `shuffled.slice(3, 9)` for the gallery, i.e. it requires at least 9
+distinct URLs... this file has 50, so it's fine. However, the fallback list is only ever consumed as
+an unvalidated external asset: every URL is a third-party (Pexels) hotlink and there is no local
+copy or integrity/availability check. If Pexels removes any of these photos, the generated pages
+will silently render broken images. Consider validating the URLs at ingest time and/or downloading
+and serving them locally.
+
+Also note the list has no unique-id/dedup guarantee; the same URL cannot currently appear twice, but
+the consumer mutates the parsed array via `sort()` in place, which is unrelated to this file.
+
+
+
+─── src/app/api/test-search/route.ts:8-9 ───
+[security · high] Raw internal error message is returned directly to the client (`err.message`),
+which can leak implementation details (DB errors, stack-adjacent info). Return a generic message and
+log the actual error server-side.
+
+-   } catch (err: any) {
+-     return NextResponse.json({ success: false, error: err.message });
++   } catch (err) {
++     console.error("search test endpoint failed", err);
++     return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });
+
+
+─── src/app/api/test-search/route.ts:8-8 ───
+[maintainability · medium] `err: any` bypasses type checking; the project rules prohibit `any`
+without justification. Use `unknown` and narrow it, or `err instanceof Error ? err.message :
+String(err)`.
+
+-   } catch (err: any) {
++   } catch (err: unknown) {
++     const message = err instanceof Error ? err.message : String(err);
+
+
+─── src/app/api/test-search/route.ts:9-9 ───
+[bug · medium] The error path returns HTTP 200, so clients cannot distinguish success from failure.
+Add an explicit non-2xx status on the error branch.
+
+-     return NextResponse.json({ success: false, error: err.message });
++     return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });
+
+
+─── src/app/api/test-search/route.ts:6-6 ───
+[maintainability · high] Business parameters are hardcoded (`''`, `'all'`, `'all'`) and the incoming
+request is ignored, so this route exposes no real functionality while still invoking the search
+action. Either read query params from `request` or remove this test-only endpoint.
+
+-     const res = await searchBusinessesAction('', 'all', 'all');
++     const { searchParams } = new URL(request.url);
++     const query = searchParams.get("q") ?? "";
++     const type = searchParams.get("type") ?? "all";
++     const category = searchParams.get("category") ?? "all";
++     const res = await searchBusinessesAction(query, type, category);
+
+
+─── src/app/actions/search.ts:7-15 ───
+[bug · high] Supabase `error` is silently discarded for both category and location fetches. Callers
+cannot distinguish "no data" from a DB/permission failure. At minimum log the error and/or propagate
+it so the UI can show a proper error state instead of an empty list.
+
+
+
+─── src/app/actions/search.ts:20-21 ───
+[security · medium] No input validation on `category`/`location`. They are passed straight into
+`.eq()` against DB columns. Validate they are non-empty strings (and reasonable slug format) before
+use so unexpected/injected values cannot reach the query layer.
+
+
+
+─── src/app/actions/search.ts:33-35 ───
+[security · medium] User input `q` is interpolated directly into an ILIKE pattern without escaping
+LIKE wildcards (`%`, `_`). A query of just `%` matches every row, altering result semantics and
+enabling cheap full-table scans. Escape the wildcards before building the pattern.
+
+
+
+─── src/app/actions/search.ts:27-28 ───
+[maintainability · medium] The conditional `!inner` join string construction is duplicated for
+categories and locations. This shape is error-prone (a typo in one branch silently breaks filtering)
+and hard to keep in sync. Extract a small helper that builds the relation select string once.
+
+
+
+─── src/app/actions/search.ts:52-56 ───
+[maintainability · medium] `any` types are used for the mapped rows and nested relations, defeating
+type safety on the data-shaping path that downstream UI depends on. Define interfaces for the
+business row and the embedded category/location relations instead of `any`.
+
+
+
+─── src/app/auth/signout/route.ts:9-15 ───
+[bug · high] Missing error handling: `getUser()` and `signOut()` are awaited without try/catch. Any
+rejected Supabase/network error will bubble up and cause a 500 response instead of a graceful
+redirect to `/login`, leaving users stuck on a broken logout page. Wrap the auth calls in try/catch
+(and log the failure) and always fall through to the redirect.
+
++   try {
+-   const {
++     const {
+-     data: { user },
++       data: { user },
+-   } = await supabase.auth.getUser()
++     } = await supabase.auth.getUser()
+  
+-   if (user) {
++     if (user) {
+-     await supabase.auth.signOut()
++       await supabase.auth.signOut()
++     }
++   } catch (error) {
++     console.error('Failed to sign out', error)
+    }
+
+
+─── src/app/auth/signout/route.ts:18-19 ───
+[security · high] The redirect origin is derived from the untrusted request URL. If the
+`Host`/`X-Forwarded-Host` header is spoofed (or a proxy is misconfigured), the user can be
+redirected to an attacker-controlled origin. Use a trusted base URL (e.g. an `NEXT_PUBLIC_SITE_URL`
+env var) or a same-origin relative redirect instead.
+
+-   const { origin } = new URL(request.url)
+-   return NextResponse.redirect(`${origin}/login`)
++   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin
++   return NextResponse.redirect(`${baseUrl}/login`)
+
+
+─── src/app/auth/signout/route.ts:13-15 ───
+[security · medium] The conditional sign-out can leave a session active: if `getUser()` returns an
+error or an empty `user` while an auth cookie still exists (expired/refreshable token, transient
+auth-server failure), `signOut()` is skipped and the session and its cookies are never cleared.
+Consider always calling `signOut()` (it is safe to call when there is no session) or explicitly
+clearing the auth cookies in the failure path.
+
+-     if (user) {
+-       await supabase.auth.signOut()
++     await supabase.auth.signOut()
+-     }
+
+
+─── src/app/auth/callback/route.ts:7-7 ───
+[security · critical] Open redirect: `next` comes straight from the query string and is concatenated
+into the redirect target without validation. An attacker can pass `?next=//evil.com`
+(protocol-relative) or `?next=/\evil.com` to bypass `${origin}` and redirect the
+freshly-authenticated user to an external site, which also enables OAuth-code/token leaking.
+Validate `next` before use — only allow same-origin relative paths (must start with a single `/`,
+not `//` or `/\`).
+
+-   const next = searchParams.get('next') ?? '/admin'
++   const nextParam = searchParams.get('next')
++   // Only allow same-origin relative paths to prevent open redirects
++   const next =
++     nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//') && !nextParam.startsWith('/\\')
++       ? nextParam
++       : '/admin'
+
+
+─── src/app/auth/callback/route.ts:11-14 ───
+[bug · high] `exchangeCodeForSession` is only checked via the returned `error` flag; if the call
+rejects (network failure, unexpected throw from the Supabase client, cookie write failure), the
+rejection is unhandled and the user gets a 500 instead of the friendly login redirect. Wrap the
+exchange in try/catch and fall through to the error redirect on both thrown errors and returned
+errors.
+
++     try {
+-     const { error } = await supabase.auth.exchangeCodeForSession(code)
++       const { error } = await supabase.auth.exchangeCodeForSession(code)
+-     if (!error) {
++       if (!error) {
+-       return NextResponse.redirect(`${origin}${next}`)
++         return NextResponse.redirect(`${origin}${next}`)
++       }
++     } catch (err) {
++       console.error('Failed to exchange auth code for session:', err)
+      }
+
+
+─── src/app/auth/callback/route.ts:18-18 ───
+[maintainability · low] Hardcoded business routes/error identifiers (`/admin`,
+`/login?error=Invalid_Token`) per project rules should be centralized (e.g. constants or a shared
+routes module) rather than inlined in the route handler, so paths and the error key stay consistent
+with the login page that consumes them.
+
+
+
+─── src/app/api/webhooks/sepay/route.ts:26-37 ───
+[security · critical] Signature verification is bypassable. The HMAC check only runs when BOTH
+`secret` and `signature` are present. If `SEPAY_WEBHOOK_SECRET` is unset (or the attacker simply
+omits the `x-sepay-signature` header), the check is skipped entirely, letting an unauthenticated
+attacker forge arbitrary transactions and trigger VIP upgrades. Make verification mandatory and fail
+closed when the secret is not configured / the header is missing.
+
+
+
+─── src/app/api/webhooks/sepay/route.ts:33-33 ───
+[security · medium] The signature is compared with `!==`, a non-constant-time comparison, which
+leaks timing information and can enable signature forgery. Use `crypto.timingSafeEqual` on
+equal-length buffers.
+
+-       if (signature !== expectedSignature) {
++       const sigBuf = Buffer.from(signature, 'hex');
++       const expBuf = Buffer.from(expectedSignature, 'hex');
++       if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+
+
+─── src/app/api/webhooks/sepay/route.ts:42-42 ───
+[maintainability · medium] `require('@supabase/supabase-js')` inside the request handler: this is a
+CommonJS call in an ES module, obscures dependency graph/bundling, and is not needed. Import
+`createClient` at the top of the file so the privileged service-role client is created through a
+normal, type-safe import.
+
+-     const { createClient: createSupabaseClient } = require('@supabase/supabase-js');
++     const supabase = createClient(
++       process.env.NEXT_PUBLIC_SUPABASE_URL!,
++       process.env.SUPABASE_SERVICE_ROLE_KEY!
++     );
+
+
+─── src/app/api/webhooks/sepay/route.ts:73-73 ───
+[bug · high] The VIP-upgrade block is not idempotent: only the initial `transactions` insert is
+guarded by the 23505 unique-violation check. A retried/duplicated webhook (or a re-sent
+notification) will insert an additional membership and re-apply the upgrade, causing duplicate
+memberships and billing/data-integrity issues. Guard the upgrade path with an idempotency key (e.g.
+the transaction id) or check for an existing membership before inserting.
+
+
+
+─── src/app/api/webhooks/sepay/route.ts:72-73 ───
+[bug · medium] `contentUpper.includes('VIP')` combined with the regex on arbitrary bank transfer
+memo text can mis-trigger upgrades for unrelated transactions (e.g. a memo merely mentioning "VIP"
+elsewhere). Anchor the parsing to the expected memo grammar instead of a loose `includes` check.
+
+
+
+─── src/app/api/webhooks/sepay/route.ts:80-84 ───
+[bug · high] Errors from the `businesses` select, `plans` select, `memberships` insert, and
+`businesses` update are never checked. A failure in any of these silently returns `{ success: true
+}` while the DB may be in a partially-updated state (e.g. membership created but business not
+flagged featured). Capture and handle `error` for each call, and roll back / report appropriately.
+
+-         const { data: business } = await supabase
++         const { data: business, error: businessError } = await supabase
+            .from('businesses')
+            .select('id, name')
+            .eq('slug', targetSlug)
+            .single();
++ 
++         if (businessError || !business) {
++           console.error('Sepay: business lookup failed', targetSlug, businessError);
++         } else {
+
+
+─── src/app/api/webhooks/sepay/route.ts:121-124 ───
+[maintainability · medium] The catch block types the error as `any`, bypassing type safety, and
+returns `err.message` directly to the client. Use `unknown` and narrow it, and avoid leaking
+internal error messages to the caller.
+
+-   } catch (err: any) {
++   } catch (err: unknown) {
+      console.error("Sepay Webhook Error:", err);
+-     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
++     const message = err instanceof Error ? err.message : 'Internal server error';
++     return NextResponse.json({ success: false, error: message }, { status: 500 });
+    }
+
+
+─── src/app/api/webhooks/sepay/route.ts:88-94 ───
+[maintainability · medium] `plan_id` is hardcoded by matching `ilike('name', '%Premium%')` and
+`.single()` will throw if no (or more than one) row matches, while the comment mentions a different
+selection strategy. This is fragile business logic; select the VIP plan explicitly (e.g. by a stable
+slug/id) and handle the empty result instead of relying on a name substring.
+
+
+
+─── src/app/actions/contact.ts:32-34 ───
+[bug · critical] Swallowed errors produce a false success. When the Supabase insert fails (the
+`error` branch is only logged, not returned) and in the `catch` block, the function still returns `{
+success: true }`. The caller (`ContactPageClient.tsx`) uses this to show "Yêu cầu đã được gửi!", so
+users are told their submission succeeded while the data is silently lost. Return `{ success: false,
+error: ... }` on persistence failure so the UI can inform the user and allow a retry.
+
+
+
+─── src/app/actions/contact.ts:45-48 ───
+[bug · critical] Unexpected submission errors are also converted into a success response. Since
+nothing is actually persisted or delivered at this point (the insert already failed), returning
+`success: true` here masks a real failure. Propagate a failure result (with a user-friendly
+Vietnamese message) instead of pretending the submission succeeded.
+
+
+
+─── src/app/actions/contact.ts:36-41 ───
+[security · high] Personal data (business name, contact name, phone, message) is written to server
+logs via `console.log`. This is a privacy/compliance concern (PII in logs) and is not a real
+notification fallback — no one receives these messages. Remove the PII logging; if a real
+notification channel is needed (email/webhook), implement it explicitly.
+
+
+
+─── src/app/actions/contact.ts:6-9 ───
+[bug · medium] Inputs are cast with `as string` and only empty-checked. `FormData.get` returns
+`string | File | null`, so a file/malformed value would bypass validation and be inserted untyped
+into the database. Also, values are inserted without trimming or length limits, allowing
+oversized/malformed data. Validate types (e.g. `typeof value === 'string'`), trim, and enforce a max
+length before insert.
+
+-   const businessName = formData.get("businessName") as string;
+-   const contactName = formData.get("contactName") as string;
+-   const phone = formData.get("phone") as string;
+-   const message = formData.get("message") as string;
++   const businessName = (formData.get("businessName") as string | null)?.trim();
++   const contactName = (formData.get("contactName") as string | null)?.trim();
++   const phone = (formData.get("phone") as string | null)?.trim();
++   const message = (formData.get("message") as string | null)?.trim();
+
+
+─── src/app/actions/contact.ts:44-44 ───
+[maintainability · low] `catch (error: any)` violates the project's no-any rule and hides the real
+error shape. Use `unknown` and narrow it when logging (or omit the annotation).
+
+-   } catch (error: any) {
++   } catch (error: unknown) {
+
+
+─── src/data/business.ts:61-65 ───
+[maintainability · medium] Dead code: `selectStr` is declared and assigned but never used in the
+query (the actual select is built from `catJoin`/`locJoin` below). Worse, it encodes a different
+query shape (non-inner joins), which is misleading and can drift from the real query. Remove it.
+
+
+
+─── src/data/business.ts:24-25 ───
+[bug · medium] `getBusinessBySlug` returns `Promise<any | null>` and does not apply
+`.filter(Boolean)` when flattening joined relations, unlike the other two functions. A null joined
+relation (e.g. a category row whose `directory_categories` is null) will produce `undefined` entries
+in `categories_list`/`locations_list`, breaking the public contract downstream. Use the `Business`
+type and filter nulls for consistency.
+
+-     categories_list: data.business_categories?.map((bc: any) => bc.directory_categories) || [],
+-     locations_list: data.business_locations?.map((bl: any) => bl.directory_locations) || []
++     categories_list: data.business_categories?.map((bc: any) => bc.directory_categories).filter(Boolean) || [],
++     locations_list: data.business_locations?.map((bl: any) => bl.directory_locations).filter(Boolean) || []
+
+
+─── src/data/business.ts:0-0 ───
+[maintainability · medium] The category/location flattening logic
+(`business_categories?.map(...).filter(Boolean)` / `business_locations?...`) is duplicated verbatim
+in all three functions and can drift (as already happened in getBusinessBySlug). Extract a shared
+mapper to keep naming and null-filtering consistent.
+
+
+
+─── src/data/business.ts:4-4 ───
+[maintainability · medium] Pervasive `any` usage (return types and mapped payloads) bypasses type
+checking on the Supabase joined relations; the checklist requires avoiding `any`, or documenting why
+it is necessary. Consider defining typed row shapes for the joined payloads and returning
+`Business`/`Business | null`.
+
+
+
+─── src/app/api/ai/write-blog/route.ts:104-109 ───
+[security · critical] Unsanitized AI-generated HTML is returned and later rendered verbatim with
+`dangerouslySetInnerHTML` (see `src/app/blog/[slug]/page.tsx`). Because the user-controlled `prompt`
+is interpolated into the model messages, an attacker can prompt-inject arbitrary markup (e.g.
+`<script>`, `onerror=`, `<iframe>`) that is persisted and executed/rendered on the public blog page.
+Sanitize `htmlContent` server-side (e.g. `sanitize-html`/DOMPurify with an allow-list of
+tags/attributes) before returning it.
+
+
+
+─── src/app/api/ai/write-blog/route.ts:4-5 ───
+[security · high] Secrets are never validated. If `DEEPSEEK_API_KEY`/`PEXELS_API_KEY` are unset, the
+code sends `Authorization: Bearer undefined` to third parties and only fails later with an opaque
+500. Validate the env vars at the start of the handler and return a clear 500/config error before
+making any external call.
+
+
+
+─── src/app/api/ai/write-blog/route.ts:9-13 ───
+[bug · high] Only truthiness of `prompt` is checked — no type or length validation. A very large or
+non-string payload (e.g. an array/object) is interpolated directly into the AI request, enabling
+cost/abuse and producing malformed prompts. Validate `typeof prompt === 'string'` and enforce a
+reasonable max length.
+
+      const { prompt } = await req.json();
+  
+-     if (!prompt) {
++     if (typeof prompt !== "string" || !prompt.trim()) {
+        return NextResponse.json({ error: "Missing prompt" }, { status: 400 });
++     }
++     if (prompt.length > 500) {
++       return NextResponse.json({ error: "Prompt quá dài (tối đa 500 ký tự)" }, { status: 400 });
+      }
+
+
+─── src/app/api/ai/write-blog/route.ts:44-44 ───
+[bug · high] External response shapes are accessed without any null/shape checks:
+`aiRes.data.choices[0].message.content`, `keywordRes.data...`, `pexelsRes.data.photos`, and
+`photos[photoIndex].src.large`. An empty `choices` array, a missing `photos` field, or a guardrail
+response will throw a `TypeError` that surfaces as a generic 500. Add safe optional chaining plus
+explicit fallbacks for each.
+
+-     let htmlContent = aiRes.data.choices[0].message.content;
++     let htmlContent = aiRes.data?.choices?.[0]?.message?.content;
++     if (!htmlContent) {
++       throw new Error("DeepSeek trả về nội dung rỗng");
++     }
+
+
+─── src/app/api/ai/write-blog/route.ts:73-73 ───
+[bug · high] `photos` may be undefined if Pexels returns an unexpected payload, and iterating
+`photos.length` / indexing `photos[photoIndex]` would then throw. Default to an empty array once and
+reuse it (also for the cover image below).
+
+-     const photos = pexelsRes.data.photos;
++     const photos = pexelsRes.data?.photos ?? [];
+
+
+─── src/app/api/ai/write-blog/route.ts:99-99 ───
+[bug · medium] `JSON.parse` on the model output is unguarded: an unexpected/truncated response
+throws a `SyntaxError` that becomes an unhelpful 500, and `meta.title`/`meta.excerpt` may be
+undefined even when parsing succeeds. Wrap the parse in a try/catch (or validate the shape) and fall
+back to a safe default object.
+
+-     const meta = JSON.parse(metaRes.data.choices[0].message.content);
++     let meta: { title?: string; excerpt?: string } = {};
++     try {
++       meta = JSON.parse(metaRes.data?.choices?.[0]?.message?.content ?? "{}");
++     } catch {
++       meta = {};
++     }
+
+
+─── src/app/api/ai/write-blog/route.ts:64-66 ───
+[bug · medium] The fallback keyword test is unreliable: `keyword.split(" ").length > 2` rejects
+multi-word output but the model is instructed to return exactly one word, and an
+empty/whitespace-only response still passes. Use a stricter check (non-empty, single token, ASCII
+letters only) and also guard the `keywordRes` access shape.
+
+-     let keyword = keywordRes.data.choices[0].message.content.trim().toLowerCase();
++     let keyword = (keywordRes.data?.choices?.[0]?.message?.content ?? "").trim().toLowerCase();
+      // Fallback if AI returns something weird
+-     if (keyword.split(" ").length > 2) keyword = "spa";
++     if (!/^[a-z]{2,20}$/.test(keyword)) keyword = "spa";
+
+
+─── src/app/api/ai/write-blog/route.ts:69-69 ───
+[bug · medium] The keyword is interpolated raw into the Pexels query string without
+`encodeURIComponent`, so a keyword containing `&`, `#`, or spaces will break the query. Use axios
+`params` (or encode it) to build the URL safely.
+
+-     const pexelsRes = await axios.get(`https://api.pexels.com/v1/search?query=${keyword}&per_page=5&orientation=landscape`, {
++     const pexelsRes = await axios.get("https://api.pexels.com/v1/search", {
++       params: { query: keyword, per_page: 5, orientation: "landscape" },
+
+
+─── src/app/api/ai/write-blog/route.ts:47-47 ───
+[bug · medium] Blanket replacement of the literal sequence ` ``` ` strips code fences but will also
+corrupt legitimate HTML that happens to contain triple backticks (e.g. inside a `<code>`/`<pre>`
+block), silently altering the content. Prefer removing only a leading/trailing fenced block (e.g. an
+anchored regex on `^\s*```html?` / ```` ```$ ````).
+
+
+
+─── src/app/api/ai/write-blog/route.ts:111-112 ───
+[maintainability · low] `error` is typed as `any` without any explanatory comment. Also,
+`error.response?.data` is logged, which may dump the upstream API payload (potentially echoing
+request data) into logs. Type the error (e.g. `unknown` + `axios.isAxiosError` narrowing) and log
+only the message/status.
+
+-   } catch (error: any) {
+-     console.error("AI Blog Error:", error.response?.data || error.message);
++   } catch (error) {
++     const message = axios.isAxiosError(error)
++       ? error.response?.status + " " + error.message
++       : error instanceof Error
++         ? error.message
++         : String(error);
++     console.error("AI Blog Error:", message);
+
+
+─── src/app/api/ai/write-blog/route.ts:49-49 ───
+[performance · low] Three DeepSeek chat completions are awaited sequentially, and the keyword
+extraction is independent of the blog content generation. Where dependencies allow, run independent
+calls in parallel with `Promise.all`. At minimum the keyword call can be launched alongside the
+content call to cut total latency by roughly a third.
+
+
+
+─── src/app/api/admin/users/route.ts:5-8 ───
+[security · critical] A real Supabase `service_role` JWT is hardcoded as a fallback credential. This
+secret is committed to the repository and will be used whenever `SUPABASE_SERVICE_ROLE_KEY` is
+missing (e.g., build/preview/misconfigured prod), granting full admin access to the project. Remove
+the hardcoded key and fail fast (throw) when the env var is not configured.
+
+- const getSupabase = () => createClient(
+-   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://fallback.supabase.co',
+-   process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbGx0YWlnb2hlbWphZ2Z6eHhoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTgwNzE0NiwiZXhwIjoyMTA1MzgzMTQ2fQ.R_Q4p01oU5gg9GUpn3TL2SPt7L2brq2kqwy6SnR9row'
+- );
++ const getSupabase = () => {
++   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
++   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
++   if (!url || !key) {
++     throw new Error('Supabase admin credentials are not configured');
++   }
++   return createClient(url, key);
++ };
+
+
+─── src/app/api/admin/users/route.ts:10-12 ───
+[security · critical] Both POST and DELETE expose privileged admin operations
+(`auth.admin.createUser` / `deleteUser`) with no authentication or authorization check on the
+caller. Anyone who can reach this route can create or delete arbitrary users. Add a server-side
+session check (e.g., `supabase.auth.getUser()` via cookies) and verify the caller has an admin role
+before proceeding.
+
+  export async function POST(request: Request) {
+    try {
+      const supabase = getSupabase();
++     // TODO: verify caller session + admin role before performing privileged operations
+
+
+─── src/app/api/admin/users/route.ts:49-51 ───
+[security · critical] DELETE is likewise missing any caller authentication/authorization check,
+allowing anyone to delete arbitrary users via `?id=`. Verify the caller is an authenticated admin
+before deleting.
+
+  export async function DELETE(request: Request) {
+    try {
+      const supabase = getSupabase();
++     // TODO: verify caller session + admin role before performing privileged operations
+
+
+─── src/app/api/admin/users/route.ts:27-29 ───
+[security · medium] Returning raw `authError.message` / `error.message` to the client leaks internal
+Supabase and infrastructure details. Log the detailed error server-side and return a generic
+user-facing message instead.
+
+      if (authError) {
+-       return NextResponse.json({ error: authError.message }, { status: 400 });
++       console.error('createUser failed:', authError);
++       return NextResponse.json({ error: 'Không thể tạo tài khoản' }, { status: 400 });
+      }
+
+
+─── src/app/api/admin/users/route.ts:38-40 ───
+[bug · high] When user creation succeeds but business linking fails, the response reports the
+failure while the user has already been created, leaving an orphaned account with no rollback.
+Delete the just-created user (or use a compensating action) on link failure so the operation stays
+consistent.
+
+        if (linkError) {
+-         return NextResponse.json({ error: 'Tạo tài khoản thành công nhưng lỗi liên kết: ' + linkError.message }, { status: 400 });
++         console.error('link business failed:', linkError);
++         await supabase.auth.admin.deleteUser(userId);
++         return NextResponse.json({ error: 'Không thể liên kết doanh nghiệp' }, { status: 400 });
+        }
+
+
+─── src/app/api/admin/users/route.ts:59-60 ───
+[bug · high] The `businesses.update` result is not checked here, so an unlink failure is silently
+ignored and the handler still reports success. If a business still references the user being
+deleted, the subsequent user deletion may fail or leave dangling references. Capture and handle the
+error before proceeding.
+
+      // Unlink business first
+-     await supabase.from('businesses').update({ owner_id: null }).eq('owner_id', userId);
++     const { error: unlinkError } = await supabase.from('businesses').update({ owner_id: null }).eq('owner_id', userId);
++     if (unlinkError) {
++       console.error('unlink business failed:', unlinkError);
++       return NextResponse.json({ error: 'Không thể gỡ liên kết doanh nghiệp' }, { status: 400 });
++     }
+
+
+─── src/app/api/admin/users/route.ts:71-73 ───
+[bug · medium] The DELETE handler reports success but ignores errors from the final `profiles`
+delete. A failed profile cleanup silently leaves an orphaned profile row. Capture the error and
+log/return it.
+
+-     await supabase.from('profiles').delete().eq('id', userId);
++     const { error: profileError } = await supabase.from('profiles').delete().eq('id', userId);
++     if (profileError) {
++       console.error('delete profile failed:', profileError);
++       return NextResponse.json({ error: 'Đã xoá tài khoản nhưng lỗi xoá hồ sơ' }, { status: 400 });
++     }
+  
+      return NextResponse.json({ success: true });
+
+
+─── src/app/api/admin/users/route.ts:44-49 ───
+[maintainability · low] Catching `error: any` and forwarding `error.message` directly exposes
+internal error details. Prefer `unknown` and normalize the message, returning a generic 500
+response.
+
+-   } catch (error: any) {
+-     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
++   } catch (error: unknown) {
++     console.error('POST /admin/users failed:', error);
++     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+  }
+  
+  export async function DELETE(request: Request) {
+
+
+─── src/app/api/admin/users/route.ts:68-70 ───
+[maintainability · low] Leftover speculative comment that does not describe actual behavior and
+references configuration that may not exist. Remove it or replace it with an accurate explanation of
+the cleanup strategy.
+
+
+
+─── src/data/directory.ts:16-16 ───
+[maintainability · medium] `heroSlides` is exported with no explicit type. Its consumers (e.g.
+`src/components/site/HeroSlider.tsx` uses `heroSlides[index]!` and `key={slide.title}`, and
+next/image consumes `slide.image`) rely on this exact shape. Add an exported interface so shape
+drift is caught at compile time and the non-null assertion in the consumer becomes unnecessary.
+
+- export const heroSlides = [
++ export type HeroSlide = {
++   image: string;
++   kicker: string;
++   title: string;
++   description: string;
++   cta: string;
++ };
++ 
++ export const heroSlides: HeroSlide[] = [
+
+
+─── src/data/directory.ts:9-14 ───
+[bug · medium] The code assumes every imported image module exposes `.src`. Vite's default asset
+imports return the URL string itself, so `.src` can be `undefined` here (only the
+Next.js/`unoptimized import` style returns `{ src }`). Consider using the import value directly, or
+assert/validate that `.src` exists, otherwise `slide.image` silently becomes undefined and
+next/image throws at runtime.
+
+- import _hero1 from "@/assets/hero-1.jpg";
+- const hero1 = _hero1.src;
+- import _hero2 from "@/assets/hero-2.jpg";
+- const hero2 = _hero2.src;
+- import _hero3 from "@/assets/hero-3.jpg";
+- const hero3 = _hero3.src;
++ import hero1 from "@/assets/hero-1.jpg";
++ import hero2 from "@/assets/hero-2.jpg";
++ import hero3 from "@/assets/hero-3.jpg";
+
+
+─── src/lib/lovable-error-reporting.ts:53-53 ───
+[bug · high] This call to the optional global `window.__lovableReportRuntimeError` is not wrapped in
+a try/catch. If the hook exists but throws (e.g. its own telemetry pipeline errors, or a
+circular/overridden payload), the exception propagates out of `reportLovableError` — which is called
+from the `react_error_boundary` render path — crashing the boundary and masking the original error.
+Wrap the hook invocations in try/catch so error reporting can never itself throw.
+
+
+
+─── src/lib/lovable-error-reporting.ts:46-51 ───
+[maintainability · medium] Nested ternary expression is prohibited by the project rules and is hard
+to read. Extract the normalization into a helper function (e.g. `normalizeErrorMessage(error)` in
+the same module) and reuse it; note the module currently exports only `reportLovableError`, so a
+small local helper keeps this maintainable.
+
+
+
+─── src/lib/lovable-error-reporting.ts:51-51 ───
+[bug · medium] `message` is derived from `String(error)` for non-Response/non-Error values, which
+can produce the unhelpful `"[object Object]"` (e.g. for a plain object or a rejected non-Error
+value). Since these values are forwarded as telemetry, consider a safer serialization (e.g.
+JSON.stringify for plain objects, with a try/catch fallback) so the reported message is actually
+actionable.
+
+
+
+─── src/lib/lovable-error-reporting.ts:31-33 ───
+[bug · medium] `...context` is spread after the reserved `source` and `route` fields, so any caller
+passing `source` or `route` in `context` silently overrides the boundary's own telemetry
+identifiers. If this precedence is unintentional, spread `...context` first so the reserved fields
+always win.
+
+
+
+─── src/lib/lovable-error-reporting.ts:56-56 ───
+[maintainability · low] `window.location.pathname` is read twice — once for `route` above and once
+for `filename` below — which can yield inconsistent values if navigation occurs between the reads.
+Capture the pathname once into a local `const` and reuse it. Note: a `window` null check exists at
+the top of the function but `window.location` itself is dereferenced without a guard against a falsy
+`location` in exotic/non-browser-like environments.
+
+
+
+─── src/lib/error-page.ts:24-24 ───
+[maintainability · medium] The `<button>` relies on an inline `onclick="location.reload()"` handler.
+Inline event handlers conflict with the project's rule against inline styles/handlers, and more
+importantly they are blocked by any Content-Security-Policy that does not allow `'unsafe-inline'`
+scripts — a common setup for server-rendered apps. In that case the "Try again" button silently
+stops working. Prefer attaching the handler via a small script placed in a separate module or by
+making the control a plain link (e.g. `href=""` / `href="/"`), so the page works without inline JS
+and under a strict CSP.
+
+-         <button class="primary" onclick="location.reload()">Try again</button>
++         <a class="primary" href="">Try again</a>
+
+
+─── src/lib/error-page.ts:25-25 ───
+[maintainability · low] Consider whether the home URL should be configurable: `href="/"` is
+hardcoded. If the app can be deployed under a base path or served from a non-root origin, this link
+will point to the wrong location. If intentional for a root-served app this is fine, but a
+base-path/`import.meta.env.BASE_URL` value would be more robust.
+
+
+
+─── src/types/business.ts:59-59 ───
+[maintainability · medium] `any` is used for `structured_data`, which disables type checking on this
+field. Prefer a dedicated structured-data type or `unknown`; if `any` is truly unavoidable (schema
+varies per template), add a comment documenting the reason so future maintainers understand the
+exception.
+
+-   structured_data: any | null;
++   // Structured data shape varies per template; typed as unknown to force callers to validate before use.
++   structured_data: Record<string, unknown> | null;
+
+
+─── src/types/business.ts:13-14 ───
+[bug · medium] `price_min`/`price_max` are plain `number`, so invalid states (negative values,
+`price_min > price_max`) are representable. Downstream code that renders a range can display
+nonsensical output. Consider documenting the invariant (e.g. `price_min <= price_max`, both >= 0) in
+a comment, or validate/normalize when parsing the API response.
+
+
+
+─── src/types/business.ts:58-59 ───
+[security · medium] These URL-shaped fields are plain `string`, so arbitrary or unsafe content can
+be stored and later rendered. Since this module only declares types, add a documented note on
+expected format/validation (URL scheme allow-list, image URL source restrictions) so consumers
+sanitize before rendering, and consider a branded/template-literal URL type if the project supports
+it.
+
+
+
+─── src/types/business.ts:5-6 ───
+[bug · low] This interface mixes `| null` (required key, nullable) and `?` (optional, may be absent)
+for similar fields — e.g. `tagline?: string` vs `canonical_url: string | null`. If the backend
+serialization does not match (missing key vs explicit `null`), consumers doing `'key' in obj` or
+non-null assertions can break. Align the optionality/nullability contract explicitly with the API
+response and document it.
+
+
+
+─── src/lib/search.ts:10-10 ───
+[maintainability · medium] Dead code: this module self-identifies as legacy/unused, and a
+project-wide search confirms `norm` has no importers or callers in any .ts/.tsx file. The live
+implementation is now `searchBusinessesAction()` (@see src/app/actions/search.ts). Keeping an
+unreferenced duplicate of the normalization logic risks silent drift (e.g. the 5 sibling slug
+helpers in src/app/(admin)/admin/**/page.tsx already differ — they additionally handle
+`.replace(/Đ/g, "D")`). Recommend deleting this file; if the normalization logic is genuinely worth
+reusing, extract one shared helper and have all call sites consume it instead of keeping a stale
+copy.
+
+
+
+─── src/lib/search.ts:15-16 ───
+[bug · low] Normalization edge cases: the `đ` → `d` replacement runs on the already lowercased
+string, so uppercase `Đ` works here, but the regex is not the issue — the real gap is that callers
+relying on this helper for lookup keys get a value that is safe for comparison but is NOT
+idempotent/normalized for other Vietnamese-specific inputs, and there is no handling of the `Đ`/`đ`
+family when the input is passed in already-normalized canonical form. More concretely, this helper
+diverges from the slug helpers that do `.replace(/đ/g, "d").replace(/Đ/g, "D")`. If this module is
+retained as a reference, align its character handling with the live implementations (or centralize
+on one documented implementation) so a future caller doesn't get subtly different results.
+
+
+
+─── src/lib/search.ts:5-5 ───
+[documentation · low] The doc comment references a target path (`src/app/actions/search.ts →
+searchBusinessesAction()`) as the replacement, but no such file/action appears in the codebase. A
+stale `@see` pointer makes it harder to verify the claim that this file is unused and could mislead
+future readers. Either update the reference to the actual live location or drop the reference when
+deleting the file.
+
+
+
+─── src/proxy.ts:12-12 ───
+[bug · critical] The exported function is named `proxy`, but the accompanying comment states
+Turbopack still requires the export to be named `middleware`. Next.js only registers a middleware
+entry point when the exported symbol is `middleware` (or the file is named `proxy.ts` in newer
+versions where `proxy` is supported). If the `middleware` name is still required here, this default
+export will never be invoked, silently disabling session refresh and all /admin + /dashboard
+protection. Please confirm the exact expected export name for the installed Next.js version and
+align the code with the comment (or rename the file/export consistently).
+
+
+
+─── src/proxy.ts:13-14 ───
+[bug · high] There is no error handling around `updateSession`. If Supabase is unreachable or
+`auth.getUser()` throws, the rejected promise propagates out of middleware, which can surface as a
+500 on every matched route (and is not safely failing closed). Wrap the call in try/catch and decide
+on an explicit failure policy (e.g. redirect to /login or return NextResponse.next() while logging
+the error) instead of letting the error escape.
+
+
+
+─── src/proxy.ts:14-14 ───
+[maintainability · low] The `async`/`await` here is unnecessary — it only adds an extra promise
+layer on every matched request. Return the promise directly.
+
+-   return await updateSession(request)
++   return updateSession(request)
+
+
+─── src/proxy.ts:25-25 ───
+[bug · medium] The negative-lookahead matcher excludes `_next/static`, `_next/image`, `favicon.ico`
+and several image extensions, but it still matches API routes (`/api/*`) and other non-page
+requests. Since middleware/proxy runs on these paths too, auth logic will execute for API calls
+(potentially redirecting them to /login with an HTML redirect rather than a JSON 401), and paths
+like `/admin/foo.png` would bypass protection entirely. Consider explicitly excluding `api` (and
+other non-UI routes) and documenting which routes must be protected.
+
+
+
+─── src/utils/supabase/client.ts:4-7 ───
+[bug · high] Silent fallback to placeholder credentials masks a missing/invalid configuration. When
+`NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is undefined (misconfigured
+deployment, missing `.env`), the client is instantiated pointing at
+`https://placeholder.supabase.co` with key `"placeholder"`. Every subsequent auth/query call then
+fails with an opaque network/DNS or "Invalid API key" error, which is very hard to trace back to a
+missing env var. The sibling `src/utils/supabase/server.ts` instead uses
+`process.env.NEXT_PUBLIC_SUPABASE_URL!`, failing fast. Make the requirement explicit by throwing a
+clear configuration error (or using the non-null assertion) rather than silently degrading. Note:
+these are `NEXT_PUBLIC_*` values that must be inlined at build time, so destructure them into locals
+first to keep that explicit.
+
+-   return createBrowserClient(
+-     process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+-     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder"
++   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
++   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
++ 
++   if (!supabaseUrl || !supabaseAnonKey) {
++     throw new Error(
++       'Missing Supabase configuration: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be defined.'
+-   )
++     )
++   }
++ 
++   return createBrowserClient(supabaseUrl, supabaseAnonKey)
+
+
+─── src/utils/supabase/server.ts:20-21 ───
+[bug · medium] The catch block silently swallows all errors from `cookieStore.set`. Failures to
+persist refreshed auth cookies (e.g. throwing in Server Components / Route Handlers where cookies
+are read-only) are hidden entirely, making session/refresh bugs very hard to diagnose. At minimum
+log the error; and consider only ignoring the known "cookies can only be modified in a Server Action
+or Route Handler" case rather than every exception.
+
+
+
+─── src/utils/supabase/server.ts:44-47 ───
+[maintainability · medium] `createAdminClient` awaits `cookies()` but never uses the result —
+`cookieStore` is dead code. Since this client is credential-based (service role), it doesn't need
+cookie-backed session persistence at all; the no-op `getAll`/`setAll` combined with the unused
+`cookieStore` signals confusion and adds an unnecessary async hop. Remove the unused `cookies()`
+call.
+
+-   const cookieStore = await cookies()
+    return createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+
+
+─── src/utils/supabase/server.ts:47-47 ───
+[security · high] `createAdminClient` is a security-sensitive factory relying on
+`SUPABASE_SERVICE_ROLE_KEY`, which bypasses RLS. The `!` non-null assertion on the service-role key
+means a missing env var silently yields a client with an `undefined` key instead of failing fast,
+and nothing prevents this module from being imported into a client bundle. Add explicit validation
+of the service-role key here (throw if absent) and ensure this file/function is only reachable from
+server-only code.
+
+
+
+─── src/utils/supabase/server.ts:8-9 ───
+[bug · medium] The env vars are read with `!` non-null assertions in all three factories. If
+`NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` are missing, the client is created with
+`undefined` and failures surface later as confusing runtime/network errors or unauthenticated
+requests. Validate once (e.g. a small helper that throws a clear error) instead of asserting.
+
+
+
+─── src/utils/supabase/server.ts:37-37 ───
+[maintainability · low] The `revalidate: 3600` cache window is a hardcoded magic value in the fetch
+wrapper. Extract it into a named constant (or config) so the cache policy is discoverable and
+centrally adjustable rather than buried in the client factory.
+
+
+
+─── src/utils/supabase/server.ts:28-28 ───
+[maintainability · low] The second `import` statement is placed mid-file instead of at the top with
+the other imports. Consolidate all imports at the top of the module to keep import ordering
+consistent and avoid ESM/hoisting confusion.
+
+
+
+─── src/utils/supabase/middleware.ts:31-33 ───
+[bug · high] `supabase.auth.getUser()` is awaited without checking its returned `error` and without
+any try/catch. A thrown error (e.g. network failure) surfaces as an unhandled exception in
+middleware and can break routing, while a returned `error` makes `user` null and silently redirects
+to `/login`, masking outages and misrouting authenticated users. Destructure and handle the returned
+`error`, and wrap the call in try/catch failing closed to `/login` with the error logged.
+
+    const {
+      data: { user },
++     error,
+    } = await supabase.auth.getUser()
++ 
++   if (error) {
++     console.error('[middleware] getUser failed:', error.message)
++   }
+
+
+─── src/utils/supabase/middleware.ts:44-48 ───
+[security · critical] Authorization decisions for `/admin` and `/dashboard` rely on
+`user.user_metadata?.role`. `user_metadata` is stored in the JWT and is writable by the user
+themselves, so a regular user could set `role: 'owner'` and gain owner routing/permissions. Use a
+server-controlled source such as `app_metadata.role` (or a role table via RLS) for access control
+instead.
+
+-     const role = user.user_metadata?.role;
++     const role = user.app_metadata?.role;
+      if (role === 'owner') {
+        if (request.nextUrl.pathname === '/admin' || 
+-           request.nextUrl.pathname.startsWith('/admin/users') || 
+-           request.nextUrl.pathname.startsWith('/admin/settings')) {
++           request.nextUrl.pathname === '/admin/users' ||
++           request.nextUrl.pathname.startsWith('/admin/users/') ||
++           request.nextUrl.pathname === '/admin/settings' ||
++           request.nextUrl.pathname.startsWith('/admin/settings/')) {
+
+
+─── src/utils/supabase/middleware.ts:47-48 ───
+[bug · medium] Using `startsWith('/admin/users')` also matches unintended paths such as
+`/admin/users-archive`, and `startsWith('/admin/settings')` matches `/admin/settings-x`. This prefix
+matching can block owners from legitimate pages (or over-match). Match the exact path or a path
+segment boundary (trailing `/`).
+
+-           request.nextUrl.pathname.startsWith('/admin/users') || 
+-           request.nextUrl.pathname.startsWith('/admin/settings')) {
++           request.nextUrl.pathname === '/admin/users' ||
++           request.nextUrl.pathname.startsWith('/admin/users/') ||
++           request.nextUrl.pathname === '/admin/settings' ||
++           request.nextUrl.pathname.startsWith('/admin/settings/')) {
+
+
+─── src/utils/supabase/middleware.ts:38-43 ───
+[bug · medium] Redirects to `/login` never preserve the originally requested path, so after login
+the user always lands on a default page rather than where they came from. Pass the original path as
+a redirect/return param, e.g. via `url.searchParams.set('redirect', request.nextUrl.pathname +
+request.nextUrl.search)`.
+
+      if (!user) {
+-       url.pathname = '/login';
+-       return NextResponse.redirect(url);
++       const redirectUrl = request.nextUrl.clone()
++       redirectUrl.pathname = '/login'
++       redirectUrl.searchParams.set('redirect', request.nextUrl.pathname + request.nextUrl.search)
++       return NextResponse.redirect(redirectUrl)
+      }
+      
+      // Kiểm tra quyền hạn Chủ Doanh Nghiệp (Owner)
+
+
+─── src/utils/supabase/middleware.ts:10-11 ───
+[maintainability · medium] Environment variables are asserted non-null (`!`) with no validation. If
+`NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` are unset, `createServerClient` receives
+`undefined` and fails with a confusing runtime error on every request. Validate them up front and
+fail with an explicit message.
+
+-     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+-     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
++     process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
++     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
+
+
+─── src/utils/supabase/middleware.ts:55-61 ───
+[maintainability · low] The `/dashboard` protection block is dead code: the following `if (/login &&
+user)` block handles login redirection, but more importantly the owner-redirect logic and this
+dashboard check duplicate the same `!user -> /login` pattern already handled for `/admin`. Extract
+the repeated "redirect unauthenticated user to /login" logic into a single helper to avoid
+duplication and divergence.
+
+
+
+─── src/lib/error-capture.ts:28-29 ───
+[bug · medium] A self-referencing `cause` chain (e.g. `err.cause === err`, or a 2-cycle) is not
+detected, so the loop emits the same stack `CAUSE_DEPTH_LIMIT` times before the depth guard stops
+it. This produces misleading, duplicated output (and can blow up the string before truncation).
+Track visited errors and break on revisit.
+
+      parts.push(`${label}${current.stack ?? `${current.name}: ${current.message}`}${status}`);
++     if (seen.has(current)) break;
+      current = current.cause;
+
+
+─── src/lib/error-capture.ts:66-69 ───
+[bug · high] `record(undefined)` is possible here: `unhandledrejection` reasons and `error` event
+payloads can legitimately be `undefined`/non-Error (e.g. `Promise.reject()` with no argument).
+Recording an `undefined` error *overwrites* any previously captured real Error and makes
+`consumeLastCapturedError()` return `undefined`, which is indistinguishable from "nothing captured"
+— a following caller then silently loses the stack it needs. Guard against recording nullish values.
+
+-   globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
+-   globalThis.addEventListener("unhandledrejection", (event) =>
+-     record((event as PromiseRejectionEvent).reason),
+-   );
++   globalThis.addEventListener("error", (event) => {
++     const value = (event as ErrorEvent).error ?? event;
++     if (value != null) record(value);
++   });
++   globalThis.addEventListener("unhandledrejection", (event) => {
++     const reason = (event as PromiseRejectionEvent).reason ?? (event as PromiseRejectionEvent);
++     if (reason != null) record(reason);
++   });
+
+
+─── src/lib/error-capture.ts:55-63 ───
+[maintainability · medium] This reassigns the global `console.error` permanently at
+module-evaluation time, and it captures `originalConsoleError` before any other instrumentation may
+patch `console`. Consequences: (1) if another module loaded earlier already wrapped `console.error`,
+this wrapper hides it or vice-versa (order-dependent); (2) it is never restored, so it permanently
+changes all process-wide logging; (3) any logging code invoked inside `originalConsoleError` that
+itself calls `console.error` will re-enter the wrapper and can recurse/unbounded-expand. Consider a
+guarded, idempotent patch (e.g. a symbol marker on the function) and/or restoring after capture.
+
+
+
+─── src/lib/error-capture.ts:4-5 ───
+[maintainability · medium] A single module-global `lastCapturedError` slot with a 5s TTL is shared
+across all concurrent requests. Under concurrency, request B's `console.error`/`unhandledrejection`
+will overwrite request A's captured error (or A will consume B's), so the stack attributed to a
+request can belong to a different one; a slow request may also miss its error once the 5s TTL
+expires. If per-request attribution matters, this needs to be correlation-scoped (e.g.
+AsyncLocalStorage) rather than a single global.
+
+
+
+─── src/lib/error-capture.ts:31-31 ───
+[bug · low] `describeError` truncates the *joined* string to `DESCRIPTION_LENGTH_LIMIT`, which can
+cut off the deepest cause(s) mid-message — exactly the detail this function exists to preserve. Note
+also that a single huge first stack (e.g. one over 8000 chars) is truncated to a fragment, and
+`slice` may split a full string. Prefer truncating per-part with an explicit marker (`…
+[truncated]`) so consumers can tell output was cut.
+
+
+
+─── src/app/(admin)/admin/blogs/page.tsx:6-6 ───
+[bug · medium] The Supabase query error is silently ignored. If the fetch fails
+(network/RLS/permission error), `data` is null and the page renders an empty list, hiding the
+failure from the admin. Capture and surface the error.
+
+```ts
+const { data: blogs, error } = await supabase
+  .from("blogs")
+  .select("*")
+  .order("created_at", { ascending: false });
+
+if (error) {
+  throw new Error(`Failed to load blogs: ${error.message}`);
+}
+```
+
+
+
+─── src/app/(admin)/admin/blogs/page.tsx:8-8 ───
+[performance · low] `select("*")` fetches every column for every row without a limit. For an admin
+list this pulls unbounded data (potential performance problem and unnecessary data exposure). Select
+only the columns the list needs and add pagination/limit.
+
+
+
+─── src/app/(admin)/admin/blogs/BlogsClient.tsx:18-24 ───
+[bug · high] `handleDelete` only inspects the PostgREST error object; it does not wrap the await in
+try/catch. If the network request rejects (offline, DNS failure, aborted request), the rejection is
+unhandled and the user sees no feedback. Wrap the call in try/catch and surface a friendly error via
+toast.
+
++     try {
+-     const { error } = await supabase.from('blogs').delete().eq('id', id);
++       const { error } = await supabase.from('blogs').delete().eq('id', id);
+-     if (error) {
++       if (error) {
+-       toast.error(error.message);
++         toast.error(error.message);
+-     } else {
++       } else {
+-       toast.success("Đã xóa bài viết!");
++         toast.success("Đã xóa bài viết!");
+-       router.refresh();
++         router.refresh();
++       }
++     } catch (err) {
++       toast.error("Không thể xóa bài viết. Vui lòng thử lại sau.");
+      }
+
+
+─── src/app/(admin)/admin/blogs/BlogsClient.tsx:82-82 ───
+[bug · medium] There is no in-flight guard for the destructive delete action. Rapid repeated clicks
+fire multiple delete requests concurrently (duplicate requests / race conditions). Track a pending
+state and disable the button while the request is in flight.
+
+
+
+─── src/app/(admin)/admin/blogs/BlogsClient.tsx:11-11 ───
+[maintainability · medium] `initialBlogs` is typed as `any[]`, discarding type safety for all
+accessed fields (`id`, `title`, `status`, `published_at`). Define and use a proper Blog type (or at
+minimum add a justification comment if `any` is truly required) to catch field-name/typing mistakes
+at compile time.
+
+
+
+─── src/app/(admin)/admin/blogs/BlogsClient.tsx:71-71 ───
+[maintainability · medium] Nested ternary for the status label violates the project rule banning
+nested ternaries and hurts readability. Extract this mapping into a lookup object or helper function
+(e.g. a `STATUS_LABELS` map) that also centralizes the status color classes.
+
+
+
+─── src/app/(admin)/admin/businesses/BusinessesClient.tsx:12-13 ───
+[performance · medium] The Supabase client is created directly in the component body, so a new
+client instance is constructed on every render. This can also trigger re-renders/re-subscriptions if
+used in effects. Memoize it with `useMemo` (or hoist a module-level singleton) so the instance is
+stable across renders.
+
+-   const supabase = createClient();
++   const supabase = useMemo(() => createClient(), []);
+    const router = useRouter();
+
+
+─── src/app/(admin)/admin/businesses/BusinessesClient.tsx:15-18 ───
+[bug · high] `handleDelete` has no in-flight guard, so rapid/double clicks fire multiple concurrent
+delete requests. Add a deleting state (disable the button and/or early-return while a delete is
+pending) to prevent duplicate destructive requests.
+
+
+
+─── src/app/(admin)/admin/businesses/BusinessesClient.tsx:11-11 ───
+[maintainability · medium] The `any[]` prop type bypasses type checking for every field used in the
+table (`status`, `is_featured`, `category`, `location`, `slug`), hiding null/missing-field bugs.
+Define an explicit interface for the business row and use it here (and type `handleDelete`'s params
+accordingly).
+
+
+
+─── src/app/(admin)/admin/businesses/BusinessesClient.tsx:86-90 ───
+[maintainability · low] Nested ternary in the className is hard to read and easy to mis-edit; it
+also mixes layout/styling concerns. Extract a small helper (e.g. `getStatusClasses(status)`)
+returning the class string, or use a lookup map.
+
+
+
+─── src/app/(admin)/admin/businesses/BusinessesClient.tsx:90-91 ───
+[bug · low] `b.status` is rendered directly without a null fallback; if the field is missing it will
+display `undefined`. Provide a default (e.g. `b.status ?? 'unknown'`) or render a placeholder.
+
+
+
+─── src/app/(admin)/admin/businesses/BusinessesClient.tsx:37-39 ───
+[maintainability · low] Admin route paths and the public business path are hardcoded inline strings.
+The project rules flag hardcoded business URL paths; consider centralizing these route constants
+(e.g. a routes/paths module) so they stay consistent and are not duplicated across the app.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/upgrade/page.tsx:45-46 ───
+[bug · critical] The payment confirmation logic is a false positive risk: `status === 'published'`
+does not prove the upgrade was paid. A business could already be published before upgrading, so this
+immediately reports success and redirects without any actual payment verification against the
+transactions/plan data. Verify `plan_id` (or a transactions record) instead of `status`.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/upgrade/page.tsx:30-30 ───
+[bug · high] Async Supabase calls ignore the `error` object in both the initial fetch and the
+payment check. Network/RLS failures silently fail with no user-facing state. Destructure and handle
+`error`, and surface a failure state to the user.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/upgrade/page.tsx:21-23 ───
+[maintainability · high] Business/payment constants (bank account, bank name, amount, sepay QR URL)
+are hardcoded in the client. These are business-critical values that should come from configuration
+(env/server) rather than being embedded in the bundle. Also `TRANSFER_CONTENT` is interpolated into
+the QR URL without `encodeURIComponent`, which can produce a malformed URL.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/upgrade/page.tsx:16-16 ───
+[bug · medium] `business` is typed as `any`, losing type safety. Additionally, `business.slug` is
+accessed without a null check while `business` can be null (initial state and when the fetch returns
+no data), risking a runtime error. Provide a proper type and guard the access (e.g.,
+`business?.slug`).
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/upgrade/page.tsx:26-26 ───
+[bug · medium] `TRANSFER_CONTENT` is built from `business.slug` without null/undefined guarding. If
+the slug is missing this throws (`business.slug.toUpperCase()`). Use optional chaining.
+Additionally, when `business` is null `QR_URL` is an empty string, which is then passed to
+`next/image` and will cause an invalid/error image request.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/upgrade/page.tsx:29-30 ───
+[bug · medium] The `useEffect` omits `supabase` from its dependency array while `supabase =
+createClient()` is recreated every render. More importantly, `setBusiness`/`setLoading` are called
+after an async `await` with no mounted/cleanup guard, which can update state after unmount. Add a
+cleanup flag (and stabilize the client) to avoid stale updates.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/upgrade/page.tsx:41-42 ───
+[bug · medium] `handleCheckPayment` has no error handling (a thrown/rejected Supabase call leaves
+`checking` stuck at `true` and gives no feedback) and no protection against
+`setIsSuccess`/`router.push` firing after unmount. Wrap in try/catch/finally and consider a mounted
+guard.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/upgrade/page.tsx:33-35 ───
+[maintainability · low] Dead code: this branch is empty and does nothing, left behind as a
+placeholder. Remove it to avoid confusion.
+
+
+
+─── src/app/(admin)/admin/blogs/categories/page.tsx:40-42 ───
+[bug · medium] `fetchCategories` is defined inside the component and invoked from a `useEffect` with
+an empty dependency array. This violates exhaustive-deps (the effect captures a non-stable
+function), and if the intent is to refetch on mount it should be declared as a `useCallback` or
+wrapped inline. As written it's easy to introduce stale-closure bugs when more state/deps are added.
+
+
+
+─── src/app/(admin)/admin/blogs/categories/page.tsx:29-30 ───
+[maintainability · medium] Missing relation is detected by string-matching the raw error message.
+This is brittle (wording/locale can change) and it also masks other schema errors. Prefer checking
+the Postgres error code, e.g. `error.code === '42P01'` (undefined_table), before showing the SQL
+hint.
+
+
+
+─── src/app/(admin)/admin/blogs/categories/page.tsx:15-15 ───
+[maintainability · medium] `categories` and the caught error are typed as `any`, violating the
+project TypeScript rule. Define a `BlogCategory` interface (e.g. `{ id: string; name: string; slug:
+string; created_at: string }`) and type the state as `BlogCategory[]`, and type the catch as
+`unknown` with a narrowing/`err instanceof Error` check.
+
+
+
+─── src/app/(admin)/admin/blogs/categories/page.tsx:49-52 ───
+[bug · medium] The insert sends `name`/`slug` without any trimming or validation beyond the HTML
+`required` attribute. Whitespace-only names or empty slugs can be persisted, and a duplicate slug
+will fail at the DB level with an opaque message. Trim the values, validate non-emptiness, and
+surface a clear message when the slug already exists.
+
+
+
+─── src/app/(admin)/admin/blogs/categories/page.tsx:70-73 ───
+[bug · medium] `handleDelete` awaits Supabase without a try/catch. Unlike `handleCreate`, an
+unexpected rejected promise here produces an unhandled rejection and leaves no user feedback. Wrap
+it in try/catch (or `.catch`) consistently with the create flow.
+
+
+
+─── src/app/(admin)/admin/blogs/categories/page.tsx:63-64 ───
+[maintainability · medium] The catch binds `err` but never uses it, so the actual cause is discarded
+and the toast always shows a generic connection error. Log or inspect the error (typed as `unknown`)
+so real failures are diagnosable.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/page.tsx:23-24 ───
+[bug · high] Supabase query errors are silently ignored. If the `businesses` fetch fails
+(network/RLS error), `data` is `null` and the code calls `notFound()`, incorrectly reporting the
+business as missing. Suggestions: destructure and check `error`, then throw a proper error so
+Next.js renders an error boundary / error page instead of a misleading 404.
+
+-   const { data: rawBusiness } = await supabase
++   const { data: rawBusiness, error: businessError } = await supabase
+      .from("businesses")
+
+
+─── src/app/(admin)/admin/businesses/[id]/page.tsx:15-16 ───
+[bug · medium] The category/location queries swallow errors and fall back to empty arrays via `||
+[]`. A transient failure would render the editor with no categories/locations, silently losing
+selection options. Capture and surface the error (e.g. throw), or at minimum log it.
+
+-   const { data: categories } = await supabase.from('directory_categories').select('id, name');
+-   const { data: locations } = await supabase.from('directory_locations').select('id, name');
++   const [{ data: categories, error: categoriesError }, { data: locations, error: locationsError }] = await Promise.all([
++     supabase.from('directory_categories').select('id, name'),
++     supabase.from('directory_locations').select('id, name'),
++   ]);
++   if (categoriesError || locationsError) {
++     throw new Error(categoriesError?.message ?? locationsError?.message);
++   }
+
+
+─── src/app/(admin)/admin/businesses/[id]/page.tsx:15-15 ───
+[performance · low] The category/location queries are two independent requests issued sequentially,
+adding avoidable latency. They can run in parallel with `Promise.all`.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/page.tsx:18-18 ───
+[maintainability · low] The `id === "new"` special case is checked only after performing I/O
+(creating the Supabase client and fetching categories/locations). Handling it before the client-side
+data fetch — or at least before the business query — avoids unnecessary work and makes the branch
+clearer.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/page.tsx:40-41 ───
+[maintainability · medium] Uses `any` for the junction-table mapping, which bypasses type safety for
+the nested Supabase relation shapes and can hide shape/consistency bugs. Prefer a typed shape (or
+type the query with `.overrideTypes`) and remove the `any` casts. The same applies to the `business`
+object being passed to a `business: any` prop.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/page.tsx:26-28 ───
+[security · medium] `select('*')` plus nested junction joins returns all business columns
+(potentially sensitive/internal fields) into the serialized props sent to the client component.
+Select only the fields the editor actually needs to reduce payload, latency, and unintended data
+exposure.
+
+
+
+─── src/app/(admin)/admin/blogs/[id]/page.tsx:40-47 ───
+[bug · critical] `useState` is misused for data fetching. `useState(initializerFn)` treats the
+function as a lazy state initializer and ignores its return value, so this side-effect never
+actually fires as intended on mount — and there is no `useEffect`, so data is never fetched.
+Additionally, if it did execute on every render, the `setFormData`/`setCategories` calls would cause
+an infinite render loop. Use `useEffect` with proper dependencies (`[id, isNew]`).
+
+    // Fetch data
+-   useState(() => {
++   useEffect(() => {
+      supabase.from("blog_categories").select("*").then(({ data, error }) => {
+-       if (!error && data) setCategories(data);
++       if (error) {
++         toast.error("Không thể tải danh mục");
++         return;
++       }
++       if (data) setCategories(data);
+      });
+  
+      if (!isNew) {
+-       supabase.from("blogs").select("*").eq("id", id).single().then(({ data }) => {
++       supabase.from("blogs").select("*").eq("id", id).single().then(({ data, error }) => {
++         if (error) {
++           toast.error(error.message);
++           return;
++         }
+
+
+─── src/app/(admin)/admin/blogs/[id]/page.tsx:47-48 ───
+[bug · high] The blog fetch ignores the `error` from Supabase entirely (only checks `if (data)`),
+and the promise chain has no `.catch`, so any rejection becomes an unhandled promise rejection with
+no user feedback. Surface the error to the user.
+
+
+
+─── src/app/(admin)/admin/blogs/[id]/page.tsx:89-89 ───
+[bug · medium] `data.title` from the AI response is used unguarded (`data.title.toLowerCase()`). If
+the AI returns a payload without `title`, this throws a TypeError inside the `try`, but note that
+`toast.error(err.message)` suggests network failures are caught — still, a missing `title` will
+break slug generation and abort the whole update. Guard against an empty/missing title.
+
+
+
+─── src/app/(admin)/admin/blogs/[id]/page.tsx:75-81 ───
+[bug · medium] `res.json()` is called without checking `res.ok`, and there is no handling for
+non-JSON/network failure responses — a failed request (e.g. 500 HTML error page) will throw on
+parsing. Check `res.ok` and validate the payload before use.
+
+        const res = await fetch("/api/ai/write-blog", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: aiPrompt })
+        });
+-       const data = await res.json();
++       const data = await res.json().catch(() => null);
++       if (!res.ok || !data) throw new Error(data?.error || "Không thể tạo bài viết bằng AI");
+        if (data.error) throw new Error(data.error);
+
+
+─── src/app/(admin)/admin/blogs/[id]/page.tsx:109-113 ───
+[bug · medium] Bug in `published_at` handling when editing: the `else if (formData.published_at)`
+branch only sets `published_at` when the field has a value, which is fine, but when `status !==
+'published'` the scheduled date is still persisted (a scheduled post converted to draft keeps its
+future publish date). More importantly, the intent seems reversed — the first branch only runs for
+`isNew`. Add explicit handling for clearing/keeping `published_at` when status changes, and document
+the intended behavior.
+
+
+
+─── src/app/(admin)/admin/blogs/[id]/page.tsx:35-35 ───
+[maintainability · medium] `any` is used for `payload`, `categories` state, and the caught error
+(`catch (err: any)`). Per project rules, `any` should be avoided or justified with a comment. Define
+proper types (e.g. a `BlogCategory` type and `unknown` for the error with a narrowing check).
+
+
+
+─── src/app/(admin)/admin/blogs/[id]/page.tsx:104-107 ───
+[maintainability · low] The `payload` object is built via a spread of `formData` and then mutated to
+`null`/ISO strings, using `any`. This leaves the object shape unchecked against the DB schema and
+can silently send unexpected fields. Consider a typed insert/update payload.
+
+
+
+─── src/app/(admin)/admin/blogs/[id]/page.tsx:14-14 ───
+[bug · medium] Missing `useEffect` import while `use` is imported from "react" — after switching the
+data fetch to `useEffect`, ensure `useEffect` is added to this import list (it is currently not
+imported).
+
+- import { use } from "react";
++ import { use, useEffect } from "react";
+
+
+─── src/app/(admin)/admin/businesses/import/page.tsx:16-16 ───
+[performance · medium] `createClient()` is called on every render, creating a brand-new Supabase
+browser client each time. This is wasteful and can lead to multiple auth/websocket instances.
+Memoize it with `useMemo` (or create it at module scope).
+
+-   const supabase = createClient();
++   const supabase = useMemo(() => createClient(), []);
+
+
+─── src/app/(admin)/admin/businesses/import/page.tsx:22-22 ───
+[bug · high] The pasted JSON is parsed and mapped without any shape/field validation. If an element
+is `null`, a primitive, or a non-object, `b.name`/`b.slug` etc. will throw a runtime error or insert
+malformed rows. Validate that each item is a non-null object and that required fields (`name`,
+`slug`) exist before mapping.
+
+
+
+─── src/app/(admin)/admin/businesses/import/page.tsx:21-21 ───
+[bug · medium] `JSON.parse` is attempted without guarding against empty/whitespace input or an
+oversized payload. An empty/whitespace string throws a syntax error and very large inputs can block
+the UI thread. Add a pre-check for non-empty trimmed input and a reasonable size limit.
+
+
+
+─── src/app/(admin)/admin/businesses/import/page.tsx:37-37 ───
+[bug · medium] `page_content` is set to the entire raw business object when `b.page_content` is
+absent, so `name`, `slug`, `status`, `category`, etc. get duplicated into the JSON content column.
+Map only the intended content fields instead of the whole object.
+
+
+
+─── src/app/(admin)/admin/businesses/import/page.tsx:47-49 ───
+[maintainability · medium] Catching with `any` violates the TypeScript rule and `err.message` is
+surfaced directly to the UI, which can leak raw Supabase/internal error details. Type the error and
+show a user-friendly message instead.
+
+-     } catch (err: any) {
++     } catch (err) {
+        console.error(err);
+-       toast.error(err.message || "Lỗi cú pháp JSON");
++       const message = err instanceof Error ? err.message : undefined;
++       toast.error(message ?? "Có lỗi xảy ra khi import dữ liệu");
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:330-330 ───
+[security · high] XSS risk: `pageContent.map_embed` is rendered with `dangerouslySetInnerHTML`
+without any sanitization. Any HTML/`<script>` pasted into the Google Maps embed textarea (including
+content influenced by imported/business-provided data) will execute in the admin session. Sanitize
+the HTML (e.g., DOMPurify, or allow-list only `<iframe>` with a google.com/maps src) before
+rendering, or render only through a validated iframe `src`.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:141-143 ───
+[bug · medium] Direct nested state mutation: `newServices` is a shallow copy but
+`newServices[index]` is the same object reference held in state, so `newServices[index][field] =
+value` mutates state in place. This aliasing can cause missed re-renders and stale/duplicated values
+(e.g. after `duplicateService`, both copies share the same nested object). Create a new object for
+the updated entry, e.g. `const newServices = pageContent.services.map((s, idx) => idx === index ? {
+...s, [field]: value } : s);`.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:157-159 ───
+[bug · medium] Same in-place mutation issue as `updateService`: `newOffers[index]` still references
+the state object, so mutating `[field]` bypasses React state immutability. Use
+`pageContent.offers.map((o, idx) => idx === index ? { ...o, [field]: value } : o)`.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:146-147 ───
+[bug · low] Same mutation problem in `duplicateService`: the spread is shallow, so the duplicated
+service shares the same nested object reference with the source. Editing one will mutate the other
+until a full page reload. Deep-copy the object: `{ ...svc }` is only one level, ensure nested fields
+are copied or use a deep clone.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:231-233 ───
+[bug · medium] Working hours are mutated in place: `newWh` is a shallow copy while `newWh[i]` is the
+same object reference in state, so `newWh[i].hours = e.target.value` mutates state directly.
+Although a new array is set, this aliasing is unsafe — replace with an immutable update:
+`pageContent.working_hours.map((w, idx) => idx === i ? { ...w, hours: e.target.value } : w)`.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:66-67 ───
+[bug · medium] The empty `catch(e) {}` silently swallows malformed `page_content` JSON and falls
+through to a partial fallback object that only contains contact fields (missing `banners`,
+`gallery`, `services`, etc.). Saved back on the next `handleSave`, this can silently wipe existing
+content. At minimum log the parse error (or surface a toast warning) so data corruption is
+detectable.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:28-36 ───
+[maintainability · medium] Pervasive `any` typing: `business`, `categories`, `locations`, the Props
+object, `pageContent`, and most handlers are typed `any`, disabling all type checking for the core
+data model. This makes access to optional/nested fields (e.g. `business.slug`,
+`pageContent.socials`) unguarded and prone to runtime errors. Use the existing
+`BusinessContent`/business types (see `src/types/business.ts`) and define explicit prop types; add a
+short comment only where `any` is truly unavoidable.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:33-36 ───
+[maintainability · low] `categories` and `locations` are declared in the destructured Props but
+never referenced anywhere in the component; they are effectively dead props. Either use them (e.g.
+category/location selectors) or remove them from the signature and the caller to avoid confusion and
+unnecessary data fetching.
+
+
+
+─── src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx:40-40 ───
+[maintainability · medium] `business` state is initialized from `initialBusiness` but is never
+updated (no setter is used), making `useState` unnecessary — a plain const would suffice. More
+importantly, the save path replaces the whole `page_content` object and `socials` wholesale, so
+concurrent edits (admin in this tab + owner in the dashboard) will overwrite each other's changes
+with no conflict detection or dirty-state tracking. Consider a merge/version-check strategy or at
+least warn the user about unsaved changes.
+
+
+
+─── src/app/(admin)/admin/businesses/page.tsx:6-9 ───
+[bug · high] The Supabase query error is destructured but never checked, and there is no try/catch.
+If the query fails (RLS denial, network error, missing table), the page silently renders an empty
+list, which is indistinguishable from a legitimately empty dataset — admins will see "Không có dữ
+liệu." and have no idea the fetch failed. Surface the error (e.g. throw it or render an error state)
+and log it.
+
+
+
+─── src/app/(admin)/admin/businesses/page.tsx:4-5 ───
+[maintainability · medium] The dynamically imported `@/utils/supabase/server` client is never used
+here (the error branch is absent), and the `error` variable is unused — dead code. Also, `error`
+being ignored means a failed query produces a misleading empty state (see above). Either handle
+`error` or remove it from destructuring.
+
+
+
+─── src/app/(admin)/admin/businesses/page.tsx:4-6 ───
+[maintainability · low] Every other admin page (blogs, contacts, users, layout) imports the Supabase
+server client statically at module scope; this file uniquely uses an inline `await import(...)`.
+This deviates from the project convention and adds unnecessary per-request module resolution
+overhead. Use a top-level import instead. Note that if the intent was to defer loading this utility
+during build, static imports are the standard approach in a server component.
+
+-   const { createClient } = await import("@/utils/supabase/server");
++ import { createClient } from "@/utils/supabase/server";
++ 
++ export default async function AdminBusinessesPage() {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+
+
+─── src/app/(admin)/admin/businesses/page.tsx:11-11 ───
+[bug · medium] `data || []` masks fetch failures and conflates a null result with an empty dataset;
+combined with the ignored `error`, this makes failures undetectable. Prefer explicitly checking
+`error` and rendering an error state, or at minimum use `data ?? []` and depend on `error` being
+handled.
+
+
+
+─── src/app/(admin)/admin/categories/page.tsx:38-40 ───
+[bug · medium] `supabase` is created on every render via `createClient()`. More importantly,
+`fetchCategories` is only referenced inside a `useEffect` with an empty dependency array, so it
+captures the initial instance and the stale closure is never refreshed; there is also no unmount
+guard, so a late-arriving response can call `setCategories`/`setFetching` on an unmounted component.
+Memoize the client (e.g. module-level `const supabase = createClient()`) and use an abort/ignore
+flag in the effect.
+
+    useEffect(() => {
+-     fetchCategories();
++     let active = true;
++     // ... fetch with the active guard, only set state when active
++     return () => {
++       active = false;
++     };
+    }, []);
+
+
+─── src/app/(admin)/admin/categories/page.tsx:63-66 ───
+[security · high] DB mutations (update/insert/delete) are issued directly from the browser client
+with no admin-role verification in this component. If RLS on `directory_categories` is not locked
+down with an is-admin policy, any authenticated/anonymous client can create, rename or delete
+categories. Enforce authorization server-side (RLS policy and/or a server action that validates the
+admin role) rather than relying on this page being reachable only under /admin.
+
+
+
+─── src/app/(admin)/admin/categories/page.tsx:98-101 ───
+[bug · medium] Slug is entered/edited freely with no uniqueness or format validation, and the
+auto-generation logic produces an empty string for inputs consisting only of symbols/whitespace. A
+duplicate or empty slug will break the public `/danh-muc/[slug]` lookup. Validate non-empty (and
+ideally uniqueness) before insert/update, and surface a friendly message to the user.
+
+
+
+─── src/app/(admin)/admin/categories/page.tsx:70-72 ───
+[security · low] Raw Supabase error messages are shown directly to the user (`error.message`) and
+the `catch` block discards the actual error (`err`) and logs a generic "Lỗi kết nối!". Exposing raw
+DB errors can leak schema/internal details; map them to user-friendly messages and log the
+underlying error for diagnostics. Expected failures already return `{ error }`, so the try/catch
+also adds little value.
+
+
+
+─── src/app/(admin)/admin/categories/page.tsx:15-15 ───
+[maintainability · medium] `any` is used for the state array and the `cat`/`err` parameters
+(`categories`, `openEditModal(cat: any)`, `catch (err: any)`). This defeats type safety for the
+Supabase row shape and category fields. Define a `DirectoryCategory` type (id, name, slug,
+created_at) and use `unknown` for caught errors with proper narrowing.
+
+-   const [categories, setCategories] = useState<any[]>([]);
++   const [categories, setCategories] = useState<DirectoryCategory[]>([]);
+
+
+─── src/app/(admin)/admin/categories/page.tsx:23-23 ───
+[performance · medium] `createClient()` is called on every render, creating a new browser Supabase
+client each time. Hoist it outside the component (module scope) or memoize it to avoid
+re-instantiating the client and to keep a stable reference for effects/callbacks.
+
+
+
+─── src/app/(admin)/admin/categories/page.tsx:80-82 ───
+[maintainability · low] `err` is unused, so the real failure cause is lost and a generic message is
+shown. Log the underlying error (or, if lint rules disallow the unused binding, use `catch (err:
+unknown)` and inspect it).
+
+
+
+─── src/app/(admin)/admin/plans/PlansClient.tsx:13-13 ───
+[maintainability · medium] `initialPlans` is typed as `any[]`, which disables all prop-level type
+checking and hides the unchecked field accesses (`p.price_monthly`, `p.id`, `p.name`) below. Define
+and use a proper `Plan` interface (e.g. `{ id: string; name: string; price_monthly: number | null;
+is_active: boolean }`) so these accesses are validated at compile time.
+
+
+
+─── src/app/(admin)/admin/plans/PlansClient.tsx:27-31 ───
+[bug · high] `parseInt(price)` is inserted directly into the database without validation. For
+non-numeric/empty input it silently yields `NaN`, and there is no range/currency sanity check, so
+corrupted plan data can be persisted. Parse with `Number(price)`/`parseInt(price, 10)` and validate
+the result (e.g. `Number.isFinite` and `>= 0`) before inserting, showing a toast error otherwise.
+
+
+
+─── src/app/(admin)/admin/plans/PlansClient.tsx:49-52 ───
+[bug · high] Inconsistent error handling with `handleCreatePlan`: this async function has no
+try/catch, so if the Supabase client throws (network failure) the rejection is unhandled and the
+user gets no feedback. Wrap the call in try/catch and surface a toast message on failure.
+
+
+
+─── src/app/(admin)/admin/plans/PlansClient.tsx:20-20 ───
+[security · high] Create/delete operations are executed directly from the browser Supabase client,
+so admin-only authorization depends entirely on server-side RLS policies. There is no check of the
+user's role/session here. Ensure the `plans` table has RLS policies that restrict INSERT/DELETE to
+admins, or move these mutations to a server-side route/action that validates the admin role.
+
+
+
+─── src/app/(admin)/admin/plans/PlansClient.tsx:92-92 ───
+[bug · medium] `p.price_monthly.toLocaleString(...)` will throw a TypeError if `price_monthly` is
+null/undefined (nullable DB columns are common), crashing the whole table render. Guard against
+missing values, e.g. `{p.price_monthly != null ? `${p.price_monthly.toLocaleString("vi-VN")} đ` :
+"—"}`.
+
+
+
+─── src/app/(admin)/admin/page.tsx:7-7 ───
+[bug · high] The 'Tổng doanh nghiệp' total is derived from `businesses.length`, but
+`getPublishedBusinesses(100)` caps results at 100 rows. Once there are more than 100 published
+businesses, the dashboard will permanently under-report the total. Use a dedicated exact count query
+(e.g. `supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('status',
+'published')`) instead of relying on a limited fetch length.
+
+-   const businesses = await getPublishedBusinesses(100);
++   const { count: businessCount } = await supabase
++     .from('businesses')
++     .select('*', { count: 'exact', head: true })
++     .eq('status', 'published');
+
+
+─── src/app/(admin)/admin/page.tsx:9-13 ───
+[bug · high] No error handling around the data fetching. `getPublishedBusinesses` already swallows
+errors and returns `[]`, but the two `supabase.from(...)` count calls ignore the returned `error`
+and can silently yield `undefined` (then rendered as `0`), masking real failures. Also, these two
+independent queries run sequentially — wrapping them in `Promise.all` would avoid an unnecessary
+serial round-trip. Consider checking `error`/logging and parallelizing the fetches.
+
+-   // Lấy số lượng người dùng (khách hàng & admin)
+-   const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+-   
+-   // Lấy số lượng bài viết
+-   const { count: blogCount } = await supabase.from('blogs').select('*', { count: 'exact', head: true });
++   // Lấy song song số lượng người dùng và bài viết, kiểm tra lỗi để tránh hiển thị nhầm 0
++   const [profilesResult, blogsResult] = await Promise.all([
++     supabase.from('profiles').select('*', { count: 'exact', head: true }),
++     supabase.from('blogs').select('*', { count: 'exact', head: true }),
++   ]);
++   if (profilesResult.error) console.error('Error fetching profile count:', profilesResult.error);
++   if (blogsResult.error) console.error('Error fetching blog count:', blogsResult.error);
++   const userCount = profilesResult.count ?? 0;
++   const blogCount = blogsResult.count ?? 0;
+
+
+─── src/app/(admin)/admin/page.tsx:64-65 ───
+[bug · high] Fabricated analytics data: the '12,450' view count and '+19% so với tháng trước' are
+hardcoded literals presented to admins as real metrics. This is misleading business data — either
+wire it to a real data source or clearly mark/label it as placeholder/sample data effectively.
+
+
+
+─── src/app/(admin)/admin/page.tsx:25-28 ───
+[maintainability · medium] The four stat cards repeat nearly identical JSX structure (same wrapper
+classes, title row, value/meta layout) with only text/icon differing. Extract a reusable `StatCard`
+component (or a local render helper) to avoid drift and make future schema changes single-source.
+
+
+
+─── src/app/(admin)/admin/locations/page.tsx:38-40 ───
+[bug · medium] `supabase` is created inside the component body and is also referenced by
+`fetchLocations`, which is called from `useEffect(..., [])`. This produces an ESLint
+`react-hooks/exhaustive-deps` warning and a stale-closure risk: any future dependency of
+`fetchLocations` (filters, sorting, pagination) will silently use the value captured on the first
+render. Prefer memoizing the client or moving `fetchLocations` inside the effect / wrapping it in
+`useCallback` with the correct deps.
+
+
+
+─── src/app/(admin)/admin/locations/page.tsx:15-15 ───
+[maintainability · medium] The declared state and the save flow rely on `any`. Because `error` is
+typed via `let error;` (implicitly `any`), TypeScript cannot catch misuse, and `locations`/`loc` are
+untyped too. Use a concrete type (e.g. `type Location = { id: string; name: string; slug: string }`)
+and let the inferred Supabase error type flow, or type the variable explicitly.
+
+
+
+─── src/app/(admin)/admin/locations/page.tsx:56-58 ───
+[bug · medium] Create/update run immediately on submit with no guard against double submission; the
+submit button is disabled, but pressing Enter or a network retry can still fire a second
+insert/update. Consider an explicit `if (loading) return;` guard at the top of `handleSave` and a
+unique constraint on `slug` (surface its error as a friendly message rather than the raw Postgres
+error text).
+
+
+
+─── src/app/(admin)/admin/locations/page.tsx:80-81 ───
+[maintainability · low] The `catch` block swallows the actual error and logs a generic "Lỗi kết
+nối!" message, which hurts diagnosability. Log the error (e.g. `console.error(err)`) and include a
+sanitized message in the toast so operators can distinguish network failures from validation errors.
+
+
+
+─── src/app/(admin)/admin/locations/page.tsx:88-88 ───
+[bug · medium] `handleDelete` uses the native `confirm` and has no pending/loading state, so the row
+stays clickable while the request is in flight and repeated clicks can queue multiple deletes. Track
+a deleting id and disable the button while the request runs.
+
+
+
+─── src/app/(admin)/admin/locations/page.tsx:99-100 ───
+[bug · medium] After the edit modal is opened, changing the name continues to overwrite the slug
+even though the user may have customized it (the slug stops tracking once manually edited, but a
+subsequent name edit will clobber it). Also, since the auto-slug transform is duplicated inline,
+extract it into a helper (e.g. `slugify`) so it can be reused and unit-tested. Additionally, when
+editing an existing record the auto-derived slug should not silently overwrite an existing custom
+slug.
+
+
+
+─── src/app/(admin)/admin/locations/page.tsx:70-73 ───
+[security · high] This admin mutation runs entirely in the browser via the anon key. There is no
+explicit auth/role check before create/update/delete; the only protection is Supabase RLS. If RLS is
+not correctly restricted to admins, any authenticated (or anonymous, if policies are absent) user
+can modify `directory_locations`. Add an explicit authorization check (server action / route handler
+verifying the admin session) or ensure documented admin-only RLS policies exist.
+
+
+
+─── src/app/(admin)/admin/contacts/page.tsx:9-12 ───
+[performance · medium] Unbounded query over PII: `select("*")` with no `limit`/`range` fetches every
+row (contact name, phone, business, message) in one request. As the contact table grows this returns
+a huge payload, slows the page, and over-exposes personal data. Fetch only the columns the table
+renders and add pagination/limit.
+
+    const { data: contacts, error } = await supabase
+      .from("contact_requests")
+-     .select("*")
+-     .order("created_at", { ascending: false });
++     .select("id, created_at, contact_name, business_name, phone, message, status")
++     .order("created_at", { ascending: false })
++     .limit(100);
+
+
+─── src/app/(admin)/admin/contacts/page.tsx:37-37 ───
+[bug · medium] The error row renders `error.message` directly (raw Supabase/DB internals) to the UI,
+which leaks backend details to any admin-page viewer. Log the raw message server-side and show a
+generic, user-friendly message in the UI.
+
+-                     Lỗi tải dữ liệu: {error.message}. (Vui lòng kiểm tra đã tạo table contact_requests chưa)
++                     Lỗi tải dữ liệu. Vui lòng thử lại sau.
+
+
+─── src/app/(admin)/admin/contacts/page.tsx:53-55 ───
+[bug · medium] `business_name` and `message` are nullable in the schema (the CHECK only constrains
+status), but they are rendered directly. A null `business_name` renders an empty cell and
+`title={c.message}` / truncation on a null message yields no tooltip; also the empty state treats a
+successful-but-null result ambiguously. Guard these fields with fallbacks.
+
+-                     <td className="p-4">{c.business_name}</td>
++                     <td className="p-4">{c.business_name ?? "—"}</td>
+                      <td className="p-4">{c.phone}</td>
+-                     <td className="p-4 max-w-xs truncate" title={c.message}>{c.message}</td>
++                     <td className="p-4 max-w-xs truncate" title={c.message ?? undefined}>{c.message ?? "—"}</td>
+
+
+─── src/app/(admin)/admin/contacts/page.tsx:57-59 ───
+[bug · low] Status is hardcoded to the single string 'new': any other value (or null) silently falls
+into the 'Đã xử lý' (processed) branch, which can misrepresent unhandled messages. Since the schema
+constrains values to 'new'/'processed', prefer an explicit mapping with a safe default.
+
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${c.status === 'new' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
+-                         {c.status === 'new' ? 'Mới' : 'Đã xử lý'}
++                         {c.status === 'new' ? 'Mới' : c.status === 'processed' ? 'Đã xử lý' : 'Không xác định'}
+                        </span>
+
+
+─── src/app/(admin)/admin/users/UsersClient.tsx:31-36 ───
+[bug · medium] Accessing `data.error` without checking `res.ok` means non-JSON error responses (e.g.
+HTML error pages, 500/502 gateways) will make `res.json()` throw and surface the generic "Lỗi kết
+nối!" message, masking the real failure. Check the response status before parsing and handle
+non-JSON bodies.
+
+
+
+─── src/app/(admin)/admin/users/UsersClient.tsx:42-44 ───
+[maintainability · low] The catch block binds `err` but never uses it, so the actual error (network
+vs. parse failure) is lost. Log the error (or include its message) to aid diagnosis.
+
+
+
+─── src/app/(admin)/admin/users/UsersClient.tsx:53-55 ───
+[bug · medium] `userId` is interpolated directly into the query string without `encodeURIComponent`,
+and the destructive DELETE handler does not check `res.ok` before parsing JSON. Encode the id and
+validate the response status.
+
+
+
+─── src/app/(admin)/admin/users/UsersClient.tsx:61-63 ───
+[maintainability · low] Same unused `err` pattern here: the bound variable is never referenced, so
+server-side details are discarded and only a generic Vietnamese message is shown.
+
+
+
+─── src/app/(admin)/admin/users/UsersClient.tsx:12-12 ───
+[maintainability · medium] Props are typed as `any[]`, which defeats type safety in a
+security-sensitive admin screen; a renamed/missing field (e.g. role, owner_id, created_at) would
+fail silently at runtime. Define explicit interfaces for profiles and businesses.
+
+
+
+─── src/app/(admin)/admin/users/UsersClient.tsx:149-149 ───
+[security · medium] The initial password is entered in a plain `type="text"` field, exposing it on
+screen and in the browser's autofill/history. Use `type="password"` (with a show/hide toggle if
+needed).
+
+
+
+─── src/app/(admin)/admin/users/UsersClient.tsx:168-170 ───
+[bug · medium] For `role === 'owner'` the business select is optional, so an owner can be created
+with an empty `businessId`, producing an orphan account with no owned business. Mark the select
+`required` or validate `businessId` before submitting.
+
+
+
+─── src/app/(admin)/admin/users/UsersClient.tsx:116-116 ───
+[bug · low] `new Date(p.created_at)` will render "Invalid Date" if `created_at` is missing/null.
+Guard against an absent value before formatting.
+
+
+
+─── src/app/(admin)/admin/plans/page.tsx:94-96 ───
+[bug · medium] The `err` parameter is captured but never used, and the generic "Lỗi kết nối!"
+message hides the real cause (e.g. Supabase client errors, network failures). Log or surface the
+actual error to aid debugging.
+
+```ts
+toast.error(`Lỗi kết nối: ${err instanceof Error ? err.message : String(err)}`);
+```
+
+
+
+─── src/app/(admin)/admin/plans/page.tsx:69-75 ───
+[bug · high] `parseFloat` on free-text numeric input is never validated: an empty/whitespace value
+yields `NaN`, and negative values are accepted, which would persist `NaN`/negative prices. Validate
+before building the payload and reject with a user-facing message.
+
++     const monthly = Number(priceMonthly);
++     const yearly = Number(priceYearly);
++     if (!Number.isFinite(monthly) || !Number.isFinite(yearly) || monthly < 0 || yearly < 0) {
++       toast.error("Giá không hợp lệ. Vui lòng nhập số không âm.");
++       setLoading(false);
++       return;
++     }
++ 
+      const payload = {
+        name,
+        description,
+-       price_monthly: parseFloat(priceMonthly),
+-       price_yearly: parseFloat(priceYearly),
++       price_monthly: monthly,
++       price_yearly: yearly,
+        is_active: isActive
+      };
+
+
+─── src/app/(admin)/admin/plans/page.tsx:15-15 ───
+[maintainability · medium] `useState<any[]>`, `plan: any`, and `catch (err: any)` bypass type safety
+and are prohibited by the project's TypeScript rules without justification. Define a `Plan`
+interface (id, name, description, price_monthly, price_yearly, is_active, created_at) and use it for
+the state and `openEditModal`.
+
+
+
+─── src/app/(admin)/admin/plans/page.tsx:41-43 ───
+[maintainability · low] `fetchPlans` is recreated on every render and referenced inside `useEffect`
+with an empty dependency array, which will trip the `react-hooks/exhaustive-deps` lint rule. Since
+it only depends on the stable `supabase` client, wrap it in `useCallback` and list it as a
+dependency (or move the fetch inside the effect).
+
+    useEffect(() => {
+      fetchPlans();
+-   }, []);
++   }, [fetchPlans]);
+
+
+─── src/app/(admin)/admin/plans/page.tsx:103-109 ───
+[bug · medium] `handleDelete` awaits the Supabase delete without a try/catch, so a thrown error
+(network/connection failure) becomes an unhandled rejection instead of a user-facing toast, unlike
+`handleSave` which wraps its calls. Wrap the delete call in try/catch with a friendly error message.
+
++     try {
+-     const { error } = await supabase.from('plans').delete().eq('id', id);
++       const { error } = await supabase.from('plans').delete().eq('id', id);
+-     if (error) {
++       if (error) {
+-       toast.error(error.message);
++         toast.error(error.message);
+-     } else {
++       } else {
+-       toast.success("Đã xóa gói!");
++         toast.success("Đã xóa gói!");
+-       fetchPlans();
++         fetchPlans();
++       }
++     } catch {
++       toast.error("Lỗi kết nối!");
+      }
+
+
+─── src/app/(admin)/admin/plans/page.tsx:61-63 ───
+[bug · medium] `openEditModal` reads `plan.is_active` directly; if the column is nullable (as
+`description` handling suggests), `isActive` state can be set to `undefined`, breaking the
+controlled checkbox. Coerce to boolean: `setIsActive(!!plan.is_active)`.
+
+-     setIsActive(plan.is_active);
++     setIsActive(!!plan.is_active);
+      setIsModalOpen(true);
+    };
+
+
+─── src/app/(admin)/admin/settings/page.tsx:25-30 ───
+[bug · high] The fetch effect ignores the `error` returned by Supabase, so a failed query is
+silently swallowed and the UI shows the hardcoded defaults as if they were real settings. Also, the
+effect has no cleanup/guard, so `setFetching`/`setSettings` may run after unmount. Handle the error
+and guard against unmounted state updates.
+
+-     supabase.from('site_settings').select('value').eq('key', 'global').single().then(({ data, error }) => {
+-       if (data && data.value) {
+-         setSettings(data.value as any);
++     let cancelled = false;
++     supabase
++       .from('site_settings')
++       .select('value')
++       .eq('key', 'global')
++       .single()
++       .then(({ data, error }) => {
++         if (cancelled) return;
++         if (error) {
++           toast.error(error.message);
++         } else if (data?.value) {
++           setSettings(prev => ({ ...prev, ...(data.value as Partial<typeof prev>) }));
+-       }
++         }
+-       setFetching(false);
++         setFetching(false);
+-     });
++       });
++     return () => {
++       cancelled = true;
++     };
+
+
+─── src/app/(admin)/admin/settings/page.tsx:41-50 ───
+[bug · high] The upsert first does a separate SELECT whose `error` is ignored, then branches on
+`existing`. If the SELECT fails (or returns no row due to RLS/transient error) while a row actually
+exists, the INSERT branch runs and creates a duplicate `key: 'global'` row, or the update is applied
+to a non-existent row and silently affects 0 rows. Prefer a single atomic upsert and check its
+result instead of a race-prone read-then-write.
+
+-     const { data: existing } = await supabase.from('site_settings').select('id').eq('key', 'global').single();
+-     
+-     let error;
+-     if (existing) {
+-       const res = await supabase.from('site_settings').update({ value: settings, updated_at: new Date().toISOString() }).eq('key', 'global');
+-       error = res.error;
+-     } else {
+-       const res = await supabase.from('site_settings').insert({ key: 'global', value: settings });
+-       error = res.error;
+-     }
++     const { error } = await supabase
++       .from('site_settings')
++       .upsert(
++         { key: 'global', value: settings, updated_at: new Date().toISOString() },
++         { onConflict: 'key' }
++       );
+
+
+─── src/app/(admin)/admin/settings/page.tsx:27-27 ───
+[maintainability · medium] Casting the fetched value with `as any` bypasses type safety; a malformed
+or partial `value` object would replace the whole settings state (e.g. `site_name` becoming
+`undefined`, which then hits a controlled `<Input>` and triggers React's uncontrolled-input
+warning). Merge into the typed defaults after validation instead of an untyped cast.
+
+
+
+─── src/app/(admin)/admin/settings/page.tsx:37-38 ───
+[bug · medium] `handleSave` writes user input without any validation or sanitization (empty site
+name, invalid/malformed contact email). These values are persisted as global settings and rendered
+site-wide (Header/Footer), so invalid input can break the UI or the contact link. Validate before
+saving. Additionally, the `error` variable is implicitly `any` (declared via `let error`), losing
+type safety.
+
+
+
+─── src/app/(admin)/admin/settings/page.tsx:16-16 ───
+[bug · medium] `supabase` is recreated on every render via `createClient()` and is used inside the
+effect but omitted from its dependency array, and the effect's async logic is not awaited. Since the
+client is recreated each render, this makes the effect inconsistent. Also, the empty dependency
+array here is a lint violation given the referenced `supabase`. Wrap the client creation in
+`useMemo`/module scope, or add it to dependencies.
+
+
+
+─── src/app/(admin)/admin/settings/page.tsx:112-112 ───
+[bug · medium] The "Hủy bỏ" (cancel) button has no `onClick` handler, so it does nothing — a
+dead/no-op control. Either reset the form to the last-saved values or remove the button.
+
+
+
+─── src/app/(admin)/layout.tsx:27-31 ───
+[security · critical] Authorization gap: this is a denylist (only `owner` is blocked), so ANY other
+role value — including `undefined` when `user_metadata.role` is missing — is implicitly granted
+access to the admin panel. This should be an explicit allowlist (e.g. `admin`/`superadmin`) that
+redirects/403s for every other case, otherwise a user with no role or an unexpected role gets admin
+access.
+
+-   const role = user.user_metadata?.role;
+-   if (role === "owner") {
+-     // Owner (chủ doanh nghiệp) không có quyền truy cập admin panel
+-     redirect("/dashboard");
++   const role = user.app_metadata?.role;
++   const ADMIN_ROLES = ["admin", "superadmin"];
++   if (!role || !ADMIN_ROLES.includes(role)) {
++     redirect(role === "owner" ? "/dashboard" : "/login");
+    }
+
+
+─── src/app/(admin)/layout.tsx:27-27 ───
+[security · critical] `user_metadata` is user-mutable in Supabase (users can edit their own metadata
+via the client SDK), so using it as the authorization source makes the admin gate spoofable — a user
+could set `user_metadata.role = 'admin'`/remove `'owner'` and reach the admin panel. Derive the role
+from `user.app_metadata` (server-only writable) or a trusted server-side source/table instead.
+
+-   const role = user.user_metadata?.role;
++   const role = user.app_metadata?.role;
+
+
+─── src/app/(admin)/layout.tsx:18-20 ───
+[bug · medium] `supabase.auth.getUser()` failures (network/auth-service errors) are not handled;
+here `getUser` returns `{ data, error }` and on failure `user` is null so it silently redirects to
+/login, but the underlying error is swallowed. Consider destructuring and surfacing `error` (e.g.
+logging / friendly message) so genuine auth-service outages are distinguishable from unauthenticated
+access.
+
+    const {
+      data: { user },
++     error,
+    } = await supabase.auth.getUser();
++ 
++   if (error) {
++     console.error("Admin auth check failed:", error.message);
++   }
+
+
+─── src/app/(admin)/layout.tsx:22-24 ───
+[maintainability · low] Business route strings "/login" and "/dashboard" are hardcoded here (and
+duplicated across layouts, e.g. (business)/dashboard/layout.tsx). Per the no-hardcoding rule for URL
+paths, centralize these route constants (e.g. `ROUTES.LOGIN`, `ROUTES.DASHBOARD`) to avoid
+divergence when paths change.
+
+
+
+─── src/app/(business)/dashboard/layout.tsx:9-9 ───
+[bug · medium] The auth check discards the error returned by `getUser()`. If Supabase auth is
+unreachable or errors, `user` is undefined and the user is silently redirected to `/login` as if
+unauthenticated, masking an infrastructure outage. Explicitly handling the error (e.g. logging it
+and rendering an error state) would make failures distinguishable from a genuine signed-out state.
+
+
+
+─── src/app/(business)/dashboard/layout.tsx:16-20 ───
+[bug · medium] The business query ignores its error. `.single()` returns an error when the user owns
+no business row, so a missing data/DB failure is silently swallowed and the layout renders the 'Chưa
+có doanh nghiệp' fallback. Additionally, `redirect()` should return `never` but some call sites
+continue execution; consider handling the error explicitly so an expected 'no business' case is
+distinguished from a query failure.
+
+
+
+─── src/app/(business)/dashboard/layout.tsx:64-66 ───
+[bug · high] `business.plan_id` is fetched but never used to derive the displayed plan. The sidebar
+always renders 'Gói Standard' with an 'Nâng cấp ngay' CTA, so users who already have a paid plan are
+shown the wrong plan and an unnecessary upgrade prompt. Derive the plan label/CTA from `plan_id` (or
+the joined plan record).
+
+
+
+─── src/app/(business)/dashboard/layout.tsx:52-60 ───
+[maintainability · low] The three sidebar nav links and the header/upgrade links hardcode route
+strings and duplicate near-identical `Link` markup. Extracting a typed nav array (label, href, icon)
+would remove the duplication and centralize route changes. Also note this component is declared
+`async` and is a server component, so the duplicate `Link` elements are re-created on each render.
+
+
+
+─── src/app/(business)/dashboard/layout.tsx:4-4 ───
+[maintainability · low] `ArrowLeft` is imported from lucide-react but never used in this file.
+Remove the unused import to keep the module clean.
+
+
+
+─── src/app/(admin)/admin/users/page.tsx:6-7 ───
+[bug · high] Supabase query errors are silently discarded. If the `profiles`/`businesses` fetch
+fails (network, RLS denial, timeout), `data` is `null` and the fallback coerces it to `[]`, so the
+admin sees an indistinguishable "no users" empty state and no error is logged or surfaced.
+Destructure and handle `error`, e.g. log it and render/throw an error state instead of silently
+returning an empty list.
+
+-   const { data: profiles } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+-   const { data: businesses } = await supabase.from("businesses").select("id, name, owner_id");
++   const { data: profiles, error: profilesError } = await supabase
++     .from("profiles")
++     .select("*")
++     .order("created_at", { ascending: false });
++   const { data: businesses, error: businessesError } = await supabase
++     .from("businesses")
++     .select("id, name, owner_id");
++ 
++   if (profilesError || businessesError) {
++     console.error("Failed to load admin users data", { profilesError, businessesError });
++     return <UsersClient initialProfiles={[]} businesses={[]} loadError="Không thể tải danh sách người dùng." />;
++   }
+
+
+─── src/app/(admin)/admin/users/page.tsx:0-0 ───
+[security · medium] `select("*")` on `profiles` pulls every column and ships the whole result to the
+client component (it becomes part of the RSC payload). If `profiles` contains sensitive columns
+(email, tokens, internal flags) they are exposed to the browser bundle. Select only the columns the
+UI actually needs.
+
+      .from("profiles")
+-     .select("*")
++     .select("id, full_name, role, business_id, created_at")
+
+
+─── src/app/(admin)/admin/users/page.tsx:6-6 ───
+[performance · medium] Both queries fetch all rows with no `.limit()`/pagination. As the user base
+grows this loads the entire `profiles` and `businesses` tables into memory on every request and
+transfers it to the client. Add a range/limit (or server-side pagination) to bound the payload.
+
+
+
+─── src/app/(admin)/admin/users/page.tsx:4-5 ───
+[security · high] Authorization for this sensitive page relies solely on middleware
+(`user_metadata.role`, which is user-modifiable) and route-group naming. There is no server-side
+admin/role check in the page itself. Enforce the admin role here as well and rely on Supabase RLS so
+the data cannot be read by non-admins even if middleware is bypassed.
+
+
+
+─── src/app/(business)/dashboard/page.tsx:8-14 ───
+[bug · high] The Supabase results are destructured without inspecting `error`. Any auth/DB/network
+failure collapses into `business === null`, so the user is shown the misleading "no business linked
+— contact admin" message instead of a real error. Capture and check `error` (e.g. throw or render an
+error state, or redirect on `PGRST116`/not-found).
+
+
+
+─── src/app/(business)/dashboard/page.tsx:13-13 ───
+[bug · high] `user?.id` may be `undefined` for an unauthenticated visitor, which sends an
+`.eq("owner_id", undefined)` query and then renders the "contact admin to be granted ownership"
+fallback — incorrect and confusing for a logged-out user. Guard with `if (!user) {
+redirect("/login") }` before querying (the layout does this, so this page should do it too).
+
+
+
+─── src/app/(business)/dashboard/page.tsx:14-14 ───
+[bug · medium] `.single()` throws/errors if the query returns zero or more than one row, and the
+returned `error` is ignored — a data inconsistency (duplicate businesses per owner) is silently
+swallowed and shown as "no business". Consider `.maybeSingle()` plus explicit handling of the error
+code, or surface the failure.
+
+
+
+─── src/app/(business)/dashboard/upgrade/page.tsx:19-28 ───
+[bug · high] Missing error handling on Supabase calls. If `getUser()` fails or the `businesses`
+query errors/returns a user-less state, `setLoading(false)` is never called (when `user` is null the
+`else` path doesn't exist), leaving the page stuck on "Đang tải..." forever. Also `.single()`
+returns `data: null` with an error when no row matches, which is silently ignored. Handle the error
+branch and always clear the loading state.
+
+Additionally, the effect references `supabase` but declares an empty dependency array, violating the
+hooks/exhaustive-deps contract. Use `async/await` inside an inner function with a cancellation
+guard, or memoize the supabase client.
+
+
+
+─── src/app/(business)/dashboard/upgrade/page.tsx:14-14 ───
+[bug · high] `business` is typed as `any`, which hides the fact that `slug` may be
+missing/undefined. `business.slug.toUpperCase()` will throw a runtime TypeError if `slug` is
+null/undefined (the row is fetched with `select("*")` and never validated). Type the state properly
+and guard the field access, e.g. `(business?.slug ?? "").toUpperCase()`.
+
+
+
+─── src/app/(business)/dashboard/upgrade/page.tsx:14-14 ───
+[maintainability · medium] `useState<any>` combined with later non-null accesses (`business.id`,
+`business.slug`) means the declared type provides no safety. Prefer a concrete interface (id, slug,
+plan_id, status) so missing fields surface at compile time instead of crashing at runtime.
+
+
+
+─── src/app/(business)/dashboard/upgrade/page.tsx:33-37 ───
+[security · medium] Hardcoded payment/business constants embedded in the component: the amount, bank
+account, bank name, transfer prefix, and the SePay QR URL. These are configuration/business data
+that should come from server config or env vars; hardcoding them makes changes error-prone and
+exposes the bank account details in the client bundle. Note `TRANSFER_CONTENT` interpolates
+`business.slug.toUpperCase()` without guarding `slug`.
+
+
+
+─── src/app/(business)/dashboard/upgrade/page.tsx:42-44 ───
+[bug · high] Weak payment verification: any non-null `plan_id` is treated as a successful upgrade
+(`if (data && data.plan_id)`), even if the plan was already active before payment, or belongs to an
+unrelated/older state. The query also has no error handling, and the response's `error` is ignored.
+Verify the specific target plan and payment status/server-side confirmation rather than the mere
+presence of a plan_id, and handle the error case with a user-facing message.
+
+
+
+─── src/app/(business)/dashboard/upgrade/page.tsx:45-47 ───
+[bug · medium] The success `setTimeout` that pushes to `/dashboard` is not cleaned up. If the
+component unmounts before the 3s elapse (e.g., the user navigates away), the callback still fires
+and triggers a navigation/setState on an unmounted component. Store the timer id and clear it in a
+cleanup function (or in a `useEffect` cleanup).
+
+
+
+─── src/app/(business)/dashboard/upgrade/page.tsx:39-40 ───
+[bug · medium] `handleCheckPayment` has no try/catch. If the Supabase call rejects (network
+failure), the rejection is unhandled and `setChecking(false)` is never reached, leaving the button
+permanently disabled with a spinning loader. Wrap in try/catch/finally (the `finally` can reset
+`checking`) and surface an error to the user.
+
+
+
+─── src/app/(business)/dashboard/upgrade/page.tsx:97-97 ───
+[bug · low] Comment says the system auto-activates "after 5 seconds", but there is no
+polling/auto-check logic anywhere; activation only occurs when the user manually clicks "Tôi đã
+chuyển khoản". Also the success copy references the "Standard" plan while the check only tests for
+any `plan_id`. Either implement the advertised polling or correct the misleading UI copy.
+
+
+
+─── src/app/(business)/dashboard/settings/page.tsx:13-13 ───
+[bug · medium] The Supabase client is recreated on every render (`createClient()` runs in the
+component body), yet the effect has an empty dependency array. This violates
+`react-hooks/exhaustive-deps` and means the effect closes over a client instance that is discarded
+each render. Even though the current call would still work, any future use of `supabase` inside the
+effect risks stale closures, and any subscription would not be cleaned up. Use `useMemo` to
+stabilize the client and add it to the deps (or declare the effect dependency explicitly). Also
+there is no cleanup/guard if the component unmounts before `getUser()` resolves, so `setEmail` may
+run on an unmounted component.
+
+-   const supabase = createClient();
++   const supabase = useMemo(() => createClient(), []);
+
+
+─── src/app/(business)/dashboard/settings/page.tsx:29-30 ───
+[maintainability · medium] `updates` is typed as `any`, which bypasses type safety for
+`supabase.auth.updateUser`. The project rules discourage `any`; use the proper `UserAttributes` type
+(or at least a typed object with optional `password`). Note also that `updates.password` will be
+sent verbatim, but since `email` is not included in `updates` the object only ever contains
+`password`, so the conditional branch and the wrapper object add little value — the logic could be
+simplified to directly call `updateUser({ password })`.
+
+-       const updates: any = {};
+-       if (password) updates.password = password;
++       const updates: { password: string } = { password };
+
+
+─── src/app/(business)/dashboard/settings/page.tsx:74-79 ───
+[security · medium] The password is submitted to Supabase with no client-side validation (minimum
+length/strength). Supabase's server-side minimum (6 chars) is the only guard, and errors from it
+surface only after the round trip. Add basic validation before calling `updateUser` to give
+immediate, user-friendly feedback and prevent trivially weak credentials.
+
+
+
+─── src/app/(business)/dashboard/settings/page.tsx:33-34 ───
+[maintainability · low] `catch (err: any)` defeats type checking. Prefer `unknown` and narrow the
+error (e.g. `err instanceof Error ? err.message : ...`) so that non-Error throws are handled safely
+and the stated fallback message is actually used.
+
+-       const { error } = await supabase.auth.updateUser(updates);
++       const { error } = await supabase.auth.updateUser({ password });
+          if (error) throw error;
+
+
+─── src/app/(business)/dashboard/settings/page.tsx:35-35 ───
+[security · high] Important security/UX gap: changing the password does not require
+re-authentication (current password) or a re-login. Supabase allows updating the password for an
+active session, so anyone with access to an unlocked browser can silently take over the account.
+Consider requiring the current password to be verified (e.g. `signInWithPassword`) before calling
+`updateUser`, and/or signing the user out after the change.
+
+
+
+─── src/app/(business)/dashboard/settings/page.tsx:10-10 ───
+[maintainability · low] On success the email display is not refreshed and password state is cleared,
+but there is no handling of the case where `updateUser` resolves successfully yet an
+email-confirmation flow is required. More importantly, the two states diverge: the "no changes" info
+toast cannot be reached when `password` is empty after a prior save, which is fine, but the missing
+null check on `err.message` above should be addressed. Additionally, `User` is imported from
+`lucide-react` but never used in JSX, which is dead code and will trigger lint warnings.
+
+- import { Lock, Mail, User } from "lucide-react";
++ import { Lock, Mail } from "lucide-react";
+
+
+─── src/app/bang-gia/PricingClient.tsx:7-7 ───
+[maintainability · high] `plans` is typed as `any[]`, which defeats TypeScript and hides
+missing/invalid fields. Since the parent (`src/app/bang-gia/page.tsx`) queries `plans` from Supabase
+(`select('*')`) and renders this component only when non-empty, a `Plan` interface with the used
+fields (`id`, `name`, `description?`, `price_monthly`, `price_yearly`) would make the contract
+explicit and prevent runtime errors. Please define a proper type instead of `any`.
+
+
+
+─── src/app/bang-gia/PricingClient.tsx:8-8 ───
+[maintainability · medium] `isYearly` is hardcoded to `true` and never read anywhere in the
+component — dead code. It also suggests a monthly billing branch that no longer exists while the UI
+copy still assumes yearly pricing. Remove it (or implement the toggle properly) to avoid misleading
+readers.
+
+
+
+─── src/app/bang-gia/PricingClient.tsx:14-16 ───
+[bug · high] Business pricing rules (`isPremium` derived from `price_yearly > 0`, and the "discount"
+derived by multiplying `price_monthly * 12`) are inlined in the view. These are duplicated business
+logic that will drift from the real pricing data (the DB already stores explicit monthly/yearly
+prices). If the API returns strings (Supabase numeric columns are often returned as strings),
+`price_yearly > 0` and `originalPrice > price` perform string/number coercion and can produce wrong
+badges or an incorrect strikethrough price. Prefer explicit numeric parsing (e.g.
+`Number(plan.price_yearly) || 0`) and, ideally, move premium detection / original-price computation
+into a shared pricing helper or the data layer rather than hardcoding the `* 12` rule in JSX.
+
+
+
+─── src/app/bang-gia/PricingClient.tsx:40-40 ───
+[bug · medium] `Number(price)` guards against NaN in the output only partially: if `price_yearly` is
+`null`/`undefined`, `Number(price)` is `NaN` and `toLocaleString` renders "NaN đ"; if
+`price_monthly` is missing, `originalPrice` is `NaN` and `originalPrice > price` is always false so
+the strikethrough is silently dropped. Also, a free plan (price 0) still shows "0 đ/năm" — verify
+that is intended. Consider validating/normalizing the values before formatting.
+
+
+
+─── src/app/bang-gia/PricingClient.tsx:76-76 ───
+[maintainability · medium] The CTA hardcodes `/lien-he` (contact page) rather than an actual
+checkout/subscribe route, and the card body advertises "Đăng ký ngay" for a paid tier. This is a
+hardcoded navigation path binding business flow to the contact form; if a real checkout page exists,
+it should be used (or exposed via config/constant) so it can change without editing the view.
+
+
+
+─── src/app/bang-gia/PricingClient.tsx:94-94 ───
+[maintainability · low] This block hardcodes a business guarantee (automatic activation 24/7 via QR
+bank transfer) as static copy, independent of the actual payment integration. Such claims should
+come from configuration/content so they stay in sync with the real checkout capability, otherwise
+the page can promise behavior the system does not provide.
+
+
+
+─── src/app/bang-gia/page.tsx:16-16 ───
+[bug · medium] The Supabase query destructures only `data` and ignores `error`. On any DB/network
+failure (or RLS denial) the error is silently discarded and the page renders the misleading "Hệ
+thống đang cập nhật bảng giá" empty state, hiding a real outage from monitoring. Capture and handle
+the error (log it / surface a distinct failure state or throw so the error boundary catches it).
+
+-   const { data: plans } = await supabase.from('plans').select('*').eq('is_active', true).order('price_monthly', { ascending: true });
++   const { data: plans, error } = await supabase.from('plans').select('*').eq('is_active', true).order('price_monthly', { ascending: true });
++   if (error) {
++     console.error('Failed to load pricing plans:', error.message);
++   }
+
+
+─── src/app/bang-gia/page.tsx:46-46 ───
+[maintainability · medium] `plans` is untyped (`any[]` inferred from `select('*')`), so the plan
+shape passed to PricingClient is unchecked. Since PricingClient does `plan.price_yearly > 0` and
+`plan.price_monthly * 12`, a missing/renamed column silently produces meaningless pricing. Define a
+`Plan` type (matching the `plans` table) and type both the query result and PricingClient's props
+instead of relying on `any`.
+
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:368-368 ───
+[security · critical] Stored XSS risk: `pageContent.map_embed` is free-text user input (also
+persisted to Supabase and rendered on the public business page), and it is injected into the DOM via
+`dangerouslySetInnerHTML` without sanitization. Any HTML/script in the embed will execute in the
+browser of anyone viewing the page. Sanitize/whitelist the iframe embed (e.g. DOMPurify or a strict
+URL/attribute allowlist) before rendering, and validate it on save.
+
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:73-76 ───
+[bug · high] Missing error handling and unhandled failure path: the auth and business queries don't
+destructure/check `error`. If `getUser()` returns no user (or the query fails), the promise resolves
+without ever calling `setLoading(false)`, so the UI can hang on "Đang tải thông tin..." forever with
+no user-facing error. Use async/await with a try/catch (or finally) that always sets loading false
+and surfaces an error state.
+
+    useEffect(() => {
+-     supabase.auth.getUser().then(({ data: { user } }) => {
+-       if (user) {
+-         supabase.from("businesses").select("*, plans(name)").eq("owner_id", user.id).single().then(({ data }) => {
++     let cancelled = false;
++     const load = async () => {
++       try {
++         const { data: { user }, error: authError } = await supabase.auth.getUser();
++         if (authError) throw authError;
++         if (!user) { if (!cancelled) setLoading(false); return; }
++         const { data, error } = await supabase.from("businesses").select("*, plans(name)").eq("owner_id", user.id).single();
++         if (error) throw error;
++         if (data && !cancelled) { /* ...existing logic... */ }
++       } catch (e) {
++         toast.error("Không thể tải thông tin doanh nghiệp");
++       } finally {
++         if (!cancelled) setLoading(false);
++       }
++     };
++     load();
++     return () => { cancelled = true; };
++   }, []);
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:105-105 ───
+[bug · medium] The try/catch around JSON parsing is empty, silently swallowing malformed
+`page_content`. A parse failure leaves the form blank with no indication to the user. At minimum log
+the error or notify via toast so corrupted data is detectable.
+
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:160-160 ───
+[bug · medium] `handleSave` dereferences `business.id` but does not guard against `business` being
+null (it is state typed `any`, initialized to null). Though the render short-circuits on
+`!business`, relying on that invariant is fragile; add an explicit guard or use the loaded id
+captured from state to avoid a possible runtime error.
+
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:183-187 ───
+[bug · medium] In-place mutation of state: `newServices`/`newOffers` are only shallow copies, so
+`newServices[index][field] = value` mutates the nested object that still belongs to the previous
+state. React state updates must be immutable to reliably trigger re-renders. Create a new object for
+the modified item, e.g. `newServices[index] = { ...newServices[index], [field]: value }`.
+
+    const updateService = (index: number, field: string, value: any) => {
+-     const newServices = [...pageContent.services];
+-     newServices[index][field] = value;
++     const newServices = pageContent.services.map((s: any, i: number) =>
++       i === index ? { ...s, [field]: value } : s
++     );
+      handlePageContentChange("services", newServices);
+    };
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:199-203 ───
+[bug · medium] Same in-place mutation problem: `newOffers[index][field] = value` mutates the nested
+offer object still referenced by previous state. Return a new object for the target index instead.
+
+    const updateOffer = (index: number, field: string, value: any) => {
+-     const newOffers = [...pageContent.offers];
+-     newOffers[index][field] = value;
++     const newOffers = pageContent.offers.map((o: any, i: number) =>
++       i === index ? { ...o, [field]: value } : o
++     );
+      handlePageContentChange("offers", newOffers);
+    };
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:269-271 ───
+[bug · medium] Same in-place mutation for working_hours: `newWh[i].hours = e.target.value` mutates
+the nested object held by previous state. Build new objects instead, e.g.
+`pageContent.working_hours.map((wh, idx) => idx === i ? { ...wh, hours: e.target.value } : wh)`.
+
+-                         const newWh = [...pageContent.working_hours];
+-                         newWh[i].hours = e.target.value;
++                         const newWh = (pageContent.working_hours || []).map((w: any, idx: number) =>
++                           idx === i ? { ...w, hours: e.target.value } : w
++                         );
+                          handlePageContentChange("working_hours", newWh);
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:159-160 ───
+[security · high] Premium gating is UI-only: the gallery and offers sections are visually
+locked/disabled, but `handleSave` always writes the full `pageContent` (including `gallery` and
+`offers`) to the database. A non-premium user can bypass this via devtools/API. Enforce the plan
+check server-side (RLS policy or an API route) rather than relying on the client overlay.
+
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:189-190 ───
+[bug · low] `duplicateService` spreads only a shallow copy of the service object: `{ ...svc }`.
+Nested references (and the currently-entered data) are shared, and because `svc` comes directly from
+state this can also alias subsequent mutations. Deep-clone the object when duplicating.
+
+      const svc = pageContent.services[index];
+      handlePageContentChange("services", [...pageContent.services, { ...svc }]);
+
+
+─── src/app/(business)/dashboard/profile/page.tsx:143-144 ───
+[maintainability · low] `handleSave` returns early if `business` is null but there is no explicit
+check inside the function; more importantly the whole save path lacks validation of required fields
+(e.g. `name`) and of URL/email formats before persisting free-form input. Consider validating user
+input before writing to the database to avoid storing invalid/unbounded values.
+
+
+
+─── src/app/blog/page.tsx:16-18 ───
+[bug · medium] The Supabase error is only logged to console; on failure the component falls through
+to `blogs == null` and renders the "Nội dung đang được cập nhật" empty state. This conflates a real
+data-access failure with a legitimately empty blog list, hiding outages from users and monitoring.
+Consider re-throwing (or rendering a distinct error UI) so failures are not silently masked as
+empty.
+
+    if (error) {
+      console.error("Failed to fetch blogs:", error);
++     throw new Error("Không thể tải danh sách bài viết");
+    }
+
+
+─── src/app/blog/page.tsx:55-58 ───
+[bug · medium] `next/image` will throw at runtime if `blog.cover_image` points to a host not listed
+in `next.config.ts` `images.remotePatterns`. Since `cover_image` is admin/AI-authored
+(`/api/ai/write-blog` stores an arbitrary Pexels `src.large` URL), an unlisted host breaks the whole
+page render. Either render unlisted hosts with a plain `<img>`/fallback or ensure all possible hosts
+are whitelisted.
+
+
+
+─── src/app/blog/page.tsx:75-75 ───
+[bug · medium] If both `published_at` and `created_at` are null (or an unparseable string), `new
+Date(null)` yields the epoch (1970-01-01) and `new Date(undefined)` yields "Invalid Date", which is
+then rendered to users. Add a null/validity check before formatting the date.
+
+-                       {new Date(blog.published_at || blog.created_at).toLocaleDateString("vi-VN", {
++                       {(blog.published_at || blog.created_at)
++                         ? new Date(blog.published_at || blog.created_at).toLocaleDateString("vi-VN", {
++                             day: "numeric",
++                             month: "long",
++                             year: "numeric",
++                           })
++                         : ""}
+
+
+─── src/app/blog/page.tsx:26-29 ───
+[maintainability · low] Inline `style` with a hardcoded external Unsplash URL is discouraged by the
+project's UI rules (avoid inline styles except for dynamic values) and scatters hardcoded asset URLs
+through the codebase. Prefer a Tailwind background-image class or centralize the asset URL in a
+shared constant/config.
+
+-           <div 
++           <div
+-             className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+-             style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1920&q=80")' }}
++             className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-[url('https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1920&q=80')]"
+            >
+
+
+─── src/app/blog/[slug]/page.tsx:26-30 ───
+[bug · high] The detail query does not filter on `status = "published"`, unlike the index page
+(src/app/blog/page.tsx filters `.eq("status", "published")`). Any draft/unpublished post is
+therefore reachable at its slug and rendered publicly, leaking unreleased content. Add the status
+filter and also handle the Supabase `error` (a DB failure is currently indistinguishable from a
+missing post, both silently becoming a 404).
+
+-   const { data: blog } = await supabase
++   const { data: blog, error } = await supabase
+      .from("blogs")
+      .select("*")
+      .eq("slug", slug)
++     .eq("status", "published")
+      .single();
++ 
++   if (error && error.code !== "PGRST116") {
++     throw new Error(`Failed to load blog post "${slug}": ${error.message}`);
++   }
+
+
+─── src/app/blog/[slug]/page.tsx:13-13 ───
+[maintainability · medium] This query also ignores the `error` field and lacks the `status =
+"published"` filter, so drafts get indexable metadata (and DB errors are reported as "not found").
+It also duplicates the exact same fetch performed in `BlogDetailPage`, causing a redundant round
+trip; consider extracting a shared `getBlogBySlug(slug)` helper (e.g. wrapped in React `cache()`)
+used by both `generateMetadata` and the page.
+
+-   const { data: blog } = await supabase.from("blogs").select("title, excerpt").eq("slug", slug).single();
++   const { data: blog } = await supabase
++     .from("blogs")
++     .select("title, excerpt")
++     .eq("slug", slug)
++     .eq("status", "published")
++     .single();
+
+
+─── src/app/blog/[slug]/page.tsx:89-92 ───
+[security · high] `blog.content` is injected as raw HTML with no sanitization. If posts are authored
+by non-trusted users or the field can be attacker-influenced, this is a stored XSS vector (e.g.
+`<script>`, `onerror=`, `javascript:` links). Sanitize the HTML server-side (e.g.
+DOMPurify/isomorphic-dompurify) before rendering.
+
+-           <div 
++           <div
+              className="prose prose-lg max-w-none prose-img:rounded-xl prose-a:text-gold hover:prose-a:text-gold/80"
+-             dangerouslySetInnerHTML={{ __html: blog.content || "" }}
++             dangerouslySetInnerHTML={{ __html: sanitizeHtml(blog.content ?? "") }}
+            />
+
+
+─── src/app/blog/[slug]/page.tsx:8-8 ───
+[performance · medium] `revalidate = 3600` is declared but there is no `generateStaticParams`, and
+`params` is typed as a `Promise` while being awaited in a non-static context — so the route is
+effectively rendered dynamically on every request, making the ISR setting ineffective. If static
+generation is intended, add `generateStaticParams` (fetch all published slugs) so the page can be
+pre-rendered/cached; otherwise remove the `revalidate` export or set `dynamicParams` explicitly.
+
+
+
+─── src/app/blog/[slug]/page.tsx:44-44 ───
+[security · medium] Rendering the DB-provided `cover_image` inside a `style` `url(...)` with double
+quotes allows an attacker-controlled URL containing `"` to break out of the CSS string and inject
+arbitrary CSS. Externally sourced strings interpolated into inline CSS should be validated/encoded
+(or use a controlled `<Image>` background with `fill`), and the hardcoded Pexels fallback URL should
+be moved to a shared constant/config rather than embedded in the component.
+
+
+
+─── src/app/blog/[slug]/page.tsx:61-61 ───
+[bug · low] `published_at`/`created_at` are not guarded: a null or malformed value yields "Invalid
+Date" rendered in the UI. Add a fallback/validation before formatting.
+
+-                 {new Date(blog.published_at || blog.created_at).toLocaleDateString('vi-VN')}
++                 {formatBlogDate(blog.published_at ?? blog.created_at)}
+
+
+─── src/app/blog/[slug]/page.tsx:17-20 ───
+[bug · low] `blog.excerpt` may be null (the type isn't narrowed), so `description` could be
+`null`/empty, producing a blank meta description. Provide a fallback string or derive a snippet from
+`content`.
+
+    return {
+      title: `${blog.title} | 1Beauty.Asia Blog`,
+-     description: blog.excerpt,
++     description: blog.excerpt ?? undefined,
+    };
+
+
+─── src/app/danh-muc/[slug]/page.tsx:12-13 ───
+[bug · high] The Supabase result's `error` is discarded, so a DB/network failure is silently treated
+as "category not found" and returns `notFound()`, masking real outages as 404s. Destructure and
+handle `error` (e.g. log and/or throw) so operational failures are distinguishable from genuinely
+missing categories.
+
+-   const { data } = await supabase.from('directory_categories').select('*').eq('slug', slug).single();
++   const { data, error } = await supabase.from('directory_categories').select('*').eq('slug', slug).single();
++   if (error) {
++     console.error("Failed to fetch category:", error);
++     return null;
++   }
+    return data;
+
+
+─── src/app/danh-muc/[slug]/page.tsx:10-10 ───
+[performance · medium] `getCategoryFromDB` is called separately in `generateMetadata` and in the
+page component, causing two identical DB round trips per request for the same slug. Wrap it with
+React `cache()` (or reuse a shared memoized fetch) so metadata and the page body share a single
+query and cannot diverge.
+
+- async function getCategoryFromDB(slug: string) {
++ const getCategoryFromDB = cache(async function getCategoryFromDB(slug: string) {
+
+
+─── src/app/danh-muc/[slug]/page.tsx:41-41 ───
+[bug · medium] `searchBusinessesAction` is awaited without try/catch. Although the action currently
+swallows its own error, an unexpected throw (e.g. network/client construction failure) will surface
+as an unhelpful 500 page. Wrap the call in try/catch and render a graceful fallback/empty state.
+
+-   const list = await searchBusinessesAction("", category.slug, "all");
++   let list: Awaited<ReturnType<typeof searchBusinessesAction>> = [];
++   try {
++     list = await searchBusinessesAction("", category.slug, "all");
++   } catch (err) {
++     console.error("Failed to load businesses for category:", err);
++   }
+
+
+─── src/app/danh-muc/[slug]/page.tsx:68-68 ───
+[maintainability · medium] `b: any` bypasses type checking of the `BusinessCard` business prop,
+hiding potential shape mismatches from the untyped select('*') result. Use the proper business type
+(or at least `unknown` narrowed) instead of `any`; if `any` is truly unavoidable, add a comment
+explaining why, per the project's TypeScript rules.
+
+-             {list.map((b: any) => (
++             {list.map((b) => (
+
+
+─── src/app/danh-muc/[slug]/page.tsx:49-49 ───
+[maintainability · low] The hero background uses a hardcoded external Unsplash URL (business content
+and a runtime third-party dependency). Move it to configuration/constant (e.g. an env var or asset
+in the repo / next/image with configured remote patterns) so it can be changed without code edits
+and doesn't silently break the page if the remote asset becomes unavailable.
+
+
+
+─── src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx:77-84 ───
+[bug · high] Malformed date strings are silently mis-parsed. If `o.validFrom`/`o.validUntil` are not
+valid dates, `new Date(...)` returns `Invalid Date`; `Invalid Date > now` and `Invalid Date < now`
+are both `false`, so a malformed end date will NOT filter the offer out (it will be shown as valid
+forever). Also `validUntil.split('/')` only produces `endDate` when `parts.length === 3`; otherwise
+`endDate` stays `undefined` and the offer is unconditionally kept. Add an explicit
+`isNaN(date.getTime())` guard so invalid input is handled deterministically (e.g. treat as expired
+or skip), instead of depending on accidentally-false comparisons.
+
+
+
+─── src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx:372-372 ───
+[bug · medium] Date parsing is inconsistent between the two display/parse sites. Here
+`o.validUntil.includes('-') ? new Date(o.validUntil)...` assumes any string containing '-' is a full
+ISO date, and the `validFrom` branch above assumes the opposite format. Since the same field is
+handled differently in different places, some offers will display `Invalid Date` or a wrong date.
+Centralize date parsing/formatting into a single helper and validate the result before rendering.
+
+
+
+─── src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx:524-524 ───
+[security · medium] External URLs derived from business data are used directly in `href` without
+protocol validation. Values like `javascript:...` or other non-http schemes could be injected via
+`booking_url`/`zalo`/`phone` fields. `zaloLink` only checks `startsWith('http')`, so a `javascript:`
+value would be built as `https://zalo.me/javascript:...` (safe) but `b.booking_url` is used raw when
+it starts with `http`. Enforce an allow-list of `http`/`https` schemes before rendering external
+links.
+
+
+
+─── src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx:38-44 ───
+[performance · medium] The hero autoplay interval runs continuously for the whole page lifetime,
+even when the hero section is scrolled out of view or the tab is hidden, causing unnecessary
+layout/paint work (carousels are one of the most expensive reflow sources). Consider pausing when
+the document is hidden (`document.visibilityState`) and/or using IntersectionObserver to stop the
+interval when the banner is offscreen, and restart it on re-entry.
+
+
+
+─── src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx:14-14 ───
+[maintainability · medium] `fadeUp: any` discards type safety, and the `any` prop/state types
+(`business: any`, `selectedService: any`, `selectedOffer: any`, the many `(x: any)` callbacks) hide
+shape mismatches such as the `heroSlides`/slider typing below. Per the checklist, avoid `any` —
+define explicit interfaces for the business object, services, offers, locations and categories, and
+type `fadeUp` as `Variants` from framer-motion. If `any` is truly unavoidable, add a comment
+explaining why.
+
+
+
+─── src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx:46-48 ───
+[bug · medium] `heroSlides` is typed as an array of whatever the source arrays contain, but it is
+later reassigned with string literals and the placeholder array. If `b.banners`/`b.gallery` hold
+objects (not strings) upstream, `map((slideUrl: string) => ...)` will pass non-string `src` to
+`Image` and silently break rendering. Validate/normalize the slide URLs into `string[]` explicitly
+(and drop non-string entries) before rendering.
+
+
+
+─── src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx:147-147 ───
+[bug · medium] `b.name.substring(0, 1)` will throw a runtime `TypeError` if `b.name` is
+null/undefined, and the empty string case renders an empty avatar. Guard before using, e.g.
+`{(b.name?.[0] ?? '?')}`. More generally, all `b.*` accesses assume the business object is fully
+populated; add a null/undefined fallback at the component entry.
+
+
+
+─── src/app/doanh-nghiep/[slug]/page.tsx:13-15 ───
+[bug · medium] `getBusinessBySlug` can reject (network/Supabase failure is only caught inside its
+own error branch, but a thrown client error or a rejected promise propagates). Since this is an
+awaited call in `generateMetadata` with no try/catch, a single rejection will break metadata
+resolution for the route. Wrap the fetch in try/catch and return a safe fallback Metadata.
+
+
+
+─── src/app/doanh-nghiep/[slug]/page.tsx:0-0 ───
+[maintainability · medium] `page_content as any` bypasses type safety and then the spread `{
+...pageContent, ...dbBusiness }` mixes untyped JSON with the DB record. If `page_content` is not a
+plain object (e.g. a string or array persisted in the column), spreading it produces index-keyed
+properties and `b.name`/`b.tagline` may be wrong or undefined without any error. Prefer a typed
+interface for `page_content` and/or normalize it (e.g. `typeof pageContent === 'object' &&
+!Array.isArray(pageContent)`) before spreading.
+
+
+
+─── src/app/doanh-nghiep/[slug]/page.tsx:34-38 ───
+[maintainability · low] Regression: this ignores `dbBusiness.tax_code`/`phone`-style top-level
+fallbacks? More importantly, `about: dbBusiness.description || pageContent.description || ''`
+shadows the merged `b` object; since the merge above already put `dbBusiness.description` first,
+this is fine, but the same fallback chain is duplicated here and in `generateMetadata`. Extract a
+single shared `mergeBusiness(dbBusiness)` helper (also used by `generateMetadata`) so the shape and
+precedence rules cannot diverge between metadata and page rendering.
+
+
+
+─── src/app/doanh-nghiep/[slug]/page.tsx:5-6 ───
+[performance · medium] `generateMetadata` and `Page` each call `getBusinessBySlug` separately,
+causing two DB round-trips per request. React's `cache()` (or a shared loader) should be used to
+deduplicate the fetch. Also, since `revalidate = 3600` is set, the unused `revalidate` value
+semantics are fine, but combining the duplicated fetch with the top-level `export const revalidate`
+comment placement is confusing — move the comment above the export.
+
+
+
+─── src/app/doanh-nghiep/[slug]/page.tsx:11-12 ───
+[security · low] `params: Promise<{ slug: string }>` without a trailing semicolon inside the type is
+valid TS, but the formatting (and lack of `await` error handling) should be normalized. More
+substantively, `resolvedParams.slug` is used directly as the query key — ensure the slug is
+validated/encoded before being passed to the data layer to avoid unexpected filter values (e.g.
+`*`/`%` in PostgREST `eq`). Validate with a slug regex before fetching.
+
+
+
+─── src/app/layout.tsx:6-6 ───
+[bug · high] `new URL(SITE_URL)` executes at module load and will throw a `TypeError` for any
+malformed `NEXT_PUBLIC_SITE_URL` (e.g. missing scheme, trailing whitespace, or a preview value like
+`beauty.vercel.app`), crashing the entire App Router tree during build/SSR. Normalize and validate
+the value defensively before constructing the URL.
+
+- const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://1beauty.asia';
++ const RAW_SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://1beauty.asia').trim().replace(/\/+$/, '');
++ const SITE_URL = /^https?:\/\//.test(RAW_SITE_URL) ? RAW_SITE_URL : `https://${RAW_SITE_URL}`;
+
+
+─── src/app/layout.tsx:42-44 ───
+[bug · medium] `canonical` uses the raw env-derived `SITE_URL`, which will point every page at an
+external/preview origin when `NEXT_PUBLIC_SITE_URL` is set for a preview deployment, producing
+incorrect canonicals that can deindex the real site. A relative canonical (`'/'`) or a resolution
+against the production origin is safer here.
+
+    alternates: {
+-     canonical: SITE_URL,
++     canonical: '/',
+    },
+
+
+─── src/app/layout.tsx:54-54 ───
+[maintainability · low] The Open Graph image URL is hardcoded to `/og-image.jpg` while Twitter
+reuses the same path. Business/asset URL paths should be shared constants (and the referenced file
+should exist) to avoid silent 404s in social previews; consider extracting to a constant and
+verifying the asset is present in `public/`.
+
+
+
+─── src/app/layout.tsx:80-83 ───
+[performance · medium] Fonts are loaded via manual third-party `<link>` stylesheets, which is
+render-blocking and creates an external runtime dependency. Prefer `next/font/google` (as the
+project already uses Next.js) for self-hosting, automatic `font-display: swap`, zero layout shift,
+and no third-party request; or at minimum keep the preconnects but move the stylesheet to an
+optimized path.
+
+
+
+─── src/app/layout.tsx:76-76 ───
+[maintainability · low] The root `<html>` has no `suppressHydrationWarning`. Vercel Analytics and
+any extension/browser-injected attributes on `<html>`/`<body>` commonly cause hydration mismatch
+warnings. If you confirm hydration is stable this is optional, but it's the conventional guard for
+an App Router root layout.
+
+
+
+─── src/app/lien-he/page.tsx:12-16 ───
+[bug · medium] The Supabase query only destructures `data` and discards `error`. If the query fails
+(network error, missing table/permission, or `.single()` returning zero/multiple rows), the page
+silently renders with empty contact fields, making the failure invisible and hard to debug. Capture
+and log/handle the error explicitly.
+
+-   const { data } = await supabase
++   const { data, error } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "global")
+      .single();
++ 
++   if (error) {
++     console.error("Failed to load global site settings:", error.message);
++   }
+
+
+─── src/app/lien-he/page.tsx:18-18 ───
+[bug · medium] `data?.value` is trusted to be an object and `settings` is implicitly `any`. If the
+stored `value` is a non-object (e.g. a string, array, or JSON scalar), the accessor
+`settings.contact_address` can throw at render time (e.g. when value is a string, `.contact_address`
+is undefined but destructuring a non-object type mismatch is hidden by `any`). Narrow the type and
+guard that `value` is a plain object before reading fields; also give `settings` an explicit type
+instead of relying on implicit `any`.
+
+-   const settings = data?.value || {};
++   const rawValue = data?.value;
++   const settings: Record<string, string | undefined> =
++     rawValue && typeof rawValue === "object" && !Array.isArray(rawValue)
++       ? (rawValue as Record<string, string | undefined>)
++       : {};
+
+
+─── src/app/lien-he/ContactPageClient.tsx:31-35 ───
+[bug · medium] The caught error is swallowed and a fully generic message is shown, which masks real
+failures and makes debugging impossible. Additionally `res` is dereferenced without a null/undefined
+check — if the action ever resolves to `undefined` or throws, `res.success` itself throws and you
+lose the ability to log the real cause. Consider typing the return contract and logging the error.
+
+      } catch (err) {
++       console.error("submitContactForm failed:", err);
+        setErrorMsg("Có lỗi xảy ra, vui lòng thử lại.");
+      } finally {
+        setLoading(false);
+      }
+
+
+─── src/app/lien-he/ContactPageClient.tsx:25-30 ───
+[bug · medium] `res.success` / `res.error` are accessed without verifying that the action returned
+an object. Since the server action's declared return type is implicit and unvalidated, a
+malformed/undefined response would throw inside the try and fall into the generic catch. Guard the
+response shape before reading its fields.
+
+        const res = await submitContactForm(formData);
+-       if (res.success) {
++       if (res?.success) {
+          setSent(true);
+        } else {
+-         setErrorMsg(res.error || "Có lỗi xảy ra, vui lòng thử lại.");
++         setErrorMsg(res?.error || "Có lỗi xảy ra, vui lòng thử lại.");
+        }
+
+
+─── src/app/lien-he/ContactPageClient.tsx:17-19 ───
+[bug · medium] Only the submit button is disabled while `loading` is true; the form itself has no
+guard, so pressing Enter in a text field or programmatically submitting can still trigger
+`handleSubmit` and produce duplicate requests. Add an early return when `loading` is already true
+(the disabled attribute alone does not prevent Enter-key submission in all browsers).
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
++     if (loading) return;
+      setLoading(true);
+
+
+─── src/app/lien-he/ContactPageClient.tsx:44-44 ───
+[maintainability · low] The background image URL is hardcoded inline. The checklist explicitly
+prohibits hardcoded URL paths; move it to config/constant or a CMS-provided asset so it can be
+changed without a code deploy. Inline `style` with a static URL is also discouraged (allowed only
+for dynamic values).
+
+
+
+─── src/app/lien-he/ContactPageClient.tsx:119-119 ───
+[maintainability · low] Business contact fallbacks (`address`, `phone`, `email`) are hardcoded
+defaults embedded in the component. These are business-related hardcoded values that should live in
+a shared config/constants module (or come from server props) so multiple pages stay consistent and
+updates require no code edit.
+
+
+
+─── src/app/lien-he/ContactPageClient.tsx:86-86 ───
+[bug · low] The phone input has no `pattern`/validation and the form has no email field despite the
+page providing a support email. Client-side `required` alone allows arbitrary values (e.g.,
+whitespace) to be submitted; consider adding `pattern`/`autoComplete` and trimming before submitting
+to reduce invalid backend data.
+
+
+
+─── src/app/login/page.tsx:22-25 ───
+[bug · high] `signInWithPassword` is awaited without a try/catch. If the call throws (network
+failure, runtime error, aborted request), the rejection is unhandled: no error toast is shown and
+`loading` stays `true`, leaving the button permanently disabled. Wrap the call in try/catch and
+reset `loading` in a `finally` block.
+
++     try {
+-     const { data, error } = await supabase.auth.signInWithPassword({
++       const { data, error } = await supabase.auth.signInWithPassword({
+-       email,
++         email,
+-       password,
++         password,
+-     });
++       });
++ 
++       if (error) {
++         toast.error("Đăng nhập thất bại: " + error.message);
++         return;
++       }
++ 
++       toast.success("Đăng nhập thành công!");
++       const role = data.user?.user_metadata?.role;
++       if (role === "admin" || role === "superadmin") {
++         router.push("/admin");
++       } else {
++         router.push("/dashboard");
++       }
++     } catch {
++       toast.error("Đăng nhập thất bại, vui lòng thử lại sau.");
++     } finally {
++       setLoading(false);
++     }
+
+
+─── src/app/login/page.tsx:27-30 ───
+[bug · high] `loading` is never reset to `false` on the success path, so the submit button stays
+disabled. If `router.push` fails or is delayed the UI is stuck with no way to retry. Reset `loading`
+once the sign-in succeeds (e.g. in a `finally` block, or before navigating).
+
+      if (error) {
+        toast.error("Đăng nhập thất bại: " + error.message);
+        setLoading(false);
+      } else {
++       setLoading(false);
+
+
+─── src/app/login/page.tsx:32-33 ───
+[maintainability · medium] The admin/owner role strings are hardcoded here as `"admin"` /
+`"superadmin"`, while `src/utils/supabase/middleware.ts` uses `'owner'` for the same concept. This
+inconsistency means a role value handled in one place is not recognized in the other. Centralize
+role constants (and the role-check logic) in a shared module so client and middleware stay in sync.
+
+
+
+─── src/app/login/page.tsx:34-37 ───
+[maintainability · low] Route literals are inlined here and below. Project rules require
+centralizing business-related hardcoded paths. Consider defining route constants (e.g. ROUTES.LOGIN,
+ROUTES.ADMIN, ROUTES.DASHBOARD, ROUTES.CONTACT) in a shared module and referencing them instead of
+string literals.
+
+-         router.push("/admin");
++         router.push(ROUTES.ADMIN);
+        } else {
+-         router.push("/dashboard");
++         router.push(ROUTES.DASHBOARD);
+        }
+
+
+─── src/app/login/page.tsx:55-62 ───
+[maintainability · low] The email and password inputs lack `name` and `autoComplete` attributes,
+which degrades password-manager integration and autofill/accessibility. Add `name="email"
+autoComplete="email"` and `name="password" autoComplete="current-password"`.
+
+            <Input
+              type="email"
++             name="email"
++             autoComplete="email"
+              required
+              placeholder="Email đăng nhập"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-12"
+            />
+
+
+─── src/app/login/page.tsx:73-75 ───
+[performance · low] Using a raw `<a href>` triggers a full page reload, bypassing Next.js
+client-side routing. Use `next/link` (`<Link href="/lien-he">`) for internal navigation.
+
+-             <a href="/lien-he" className="text-xs text-muted-foreground hover:text-gold transition-colors">
++             <Link href="/lien-he" className="text-xs text-muted-foreground hover:text-gold transition-colors">
+                Quên mật khẩu?
+-             </a>
++             </Link>
+
+
+─── src/components/site/BackToTop.tsx:13-14 ───
+[bug · medium] `handleScroll` is only used as a scroll listener, so the button's visibility is not
+computed on mount. After a page refresh or browser scroll restoration (user already scrolled past
+500px), the button stays hidden until the next scroll event. Call `handleScroll()` once inside the
+effect to initialize the state.
+
+-     window.addEventListener("scroll", handleScroll);
++     handleScroll();
++     window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => window.removeEventListener("scroll", handleScroll);
+
+
+─── src/components/site/BackToTop.tsx:10-12 ───
+[performance · medium] The scroll handler runs on every scroll event with no throttling, which fires
+at very high frequency and does main-thread work. Consider throttling via `requestAnimationFrame`
+(or another throttle) to reduce work.
+
+
+
+─── src/components/site/BackToTop.tsx:18-18 ───
+[maintainability · low] `window.scrollTo` with `behavior: "smooth"` ignores the user's
+`prefers-reduced-motion` setting. Consider falling back to an instant scroll when reduced motion is
+requested for accessibility.
+
+
+
+─── src/app/error.tsx:17-18 ───
+[maintainability · medium] Mismatch between the comment and the actual behavior: the comment says
+"Optionally log the error to an error reporting service" but only `console.error(error)` is called,
+while the UI copy promises the user "Chúng tôi đã ghi nhận lỗi" ("we have recorded the error").
+Either wire up the telemetry/error-reporting call (and forward `error.digest` for server-boundary
+correlation), or reword the UI message so it doesn't make a false promise.
+
+
+
+─── src/app/error.tsx:24-25 ───
+[maintainability · medium] Accessibility: this error fallback has no live region/alert semantics, so
+screen-reader users are not notified that an error occurred or that the retry action appeared. Add
+`role="alert"` (with `aria-live="assertive"`/`aria-atomic`) to the error container, or at minimum to
+the `<h2>` heading, and associate the description via `aria-describedby`. Note the icon is
+decorative and should be marked `aria-hidden`.
+
+
+
+─── src/app/error.tsx:13-13 ───
+[maintainability · low] `error` is typed as `Error & { digest?: string }`, but `digest` is never
+surfaced. `digest` is the only identifier Next.js exposes to correlate a client-side rendered error
+with its server log, so it is valuable for support/debugging. Consider logging it explicitly (e.g.
+`console.error(error.digest, error)`) and/or showing it in a small, non-intrusive way so users can
+report it.
+
+
+
+─── src/app/tim-kiem/page.tsx:20-24 ───
+[bug · high] `Promise.all` has no error handling. Although `searchBusinessesAction` swallows its own
+errors, `getCategoriesAction`/`getLocationsAction` throw on failure (they don't check `error`), so
+any rejection here will crash the whole page instead of degrading gracefully. Wrap the calls in
+try/catch and fall back to empty arrays / an error message.
+
+
+
+─── src/app/tim-kiem/page.tsx:127-129 ───
+[maintainability · medium] `results` is typed via `any` here, which bypasses all type checking on
+the data passed to `BusinessCard` (which itself is `business: any`). If the action shape changes,
+this silently renders wrong. Prefer a typed result interface (e.g. `Business[]`) instead of the
+explicit `any` cast.
+
+
+
+─── src/app/tim-kiem/page.tsx:32-32 ───
+[maintainability · medium] Hardcoded third-party (Unsplash) image URL embedded in an inline style.
+This couples the page to an external asset that can vanish/change, blocks Next.js image
+optimization, and violates the project rule of avoiding inline styles for static values. Move the
+URL to a constant/config or use a local asset with `next/image`.
+
+
+
+─── src/app/tim-kiem/page.tsx:61-62 ───
+[maintainability · low] The filter-link generation is duplicated four times: building `new
+URLSearchParams({...})` plus the active-class ternary. Extract a helper (e.g.
+`buildFilterHref(overrides)` and a shared className function) so encoding and active styling stay
+consistent and easier to maintain.
+
+
+
+─── src/app/page.tsx:70-83 ───
+[bug · high] Offer date parsing is fragile. `new Date(`${o.validFrom}T00:00:00`)` silently yields an
+Invalid Date for malformed input, and `if (startDate && startDate > now)` is then true for an
+Invalid Date (NaN comparison → false, so it actually never rejects), and for `endDate` an Invalid
+Date makes `endDate < now` false, so the offer is silently included regardless of the intended
+validity window. Also the dd/mm/yyyy branch assumes `parts[2]` is a 4-digit year; a malformed
+`validUntil` (e.g. `01/02`) falls through to `new Date(`${o.validUntil}T23:59:59`)` → Invalid Date.
+Validate `Number.isNaN(date.getTime())` and fall back to a safe default instead of string-splicing
+dates.
+
+
+
+─── src/app/page.tsx:33-37 ───
+[bug · high] `Promise.all` has no error handling. `getCategoriesAction`/`getLocationsAction` don't
+catch network/DB exceptions (they only ignore the `error` field with `const { data } = ...`; a
+thrown rejection propagates), and `getPublishedBusinesses` similarly doesn't catch. A single failure
+rejects the whole `Promise.all` and crashes the entire homepage render. Wrap in try/catch (or
+`Promise.allSettled`) and degrade gracefully to empty arrays so the rest of the page still renders.
+
+
+
+─── src/app/page.tsx:26-31 ───
+[bug · medium] The daily rotation is seeded from `getFullYear()/getMonth()/getDate()`, i.e. server
+local time, while the underlying data is cached by ISR (`revalidate = 3600`). Combined with
+`Date.now()` in the 7-day window, the "changes every 24h / same result all day" claim in the comment
+is not guaranteed: on a UTC+7 server the seed and the rendered content can drift across DST/timezone
+boundaries and between environments. Consider deriving the seed from a fixed timezone (e.g. `new
+Date().toISOString().slice(0,10)`) to make rotation deterministic and reproducible.
+
+
+
+─── src/app/page.tsx:121-122 ───
+[bug · medium] Dynamic icon lookup indexes `LucideIcons as any` with an arbitrary DB-provided value
+(`c.icon`) without validating that it is an actual exported icon. A typo or unexpected name silently
+falls back to `Sparkles`, but a name colliding with a non-component export (e.g. a constant/utility
+in the lucide namespace) would produce a runtime render error. Prefer an explicit allow-list/map
+(like `categoryIcons`) and validate with `typeof Icon === 'function'` before rendering.
+
+
+
+─── src/app/page.tsx:113-120 ───
+[performance · low] The `categoryIcons` map is redeclared on every iteration of `categories.map`,
+allocating a new object per category on each render, and duplicates fallback logic already handled
+by `c.icon`. Hoist this constant to module scope.
+
+
+
+─── src/app/page.tsx:41-43 ───
+[maintainability · medium] `any` is used pervasively across the file (`(b: any)`, `(c: any)`, `(o:
+any)`, `(l: any)`, `as any` for the lucide namespace) with no explanatory comment, defeating
+TypeScript type safety and hiding shape mismatches such as `b.page_content`, `b.plan_id`,
+`o.discount`. Note that `getPublishedBusinesses` already returns a typed `Business[]` that is
+discarded here by the inline `any` annotations. Use the existing `Business`/category/location/offer
+types (extending them if needed) or add a comment justifying `any`.
+
+
+
+─── src/app/page.tsx:11-11 ───
+[style · low] The import of `revalidate` is placed after the `lucide-react` import rather than
+grouped with the other imports, and the `React` default import is unused (the new JSX transform
+means it is not needed). Move `export const revalidate = 3600;` after all imports and drop the
+unused `React` import.
+
+
+
+─── src/components/admin/AppSidebar.tsx:51-51 ───
+[bug · medium] The prefix-based active check `pathname.startsWith(item.url)` can incorrectly
+highlight multiple menu items. For example, `/admin/user-settings` would also mark the
+`/admin/users` item active, and `/admin/plans-detail` would match `/admin/plans`. Match on a path
+boundary instead (e.g., `pathname === item.url || pathname.startsWith(item.url + '/')`).
+
+-                   <SidebarMenuButton asChild isActive={pathname === item.url || (item.url !== '/admin' && pathname.startsWith(item.url))}>
++                   <SidebarMenuButton asChild isActive={pathname === item.url || (item.url !== '/admin' && pathname.startsWith(item.url + '/'))}>
+
+
+─── src/components/admin/AppSidebar.tsx:50-50 ───
+[maintainability · low] `item.title` is used as the React key. Titles are user-visible/localizable
+strings and could be duplicated or changed, leading to unstable reconciliation. Prefer the route URL
+as the stable identifier.
+
+-                 <SidebarMenuItem key={item.title}>
++                 <SidebarMenuItem key={item.url}>
+
+
+─── src/components/admin/AppSidebar.tsx:67-68 ───
+[bug · medium] `SidebarMenuButton asChild` uses Radix `Slot`, which expects exactly one child
+element and merges its props onto it. Rendering a `<form>` here (with a `<button>` inside) produces
+a block-level form nested where the trigger expects a single interactive element, resulting in
+invalid markup and unreliable active/focus styling. It also silently overrides Slot props (e.g. the
+sidebar button's `data-active`, `onClick`) onto the `<form>`. Consider rendering the sign-out as a
+plain styled menu row/button rather than wrapping a form inside the `asChild` slot.
+
+
+
+─── src/components/site/BusinessCard.tsx:6-6 ───
+[maintainability · medium] `business: any` violates the no-`any` rule and, combined with spreading
+`page_content` over the DB record, means every field accessed below (categories_list,
+locations_list, offers, services_list, slug, rating...) is untyped and unvalidated. Define an
+explicit `Business` interface (with `page_content` typed) so consumers get compile-time safety, or
+at minimum add a comment explaining why `any` is required.
+
+
+
+─── src/components/site/BusinessCard.tsx:18-20 ───
+[bug · high] `pc.banners` may be a non-array (e.g. a truthy string/object from raw JSON), in which
+case `.filter` throws at render time and crashes the card. Also `pc.hero_image` is used directly
+without verifying it is a non-empty string. Guard the array and string shapes before use.
+
+-   const coverImage = (pc.banners || []).filter(Boolean)[0] 
+-     || pc.hero_image 
+-     || "https://images.pexels.com/photos/3997989/pexels-photo-3997989.jpeg?auto=compress&cs=tinysrgb&w=800";
++   const banners = Array.isArray(pc.banners) ? pc.banners : [];
++   const coverImage = banners.filter((b: unknown) => typeof b === "string" && b.trim())[0]
++     || (typeof pc.hero_image === "string" && pc.hero_image.trim() ? pc.hero_image : null)
++     || FALLBACK_COVER_IMAGE;
+
+
+─── src/components/site/BusinessCard.tsx:83-83 ───
+[bug · medium] This chain assumes `services_list`/`services` are arrays; if either is a non-array
+truthy value (e.g. an object or string), `.slice` will throw. The `||` short-circuit also means a
+non-empty-but-invalid `services_list` prevents falling back to `services`. Normalize with
+`Array.isArray` first.
+
+-           {(business.services_list || business.services || []).slice(0, 3).map((s: any) => (
++           {(Array.isArray(business.services_list) ? business.services_list : Array.isArray(business.services) ? business.services : []).slice(0, 3).map((s: any) => (
+
+
+─── src/components/site/BusinessCard.tsx:85-85 ───
+[bug · low] Using `s.name` as the React key is unstable: service names can be duplicated or missing
+(undefined), causing duplicate-key warnings and incorrect reconciliation. Prefer a stable unique
+field (e.g. `s.id`/`s.slug`) with an index fallback.
+
+-               key={s.name}
++               key={s.id ?? s.slug ?? s.name ?? "service"}
+
+
+─── src/components/site/BusinessCard.tsx:14-14 ───
+[bug · medium] `rating || 5.0` silently displays a perfect 5.0 rating for businesses with no rating
+data (0/missing), which is misleading to users. Consider only showing the rating badge when a real
+rating exists.
+
+
+
+─── src/components/site/BusinessCard.tsx:20-20 ───
+[maintainability · low] The Pexels placeholder URL is a hardcoded external URL in business logic;
+per the review checklist, URL paths should not be hardcoded inline. Move it to a shared
+constant/config (and consider a local asset to avoid external dependency).
+
+-     || "https://images.pexels.com/photos/3997989/pexels-photo-3997989.jpeg?auto=compress&cs=tinysrgb&w=800";
++ import { FALLBACK_COVER_IMAGE } from "@/lib/constants";
++ // ...
++     || FALLBACK_COVER_IMAGE;
+
+
+─── src/components/site/BusinessCard.tsx:38-38 ───
+[security · low] `offer.discount` is interpolated directly into JSX. Since offers come from
+merchant-provided page_content, an offer without `discount` will render an empty badge, and if this
+value is ever rendered via raw HTML elsewhere it would be an XSS vector. Validate the field before
+rendering the badge.
+
+-             {offer.discount}
++             {offer.discount ?? "Ưu đãi"}
+
+
+─── src/app/uu-dai/page.tsx:17-21 ───
+[bug · high] The Supabase query result destructures only `data` and ignores `error`. If the query
+fails (network/RLS/schema change), `businesses` is undefined and the page silently falls into the
+"no offers" empty state, masking backend failures from operators and users. Handle the error (e.g.,
+log it and/or throw) instead of dropping it.
+
+-   const { data: businesses } = await supabase
++   const { data: businesses, error } = await supabase
+      .from("businesses")
+      .select("slug, name, page_content, plan_id")
+      .eq("status", "published")
+      .not("plan_id", "is", null);
++ 
++   if (error) {
++     console.error("Failed to load offers:", error.message);
++     throw new Error("Không thể tải danh sách ưu đãi.");
++   }
+
+
+─── src/app/uu-dai/page.tsx:36-39 ───
+[bug · high] Date parsing has no validity guard. When `validUntil` is DD/MM/YYYY the code builds
+`YYYY-MM-DDTHH:mm:ss`, but a malformed value (e.g. `2025/13/45`, or a DD/MM/YYYY with non-3 parts)
+makes `endDate` `undefined` or an `Invalid Date`, and `endDate < now` is false for Invalid Date — so
+an expired/malformed offer is still shown. The same applies to the `validFrom` branch, where
+`startDate > now` is also false for Invalid Date. Explicitly `Number.isNaN(date.getTime())`-check
+the parsed values and drop offers with unparseable dates.
+
+        if (o.validFrom) {
+-         let startDate = new Date(`${o.validFrom}T00:00:00`);
+-         if (startDate && startDate > now) return false;
++         const startDate = new Date(`${o.validFrom}T00:00:00`);
++         if (!Number.isNaN(startDate.getTime()) && startDate > now) return false;
+        }
+
+
+─── src/app/uu-dai/page.tsx:37-38 ───
+[maintainability · medium] `let startDate` is never reassigned; use `const`. More importantly,
+`startDate`/`endDate` are declared with `new Date(...)` and then guarded with truthiness (`if
+(startDate && ...)`) — a `Date` object is always truthy even when invalid, so these checks don't
+protect against malformed input. Validate with `Number.isNaN(...getTime())` instead. (Also declared
+with `let endDate;` on line 43 which is implicitly `any`; give it an explicit type.)
+
+-         let startDate = new Date(`${o.validFrom}T00:00:00`);
+-         if (startDate && startDate > now) return false;
++         const startDate = new Date(`${o.validFrom}T00:00:00`);
++         if (!Number.isNaN(startDate.getTime()) && startDate > now) return false;
+
+
+─── src/app/uu-dai/page.tsx:117-119 ───
+[bug · medium] The date-format detection here (`includes('-')`) is inconsistent with the filter
+logic above, which branches on `includes('/')`. A value in DD/MM/YYYY passes the filter path but is
+rendered raw here, while a malformed `YYYY-MM-DD` value would be parsed to an Invalid Date and
+rendered as "Invalid Date". Prefer a single shared parse/normalize helper (used by both filtering
+and display) so the shown date always matches the filtering decision.
+
+
+
+─── src/app/uu-dai/page.tsx:27-33 ───
+[maintainability · medium] `businesses` and every offer item are typed as `any` with no
+justification, so `b.page_content` (untrusted JSON) and the offer fields are accessed without type
+safety or null checks. A `page_content.offers` entry that is `null`/non-array, or one missing
+`title`/`description`, will either throw or render empty content. Define an `Offer` interface for
+these shapes (and type the query result) instead of `any`.
+
+-     .flatMap((b: any) => {
++     .flatMap((b: { slug: string; name: string; page_content: { offers?: Offer[] } }) => {
+        const pc = b.page_content || {};
+-       return (pc.offers || []).map((o: any) => ({
++       const offers = Array.isArray(pc.offers) ? pc.offers : [];
++       return offers.map((o) => ({
+          ...o,
+          business: { slug: b.slug, name: b.name },
+        }));
+      })
+
+
+─── src/app/uu-dai/page.tsx:85-87 ───
+[maintainability · low] The offers shown on this page are the source of truth for the link target;
+`o.business.slug` is used directly in the href without a null guard. Using the array index `i` in
+the React key also makes reconciliation unstable when offers change (and hides duplicate keys from
+identical `business.slug`). Prefer a stable identifier (e.g. the offer `code` or a content-derived
+id).
+
+
+
+─── src/components/site/HeroSlider.tsx:19-25 ───
+[bug · high] Crash risk on empty data: `heroSlides[index]!` uses a non-null assertion, and `%
+heroSlides.length` divides by zero (NaN) when the array is empty. Since `heroSlides` comes from
+static data, an accidental empty/refactored array would crash the whole hero section. Add a
+guard/fallback.
+
+    const [index, setIndex] = useState(0);
+-   const active = heroSlides[index]!;
+  
+    useEffect(() => {
++     if (heroSlides.length <= 1) return;
+      const id = setInterval(() => setIndex((i) => (i + 1) % heroSlides.length), 6500);
+      return () => clearInterval(id);
+    }, []);
++ 
++   const active = heroSlides[index] ?? heroSlides[0];
++   if (!active) return null;
+
+
+─── src/components/site/HeroSlider.tsx:23-25 ───
+[bug · medium] Timer is not reset when a slide is manually selected: the interval effect keeps its
+own schedule, so after clicking an indicator the slide can immediately advance (or skip) at the next
+tick. Reset the interval when `index` changes, or restart it on user interaction.
+
+      const id = setInterval(() => setIndex((i) => (i + 1) % heroSlides.length), 6500);
+      return () => clearInterval(id);
+-   }, []);
++   }, [index]);
+
+
+─── src/components/site/HeroSlider.tsx:67-68 ───
+[maintainability · medium] Business URL path hardcoded in the component. Per project rules, business
+routes should not be hardcoded in UI code; derive the CTA target from the slide data (e.g.
+`active.href`) or a shared route constant so all slides/CTAs stay consistent and maintainable.
+
+            <Link
+-             href="/tim-kiem"
++             href={active.href ?? "/tim-kiem"}
+
+
+─── src/components/site/HeroSlider.tsx:31-31 ───
+[bug · medium] Using `slide.title` as the React `key` (both on the slide container and the indicator
+buttons) assumes titles are unique. Duplicate titles would cause reconciliation bugs,
+duplicated/incorrect `aria-hidden` state and broken indicator highlighting. Prefer a stable unique
+identifier from the data (e.g. `slide.image` or an explicit id/slug).
+
+-           key={slide.title}
++           key={slide.image}
+
+
+─── src/components/site/HeroSlider.tsx:40-40 ───
+[maintainability · low] `alt={slide.title}` uses the content headline as the image description,
+which does not describe the image and is poor for accessibility. Provide dedicated alt text in the
+slide data (e.g. `slide.imageAlt`) and fall back to an empty string for purely decorative
+backgrounds.
+
+-             alt={slide.title}
++             alt={slide.imageAlt ?? ""}
+
+
+─── src/components/site/Layout.tsx:35-38 ───
+[bug · medium] Module-level caches (`_settingsCache`, `_categoriesCache`) are shared for the whole
+browser session and are never invalidated on failure. A failed or empty fetch stores `null`/`[]` and
+then serves that stale/empty data for the full 5-minute TTL, so the footer silently renders without
+logo/categories. Also, `_settingsCacheTime`/`_categoriesCacheTime` are set from a `now` captured
+*before* the await, which can shorten the effective TTL. Consider only caching successful results
+and stamping the time after the fetch completes.
+
+
+
+─── src/components/site/Layout.tsx:17-17 ───
+[maintainability · medium] `_settingsCache` and the component's `settings` state are typed as `any`,
+defeating type safety on all the fields consumed in JSX (logo_url, site_name,
+contact_email/phone/address). Define a `SiteSettings` interface and use `unknown`/a typed cache
+instead of `any` (or add a comment justifying `any`).
+
+
+
+─── src/components/site/Layout.tsx:21-21 ───
+[maintainability · medium] Same issue for the categories cache: `any[] | null` propagates to
+`categories` state, so `c.slug`/`c.name` are unchecked. Prefer a typed interface (e.g. `{ slug:
+string; name: string }[]`).
+
+
+
+─── src/components/site/Layout.tsx:30-35 ───
+[bug · medium] These async fetchers have no try/catch. A network or Supabase error rejects the
+promise, producing an unhandled rejection and leaving `settings`/`categories` null/empty with no
+user-visible fallback or logging. Wrap in try/catch (and your checklist requires user-friendly error
+handling for async functions).
+
+
+
+─── src/components/site/Layout.tsx:59-61 ───
+[bug · medium] `getSettings().then(setSettings)` has no `.catch` (or try/catch) and no
+unmount/cancellation guard. If the component unmounts before the promise resolves, `setSettings`
+fires on an unmounted component; and any rejection is silently swallowed by the `.then` chain. Add
+error handling and an `ignore`/abort guard on cleanup.
+
+
+
+─── src/components/site/Layout.tsx:143-143 ───
+[bug · medium] `settings?.site_name?.split(".")[1]` may be `undefined` for a site name without a dot
+(e.g. "1Beauty"), which renders as the literal string "undefined" in the UI. Also note the `any`
+typing on `settings` makes this unchecked. Guard the segment with a fallback instead of relying on
+`||` chain on the whole split result.
+
+
+
+─── src/components/site/Layout.tsx:130-133 ───
+[performance · low] The two independent fetches are fired separately without `Promise.all`. They can
+be parallelized to reduce the number of round-trips and to share a single error-handling path
+(checklist prefers `Promise.all` for independent async operations).
+
+    useEffect(() => {
+-     getSettings().then(setSettings);
+-     getFooterCategories().then(setCategories);
++     let ignore = false;
++     Promise.all([getSettings(), getFooterCategories()])
++       .then(([s, c]) => {
++         if (ignore) return;
++         setSettings(s);
++         setCategories(c);
++       })
++       .catch((err) => console.error("Failed to load footer data", err));
++     return () => {
++       ignore = true;
++     };
+    }, []);
+
+
+─── src/components/site/SearchBar.tsx:30-31 ───
+[bug · medium] The controlled `<select>` values can end up not matching any `<option>` when
+`defaultCategory`/`defaultLocation` are passed a slug that isn't present in the server-provided
+`categories`/`locations` lists (e.g. a stale slug, or `"all"` when the lists are empty). In that
+case the browser silently falls back to the first option and `category`/`location` state diverges
+from what the user sees. Consider passing the full URL as `defaultValue` on the `<form>` instead of
+controlled state, or reconciling the initial value against the option lists.
+
+
+
+─── src/components/site/SearchBar.tsx:36-36 ───
+[bug · low] Submitting with an empty or whitespace-only query still navigates to
+`/tim-kiem?q=&category=location`, because `q` is never trimmed or validated. Trim the query before
+building the params (and/or skip pushing when the query is blank) so users don't land on a results
+page with meaningless whitespace search terms.
+
+
+
+─── src/components/site/SearchBar.tsx:41-43 ───
+[other · low] The submit button has no explicit accessible name tied to its form's purpose — the
+visible text "Tìm kiếm" is generic and the icon-only inputs rely on implicit label association (the
+`<label>` wraps both icon and control without a text label). Add `aria-label`/visually-hidden text
+for the search input, category and location selects, and a descriptive form landmark
+(`role="search"`) so screen-reader users can distinguish the fields.
+
+
+
+─── src/hooks/use-mobile.tsx:13-13 ───
+[bug · medium] `MediaQueryList.addEventListener`/`removeEventListener` are not supported in older
+browsers (notably Safari < 14 and legacy Edge); those implementations only expose
+`addListener`/`removeListener`. On such browsers this throws a TypeError inside the effect (breaking
+the consuming `SidebarProvider`) and the listener is never registered. Consider a feature-detected
+fallback to the legacy API.
+
++     if (typeof mql.addEventListener === "function") {
+-     mql.addEventListener("change", onChange);
++       mql.addEventListener("change", onChange);
++     } else {
++       mql.addListener(onChange);
++     }
+
+
+─── src/hooks/use-mobile.tsx:15-15 ───
+[bug · medium] The cleanup unconditionally calls `removeEventListener`, which will throw on browsers
+that only support the legacy API (mirroring the registration fallback above). Use the same feature
+detection in cleanup to keep register/unregister symmetric.
+
+-     return () => mql.removeEventListener("change", onChange);
++     return () => {
++       if (typeof mql.removeEventListener === "function") {
++         mql.removeEventListener("change", onChange);
++       } else {
++         mql.removeListener(onChange);
++       }
++     };
+
+
+─── src/hooks/use-mobile.tsx:10-12 ───
+[maintainability · low] The same breakpoint is expressed three times (the media query on line 9 and
+the two `window.innerWidth < MOBILE_BREAKPOINT` comparisons). Since `MOBILE_BREAKPOINT - 1` is used
+in the media query while the raw constant is used for the width check, the two can drift if either
+is edited. Recommend deriving both from a single source, e.g. read the result from `mql.matches`
+instead of re-comparing `innerWidth`, so the two checks can never diverge.
+
+      const onChange = () => {
+-       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
++       setIsMobile(mql.matches);
+      };
+
+
+
+──────── Project Summary ────────
+
+# Project Review Summary
+
+### Top Issues
+
+1. **Broken/absent authorization on admin surfaces (highest severity).** Admin privilege is derived from `user_metadata.role`, which users can write themselves, and the gate is a denylist rather than an allowlist.
+   - `src/app/(admin)/layout.tsx` allows any role except `owner` (including `undefined`).
+   - `src/utils/supabase/middleware.ts` trusts `user.user_metadata?.role` for `/admin` gating.
+   - `src/app/api/admin/users/route.ts` exposes `auth.admin.createUser`/`deleteUser` with **no caller auth check at all**, and even ships a **hardcoded real `service_role` JWT fallback** committed to the repo.
+   - Multiple admin pages (`categories`, `plans`, `locations`) perform privileged mutations directly from the browser with no role check, relying entirely on RLS.
+
+2. **Stored XSS via AI/user-authored HTML rendered with `dangerouslySetInnerHTML`.** Unsanitized HTML flows end-to-end with no sanitization at any boundary.
+   - `src/app/api/ai/write-blog/route.ts` returns model-generated HTML; `src/app/blog/[slug]/page.tsx` renders it raw (prompt-injectable via user `prompt`).
+   - `src/app/(admin)/admin/businesses/[id]/BusinessEditorClient.tsx` and `src/app/(business)/dashboard/profile/page.tsx` render `pageContent.map_embed` raw (map-embed textarea).
+   - `src/components/site/BusinessCard.tsx` / `BusinessEditorClient` accept arbitrary business HTML.
+
+3. **Webhook forgery and non-idempotent VIP upgrade.** `src/app/api/webhooks/sepay/route.ts` skips signature verification entirely when the secret or signature header is absent, uses `!==` (non-constant-time) comparison, fails to anchor VIP memo parsing, and re-applies upgrades on retry (only the initial insert is unique-guarded). This is a payment-integrity failure.
+
+4. **Open redirects derived from untrusted input.**
+   - `src/app/auth/callback/route.ts` concatenates an unvalidated `next` param into the redirect target (`//evil.com`, `/\evil.com`).
+   - `src/app/auth/signout/route.ts` derives the redirect origin from a spoofable `Host`/`X-Forwarded-Host` header.
+
+5. **Pervasive silent error swallowing** — the single most repeated root cause across the repo. Supabase `error` is discarded and replaced with a misleading empty/fallback state on both server and client, hiding outages and RLS failures.
+   - Server: `src/app/actions/search.ts`, `src/app/(admin)/admin/{blogs,businesses,users,settings}/page.tsx`, `src/app/blog/page.tsx`, `src/app/bang-gia/page.tsx`, `src/app/danh-muc/[slug]/page.tsx`, `src/app/uu-dai/page.tsx`.
+   - Client: `src/app/lien-he/ContactPageClient.tsx`, `src/app/(business)/dashboard/page.tsx`.
+   - A variant, false success, is worse: `src/app/actions/contact.ts` returns `{ success: true }` even when the insert fails, and the UI tells the user their request was "received".
+   - And "not found" is fabricated from errors: `src/app/(admin)/admin/businesses/[id]/page.tsx` calls `notFound()` on a DB failure.
+
+6. **`any` used pervasively, defeating type safety on the data-shaping path.** ~20+ files use `any` for state, props, and caught errors despite a project rule against it (see below). This directly enables several runtime crashes. Representative: `src/data/business.ts`, `src/types/business.ts`, `src/app/page.tsx`, `src/components/site/BusinessCard.tsx`, `src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx`.
+
+7. **Date parsing is unsafe and inconsistent everywhere offers/hours are handled.** Malformed/`null` dates become `Invalid Date` or epoch (1970), and comparison operators on `Invalid Date` are always `false`, so filtering silently fails.
+   - `src/app/uu-dai/page.tsx`, `src/app/page.tsx`, `src/app/doanh-nghiep/[slug]/BusinessPageClient.tsx` (with divergent `includes('-')` vs `includes('/')` format detection), `src/app/blog/page.tsx`, `src/app/blog/[slug]/page.tsx`.
+
+8. **Env/config handling: no fail-fast, only placeholders or crashes.**
+   - `src/utils/supabase/{client,server,middleware}.ts` use `!` non-null assertions or silently fall back to a placeholder URL (`https://placeholder.supabase.co`).
+   - `src/app/layout.tsx` runs `new URL(SITE_URL)` at module load → crashes the whole app on a malformed env value, and leaks the raw env into `canonical`.
+   - `src/app/api/ai/write-blog/route.ts` sends `Bearer undefined` to third parties when keys are unset.
+
+9. **Duplicate DB round trips per request.** `generateMetadata` and the page body each re-fetch without `cache()`: `src/app/blog/[slug]/page.tsx`, `src/app/doanh-nghiep/[slug]/page.tsx`, `src/app/danh-muc/[slug]/page.tsx`. Combined with `select('*')` everywhere and no pagination/limit on admin lists, this is a systematic performance and data-exposure issue.
+
+10. **Hardcoded business URLs, routes, roles, and secrets scattered across the codebase**, directly violating the stated no-hardcoding rule. Route literals duplicated (`/login`, `/dashboard`, `/admin`), Unsplash/Pexels URLs inlined in styles and components, payment constants (bank account, amount, QR URL) embedded in the client bundle (`src/app/(business)/dashboard/upgrade/page.tsx`), and role strings inconsistent (`'admin'/'superadmin'` in `login/page.tsx` vs `'owner'` in middleware).
+
+### Module Hotspots
+
+- **`src/app/(admin)/admin/**`** — by far the densest area. Nearly every page repeats the same cluster: ignored `error`, `select('*')` without limit, `any` typing, nested ternaries, no in-flight guards on destructive actions (`BlogsClient.tsx`, `BusinessesClient.tsx`, `locations/page.tsx`, `plans/page.tsx`, `categories/page.tsx`), and client-side privileged mutations.
+- **`src/utils/supabase/**`** — small but security-critical; all three files have credential/validation problems that amplify every other finding.
+- **`src/app/actions/*` and `src/app/api/**`** — silent swallowing and auth issues concentrated here (`contact.ts` false success, `search.ts` wildcard injection, `webhooks/sepay` forgery, `admin/users` no-auth).
+- **`src/app/(business)/dashboard/**`** — state mutation, `any`, hardcoded payment data, missing cleanup timers.
+- **`src/app/doanh-nghiep/[slug]/` and `src/app/page.tsx`** — heaviest `any` usage plus the offer-date bugs.
+- **`src/lib/error-capture.ts`** — a cluster of concurrency and correctness defects on its own (global `console.error` reassignment, unsynchronized `lastCapturedError` slot under concurrent requests, cycle-unsafe cause traversal).
+
+### Cross-Cutting Concerns
+
+- **No input validation on the mutation path.** `category`/`location` passed raw into `.eq()` (`src/app/actions/search.ts`), LIKE wildcards not escaped (full-table-scan via `q=%`), `parseInt(price)` inserted unvalidated (`PlansClient.tsx`), wholesale raw `page_content` object written to a JSON column (`import/page.tsx`), unrestricted `as string` casts on `FormData` values (`contact.ts`).
+- **Non-idempotent / unguarded destructive and create operations.** Double-click deletes fire concurrent requests across every admin client; the webhook upgrade is not retry-safe.
+- **No in-flight guards and no mounted/cleanup guards.** Rapid clicks and post-unmount `setState` recur in `upgrade/page.tsx`, `login/page.tsx`, `BackToTop.tsx`, `BusinessesClient.tsx`, `BlogsClient.tsx`, `locations/page.tsx`.
+- **Duplicate business logic that will drift.** Relation-flattening logic duplicated across `src/data/business.ts`; plan/pricing logic inlined in view (`PricingClient.tsx`, `dashboard/layout.tsx`); route and role constants repeated instead of centralized; `fetch` helpers across admin pages.
+- **Hardcoded external asset URLs and inline styles.** Unsplash/Pexels URLs in `src/app/tim-kiem/page.tsx`, `src/app/lien-he/ContactPageClient.tsx`, `src/app/blog/page.tsx`, `src/components/site/BusinessCard.tsx`, `src/app/danh-muc/[slug]/page.tsx`.
+- **Non-constant-time or missing signature/scheme checks** on security-sensitive comparisons (`webhooks/sepay`) and `href` values lacking protocol allow-listing (`BusinessPageClient.tsx`: `javascript:` injectable).
+- **Accessibility gaps.** No live-region on error page (`src/app/error.tsx`), content headlines used as image `alt` (`HeroSlider.tsx`), missing `autoComplete`/`name`/password `type` on login and user-creation forms, unlabeled submit controls (`SearchBar.tsx`).
+- **Empty/no-op catch blocks and unused caught `err` bindings** repeated across `ContactPageClient.tsx`, `categories/page.tsx`, `plans/page.tsx`, `UsersClient.tsx`, `profile/page.tsx` — always degrading diagnosis quality.
+
+### Quick Wins
+
+- **Add `if (!error) ... else surface/log`** to the Supabase reads across admin pages and the blog/offers/category pages. This single change converts a large share of the "silent empty state" and "page shows nothing" findings into diagnosable behavior.
+- **Import the missing `useEffect` and replace the misused `useState(initializerFn)` fetch** in `src/app/(admin)/admin/blogs/[id]/page.tsx` — the page currently never fetches data.
+- **Wrap awaited mutations in `try/catch/finally`** and reset the relevant loading flag: `login/page.tsx` (currently disables the button permanently), `upgrade/page.tsx` (`setChecking(false)` unreachable), and each `handleDelete`.
+- **Add `.filter(Boolean)`** and extract the shared relation-flattening helper in `src/data/business.ts` (fixes the `undefined`-entries bug in `getBusinessBySlug`); delete the dead `selectStr`.
+- **Mechanical cleanups:** remove the committed `service_role` JWT from `src/app/api/admin/users/route.ts` (rotate it immediately), replace `!==` with `crypto.timingSafeEqual` in `webhooks/sepay/route.ts`, remove unused imports/dead code (`ArrowLeft` in `dashboard/layout.tsx`, `isYearly` in `PricingClient.tsx`), delete unused/dead modules `src/lib/search.ts`.
+- **Guard primitive render sites:** `business?.slug?.toUpperCase()`, `b.name?.[0] ?? '?'`, `price_monthly != null`, and null checks before `new Date(...)` formatting — small edits that remove several guaranteed `TypeError`/`Invalid Date` crashes.
+- **Add `encodeURIComponent`/`URLSearchParams`** to the keyword→Pexels query and the `userId` query string in `UsersClient.tsx`.
+- **Deduplicate fetches with React `cache()`** in `blog/[slug]`, `doanh-nghiep/[slug]`, and `danh-muc/[slug]` to halve DB round trips per request.

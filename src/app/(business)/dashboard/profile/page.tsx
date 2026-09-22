@@ -102,7 +102,7 @@ export default function BusinessProfilePage() {
                   tiktok: data.socials?.tiktok || parsed.tiktok || "",
                   youtube: data.socials?.youtube || parsed.youtube || "",
                 }));
-              } catch(e) {}
+              } catch (e) { console.error(e); }
             } else {
               setPageContent((prev: any) => ({
                 ...prev,

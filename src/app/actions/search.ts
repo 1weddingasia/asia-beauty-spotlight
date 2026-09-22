@@ -4,13 +4,13 @@ import { createStaticClient } from "@/utils/supabase/server";
 
 export async function getCategoriesAction() {
   const supabase = createStaticClient();
-  const { data } = await supabase.from('directory_categories').select('*').order('name');
+  const { data } = await supabase.from('directory_categories').select('*').order('name').limit(500);
   return data || [];
 }
 
 export async function getLocationsAction() {
   const supabase = createStaticClient();
-  const { data } = await supabase.from('directory_locations').select('*').order('name');
+  const { data } = await supabase.from('directory_locations').select('*').order('name').limit(500);
   return data || [];
 }
 
@@ -28,10 +28,12 @@ export async function searchBusinessesAction(q: string, category: string, locati
       business_locations${filterLoc ? '!inner' : ''} ( directory_locations${filterLoc ? '!inner' : ''} (id, name, slug) )
     `)
     .eq('status', 'published')
-    .order('is_featured', { ascending: false });
+    .order('is_featured', { ascending: false })
+    .limit(50);
 
   if (q) {
-    query = query.ilike('name', `%${q}%`);
+    const safeQ = q.replace(/[%_]/g, '\\$&');
+    query = query.ilike('name', `%${safeQ}%`);
   }
 
   if (filterCat) {

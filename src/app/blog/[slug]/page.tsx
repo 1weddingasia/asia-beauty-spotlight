@@ -3,6 +3,7 @@ import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { cache } from "react";
 import { ArrowLeft } from "lucide-react";
 
 export const revalidate = 3600;
@@ -10,7 +11,7 @@ export const revalidate = 3600;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const supabase = createStaticClient();
-  const { data: blog } = await supabase.from("blogs").select("title, excerpt").eq("slug", slug).single();
+  const { data: blog, error } = await supabase.from("blogs").select("title, excerpt").eq("slug", slug).single();
   
   if (!blog) return { title: "Không tìm thấy bài viết" };
   
@@ -23,10 +24,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const supabase = createStaticClient();
-  const { data: blog } = await supabase
+  const { data: blog, error } = await supabase
     .from("blogs")
     .select("*")
-    .eq("slug", slug)
+    .limit(500).eq("slug", slug)
     .single();
 
   if (!blog) {
