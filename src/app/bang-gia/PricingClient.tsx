@@ -87,11 +87,11 @@ export default function PricingClient({ plans }: { plans: any[] }) {
         })}
       </div>
       
-      {/* SEPAY Info for Vietnamese Bank Transfer */}
+      {/* Payment Info for Vietnamese Bank Transfer */}
       <div className="mt-16 text-center bg-champagne/30 rounded-2xl p-8 border border-gold/30">
         <h4 className="text-lg font-bold font-display mb-2">Thanh toán tự động 24/7</h4>
         <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
-          Hệ thống hỗ trợ tự động nâng cấp gói bằng cách quét mã QR chuyển khoản qua SePay. Tài khoản của bạn sẽ được kích hoạt VIP ngay lập tức mà không cần chờ đợi.
+          Hệ thống hỗ trợ tự động nâng cấp gói bằng cách quét mã QR chuyển khoản. Tài khoản của bạn sẽ được kích hoạt Gói Premium ngay lập tức mà không cần chờ đợi.
         </p>
       </div>
     </div>

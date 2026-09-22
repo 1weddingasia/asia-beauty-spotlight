@@ -18,12 +18,13 @@ export default function UpgradePage({ params }: { params: Promise<{ id: string }
   const [checking, setChecking] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // We hardcode the UPGRADE plan amount for now based on user context
   const UPGRADE_AMOUNT = 399000;
-  const SEPAY_ACC = "0918731411";
-  const SEPAY_BANK = "TPBank";
-  const TRANSFER_CONTENT = `UPGRADE ${id.split('-')[0].toUpperCase()}`; // Shorter ID for content
-  const QR_URL = `https://qr.sepay.vn/img?acc=${SEPAY_ACC}&bank=${SEPAY_BANK}&amount=${UPGRADE_AMOUNT}&des=${TRANSFER_CONTENT}`;
+  const BANK_ACC = "0918731411";
+  const BANK_NAME = "TPBank";
+  
+  // We can only generate the transfer content once we have the business slug
+  const TRANSFER_CONTENT = business ? `UPGRADE ${business.slug.toUpperCase()}` : ""; 
+  const QR_URL = business ? `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${UPGRADE_AMOUNT}&des=${TRANSFER_CONTENT}` : "";
 
   useEffect(() => {
     supabase.from("businesses").select("*").eq("id", id).single().then(({ data }) => {

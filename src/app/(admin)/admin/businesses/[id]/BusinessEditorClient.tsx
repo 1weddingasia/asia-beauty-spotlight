@@ -64,10 +64,33 @@ export default function BusinessEditorClient({ business, categories, locations }
       if (business.page_content) {
         try {
           const parsed = typeof business.page_content === 'string' ? JSON.parse(business.page_content) : business.page_content;
-          setPageContent((prev: any) => ({ ...prev, ...parsed }));
+          setPageContent((prev: any) => ({ 
+            ...prev, 
+            ...parsed,
+            phone: business.phone || parsed.phone || "",
+            email: business.email || parsed.email || "",
+            website: business.website || parsed.website || "",
+            facebook: business.socials?.facebook || parsed.facebook || "",
+            instagram: business.socials?.instagram || parsed.instagram || "",
+            tiktok: business.socials?.tiktok || parsed.tiktok || "",
+            youtube: business.socials?.youtube || parsed.youtube || "",
+            address: business.address || parsed.address || "",
+          }));
         } catch(e) {
           console.error("Failed to parse page_content", e);
         }
+      } else {
+        setPageContent((prev: any) => ({
+          ...prev,
+          phone: business.phone || "",
+          email: business.email || "",
+          website: business.website || "",
+          facebook: business.socials?.facebook || "",
+          instagram: business.socials?.instagram || "",
+          tiktok: business.socials?.tiktok || "",
+          youtube: business.socials?.youtube || "",
+          address: business.address || "",
+        }));
       }
     }
   }, [business]);
@@ -94,6 +117,17 @@ export default function BusinessEditorClient({ business, categories, locations }
       // Build final payload
       const payload = {
         ...formData,
+        address: pageContent.address || null,
+        phone: pageContent.phone || null,
+        email: pageContent.email || null,
+        website: pageContent.website || null,
+        zalo: pageContent.zalo || null,
+        socials: { 
+          facebook: pageContent.facebook, 
+          instagram: pageContent.instagram, 
+          tiktok: pageContent.tiktok,
+          youtube: pageContent.youtube
+        },
         page_content: pageContent
       };
 

@@ -62,8 +62,29 @@ export default function BusinessProfilePage() {
             if (data.page_content) {
               try {
                 const parsed = typeof data.page_content === 'string' ? JSON.parse(data.page_content) : data.page_content;
-                setPageContent((prev: any) => ({ ...prev, ...parsed }));
+                setPageContent((prev: any) => ({ 
+                  ...prev, 
+                  ...parsed,
+                  phone: data.phone || parsed.phone || "",
+                  email: data.email || parsed.email || "",
+                  website: data.website || parsed.website || "",
+                  facebook: data.socials?.facebook || parsed.facebook || "",
+                  instagram: data.socials?.instagram || parsed.instagram || "",
+                  tiktok: data.socials?.tiktok || parsed.tiktok || "",
+                  youtube: data.socials?.youtube || parsed.youtube || "",
+                }));
               } catch(e) {}
+            } else {
+              setPageContent((prev: any) => ({
+                ...prev,
+                phone: data.phone || "",
+                email: data.email || "",
+                website: data.website || "",
+                facebook: data.socials?.facebook || "",
+                instagram: data.socials?.instagram || "",
+                tiktok: data.socials?.tiktok || "",
+                youtube: data.socials?.youtube || "",
+              }));
             }
           }
           setLoading(false);
@@ -86,6 +107,16 @@ export default function BusinessProfilePage() {
       const { error } = await supabase.from("businesses").update({
         name: formData.name,
         address: formData.address,
+        phone: pageContent.phone || null,
+        email: pageContent.email || null,
+        website: pageContent.website || null,
+        zalo: pageContent.zalo || null,
+        socials: { 
+          facebook: pageContent.facebook, 
+          instagram: pageContent.instagram, 
+          tiktok: pageContent.tiktok,
+          youtube: pageContent.youtube
+        },
         page_content: pageContent
       }).eq("id", business.id);
 
