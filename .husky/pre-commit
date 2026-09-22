@@ -1,0 +1,2 @@
+echo "Running OpenCodeReview..."
+ocr review
