@@ -104,7 +104,8 @@ async function scrapeImages(page, bizName) {
 
     const hqImages = data.imgs.map(upgradeImageUrl).filter(Boolean);
     const logo = data.logo ? upgradeImageUrl(data.logo) : null;
-    return { logo, banners: hqImages.slice(0, 3), gallery: hqImages.slice(3, 8).map(url => ({ url })) };
+    // FIX: gallery must be plain URL strings — consumer renders <img src={url} />
+    return { logo, banners: hqImages.slice(0, 3), gallery: hqImages.slice(3, 8) };
   } catch (e) {
     console.error(`  ❌ Scrape failed: ${e.message}`);
     return null;

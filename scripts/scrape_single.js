@@ -1,10 +1,10 @@
 /**
  * scrape_single.js — Engine cào dữ liệu nâng cấp v2
- * Chạy: node scripts/scrape_single.js --url="..." --mode="bulk|supplement" --businessId="..."
+ * Chạy: node scripts/scrape_single.js --url="..." --mode="bulk|supplement" --businessId="..." --category="spa-massage" --location="ho-chi-minh"
  * 
  * Cải tiến so với night_shift.js:
- * 1. Click vào tab "Ảnh" để load full gallery
- * 2. Lọc ảnh "by owner" vs "by visitor" → ưu tiên ảnh chủ sở hữu
+ * 1. Dùng Puppeteer-compatible tab iteration (không dùng :has-text Playwright-only)
+ * 2. Click tab Ảnh để load full gallery, scroll để load lazy images
  * 3. Ép URL ảnh lên =s2048 (4K)
  * 4. Lấy logo từ Knowledge Panel
  * 5. Chế độ "supplement" chỉ ghi đè trường rỗng, không xóa dữ liệu cũ
@@ -45,7 +45,7 @@ for (const arg of process.argv.slice(2)) {
   const m = arg.match(/^--([^=]+)=(.*)$/);
   if (m) args[m[1]] = m[2];
 }
-const { url, mode = 'bulk', businessId } = args;
+const { url, mode = 'bulk', businessId, category = 'spa-massage', location = 'ho-chi-minh' } = args;
 
 function slugify(text) {
   return text.toString().toLowerCase()
@@ -145,32 +145,36 @@ async function scrapeGoogleMaps(page, searchQuery) {
     // ── CLICK PHOTOS TAB & LOAD MORE ────────────────────────
     let allImages = [...(basicInfo.imgs || [])];
     try {
-      // Try clicking the Photos tab button
-      const photoTabBtn = await page.$('button[aria-label*="Photo"], button[aria-label*="Ảnh"], div[role="tab"]:has-text("Photo"), div[role="tab"]:has-text("Ảnh")');
-      if (photoTabBtn) {
-        await photoTabBtn.click();
-        await delay(2500);
-
-        // Auto-scroll to load lazy images
-        await page.evaluate(async () => {
-          const scrollable = document.querySelector('[role="main"]') || document.body;
-          for (let i = 0; i < 5; i++) {
-            scrollable.scrollTop += 600;
-            await new Promise(r => setTimeout(r, 600));
-          }
-        });
-
-        const galleryImgs = await page.evaluate(() => {
-          const imgs = Array.from(document.querySelectorAll('img'));
-          return [...new Set(
-            imgs
-              .map(i => i.src)
-              .filter(s => s && s.includes('googleusercontent.com') && !s.includes('=s40') && !s.includes('=s24'))
-          )];
-        });
-        allImages = [...new Set([...allImages, ...galleryImgs])];
+      // Use Puppeteer-compatible approach: get all tab elements, check text content
+      const tabs = await page.$$('[role="tab"], button[jsaction*="tab"]');
+      for (const tab of tabs) {
+        const txt = await tab.evaluate(el => el.innerText || '');
+        if (txt.includes('Photo') || txt.includes('Ảnh') || txt.includes('ảnh')) {
+          await tab.click();
+          await delay(2500);
+          break;
+        }
       }
-    } catch (_) { /* Photos tab click failed — silently continue */ }
+
+      // Auto-scroll to load lazy images
+      await page.evaluate(async () => {
+        const scrollable = document.querySelector('[role="main"]') || document.body;
+        for (let i = 0; i < 5; i++) {
+          scrollable.scrollTop += 600;
+          await new Promise(r => setTimeout(r, 600));
+        }
+      });
+
+      const galleryImgs = await page.evaluate(() => {
+        const imgs = Array.from(document.querySelectorAll('img'));
+        return [...new Set(
+          imgs
+            .map(i => i.src)
+            .filter(s => s && s.includes('googleusercontent.com') && !s.includes('=s40') && !s.includes('=s24'))
+        )];
+      });
+      allImages = [...new Set([...allImages, ...galleryImgs])];
+    } catch (_) { /* Photos tab click failed — silently continue with shallow images */ }
 
     // ── UPGRADE ALL IMAGES TO 4K ───────────────────────────
     const hqImages = allImages
@@ -180,7 +184,8 @@ async function scrapeGoogleMaps(page, searchQuery) {
 
     const logoHq = basicInfo.logo ? upgradeImageUrl(basicInfo.logo) : null;
     const banners = hqImages.slice(0, 3);
-    const gallery = hqImages.slice(3).map(url => ({ url }));
+    // FIX: gallery must be plain URL strings, not objects — consumer code does <img src={url} />
+    const gallery = hqImages.slice(3);
 
     return {
       ...basicInfo,
@@ -263,19 +268,25 @@ async function run() {
   // Build banners with Pexels fallback
   let banners = scraped?.banners || [];
   if (banners.length < 3) {
-    const fallback = await fetchPexelsFallback('spa-massage');
+    const fallback = await fetchPexelsFallback(category);
     banners = [...banners, ...fallback].filter(Boolean).slice(0, 3);
   }
 
+  // Type-guard rating and reviews before string operations
   let numericRating = 5.0;
-  if (scraped?.rating) numericRating = parseFloat(scraped.rating.replace(',', '.')) || 5.0;
+  if (scraped?.rating) {
+    const ratingStr = String(scraped.rating).replace(',', '.');
+    numericRating = parseFloat(ratingStr) || 5.0;
+  }
   let numericReviews = 0;
-  if (scraped?.reviews) numericReviews = parseInt(scraped.reviews.replace(/[^\d]/g, '')) || 0;
+  if (scraped?.reviews) {
+    numericReviews = parseInt(String(scraped.reviews).replace(/[^\d]/g, '')) || 0;
+  }
 
   const page_content = {
     logo_url: scraped?.logo || null,
     hero_image: banners[0] || null,
-    banners,
+    banners: banners.filter(Boolean),
     gallery: scraped?.gallery || [],
     rating: numericRating,
     reviews: numericReviews,
@@ -285,8 +296,8 @@ async function run() {
   const payload = {
     name: bizName,
     slug,
-    category_slug: 'spa-massage',
-    location_slug: 'ho-chi-minh',
+    category_slug: category,
+    location_slug: location,
     address: scraped?.address || null,
     phone: scraped?.phone || null,
     website: scraped?.website || null,
