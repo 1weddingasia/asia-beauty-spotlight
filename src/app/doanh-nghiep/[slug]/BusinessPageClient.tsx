@@ -11,6 +11,8 @@ import { useState, useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import fallbackImages from "@/lib/fallback_images.json";
+
 const fadeUp: any = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -19,6 +21,10 @@ const fadeUp: any = {
 export default function BusinessPageClient({ business: b }: { business: any }) {
   const displayCategories = b.categories_list || [];
   const displayLocations = b.locations_list || [];
+  
+  // Deterministic seed based on business ID or slug
+  const seed = b.id ? b.id.charCodeAt(0) + b.id.charCodeAt(b.id.length - 1) : 0;
+  const getFallback = (index: number) => fallbackImages[(seed + index) % fallbackImages.length];
   
   // Embla Carousels
   const [heroRef, heroApi] = useEmblaCarousel({ loop: true });
@@ -47,7 +53,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
     ? b.banners 
     : (b.gallery?.length > 0 ? b.gallery : [b.hero_image, b.cover_image].filter(Boolean));
   if (heroSlides.length > 3) heroSlides = heroSlides.slice(0, 3);
-  if (heroSlides.length === 0) heroSlides = ['https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920'];
+  if (heroSlides.length === 0) heroSlides = [getFallback(0), getFallback(1), getFallback(2)];
 
   let galleryItems = b.gallery || [];
   if (galleryItems.length > 0 && galleryItems.length < 4) {
@@ -55,9 +61,10 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
     galleryItems = [...galleryItems, ...extra];
   }
   if (galleryItems.length === 0) {
-    galleryItems = [null, null, null, null];
+    galleryItems = [getFallback(3), getFallback(4), getFallback(5), getFallback(6)];
   } else if (galleryItems.length < 4) {
-    galleryItems = [...galleryItems, ...Array(4 - galleryItems.length).fill(null)];
+    const needed = 4 - galleryItems.length;
+    galleryItems = [...galleryItems, ...Array(needed).fill(null).map((_, i) => getFallback(7 + i))];
   }
 
   const servicesItems = b.services && b.services.length > 0 

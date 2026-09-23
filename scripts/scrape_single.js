@@ -192,7 +192,7 @@ async function scrapeGoogleMaps(page, searchQuery) {
       return [...new Set(
         allImgs
           .map(i => i.src)
-          .filter(s => s && s.includes('googleusercontent.com') && !s.includes('=s40') && !s.includes('=s24') && !s.includes('=w36') && !s.includes('default'))
+          .filter(s => s && s.includes('googleusercontent.com') && !s.includes('/a/') && !s.includes('/a-/') && !s.includes('=w36') && !s.includes('default'))
       )];
     });
 
@@ -217,7 +217,7 @@ async function scrapeGoogleMaps(page, searchQuery) {
         return [...new Set(
           allImgs
             .map(i => i.src)
-            .filter(s => s && s.includes('googleusercontent.com') && !s.includes('=s40') && !s.includes('=s24') && !s.includes('=w36') && !s.includes('default'))
+            .filter(s => s && s.includes('googleusercontent.com') && !s.includes('/a/') && !s.includes('/a-/') && !s.includes('=w36') && !s.includes('default'))
         )];
       });
       basicInfo.imgs = [...new Set([...basicInfo.imgs, ...moreImgs])];
