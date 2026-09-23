@@ -22,34 +22,40 @@ export default function ClaimClient({ business, token }: { business: any, token:
     setLoading(true);
     
     try {
-      // 1. Sign up the user (or sign in if they already exist)
+      // 1. Try to sign up first (most common case for new businesses)
       let authUserId = null;
       
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
       });
       
-      if (signInError) {
-        if (signInError.message.includes("Invalid login")) {
-           // Maybe user doesn't exist, let's try sign up
-           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-             email,
-             password,
-           });
-           
-           if (signUpError) {
-             throw new Error(signUpError.message);
-           }
-           
-           if (signUpData.user) {
-             authUserId = signUpData.user.id;
-           }
+      if (signUpError) {
+        if (signUpError.message.includes("User already registered") || signUpError.message.includes("already exists")) {
+          // Fallback to sign in
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (signInError) {
+             throw new Error(signInError.message === "Invalid login credentials" ? "Mật khẩu không đúng cho tài khoản này." : signInError.message);
+          }
+          if (signInData.user) {
+            authUserId = signInData.user.id;
+          }
         } else {
-          throw new Error(signInError.message);
+          throw new Error(signUpError.message);
         }
-      } else if (signInData.user) {
-        authUserId = signInData.user.id;
+      } else {
+         if (signUpData.user) {
+           // check if email confirmation is required but not confirmed
+           if (signUpData.session === null && signUpData.user.identities && signUpData.user.identities.length > 0) {
+              toast.error("Vui lòng kiểm tra hộp thư email của bạn để xác thực tài khoản trước khi tiếp tục!");
+              setLoading(false);
+              return;
+           }
+           authUserId = signUpData.user.id;
+         }
       }
       
       if (!authUserId) {
@@ -57,7 +63,7 @@ export default function ClaimClient({ business, token }: { business: any, token:
       }
       
       // 2. Call Server Action to update database securely
-      const result = await claimBusinessAction(token, authUserId);
+      const result = await claimBusinessAction(token);
       if (!result.success) {
         throw new Error(result.error || "Có lỗi xảy ra khi bàn giao.");
       }
@@ -68,6 +74,7 @@ export default function ClaimClient({ business, token }: { business: any, token:
       
     } catch (err: any) {
       toast.error(err.message || "Có lỗi xảy ra");
+    } finally {
       setLoading(false);
     }
   };

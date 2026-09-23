@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, Pencil, Trash2, Eye, Upload } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, Upload, Link as LinkIcon } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";

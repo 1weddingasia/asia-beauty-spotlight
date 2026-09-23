@@ -1,10 +1,15 @@
 "use server";
 
 import { createClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function claimBusinessAction(token: string, userId: string) {
+export async function claimBusinessAction(token: string) {
   try {
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Bạn cần đăng nhập." };
+
     // Create an admin client bypassing RLS
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,17 +31,21 @@ export async function claimBusinessAction(token: string, userId: string) {
       return { success: false, error: "Doanh nghiệp này đã được đăng ký quản lý." };
     }
     
-    // 2. Update the business with the new owner_id and clear the token
-    const { error: updateError } = await supabaseAdmin
+    // 2. Update the business atomically
+    const { data: updated, error: updateError } = await supabaseAdmin
       .from("businesses")
       .update({
-        owner_id: userId,
+        owner_id: user.id,
         claim_token: null, // Single-use link
       })
-      .eq("id", business.id);
+      .eq("id", business.id)
+      .is("owner_id", null)
+      .select()
+      .single();
       
-    if (updateError) {
-      return { success: false, error: "Lỗi hệ thống khi cập nhật chủ sở hữu." };
+    if (updateError || !updated) {
+      console.error(updateError);
+      return { success: false, error: "Lỗi hệ thống khi cập nhật chủ sở hữu hoặc cơ sở đã được nhận." };
     }
     
     // 3. Clear cache
@@ -45,6 +54,7 @@ export async function claimBusinessAction(token: string, userId: string) {
     
     return { success: true };
   } catch (error: any) {
-    return { success: false, error: error.message || "Lỗi không xác định." };
+    console.error(error);
+    return { success: false, error: "Lỗi không xác định." };
   }
 }
