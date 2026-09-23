@@ -5,7 +5,7 @@ export default async function AdminBusinessesPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("businesses")
-    .select("id, slug, name, status, is_featured, created_at, category, location")
+    .select("id, slug, name, status, is_featured, created_at, category, location, claim_token, owner_id")
     .order("created_at", { ascending: false })
     .limit(200);
 

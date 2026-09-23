@@ -109,6 +109,20 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                           <Pencil className="size-4" />
                         </Link>
                       </Button>
+                      {!b.owner_id && b.claim_token && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          title="Copy Link Bàn Giao"
+                          onClick={() => {
+                            const link = `${window.location.origin}/claim/${b.claim_token}`;
+                            navigator.clipboard.writeText(link);
+                            toast.success("Đã copy link bàn giao!");
+                          }}
+                        >
+                          <LinkIcon className="size-4 text-green-600" />
+                        </Button>
+                      )}
                       <Button 
                         variant="ghost" 
                         size="icon" 
