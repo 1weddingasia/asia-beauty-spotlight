@@ -34,7 +34,10 @@ const PEXELS_KEY = process.env.PEXELS_API_KEY;
 
 function upgradeImageUrl(src) {
   if (!src || !src.includes('googleusercontent.com')) return src;
-  return src.replace(/=w\d+-h\d+(-[a-zA-Z0-9\-]+)?/, '=s2048').replace(/=s\d+/, '=s2048').split('?')[0] + '=s2048';
+  let base = src.split('=s')[0];
+  base = base.split('=w')[0];
+  base = base.split('?')[0];
+  return base + '=s1024';
 }
 
 async function fetchPexelsFallback(category) {
