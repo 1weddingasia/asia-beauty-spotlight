@@ -49,9 +49,16 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
   if (heroSlides.length > 3) heroSlides = heroSlides.slice(0, 3);
   if (heroSlides.length === 0) heroSlides = ['https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920'];
 
-  const galleryItems = b.gallery && b.gallery.length > 0 
-    ? b.gallery 
-    : [null, null, null, null]; // 4 placeholders
+  let galleryItems = b.gallery || [];
+  if (galleryItems.length > 0 && galleryItems.length < 4) {
+    const extra = (b.banners || []).filter((img: string) => !galleryItems.includes(img));
+    galleryItems = [...galleryItems, ...extra];
+  }
+  if (galleryItems.length === 0) {
+    galleryItems = [null, null, null, null];
+  } else if (galleryItems.length < 4) {
+    galleryItems = [...galleryItems, ...Array(4 - galleryItems.length).fill(null)];
+  }
 
   const servicesItems = b.services && b.services.length > 0 
     ? b.services 
@@ -215,9 +222,10 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
             <p className="text-base md:text-lg leading-relaxed text-foreground font-medium">
               {b.short_description || "Đang cập nhật giới thiệu..."}
             </p>
-            <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {b.about || b.description || "Nội dung đang được hệ thống hoặc doanh nghiệp cập nhật thêm."}
-            </p>
+            <div 
+              className="text-sm md:text-base text-muted-foreground leading-relaxed space-y-4"
+              dangerouslySetInnerHTML={{ __html: b.about || b.description || "Nội dung đang được hệ thống hoặc doanh nghiệp cập nhật thêm." }}
+            />
 
             {b.amenities && b.amenities.length > 0 && (
               <div className="pt-6 border-t border-border mt-8">
@@ -247,7 +255,15 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
               {zaloNumber && (
                 <div className="flex items-center gap-3">
                   <div className="size-4 md:size-5 text-gold shrink-0 font-bold text-[10px] md:text-xs flex items-center justify-center border border-gold rounded-full">Z</div>
-                  <span className="text-xs md:text-sm font-medium">{zaloNumber}</span>
+                  <span className="text-xs md:text-sm font-medium">{b.zalo || b.phone}</span>
+                </div>
+              )}
+              {b.website && (
+                <div className="flex items-center gap-3">
+                  <Globe className="size-4 md:size-5 text-gold shrink-0" />
+                  <a href={b.website.startsWith('http') ? b.website : `https://${b.website}`} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">
+                    {b.website.replace(/^https?:\/\//, '')}
+                  </a>
                 </div>
               )}
               <div className="flex items-start gap-3">

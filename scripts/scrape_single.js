@@ -142,7 +142,7 @@ async function scrapeGoogleMaps(page, searchQuery) {
     }
 
     // ── EXTRACT BASIC INFO ──────────────────────────────────
-    const basicInfo = await page.evaluate(() => {
+    const basicInfoData = await page.evaluate(() => {
       const title = document.querySelector('h1')?.innerText || null;
 
       let rating = null, reviews = null;
@@ -173,61 +173,54 @@ async function scrapeGoogleMaps(page, searchQuery) {
       }
 
 
-      // Logo from profile photo
-      let logo = null;
-      const logoEl = document.querySelector('button[aria-label*="Photo"] img, img[class*="section-hero-header-image-hero-photo"], img[class*="profile"]');
-      if (logoEl) logo = logoEl.getAttribute('src');
-
-      // Grab visible photos (shallow)
-      const imgEls = Array.from(document.querySelectorAll('button[aria-label*="Photo"] img, button[aria-label*="Ảnh"] img'));
-      const imgs = [...new Set(imgEls.map(i => i.src).filter(s => s && s.includes('googleusercontent.com')))];
-
-      return { title, rating, reviews, address, phone, website, logo, imgs };
+      return { title, rating, reviews, address, phone, website };
     });
 
-    // ── CLICK PHOTOS TAB & LOAD MORE ────────────────────────
-    let allImages = [...(basicInfo.imgs || [])];
-    try {
-      // Use Puppeteer-compatible approach: get all tab elements, check text content
-      const tabs = await page.$$('[role="tab"], button[jsaction*="tab"]');
-      for (const tab of tabs) {
-        const txt = await tab.evaluate(el => el.innerText || '');
-        if (txt.includes('Photo') || txt.includes('Ảnh') || txt.includes('ảnh')) {
-          await tab.click();
-          await delay(2500);
-          break;
-        }
-      }
+    // Grab visible photos (shallow)
+    const imgs = await page.evaluate(() => {
+      const allImgs = Array.from(document.querySelectorAll('img'));
+      return [...new Set(
+        allImgs
+          .map(i => i.src)
+          .filter(s => s && s.includes('googleusercontent.com') && !s.includes('=s40') && !s.includes('=s24') && !s.includes('=w36') && !s.includes('default'))
+      )];
+    });
 
-      // Auto-scroll to load lazy images
+    let logo = null;
+    if (imgs.length > 0) logo = imgs[0]; // first image is usually the main/logo
+    const basicInfo = { ...basicInfoData, logo, imgs };
+
+    // Try to scroll sidebar to lazy load more images
+    try {
       await page.evaluate(async () => {
-        const scrollable = document.querySelector('[role="main"]') || document.body;
-        for (let i = 0; i < 5; i++) {
-          scrollable.scrollTop += 600;
-          await new Promise(r => setTimeout(r, 600));
+        const scrollable = document.querySelector('div[role="main"], div.m6QErb');
+        if (scrollable) {
+          for (let i = 0; i < 5; i++) {
+            scrollable.scrollTop += 800;
+            await new Promise(r => setTimeout(r, 500));
+          }
         }
       });
-
-      const galleryImgs = await page.evaluate(() => {
-        const imgs = Array.from(document.querySelectorAll('img'));
+      
+      const moreImgs = await page.evaluate(() => {
+        const allImgs = Array.from(document.querySelectorAll('img'));
         return [...new Set(
-          imgs
+          allImgs
             .map(i => i.src)
-            .filter(s => s && s.includes('googleusercontent.com') && !s.includes('=s40') && !s.includes('=s24'))
+            .filter(s => s && s.includes('googleusercontent.com') && !s.includes('=s40') && !s.includes('=s24') && !s.includes('=w36') && !s.includes('default'))
         )];
       });
-      allImages = [...new Set([...allImages, ...galleryImgs])];
-    } catch (_) { /* Photos tab click failed — silently continue with shallow images */ }
+      basicInfo.imgs = [...new Set([...basicInfo.imgs, ...moreImgs])];
+    } catch (_) {}
 
-    // ── UPGRADE ALL IMAGES TO 4K ───────────────────────────
-    const hqImages = allImages
+    // UPGRADE ALL IMAGES TO 4K
+    const hqImages = basicInfo.imgs
       .map(upgradeImageUrl)
       .filter(Boolean)
-      .slice(0, 12); // max 12 images
+      .slice(0, 15); // max 15 images
 
     const logoHq = basicInfo.logo ? upgradeImageUrl(basicInfo.logo) : null;
     const banners = hqImages.slice(0, 3);
-    // FIX: gallery must be plain URL strings, not objects — consumer code does <img src={url} />
     const gallery = hqImages.slice(3);
 
     return {
@@ -281,8 +274,8 @@ async function run() {
       ...pc,
       logo_url: pc.logo_url || scraped.logo || pc.logo_url,
       hero_image: pc.hero_image || scraped.banners?.[0] || pc.hero_image,
-      banners: (pc.banners?.filter(Boolean).length >= 3) ? pc.banners : [...(pc.banners || []), ...(scraped.banners || [])].filter(Boolean).slice(0, 3),
-      gallery: (pc.gallery?.length > 0) ? pc.gallery : (scraped.gallery || []),
+      banners: [...new Set([...(pc.banners || []), ...(scraped.banners || [])])].filter(Boolean).slice(0, 3),
+      gallery: [...new Set([...(pc.gallery || []), ...(scraped.gallery || [])])].filter(Boolean),
       rating: pc.rating || (scraped.rating ? parseFloat(scraped.rating.replace(',', '.')) : undefined),
       reviews: pc.reviews || (scraped.reviews ? parseInt(scraped.reviews.replace(/[^\d]/g, '')) : undefined),
     };
@@ -321,12 +314,8 @@ async function run() {
     process.exit(0);
   }
 
-  // Build banners with Pexels fallback
+  // Build banners from scraped
   let banners = scraped?.banners || [];
-  if (banners.length < 3) {
-    const fallback = await fetchPexelsFallback(category);
-    banners = [...banners, ...fallback].filter(Boolean).slice(0, 3);
-  }
 
   // Type-guard rating and reviews before string operations
   let numericRating = 5.0;
