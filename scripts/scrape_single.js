@@ -173,7 +173,17 @@ async function scrapeGoogleMaps(page, searchQuery) {
       }
 
 
-      return { title, rating, reviews, address, phone, website };
+      let working_hours = "Đang cập nhật";
+      const ohEl = document.querySelector('[data-item-id="oh"]');
+      if (ohEl) {
+        let ariaOh = ohEl.getAttribute('aria-label') || '';
+        ariaOh = ariaOh.replace(/Ẩn giờ hoạt động trong tuần\.?|Hide hours for the week\.?/gi, '').trim();
+        if (ariaOh) {
+          working_hours = ariaOh.split('. ').map(s => s.trim()).filter(Boolean).join('\n');
+        }
+      }
+      
+      return { title, rating, reviews, address, phone, website, working_hours };
     });
 
     // Grab visible photos (shallow)
@@ -278,6 +288,7 @@ async function run() {
       gallery: [...new Set([...(pc.gallery || []), ...(scraped.gallery || [])])].filter(Boolean),
       rating: pc.rating || (scraped.rating ? parseFloat(scraped.rating.replace(',', '.')) : undefined),
       reviews: pc.reviews || (scraped.reviews ? parseInt(scraped.reviews.replace(/[^\d]/g, '')) : undefined),
+      working_hours: scraped.working_hours && scraped.working_hours !== 'Đang cập nhật' ? scraped.working_hours : (pc.working_hours || []),
     };
     let aiContent = null;
     if (!existing.description || !existing.short_description || !pc.tagline) {
@@ -341,6 +352,7 @@ async function run() {
     rating: numericRating,
     reviews: numericReviews,
     tagline: aiContent?.tagline || `Dịch vụ làm đẹp chuyên nghiệp tại TP.HCM`,
+    working_hours: scraped?.working_hours || [],
   };
 
   const payload = {

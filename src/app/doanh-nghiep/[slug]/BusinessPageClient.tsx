@@ -282,6 +282,19 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                 </div>
               </div>
             </div>
+            {b.address && (
+              <div className="mt-6 rounded-2xl overflow-hidden border border-border h-[200px] md:h-[250px] bg-secondary/30 relative">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(b.address + ' ' + (b.name || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                ></iframe>
+              </div>
+            )}
             <a
               href={zaloLink}
               target="_blank"
