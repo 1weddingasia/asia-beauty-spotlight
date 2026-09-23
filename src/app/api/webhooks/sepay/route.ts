@@ -23,17 +23,23 @@ export async function POST(request: Request) {
     const signature = request.headers.get('x-sepay-signature');
     const secret = process.env.SEPAY_WEBHOOK_SECRET;
 
-    if (secret && signature) {
-      // Xác thực HMAC-SHA256 theo chuẩn SePay
-      const expectedSignature = crypto
-        .createHmac('sha256', secret)
-        .update(rawBody)
-        .digest('hex');
+    if (!secret || !signature) {
+      console.error("Missing SePay secret or signature");
+      return NextResponse.json({ success: false, error: 'Missing signature' }, { status: 401 });
+    }
 
-      if (signature !== expectedSignature) {
-        console.error("Invalid SePay Signature");
-        return NextResponse.json({ success: false, error: 'Invalid signature' }, { status: 401 });
-      }
+    // Xác thực HMAC-SHA256 theo chuẩn SePay
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(rawBody)
+      .digest('hex');
+
+    if (
+      signature.length !== expectedSignature.length || 
+      !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))
+    ) {
+      console.error("Invalid SePay Signature");
+      return NextResponse.json({ success: false, error: 'Invalid signature' }, { status: 401 });
     }
 
     const payload: SepayPayload = JSON.parse(rawBody);
@@ -106,9 +112,9 @@ export async function POST(request: Request) {
               expires_at: expiresAt.toISOString(),
             });
 
-            // 4. Update Business hiển thị "is_featured" và cập nhật plan_id
+            // 4. Update Business hiển thị "is_featured" và cập nhật plan_id, plan_tier
             await supabase.from('businesses')
-              .update({ is_featured: true, plan_id: plan.id })
+              .update({ is_featured: true, plan_id: plan.id, plan_tier: 'premium' })
               .eq('id', business.id);
 
             console.log(`Successfully upgraded business ${targetSlug} to VIP via SePay transaction ${payload.id}`);

@@ -40,10 +40,10 @@ export default function UpgradePage() {
     setChecking(true);
     try {
       // Polling mock for now. In real life, webhook updates the DB, we check DB here.
-      const { data, error } = await supabase.from("businesses").select("plan_id, status").eq("id", business.id).single();
+      const { data, error } = await supabase.from("businesses").select("plan_tier, status").eq("id", business.id).single();
       if (error) {
         console.error("Lỗi kiểm tra thanh toán:", error);
-      } else if (data && data.plan_id) { 
+      } else if (data && data.plan_tier === 'premium') { 
          setIsSuccess(true);
          setTimeout(() => {
            router.push(`/dashboard`);
@@ -56,14 +56,14 @@ export default function UpgradePage() {
     }
   };
 
-  if (isSuccess) {
+  if (isSuccess || business.plan_tier === 'premium') {
     return (
       <div className="max-w-2xl mx-auto space-y-8 py-12 text-center">
         <div className="mx-auto size-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
           <Check className="size-12" />
         </div>
         <h2 className="text-3xl font-bold">Thanh toán thành công!</h2>
-        <p className="text-muted-foreground text-lg">Gói Standard của gian hàng đã được kích hoạt. Đang chuyển hướng...</p>
+        <p className="text-muted-foreground text-lg">Gói Premium của gian hàng đã được kích hoạt. Đang chuyển hướng...</p>
       </div>
     );
   }
@@ -71,7 +71,7 @@ export default function UpgradePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-10">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Nâng cấp Gói Standard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Nâng cấp Gói Premium</h2>
         <p className="text-muted-foreground mt-2">
           Thanh toán tự động bằng cách quét mã QR qua ứng dụng ngân hàng.
         </p>
@@ -81,7 +81,7 @@ export default function UpgradePage() {
         <div className="space-y-6">
           <Card className="border-gold shadow-md">
             <CardHeader>
-              <CardTitle className="text-2xl text-gold">Lợi ích Gói Standard</CardTitle>
+              <CardTitle className="text-2xl text-gold">Lợi ích Gói Premium</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-4xl font-bold">{UPGRADE_AMOUNT.toLocaleString('vi-VN')}đ <span className="text-sm font-normal text-muted-foreground">/ năm</span></div>

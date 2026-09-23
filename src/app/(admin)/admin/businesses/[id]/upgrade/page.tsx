@@ -42,8 +42,8 @@ export default function UpgradePage({ params }: { params: Promise<{ id: string }
     setChecking(true);
     // Real implementation would check the transactions table or businesses table
     // to see if the plan was updated by the webhook.
-    const { data } = await supabase.from("businesses").select("status").eq("id", id).single();
-    if (data && data.status === 'published') { // assuming upgrade sets status to published
+    const { data } = await supabase.from("businesses").select("plan_tier").eq("id", id).single();
+    if (data && data.plan_tier === 'premium') { 
        setIsSuccess(true);
        setTimeout(() => {
          router.push(`/admin/businesses/${id}`);
@@ -61,7 +61,7 @@ export default function UpgradePage({ params }: { params: Promise<{ id: string }
           <Check className="size-12" />
         </div>
         <h2 className="text-3xl font-bold">Thanh toán thành công!</h2>
-        <p className="text-muted-foreground text-lg">Gói Standard của doanh nghiệp đã được kích hoạt. Đang chuyển hướng...</p>
+        <p className="text-muted-foreground text-lg">Gói Premium của doanh nghiệp đã được kích hoạt. Đang chuyển hướng...</p>
       </div>
     );
   }
@@ -82,7 +82,7 @@ export default function UpgradePage({ params }: { params: Promise<{ id: string }
         <div className="space-y-6">
           <Card className="border-gold shadow-md">
             <CardHeader>
-              <CardTitle className="text-2xl text-gold">Gói Standard</CardTitle>
+              <CardTitle className="text-2xl text-gold">Gói Premium</CardTitle>
               <CardDescription>Mở khóa toàn quyền năng của 1Beauty</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

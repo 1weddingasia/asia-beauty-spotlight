@@ -15,7 +15,7 @@ export default async function BusinessDashboardLayout({ children }: { children: 
   // Lấy thông tin doanh nghiệp của user
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, plan_id")
+    .select("id, name, slug, plan_id, plan_tier")
     .eq("owner_id", user.id)
     .single();
 
@@ -60,15 +60,24 @@ export default async function BusinessDashboardLayout({ children }: { children: 
             </Link>
           </nav>
           <div className="p-4 mt-auto">
-            <div className="rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 p-4 border border-gold/30">
-              <h4 className="font-bold text-sm mb-1 flex items-center gap-1">
-                <Sparkles className="size-4 text-gold" /> Gói Standard
-              </h4>
-              <p className="text-xs text-muted-foreground mb-3">Mở khóa hiển thị SĐT, Zalo và ảnh không giới hạn.</p>
-              <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
-                <Link href="/dashboard/upgrade">Nâng cấp ngay</Link>
-              </Button>
-            </div>
+            {business?.plan_tier === 'premium' ? (
+              <div className="rounded-xl bg-gradient-to-br from-green-500/20 to-green-500/5 p-4 border border-green-500/30">
+                <h4 className="font-bold text-sm mb-1 flex items-center gap-1 text-green-700">
+                  <Sparkles className="size-4" /> Đã kích hoạt Premium
+                </h4>
+                <p className="text-xs text-muted-foreground">Bạn đang sử dụng toàn bộ tính năng cao cấp của hệ thống.</p>
+              </div>
+            ) : (
+              <div className="rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 p-4 border border-gold/30">
+                <h4 className="font-bold text-sm mb-1 flex items-center gap-1">
+                  <Sparkles className="size-4 text-gold" /> Gói Premium
+                </h4>
+                <p className="text-xs text-muted-foreground mb-3">Mở khóa hiển thị SĐT, Zalo và ảnh không giới hạn.</p>
+                <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
+                  <Link href="/dashboard/upgrade">Nâng cấp ngay</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </aside>
 

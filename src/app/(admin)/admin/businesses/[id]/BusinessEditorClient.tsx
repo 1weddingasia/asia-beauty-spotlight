@@ -196,7 +196,25 @@ export default function BusinessEditorClient({
 
         <TabsContent value="overview" className="space-y-6">
           <div className="rounded-2xl border bg-card p-6 md:p-8 shadow-sm space-y-6">
-            <h3 className="font-semibold text-xl border-b pb-4">Thông tin Cơ bản</h3>
+            <div className="flex items-center justify-between border-b pb-4">
+              <h3 className="font-semibold text-xl">Quản lý Gói Thành viên</h3>
+              {business.plan_tier === 'premium' ? (
+                <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                  <CheckSquare className="size-4" /> Đã kích hoạt Premium
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                    <Square className="size-4" /> Gói Tiêu chuẩn (Free)
+                  </div>
+                  <Button asChild variant="outline" size="sm" className="border-gold text-gold">
+                    <Link href={`/admin/businesses/${business.id}/upgrade`}>Nâng cấp Premium</Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+            
+            <h3 className="font-semibold text-xl border-b pb-4 pt-4">Thông tin Cơ bản</h3>
             
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
