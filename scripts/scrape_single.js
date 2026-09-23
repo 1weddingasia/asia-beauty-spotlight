@@ -85,6 +85,42 @@ async function fetchPexelsFallback(category) {
   } catch { return []; }
 }
 
+async function generateContentWithAI(name, category, address, reviews) {
+  if (!process.env.DEEPSEEK_API_KEY) return null;
+  try {
+    const prompt = `Tôi đang tạo hồ sơ cho doanh nghiệp làm đẹp:
+Tên: ${name}
+Địa chỉ: ${address || 'Đang cập nhật'}
+Ngành nghề: ${category}
+Số đánh giá: ${reviews || 0}
+
+Yêu cầu viết bằng tiếng Việt:
+1. short_description: 1 câu mô tả ngắn gọn, hấp dẫn, chuẩn SEO (khoảng 15-20 chữ).
+2. description: Câu chuyện thương hiệu và giới thiệu dịch vụ (khoảng 3 đoạn văn). Văn phong chuyên nghiệp, sang trọng, thu hút khách hàng làm đẹp. Sử dụng thẻ HTML cơ bản (<p>, <b>, <ul>, <br>) để trình bày. KHÔNG dùng markdown hay \`\`\`.
+3. tagline: Slogan ngắn gọn (3-6 chữ).
+
+Trả về ĐÚNG MỘT JSON thuần túy (không bọc trong \`\`\`json), với cấu trúc:
+{"short_description": "...", "description": "...", "tagline": "..."}`;
+    
+    const res = await axios.post('https://api.deepseek.com/chat/completions', {
+      model: 'deepseek-chat',
+      messages: [{ role: 'user', content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.7
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 30000
+    });
+    const txt = res.data.choices[0].message.content;
+    return JSON.parse(txt.replace(/```json/g, '').replace(/```/g, '').trim());
+  } catch (e) {
+    return null;
+  }
+}
+
 async function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function scrapeGoogleMaps(page, searchQuery) {
@@ -250,10 +286,23 @@ async function run() {
       rating: pc.rating || (scraped.rating ? parseFloat(scraped.rating.replace(',', '.')) : undefined),
       reviews: pc.reviews || (scraped.reviews ? parseInt(scraped.reviews.replace(/[^\d]/g, '')) : undefined),
     };
+    let aiContent = null;
+    if (!existing.description || !existing.short_description || !pc.tagline) {
+      try {
+        aiContent = await generateContentWithAI(existing.name, existing.category_slug, scraped.address || existing.address, updatedPc.reviews);
+      } catch (e) {}
+    }
+
+    if (aiContent) {
+      if (!pc.tagline) updatedPc.tagline = aiContent.tagline;
+    }
+
     const updates = {
       address: existing.address || scraped.address,
       phone: existing.phone || scraped.phone,
       website: existing.website || scraped.website,
+      short_description: existing.short_description || aiContent?.short_description || null,
+      description: existing.description || aiContent?.description || null,
       page_content: updatedPc,
     };
     await supabase.from('businesses').update(updates).eq('id', businessId);
@@ -290,6 +339,11 @@ async function run() {
     numericReviews = parseInt(String(scraped.reviews).replace(/[^\d]/g, '')) || 0;
   }
 
+  let aiContent = null;
+  try {
+    aiContent = await generateContentWithAI(bizName, category, scraped?.address, numericReviews);
+  } catch (e) {}
+
   const page_content = {
     logo_url: scraped?.logo || null,
     hero_image: banners[0] || null,
@@ -297,7 +351,7 @@ async function run() {
     gallery: scraped?.gallery || [],
     rating: numericRating,
     reviews: numericReviews,
-    tagline: `Dịch vụ làm đẹp chuyên nghiệp tại TP.HCM`,
+    tagline: aiContent?.tagline || `Dịch vụ làm đẹp chuyên nghiệp tại TP.HCM`,
   };
 
   const payload = {
@@ -308,6 +362,8 @@ async function run() {
     address: scraped?.address || null,
     phone: scraped?.phone || null,
     website: scraped?.website || null,
+    short_description: aiContent?.short_description || null,
+    description: aiContent?.description || null,
     status: 'published',
     is_featured: false,
     page_content,
