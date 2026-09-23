@@ -117,17 +117,25 @@ async function scrapeGoogleMaps(page, searchQuery) {
         reviews = rvEl?.innerText;
       }
 
+      // ── EXTRACT ROBUST CONTACT INFO ──
       let address = null, phone = null, website = null;
-      document.querySelectorAll('button[aria-label], a[aria-label]').forEach(el => {
-        const label = el.getAttribute('aria-label') || '';
-        if ((label.includes('Address') || label.includes('Địa chỉ')) && !address)
-          address = label.replace(/^(Address|Địa chỉ):\s*/i, '').trim();
-        if ((label.includes('Phone') || label.includes('Điện thoại') || label.includes('phone')) && !phone)
-          phone = el.innerText?.trim() || label.replace(/^(Phone|Điện thoại):\s*/i, '').trim();
-      });
-      // Website via CTA button
-      const webEl = document.querySelector('a[data-item-id="authority"]');
-      if (webEl) website = webEl.getAttribute('href');
+      
+      const addrEl = document.querySelector('[data-item-id="address"]');
+      if (addrEl) address = (addrEl.getAttribute('aria-label') || '').replace(/^[^:]+:\s*/, '').trim();
+      
+      const phoneEl = document.querySelector('[data-item-id^="phone:tel:"]');
+      if (phoneEl) {
+        phone = (phoneEl.getAttribute('aria-label') || '').replace(/^[^:]+:\s*/, '').trim();
+        if (!phone && phoneEl.innerText) phone = phoneEl.innerText.split('\n').pop().trim();
+      }
+      
+      const webEl = document.querySelector('[data-item-id="authority"]');
+      if (webEl) {
+        website = webEl.getAttribute('href');
+        if (!website) website = (webEl.getAttribute('aria-label') || '').replace(/^[^:]+:\s*/, '').trim();
+        if (!website && webEl.innerText) website = webEl.innerText.split('\n').pop().trim();
+      }
+
 
       // Logo from profile photo
       let logo = null;
