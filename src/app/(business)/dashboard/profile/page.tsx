@@ -31,7 +31,9 @@ export default function BusinessProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [business, setBusiness] = useState<any>(null);
-  const [isPremium, setIsPremium] = useState(false);
+  // NOTE: Gallery & Offers are unlocked for all businesses during the launch phase (30-day trial).
+  // Re-enable plan-tier gating when Free/VIP tiers are introduced.
+  const [isPremium] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -77,11 +79,6 @@ export default function BusinessProfilePage() {
           if (data) {
             setBusiness(data);
             
-            // Check if plan has Premium in name
-            const planName = data.plans?.name || "";
-            if (planName.toLowerCase().includes("premium") || planName.toLowerCase().includes("vip")) {
-              setIsPremium(true);
-            }
 
             setFormData({
               name: data.name || "",

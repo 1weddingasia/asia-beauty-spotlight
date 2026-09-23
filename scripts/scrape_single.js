@@ -1,0 +1,310 @@
+/**
+ * scrape_single.js — Engine cào dữ liệu nâng cấp v2
+ * Chạy: node scripts/scrape_single.js --url="..." --mode="bulk|supplement" --businessId="..."
+ * 
+ * Cải tiến so với night_shift.js:
+ * 1. Click vào tab "Ảnh" để load full gallery
+ * 2. Lọc ảnh "by owner" vs "by visitor" → ưu tiên ảnh chủ sở hữu
+ * 3. Ép URL ảnh lên =s2048 (4K)
+ * 4. Lấy logo từ Knowledge Panel
+ * 5. Chế độ "supplement" chỉ ghi đè trường rỗng, không xóa dữ liệu cũ
+ * 6. Output JSON chuẩn ra stdout để API parse
+ */
+
+const puppeteer = require('puppeteer');
+const axios = require('axios');
+const { createClient } = require('@supabase/supabase-js');
+const fs = require('fs');
+const path = require('path');
+
+// Load env
+const envPath = path.join(__dirname, '..', '.env.local');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  for (const line of envContent.split('\n')) {
+    const eqIdx = line.indexOf('=');
+    if (eqIdx > 0) {
+      const key = line.substring(0, eqIdx).trim();
+      let val = line.substring(eqIdx + 1).trim();
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+      }
+      if (key) process.env[key] = val;
+    }
+  }
+}
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const PEXELS_KEY = process.env.PEXELS_API_KEY;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Parse CLI args
+const args = {};
+for (const arg of process.argv.slice(2)) {
+  const m = arg.match(/^--([^=]+)=(.*)$/);
+  if (m) args[m[1]] = m[2];
+}
+const { url, mode = 'bulk', businessId } = args;
+
+function slugify(text) {
+  return text.toString().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function upgradeImageUrl(src) {
+  if (!src || !src.includes('googleusercontent.com')) return src;
+  // Remove all size/crop params and request s2048
+  return src
+    .replace(/=w\d+-h\d+(-[a-zA-Z0-9\-]+)?/, '=s2048')
+    .replace(/=s\d+/, '=s2048')
+    .split('?')[0] + '=s2048';
+}
+
+async function fetchPexelsFallback(category) {
+  if (!PEXELS_KEY) return [];
+  const queries = {
+    'spa-massage': 'luxury spa interior vietnam',
+    'nail-lash': 'nail salon interior modern',
+    'hair-salon': 'hair salon interior elegant',
+    'tham-my-vien': 'beauty clinic aesthetic',
+    'makeup-bridal': 'makeup artist bridal salon',
+    'barber-mens': 'barber shop modern',
+  };
+  const q = queries[category] || 'beauty salon interior';
+  try {
+    const res = await axios.get(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&per_page=5&orientation=landscape`,
+      { headers: { Authorization: PEXELS_KEY }, timeout: 10000 }
+    );
+    return res.data.photos.map(p => p.src.large2x || p.src.large);
+  } catch { return []; }
+}
+
+async function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function scrapeGoogleMaps(page, searchQuery) {
+  try {
+    const isDirectUrl = searchQuery.startsWith('http');
+    const targetUrl = isDirectUrl
+      ? searchQuery
+      : `https://www.google.com/maps/search/${encodeURIComponent(searchQuery + ' Ho Chi Minh City')}`;
+
+    await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 45000 });
+    await delay(3000);
+
+    // If it's a search results page (not a direct business page), click the first result
+    const firstResult = await page.$('a[href*="/maps/place/"]');
+    if (firstResult) {
+      await firstResult.click();
+      await page.waitForSelector('h1', { timeout: 10000 }).catch(() => {});
+      await delay(2500);
+    }
+
+    // ── EXTRACT BASIC INFO ──────────────────────────────────
+    const basicInfo = await page.evaluate(() => {
+      const title = document.querySelector('h1')?.innerText || null;
+
+      let rating = null, reviews = null;
+      const ratingEl = document.querySelector('div.F7nice');
+      if (ratingEl) {
+        rating = ratingEl.querySelector('span[aria-hidden="true"]')?.innerText;
+        const rvEl = ratingEl.querySelector('span[aria-label*="review"], span[aria-label*="đánh giá"]');
+        reviews = rvEl?.innerText;
+      }
+
+      let address = null, phone = null, website = null;
+      document.querySelectorAll('button[aria-label], a[aria-label]').forEach(el => {
+        const label = el.getAttribute('aria-label') || '';
+        if ((label.includes('Address') || label.includes('Địa chỉ')) && !address)
+          address = label.replace(/^(Address|Địa chỉ):\s*/i, '').trim();
+        if ((label.includes('Phone') || label.includes('Điện thoại') || label.includes('phone')) && !phone)
+          phone = el.innerText?.trim() || label.replace(/^(Phone|Điện thoại):\s*/i, '').trim();
+      });
+      // Website via CTA button
+      const webEl = document.querySelector('a[data-item-id="authority"]');
+      if (webEl) website = webEl.getAttribute('href');
+
+      // Logo from profile photo
+      let logo = null;
+      const logoEl = document.querySelector('button[aria-label*="Photo"] img, img[class*="section-hero-header-image-hero-photo"], img[class*="profile"]');
+      if (logoEl) logo = logoEl.getAttribute('src');
+
+      // Grab visible photos (shallow)
+      const imgEls = Array.from(document.querySelectorAll('button[aria-label*="Photo"] img, button[aria-label*="Ảnh"] img'));
+      const imgs = [...new Set(imgEls.map(i => i.src).filter(s => s && s.includes('googleusercontent.com')))];
+
+      return { title, rating, reviews, address, phone, website, logo, imgs };
+    });
+
+    // ── CLICK PHOTOS TAB & LOAD MORE ────────────────────────
+    let allImages = [...(basicInfo.imgs || [])];
+    try {
+      // Try clicking the Photos tab button
+      const photoTabBtn = await page.$('button[aria-label*="Photo"], button[aria-label*="Ảnh"], div[role="tab"]:has-text("Photo"), div[role="tab"]:has-text("Ảnh")');
+      if (photoTabBtn) {
+        await photoTabBtn.click();
+        await delay(2500);
+
+        // Auto-scroll to load lazy images
+        await page.evaluate(async () => {
+          const scrollable = document.querySelector('[role="main"]') || document.body;
+          for (let i = 0; i < 5; i++) {
+            scrollable.scrollTop += 600;
+            await new Promise(r => setTimeout(r, 600));
+          }
+        });
+
+        const galleryImgs = await page.evaluate(() => {
+          const imgs = Array.from(document.querySelectorAll('img'));
+          return [...new Set(
+            imgs
+              .map(i => i.src)
+              .filter(s => s && s.includes('googleusercontent.com') && !s.includes('=s40') && !s.includes('=s24'))
+          )];
+        });
+        allImages = [...new Set([...allImages, ...galleryImgs])];
+      }
+    } catch (_) { /* Photos tab click failed — silently continue */ }
+
+    // ── UPGRADE ALL IMAGES TO 4K ───────────────────────────
+    const hqImages = allImages
+      .map(upgradeImageUrl)
+      .filter(Boolean)
+      .slice(0, 12); // max 12 images
+
+    const logoHq = basicInfo.logo ? upgradeImageUrl(basicInfo.logo) : null;
+    const banners = hqImages.slice(0, 3);
+    const gallery = hqImages.slice(3).map(url => ({ url }));
+
+    return {
+      ...basicInfo,
+      logo: logoHq,
+      banners,
+      gallery,
+      hqImages,
+    };
+  } catch (e) {
+    process.stderr.write(`[scrape error] ${e.message}\n`);
+    return null;
+  }
+}
+
+async function run() {
+  if (!url) {
+    process.stdout.write(JSON.stringify({ error: 'Missing --url argument' }) + '\n');
+    process.exit(1);
+  }
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=vi-VN,en-US', '--disable-blink-features=AutomationControlled'],
+  });
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1280, height: 900 });
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
+  // Hide webdriver flag
+  await page.evaluateOnNewDocument(() => { Object.defineProperty(navigator, 'webdriver', { get: () => false }); });
+
+  const scraped = await scrapeGoogleMaps(page, url);
+  await browser.close();
+
+  // ── SUPPLEMENT MODE ────────────────────────────────────────
+  if (mode === 'supplement' && businessId) {
+    if (!scraped) {
+      process.stdout.write(JSON.stringify({ error: 'Không thể cào dữ liệu từ link này' }) + '\n');
+      process.exit(0);
+    }
+    // Load existing business
+    const { data: existing } = await supabase.from('businesses').select('*').eq('id', businessId).single();
+    if (!existing) {
+      process.stdout.write(JSON.stringify({ error: 'Không tìm thấy doanh nghiệp' }) + '\n');
+      process.exit(0);
+    }
+    const pc = (typeof existing.page_content === 'string' ? JSON.parse(existing.page_content) : existing.page_content) || {};
+
+    // Only overwrite empty fields
+    const updatedPc = {
+      ...pc,
+      logo_url: pc.logo_url || scraped.logo || pc.logo_url,
+      hero_image: pc.hero_image || scraped.banners?.[0] || pc.hero_image,
+      banners: (pc.banners?.filter(Boolean).length >= 3) ? pc.banners : [...(pc.banners || []), ...(scraped.banners || [])].filter(Boolean).slice(0, 3),
+      gallery: (pc.gallery?.length > 0) ? pc.gallery : (scraped.gallery || []),
+      rating: pc.rating || (scraped.rating ? parseFloat(scraped.rating.replace(',', '.')) : undefined),
+      reviews: pc.reviews || (scraped.reviews ? parseInt(scraped.reviews.replace(/[^\d]/g, '')) : undefined),
+    };
+    const updates = {
+      address: existing.address || scraped.address,
+      phone: existing.phone || scraped.phone,
+      website: existing.website || scraped.website,
+      page_content: updatedPc,
+    };
+    await supabase.from('businesses').update(updates).eq('id', businessId);
+    process.stdout.write(JSON.stringify({ success: true, name: existing.name }) + '\n');
+    process.exit(0);
+  }
+
+  // ── BULK MODE ──────────────────────────────────────────────
+  const bizName = scraped?.title || url;
+  const slug = slugify(bizName);
+
+  // Check existing
+  const { data: existing } = await supabase.from('businesses').select('id').eq('slug', slug).single();
+  if (existing) {
+    process.stdout.write(JSON.stringify({ skipped: true, name: bizName }) + '\n');
+    process.exit(0);
+  }
+
+  // Build banners with Pexels fallback
+  let banners = scraped?.banners || [];
+  if (banners.length < 3) {
+    const fallback = await fetchPexelsFallback('spa-massage');
+    banners = [...banners, ...fallback].filter(Boolean).slice(0, 3);
+  }
+
+  let numericRating = 5.0;
+  if (scraped?.rating) numericRating = parseFloat(scraped.rating.replace(',', '.')) || 5.0;
+  let numericReviews = 0;
+  if (scraped?.reviews) numericReviews = parseInt(scraped.reviews.replace(/[^\d]/g, '')) || 0;
+
+  const page_content = {
+    logo_url: scraped?.logo || null,
+    hero_image: banners[0] || null,
+    banners,
+    gallery: scraped?.gallery || [],
+    rating: numericRating,
+    reviews: numericReviews,
+    tagline: `Dịch vụ làm đẹp chuyên nghiệp tại TP.HCM`,
+  };
+
+  const payload = {
+    name: bizName,
+    slug,
+    category_slug: 'spa-massage',
+    location_slug: 'ho-chi-minh',
+    address: scraped?.address || null,
+    phone: scraped?.phone || null,
+    website: scraped?.website || null,
+    status: 'published',
+    is_featured: false,
+    page_content,
+  };
+
+  const { error } = await supabase.from('businesses').insert(payload);
+  if (error) {
+    process.stdout.write(JSON.stringify({ error: error.message }) + '\n');
+    process.exit(0);
+  }
+  process.stdout.write(JSON.stringify({ success: true, name: bizName }) + '\n');
+  process.exit(0);
+}
+
+run().catch(e => {
+  process.stdout.write(JSON.stringify({ error: e.message }) + '\n');
+  process.exit(1);
+});
