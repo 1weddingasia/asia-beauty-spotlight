@@ -13,35 +13,40 @@ export async function POST(request: NextRequest) {
 
   try {
     // Call the Node.js scraper API (running as a separate service)
-    // Since Next.js API runs in Edge/Node, we call our puppeteer script via a child process
-    const { exec } = await import("child_process");
+    const { execFile } = await import("child_process");
     const { promisify } = await import("util");
-    const execAsync = promisify(exec);
+    const execFileAsync = promisify(execFile);
     const path = await import("path");
 
     const scriptPath = path.join(process.cwd(), "scripts", "scrape_single.js");
-    const escapedUrl = url.replace(/"/g, '\\"');
-    const escapedMode = mode || "bulk";
-    const escapedBizId = businessId || "";
-    const escapedCategory = (category || "spa-massage").replace(/"/g, '\\"');
-    const escapedLocation = (location || "ho-chi-minh").replace(/"/g, '\\"');
+    const safeMode = mode || "bulk";
+    const safeBizId = businessId || "";
+    const safeCategory = category || "spa-massage";
+    const safeLocation = location || "ho-chi-minh";
 
-    const { stdout, stderr } = await execAsync(
-      `node "${scriptPath}" --url="${escapedUrl}" --mode="${escapedMode}" --businessId="${escapedBizId}" --category="${escapedCategory}" --location="${escapedLocation}"`,
+    // Use execFile to prevent shell injection (args are passed directly to node, not parsed by shell)
+    const { stdout, stderr } = await execFileAsync(
+      "node",
+      [
+        scriptPath,
+        `--url=${url}`,
+        `--mode=${safeMode}`,
+        `--businessId=${safeBizId}`,
+        `--category=${safeCategory}`,
+        `--location=${safeLocation}`,
+      ],
       { timeout: 60000, cwd: process.cwd() }
     );
 
     // Parse the JSON result output from the script
-    // scrape_single.js always writes a JSON result to stdout
-    // If stdout is empty or unparseable, surface stderr for debugging
     const lines = stdout.trim().split("\n");
     const lastLine = lines[lines.length - 1];
     try {
       const result = JSON.parse(lastLine);
       return NextResponse.json(result);
     } catch {
-      const errDetail = stderr?.trim() || lastLine || "Empty response from scraper";
-      return NextResponse.json({ error: errDetail }, { status: 500 });
+      console.error("[scrape-business] Parse error. Stderr:", stderr?.trim(), "Stdout lastLine:", lastLine);
+      return NextResponse.json({ error: "Lỗi nội bộ khi trích xuất dữ liệu" }, { status: 500 });
     }
   } catch (e: any) {
     console.error("[scrape-business] error:", e.message);
