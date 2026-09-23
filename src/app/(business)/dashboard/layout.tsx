@@ -15,7 +15,7 @@ export default async function BusinessDashboardLayout({ children }: { children: 
   // Lấy thông tin doanh nghiệp của user
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, plan_id, plan_tier")
+    .select("id, name, slug, plan_id, plan_tier, created_at")
     .eq("owner_id", user.id)
     .single();
 
@@ -60,24 +60,53 @@ export default async function BusinessDashboardLayout({ children }: { children: 
             </Link>
           </nav>
           <div className="p-4 mt-auto">
-            {business?.plan_tier === 'premium' ? (
-              <div className="rounded-xl bg-gradient-to-br from-green-500/20 to-green-500/5 p-4 border border-green-500/30">
-                <h4 className="font-bold text-sm mb-1 flex items-center gap-1 text-green-700">
-                  <Sparkles className="size-4" /> Đã kích hoạt Premium
-                </h4>
-                <p className="text-xs text-muted-foreground">Bạn đang sử dụng toàn bộ tính năng cao cấp của hệ thống.</p>
-              </div>
-            ) : (
-              <div className="rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 p-4 border border-gold/30">
-                <h4 className="font-bold text-sm mb-1 flex items-center gap-1">
-                  <Sparkles className="size-4 text-gold" /> Gói Premium
-                </h4>
-                <p className="text-xs text-muted-foreground mb-3">Mở khóa hiển thị SĐT, Zalo và ảnh không giới hạn.</p>
-                <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
-                  <Link href="/dashboard/upgrade">Nâng cấp ngay</Link>
-                </Button>
-              </div>
-            )}
+            {(() => {
+              if (business?.plan_tier === 'premium') {
+                return (
+                  <div className="rounded-xl bg-gradient-to-br from-green-500/20 to-green-500/5 p-4 border border-green-500/30">
+                    <h4 className="font-bold text-sm mb-1 flex items-center gap-1 text-green-700">
+                      <Sparkles className="size-4" /> Đã kích hoạt Premium
+                    </h4>
+                    <p className="text-xs text-muted-foreground">Bạn đang sử dụng toàn bộ tính năng cao cấp của hệ thống.</p>
+                  </div>
+                );
+              }
+              
+              const createdAt = business?.created_at ? new Date(business.created_at) : new Date();
+              const trialEndDate = new Date(createdAt);
+              trialEndDate.setDate(trialEndDate.getDate() + 30);
+              const now = new Date();
+              const isExpired = now > trialEndDate;
+              const daysLeft = Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+              
+              if (isExpired) {
+                return (
+                  <div className="rounded-xl bg-gradient-to-br from-red-500/20 to-red-500/5 p-4 border border-red-500/30">
+                    <h4 className="font-bold text-sm mb-1 flex items-center gap-1 text-red-700">
+                      Đã hết hạn dùng thử
+                    </h4>
+                    <p className="text-xs text-red-700/80 mb-3">
+                      Trang doanh nghiệp hiện đang bị khóa tạm thời. Vui lòng kích hoạt Premium.
+                    </p>
+                    <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
+                      <Link href="/dashboard/upgrade">Kích hoạt Premium</Link>
+                    </Button>
+                  </div>
+                );
+              }
+              
+              return (
+                <div className="rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 p-4 border border-gold/30">
+                  <h4 className="font-bold text-sm mb-1 flex items-center gap-1">
+                    <Sparkles className="size-4 text-gold" /> Dùng thử {daysLeft} ngày
+                  </h4>
+                  <p className="text-xs text-muted-foreground mb-3">Nâng cấp Premium để duy trì hiển thị trang doanh nghiệp của bạn.</p>
+                  <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
+                    <Link href="/dashboard/upgrade">Nâng cấp ngay</Link>
+                  </Button>
+                </div>
+              );
+            })()}
           </div>
         </aside>
 

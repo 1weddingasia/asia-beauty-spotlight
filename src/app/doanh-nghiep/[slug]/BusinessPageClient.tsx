@@ -118,8 +118,39 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
   const zaloNumber = b.zalo || (b.phone ? b.phone.replace(/[^0-9]/g, '') : '');
   const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
 
+  // Trial calculation
+  const isPremium = b.plan_tier === 'premium';
+  const createdAt = b.created_at ? new Date(b.created_at) : new Date();
+  const trialEndDate = new Date(createdAt);
+  trialEndDate.setDate(trialEndDate.getDate() + 30);
+  const isExpired = !isPremium && now > trialEndDate;
+
   return (
     <PageShell solidHeader={true}>
+      {isExpired && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-md p-4">
+          <div className="bg-card border border-gold/30 p-8 rounded-2xl shadow-2xl max-w-lg w-full text-center space-y-4">
+            <div className="mx-auto size-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+              <Clock className="size-8" />
+            </div>
+            <h2 className="text-2xl font-bold font-display">Đã hết hạn dùng thử</h2>
+            <p className="text-muted-foreground">
+              Trang doanh nghiệp <b>{b.name}</b> đã kết thúc 30 ngày dùng thử miễn phí. 
+              Vui lòng liên hệ chủ sở hữu hoặc quản trị viên để kích hoạt Gói Premium.
+            </p>
+            <div className="pt-4">
+              <Link href="/">
+                <button className="bg-gold text-ink font-semibold px-6 py-2 rounded-full hover:bg-gold/90 transition">
+                  Quay lại Trang chủ
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content - Blurred if expired */}
+      <div className={isExpired ? "pointer-events-none select-none filter blur-lg opacity-40 transition-all duration-1000" : ""}>
       {/* 1. HERO BANNER (3 SLIDES) */}
       <section className="relative w-full bg-champagne">
         <div className="relative h-[45vh] min-h-[350px] w-full md:h-[65vh] md:min-h-[550px] overflow-hidden" ref={heroRef}>
@@ -568,6 +599,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
         <a href={`tel:${b.phone || ''}`} className="grid place-items-center bg-ink text-gold size-[48px] shrink-0 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-gold-soft">
           <Phone className="size-5" />
         </a>
+      </div>
       </div>
     </PageShell>
   );

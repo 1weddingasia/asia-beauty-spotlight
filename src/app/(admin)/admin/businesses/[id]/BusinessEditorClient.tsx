@@ -196,25 +196,51 @@ export default function BusinessEditorClient({
 
         <TabsContent value="overview" className="space-y-6">
           <div className="rounded-2xl border bg-card p-6 md:p-8 shadow-sm space-y-6">
-            <div className="flex items-center justify-between border-b pb-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4 gap-4">
               <h3 className="font-semibold text-xl">Quản lý Gói Thành viên</h3>
-              {business.plan_tier === 'premium' ? (
-                <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                  <CheckSquare className="size-4" /> Đã kích hoạt Premium
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <div className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                    <Square className="size-4" /> Gói Tiêu chuẩn (Free)
+              {(() => {
+                if (business.plan_tier === 'premium') {
+                  return (
+                    <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                      <CheckSquare className="size-4" /> Đã kích hoạt Premium
+                    </div>
+                  );
+                }
+                
+                const createdAt = business.created_at ? new Date(business.created_at) : new Date();
+                const trialEndDate = new Date(createdAt);
+                trialEndDate.setDate(trialEndDate.getDate() + 30);
+                const now = new Date();
+                const isExpired = now > trialEndDate;
+                const daysLeft = Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+
+                if (isExpired) {
+                  return (
+                    <div className="flex items-center gap-3">
+                      <div className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                        <Square className="size-4" /> Hết hạn dùng thử
+                      </div>
+                      <Button asChild variant="outline" size="sm" className="border-gold text-gold hover:bg-gold hover:text-ink">
+                        <Link href={`/admin/businesses/${business.id}/upgrade`}>Kích hoạt Premium</Link>
+                      </Button>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                      <Square className="size-4" /> Dùng thử ({daysLeft} ngày)
+                    </div>
+                    <Button asChild variant="outline" size="sm" className="border-gold text-gold hover:bg-gold hover:text-ink">
+                      <Link href={`/admin/businesses/${business.id}/upgrade`}>Nâng cấp Premium</Link>
+                    </Button>
                   </div>
-                  <Button asChild variant="outline" size="sm" className="border-gold text-gold">
-                    <Link href={`/admin/businesses/${business.id}/upgrade`}>Nâng cấp Premium</Link>
-                  </Button>
-                </div>
-              )}
+                );
+              })()}
             </div>
             
-            <h3 className="font-semibold text-xl border-b pb-4 pt-4">Thông tin Cơ bản</h3>
+            <h3 className="font-semibold text-xl pt-2">Thông tin Cơ bản</h3>
             
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
