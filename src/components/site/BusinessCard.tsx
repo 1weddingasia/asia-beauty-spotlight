@@ -62,41 +62,43 @@ export function BusinessCard({ business: dbBusiness }: { business: BusinessCardP
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-6">
-        <div className="flex items-start gap-3">
+      <div className="relative flex flex-1 flex-col items-center text-center gap-3 p-5 pt-12">
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 rounded-full bg-white p-1.5 shadow-xl border border-gold/30">
           {business.logo_url ? (
             <Image 
               src={business.logo_url} 
               alt="logo" 
-              width={56} 
-              height={56}
-              className="shrink-0 rounded-full border border-gold object-contain bg-white p-1.5 shadow-md" 
+              width={72} 
+              height={72}
+              className="size-[72px] shrink-0 rounded-full object-contain p-1" 
             />
           ) : (
-            <span className="font-display grid size-14 shrink-0 place-items-center rounded-full border border-gold-soft bg-champagne text-sm tracking-widest text-ink shadow-md">
+            <span className="font-display grid size-[72px] shrink-0 place-items-center rounded-full bg-champagne text-xl tracking-widest text-ink">
               {(business.name || "1B").substring(0, 2).toUpperCase()}
             </span>
           )}
-          
-          <div className="min-w-0">
-            <h3 className="flex items-center gap-1.5 truncate text-lg">
-              {business.name}
-              {business.is_featured && <BadgeCheck className="size-4 shrink-0 text-gold" />}
-            </h3>
-            <p className="truncate text-sm text-muted-foreground">{business.tagline || business.short_description}</p>
-          </div>
+        </div>
+        
+        <div className="w-full">
+          <h3 className="font-serif text-[17px] font-medium leading-tight line-clamp-2 mb-1.5">
+            {business.name}
+            {business.is_featured && <BadgeCheck className="inline-block ml-1 mb-0.5 size-4 shrink-0 text-gold" />}
+          </h3>
+          <p className="line-clamp-2 text-[13px] text-muted-foreground/90">
+            {business.tagline || business.short_description}
+          </p>
         </div>
 
-        <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <MapPin className="size-3.5 text-gold" />
-          {firstLocation} · {reviewsCount} đánh giá
+        <p className="flex items-center justify-center gap-1 text-[13px] text-muted-foreground mt-1 w-full">
+          <MapPin className="size-3.5 text-gold shrink-0" />
+          <span className="truncate">{firstLocation} · {reviewsCount} đánh giá</span>
         </p>
 
-        <div className="mt-auto flex flex-wrap gap-1.5 pt-2">
+        <div className="mt-auto flex flex-wrap justify-center gap-1.5 pt-3">
           {(business.services_list || business.services || []).slice(0, 3).map((s: any) => (
             <span
               key={s.name}
-              className="rounded-full border border-border bg-secondary px-2.5 py-1 text-[11px] text-secondary-foreground"
+              className="rounded-full border border-gold/20 bg-champagne/30 px-3 py-1 text-[11px] text-ink"
             >
               {s.name}
             </span>

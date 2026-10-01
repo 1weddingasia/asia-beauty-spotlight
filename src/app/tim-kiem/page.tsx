@@ -10,17 +10,18 @@ export const metadata = {
 };
 
 export default async function SearchPage(props: {
-  searchParams: Promise<{ q?: string; category?: string; location?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; location?: string; page?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const q = searchParams.q || "";
   const category = searchParams.category || "all";
   const location = searchParams.location || "all";
+  const page = parseInt(searchParams.page || "1", 10) || 1;
 
-  const [categories, locations, results] = await Promise.all([
+  const [categories, locations, { results, totalPages }] = await Promise.all([
     getCategoriesAction(),
     getLocationsAction(),
-    searchBusinessesAction(q, category, location)
+    searchBusinessesAction(q, category, location, page)
   ]);
 
   return (
@@ -123,11 +124,35 @@ export default async function SearchPage(props: {
           </form>
           
           {results.length > 0 ? (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-              {results.map((b: any) => (
-                <BusinessCard key={b.slug} business={b} />
-              ))}
-            </div>
+            <>
+              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                {results.map((b: any) => (
+                  <BusinessCard key={b.slug} business={b} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="mt-12 flex justify-center gap-2">
+                  {Array.from({ length: totalPages }).map((_, i) => {
+                    const p = i + 1;
+                    const isActive = p === page;
+                    return (
+                      <Link
+                        key={p}
+                        href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: p.toString() }).toString()}`}
+                        className={`flex size-10 items-center justify-center rounded-full border transition-colors ${
+                          isActive 
+                            ? 'bg-gold border-gold text-ink font-bold' 
+                            : 'border-border bg-card hover:border-gold'
+                        }`}
+                      >
+                        {p}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-20 text-muted-foreground">
               Không tìm thấy doanh nghiệp nào phù hợp với điều kiện tìm kiếm.
