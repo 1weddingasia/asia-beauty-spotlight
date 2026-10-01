@@ -165,7 +165,7 @@ export function SiteFooter() {
         <div>
           <p className="text-xs tracking-[0.25em] text-gold uppercase">Liên hệ</p>
           <ul className="mt-4 space-y-2 text-sm">
-            <li>0918 731 411</li>
+            <li>{settings?.contact_phone || "0918 731 411"}</li>
             <li>
               <Link href="/lien-he" className="transition-colors hover:text-gold">
                 Gửi tin nhắn
