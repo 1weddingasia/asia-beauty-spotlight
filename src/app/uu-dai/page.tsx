@@ -15,12 +15,11 @@ export const revalidate = 3600; // Revalidate mỗi 1 tiếng
 export default async function OffersPage() {
   const supabase = createStaticClient();
   
-  // Lấy các doanh nghiệp Premium (có plan_id)
+  // Lấy tất cả các doanh nghiệp đã được xuất bản
   const { data: businesses, error } = await supabase
     .from("businesses")
     .select("slug, name, page_content, plan_id")
     .eq("status", "published")
-    .not("plan_id", "is", null)
     .limit(500);
 
   if (error) {
