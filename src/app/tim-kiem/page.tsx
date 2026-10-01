@@ -133,26 +133,44 @@ export default async function SearchPage(props: {
 
               {totalPages > 1 && (
                 <div className="mt-12 flex justify-center gap-2">
-                  {Array.from({ length: totalPages }).map((_, i) => {
-                    const p = i + 1;
-                    const isActive = p === page;
-                    return (
-                      <Link
-                        key={p}
-                        href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: p.toString() }).toString()}`}
-                        className={`flex size-10 items-center justify-center rounded-full border transition-colors ${
-                          isActive 
-                            ? 'bg-gold border-gold text-ink font-bold' 
-                            : 'border-border bg-card hover:border-gold'
-                        }`}
-                      >
-                        {p}
-                      </Link>
-                    );
-                  })}
+                  {/* Truncated pagination logic */}
+                  {Array.from({ length: totalPages })
+                    .map((_, i) => i + 1)
+                    .filter(p => p === 1 || p === totalPages || (p >= page - 2 && p <= page + 2))
+                    .reduce((acc, p, i, arr) => {
+                      if (i > 0 && arr[i - 1] !== p - 1) acc.push(-1); // -1 represents ellipsis
+                      acc.push(p);
+                      return acc;
+                    }, [] as number[])
+                    .map((p, i) => {
+                      if (p === -1) {
+                        return <span key={`ellipsis-${i}`} className="flex size-10 items-center justify-center text-muted-foreground">...</span>;
+                      }
+                      const isActive = p === page;
+                      return (
+                        <Link
+                          key={p}
+                          href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: p.toString() }).toString()}`}
+                          className={`flex size-10 items-center justify-center rounded-full border transition-colors ${
+                            isActive 
+                              ? 'bg-gold border-gold text-ink font-bold' 
+                              : 'border-border bg-card hover:border-gold'
+                          }`}
+                        >
+                          {p}
+                        </Link>
+                      );
+                    })}
                 </div>
               )}
             </>
+          ) : page > 1 ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground mb-4">Trang này không có dữ liệu.</p>
+              <Link href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: '1' }).toString()}`} className="text-gold hover:underline">
+                Quay lại trang 1
+              </Link>
+            </div>
           ) : (
             <div className="text-center py-20 text-muted-foreground">
               Không tìm thấy doanh nghiệp nào phù hợp với điều kiện tìm kiếm.

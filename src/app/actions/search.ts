@@ -20,8 +20,9 @@ export async function searchBusinessesAction(q: string, category: string, locati
   const filterCat = category && category !== 'all';
   const filterLoc = location && location !== 'all';
 
+  const safePage = Math.max(1, Math.floor(page) || 1);
   const PAGE_SIZE = 12;
-  const offset = (page - 1) * PAGE_SIZE;
+  const offset = (safePage - 1) * PAGE_SIZE;
 
   let query = supabase
     .from('businesses')
@@ -51,7 +52,7 @@ export async function searchBusinessesAction(q: string, category: string, locati
 
   if (error) {
     console.error("Search error:", error);
-    return { results: [], count: 0, totalPages: 0 };
+    return { results: [], count: 0, totalPages: 0, error: true };
   }
 
   const results = (data || []).map((b: any) => ({

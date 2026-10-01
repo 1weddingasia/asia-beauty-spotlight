@@ -38,7 +38,7 @@ export default async function CategoryPage({
   if (!category) return notFound();
 
   // Fetch businesses for this category
-  const list = await searchBusinessesAction("", category.slug, "all");
+  const { results: list } = await searchBusinessesAction("", category.slug, "all");
 
   return (
     <PageShell>
