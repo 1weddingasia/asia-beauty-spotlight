@@ -45,19 +45,28 @@ export async function submitContactForm(formData: FormData) {
     const telegramChatId = process.env.TELEGRAM_CHAT_ID;
 
     if (telegramToken && telegramChatId) {
-      const text = `🔔 *YÊU CẦU ĐĂNG KÝ MỚI*\n\n🏢 *Doanh nghiệp:* ${businessName}\n👤 *Người liên hệ:* ${contactName}\n📞 *SĐT:* ${phone}\n💬 *Lời nhắn:* ${message}`;
+      // Escape HTML entities to prevent Telegram API parsing errors
+      const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      
+      const text = `🔔 <b>YÊU CẦU ĐĂNG KÝ MỚI</b>\n\n🏢 <b>Doanh nghiệp:</b> ${escapeHtml(businessName)}\n👤 <b>Người liên hệ:</b> ${escapeHtml(contactName)}\n📞 <b>SĐT:</b> ${escapeHtml(phone)}\n💬 <b>Lời nhắn:</b> ${escapeHtml(message)}`;
       
       try {
-        await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+        const response = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: telegramChatId,
             text,
-            parse_mode: 'Markdown'
-          })
+            parse_mode: 'HTML'
+          }),
+          signal: AbortSignal.timeout(8000)
         });
-        console.log("Sent notification to Telegram successfully.");
+        
+        if (!response.ok) {
+           console.error(`Telegram API responded with status ${response.status}: ${await response.text()}`);
+        } else {
+           console.log("Sent notification to Telegram successfully.");
+        }
       } catch (tgError) {
         console.error("Error sending to Telegram:", tgError);
       }

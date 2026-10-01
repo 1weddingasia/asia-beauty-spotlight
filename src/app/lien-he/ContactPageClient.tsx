@@ -1,15 +1,8 @@
 "use client";
-import { Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import { PageShell } from "@/components/site/Layout";
 
-interface ContactPageClientProps {
-  address?: string;
-  phone?: string;
-  email?: string;
-}
-
-export default function ContactPageClient({ address, phone, email }: ContactPageClientProps) {
+export default function ContactPageClient() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
