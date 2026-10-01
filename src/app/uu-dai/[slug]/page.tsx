@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { createStaticClient } from "@/utils/supabase/server";
 import PromoClient from "./PromoClient";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const supabase = createStaticClient();
   const { data: business } = await supabase.from('businesses').select('name').eq('slug', slug).single();
@@ -15,13 +15,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function PromoPage({ params }: { params: { slug: string } }) {
+export default async function PromoPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const supabase = createStaticClient();
   
   const { data: business } = await supabase
     .from('businesses')
-    .select('id, name, slug, page_content')
+    .select('id, name, slug, address, page_content')
     .eq('slug', slug)
     .single();
 
@@ -30,8 +30,8 @@ export default async function PromoPage({ params }: { params: { slug: string } }
   }
 
   // Lấy ảnh bìa hoặc avatar làm background
-  const bannerImg = business.page_content?.banners?.[0] || business.page_content?.gallery?.[0] || "/default-spa-bg.jpg";
-  const avatar = business.page_content?.avatar || "https://placehold.co/100x100/gold/white?text=SPA";
+  const bannerImg = business.page_content?.banners?.[0] || business.page_content?.gallery?.[0] || "/images/fallback/spa_1.jpg";
+  const avatar = business.page_content?.logo_url || "https://placehold.co/100x100/gold/white?text=SPA";
 
   return (
     <PromoClient business={business} bannerImg={bannerImg} avatar={avatar} />

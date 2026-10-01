@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     // 1. Lấy thông tin tiệm (Context)
     const { data: business } = await supabase
       .from('businesses')
-      .select('name, page_content')
+      .select('name, address, page_content')
       .eq('id', shop_id)
       .single();
 
@@ -56,8 +56,8 @@ QUY TẮC BẮT BUỘC:
 
 [DỮ LIỆU TIỆM]:
 - Tên tiệm: ${business.name}
-- Hotline: ${business.page_content?.hotline || 'Chưa cập nhật'}
-- Địa chỉ: ${business.page_content?.address || 'Chưa cập nhật'}
+- Hotline: ${business.page_content?.phone || 'Chưa cập nhật'}
+- Địa chỉ: ${business.address || 'Chưa cập nhật'}
 - Bảng giá/Dịch vụ: ${JSON.stringify(business.page_content?.services || 'Đang cập nhật')}
 - Ưu đãi: ${JSON.stringify(business.page_content?.promotions || 'Đang cập nhật')}
 `;
@@ -107,12 +107,16 @@ QUY TẮC BẮT BUỘC:
       }
     );
 
-    return NextResponse.json({
-      reply: aiRes.data.choices[0].message.content
-    });
+    const reply = aiRes.data?.choices?.[0]?.message?.content;
+    if (!reply) {
+      return NextResponse.json({ error: "Không nhận được phản hồi từ AI" }, { status: 502 });
+    }
 
-  } catch (error: any) {
-    console.error("Chat API Error:", error.response?.data || error.message);
+    return NextResponse.json({ reply });
+
+  } catch (error: unknown) {
+    const e = error as { response?: { data?: unknown }, message?: string };
+    console.error("Chat API Error:", e.response?.data || e.message);
     return NextResponse.json({ error: "Lỗi kết nối AI" }, { status: 500 });
   }
 }

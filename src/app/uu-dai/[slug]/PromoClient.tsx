@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { MapPin, Phone, CheckCircle2, Ticket } from "lucide-react";
 import { toast } from "sonner";
 
-export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string, avatar: string }) {
+export default function PromoClient({ business, bannerImg, avatar }: { business: { id: string, name: string, slug: string, address: string, page_content: any }, bannerImg: string, avatar: string }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,8 +18,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone) {
-      toast.error("Vui lòng nhập số điện thoại");
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (!/^(03|05|07|08|09)\d{8}$/.test(cleanPhone)) {
+      toast.error("Vui lòng nhập số điện thoại hợp lệ");
       return;
     }
     
@@ -40,6 +41,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       
       if (!res.ok) {
         toast.error(data.error || "Có lỗi xảy ra");
+      } else if (!data.voucher_code) {
+        toast.error("Không nhận được mã ưu đãi. Vui lòng thử lại.");
       } else {
         setVoucher(data.voucher_code);
         toast.success("Nhận ưu đãi thành công!");
@@ -51,7 +54,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     }
   };
 
-  const hotline = business.page_content?.hotline || "1900 xxxx";
+  const hotline = business.page_content?.phone || "1900 xxxx";
 
   return (
     <div className="min-h-screen bg-muted/30 pb-20 md:pb-0">
@@ -66,7 +69,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           <div className="pb-1">
             <h1 className="text-2xl md:text-3xl font-bold text-white shadow-sm">{business.name}</h1>
             <p className="text-champagne text-sm md:text-base flex items-center gap-1 mt-1 opacity-90">
-              <MapPin className="size-4" /> {business.page_content?.address || "Đang cập nhật địa chỉ"}
+              <MapPin className="size-4" /> {business.address || "Đang cập nhật địa chỉ"}
             </p>
           </div>
         </div>
