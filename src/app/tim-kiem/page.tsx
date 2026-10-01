@@ -111,70 +111,9 @@ export default async function SearchPage(props: {
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-12 lg:flex-row">
-        <aside className="w-full shrink-0 lg:w-64">
-          <div className="sticky top-24 space-y-8">
-            <div>
-              <div className="flex items-center gap-2 font-medium">
-                <SlidersHorizontal className="size-4" /> BỘ LỌC
-              </div>
-              <div className="mt-6 space-y-4">
-                <div>
-                  <label className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                    Danh mục
-                  </label>
-                  <div className="mt-3 space-y-2">
-                    <Link
-                      scroll={false}
-                      href={`/tim-kiem?${new URLSearchParams({ q, location, category: 'all' }).toString()}`}
-                      className={`block text-sm transition-colors hover:text-gold ${category === 'all' ? 'text-gold font-bold' : ''}`}
-                    >
-                      Tất cả
-                    </Link>
-                    {categories.map((c) => (
-                      <Link
-                        key={c.slug}
-                        scroll={false}
-                        href={`/tim-kiem?${new URLSearchParams({ q, location, category: c.slug }).toString()}`}
-                        className={`block text-sm transition-colors hover:text-gold ${category === c.slug ? 'text-gold font-bold' : ''}`}
-                      >
-                        {c.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="pt-4">
-                  <label className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                    Khu vực
-                  </label>
-                  <div className="mt-3 space-y-2">
-                    <Link
-                      scroll={false}
-                      href={`/tim-kiem?${new URLSearchParams({ q, category, location: 'all' }).toString()}`}
-                      className={`block text-sm transition-colors hover:text-gold ${location === 'all' ? 'text-gold font-bold' : ''}`}
-                    >
-                      Tất cả
-                    </Link>
-                    {locations.map((l) => (
-                      <Link
-                        key={l.slug}
-                        scroll={false}
-                        href={`/tim-kiem?${new URLSearchParams({ q, category, location: l.slug }).toString()}`}
-                        className={`block text-sm transition-colors hover:text-gold ${location === l.slug ? 'text-gold font-bold' : ''}`}
-                      >
-                        {l.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        <div className="flex-1">
-          <form action="/tim-kiem" method="GET" className="relative mb-8">
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <div className="mb-8">
+          <form action="/tim-kiem" method="GET" className="relative mb-6">
             <input type="hidden" name="category" value={category} />
             <input type="hidden" name="location" value={location} />
             <Search className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" />
@@ -189,7 +128,66 @@ export default async function SearchPage(props: {
               Tìm
             </button>
           </form>
-          
+
+          {/* Horizontal Filters */}
+          <div className="flex flex-col md:flex-row items-center gap-4 border-y border-border py-4">
+            <div className="flex items-center gap-2 font-medium shrink-0">
+              <SlidersHorizontal className="size-4" /> BỘ LỌC:
+            </div>
+            
+            <div className="flex flex-1 items-center gap-6 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full">
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-xs font-medium tracking-wider text-muted-foreground uppercase mr-2">Danh mục</span>
+                <div className="flex gap-2">
+                  <Link
+                    scroll={false}
+                    href={`/tim-kiem?${new URLSearchParams({ q, location, category: 'all' }).toString()}`}
+                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${category === 'all' ? 'bg-gold text-ink font-bold' : 'bg-card border border-border hover:border-gold'}`}
+                  >
+                    Tất cả
+                  </Link>
+                  {categories.map((c) => (
+                    <Link
+                      key={c.slug}
+                      scroll={false}
+                      href={`/tim-kiem?${new URLSearchParams({ q, location, category: c.slug }).toString()}`}
+                      className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${category === c.slug ? 'bg-gold text-ink font-bold' : 'bg-card border border-border hover:border-gold'}`}
+                    >
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="w-px h-6 bg-border hidden md:block shrink-0"></div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-xs font-medium tracking-wider text-muted-foreground uppercase mr-2">Khu vực</span>
+                <div className="flex gap-2">
+                  <Link
+                    scroll={false}
+                    href={`/tim-kiem?${new URLSearchParams({ q, category, location: 'all' }).toString()}`}
+                    className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${location === 'all' ? 'bg-gold text-ink font-bold' : 'bg-card border border-border hover:border-gold'}`}
+                  >
+                    Tất cả
+                  </Link>
+                  {locations.map((l) => (
+                    <Link
+                      key={l.slug}
+                      scroll={false}
+                      href={`/tim-kiem?${new URLSearchParams({ q, category, location: l.slug }).toString()}`}
+                      className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition-colors ${location === l.slug ? 'bg-gold text-ink font-bold' : 'bg-card border border-border hover:border-gold'}`}
+                    >
+                      {l.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
           {searchResultsContent}
         </div>
       </div>

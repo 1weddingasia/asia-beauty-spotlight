@@ -80,9 +80,9 @@ export function BusinessCard({ business: dbBusiness }: { business: BusinessCardP
         </div>
         
         <div className="w-full">
-          <h3 className="font-serif text-[17px] font-medium leading-tight line-clamp-2 mb-1.5">
+          <h3 className="font-serif text-[18px] font-bold leading-tight line-clamp-2 mb-1.5 uppercase tracking-wide text-ink">
             {business.name}
-            {business.is_featured && <BadgeCheck className="inline-block ml-1 mb-0.5 size-4 shrink-0 text-gold" />}
+            {business.is_featured && <BadgeCheck className="inline-block ml-1.5 mb-0.5 size-[18px] shrink-0 text-gold" />}
           </h3>
           <p className="line-clamp-2 text-[13px] text-muted-foreground/90">
             {business.tagline || business.short_description}
