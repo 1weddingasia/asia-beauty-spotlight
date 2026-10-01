@@ -639,19 +639,10 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
 
 
 
-      {/* NÚT BOOKING / GỌI ĐIỆN NỔI DÀNH CHO MOBILE */}
-      <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden flex gap-2">
-        {b.booking_url ? (
-          <a href={b.booking_url.startsWith('http') ? b.booking_url : `https://${b.booking_url}`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-gradient-gold text-ink font-bold flex items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-sm uppercase tracking-wider">
-            Đặt Lịch Ngay
-          </a>
-        ) : (
-          <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="flex-1 bg-gradient-gold text-ink font-bold flex items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-sm uppercase tracking-wider">
-            Tư Vấn Zalo
-          </a>
-        )}
-        <a href={`tel:${b.phone || ''}`} className="grid place-items-center bg-ink text-gold size-[48px] shrink-0 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-gold-soft">
-          <Phone className="size-5" />
+      {/* NÚT ZALO NỔI DÀNH CHO MOBILE */}
+      <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
+        <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="w-full h-[48px] bg-gradient-gold text-ink font-bold flex items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-sm uppercase tracking-wider">
+          Kết nối Zalo
         </a>
       </div>
       </div>
