@@ -1,11 +1,15 @@
 import BusinessesClient from "./BusinessesClient";
 
 export default async function AdminBusinessesPage() {
-  const { createClient } = await import("@/utils/supabase/server");
-  const supabase = await createClient();
+  const { createAdminClient } = await import("@/utils/supabase/server");
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("businesses")
-    .select("id, slug, name, status, is_featured, created_at, category, location, claim_token, owner_id")
+    .select(`
+      id, slug, name, status, is_featured, created_at, claim_token, owner_id,
+      business_categories(directory_categories(name)),
+      business_locations(directory_locations(name))
+    `)
     .order("created_at", { ascending: false })
     .limit(200);
 

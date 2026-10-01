@@ -1,9 +1,9 @@
 import { getPublishedBusinesses } from "@/data/business";
 import { Store, Eye, TrendingUp, Users, FileText } from "lucide-react";
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/server";
 
 export default async function AdminDashboardPage() {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const businesses = await getPublishedBusinesses(100);
   
   // Lấy số lượng người dùng (khách hàng & admin)

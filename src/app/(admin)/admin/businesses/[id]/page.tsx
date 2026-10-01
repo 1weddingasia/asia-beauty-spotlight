@@ -1,6 +1,6 @@
 import BusinessEditorClient from "./BusinessEditorClient";
 import { notFound } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/server";
 
 export default async function EditBusinessPage({
   params,
@@ -9,7 +9,7 @@ export default async function EditBusinessPage({
 }) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   
   // Fetch available categories and locations
   const { data: categories } = await supabase.from('directory_categories').select('id, name');

@@ -5,7 +5,7 @@ import { BusinessCard } from "@/components/site/BusinessCard";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Tìm kiếm | 1Beauty.Asia",
+  title: "Danh bạ | 1Beauty.Asia",
   description: "Tìm kiếm spa, thẩm mỹ viện và salon làm đẹp tại Việt Nam.",
 };
 
@@ -99,12 +99,13 @@ export default async function SearchPage(props: {
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1920&q=80")' }}
         >
-          <div className="absolute inset-0 bg-ink/70"></div>
+          <div className="absolute inset-0 bg-ink/40"></div>
+          <div className="absolute inset-0 bg-gold/50 mix-blend-multiply"></div>
         </div>
         
         {/* Content */}
         <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[35vh]">
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-white">Tìm kiếm</h1>
+          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md">Danh bạ</h1>
           <p className="mt-4 text-gray-200 md:text-lg">
             Khám phá hàng ngàn địa điểm làm đẹp uy tín trên khắp Việt Nam.
           </p>

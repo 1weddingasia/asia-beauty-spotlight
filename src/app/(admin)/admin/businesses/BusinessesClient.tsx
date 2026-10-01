@@ -95,8 +95,16 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                       </span>
                     )}
                   </TableCell>
-                  <TableCell>{b.category || "---"}</TableCell>
-                  <TableCell>{b.location || "---"}</TableCell>
+                  <TableCell>
+                    {b.business_categories && b.business_categories.length > 0 
+                      ? b.business_categories.map((c: any) => c.directory_categories?.name).filter(Boolean).join(", ") 
+                      : (b.category || "---")}
+                  </TableCell>
+                  <TableCell>
+                    {b.business_locations && b.business_locations.length > 0
+                      ? b.business_locations.map((l: any) => l.directory_locations?.name).filter(Boolean).join(", ")
+                      : (b.location || "---")}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Button variant="ghost" size="icon" asChild title="Xem trên web">

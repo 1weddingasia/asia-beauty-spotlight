@@ -1,8 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/server";
 import UsersClient from "./UsersClient";
 
 export default async function AdminUsersPage() {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data: profiles } = await supabase.from("profiles").select("*").order("created_at", { ascending: false }).limit(500);
   const { data: businesses } = await supabase.from("businesses").select("id, name, owner_id");
 

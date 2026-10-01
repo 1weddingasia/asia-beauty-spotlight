@@ -17,7 +17,6 @@ type BusinessCardProps = Partial<Business> & {
 };
 
 export function BusinessCard({ business: dbBusiness }: { business: BusinessCardProps }) {
-  // Merge db properties and page_content json
   const pc = dbBusiness.page_content || {};
   const business: any = { ...dbBusiness, ...pc };
 
@@ -27,17 +26,24 @@ export function BusinessCard({ business: dbBusiness }: { business: BusinessCardP
   const rating = business.rating || 5.0;
   const reviewsCount = business.reviews || 0;
 
-  // Cover image: banners[0] > logo_url fallback > placeholder
-  const coverImage = (pc.banners || []).filter(Boolean)[0] 
-    || pc.hero_image 
+  const coverImage = (pc.banners || []).filter(Boolean)[0]
+    || pc.hero_image
     || "https://images.pexels.com/photos/3997989/pexels-photo-3997989.jpeg?auto=compress&cs=tinysrgb&w=800";
 
   return (
     <Link
       href={`/doanh-nghiep/${business.slug}`}
-      className="group shadow-card hover:shadow-luxe relative flex flex-col overflow-hidden rounded-2xl border border-border/70 bg-card transition-all duration-500 hover:-translate-y-1"
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-[oklch(0.92_0.012_85)] transition-all duration-500 hover:-translate-y-1.5"
+      style={{ boxShadow: "0 4px 24px -8px oklch(0.35 0.05 70 / 0.15)" }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 16px 48px -12px oklch(0.35 0.05 70 / 0.3)";
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 24px -8px oklch(0.35 0.05 70 / 0.15)";
+      }}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      {/* Cover image */}
+      <div className="relative aspect-[16/10] overflow-hidden">
         <Image
           src={coverImage as string}
           alt={business.name || "Doanh nghiệp"}
@@ -45,65 +51,85 @@ export function BusinessCard({ business: dbBusiness }: { business: BusinessCardP
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="overlay-ink absolute inset-0" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+
+        {/* Offer badge */}
         {offer && (
-          <span className="bg-gradient-gold absolute top-4 left-4 rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
+          <span className="absolute top-3 left-3 rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest uppercase text-white"
+            style={{ background: "linear-gradient(100deg, oklch(0.82 0.09 88), oklch(0.72 0.11 78))" }}
+          >
             {offer.discount}
           </span>
         )}
-        <div className="absolute right-4 bottom-4 left-4 flex items-end justify-between gap-3">
-          <span className="text-xs tracking-[0.2em] text-background/80 uppercase">
+
+        {/* Category + Rating row on image bottom */}
+        <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
+          <span className="text-[10px] font-semibold tracking-[0.18em] text-white/90 uppercase">
             {firstCategory}
           </span>
-          <span className="flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold">
-            <Star className="size-3 fill-gold text-gold" />
+          <span className="flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-amber-600">
+            <Star className="size-3 fill-amber-400 text-amber-400" />
             {Number(rating).toFixed(1)}
           </span>
         </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col items-center text-center gap-3 p-5 pt-12">
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 rounded-full bg-white p-1.5 shadow-xl border border-gold/30">
+      {/* Card body */}
+      <div className="relative flex flex-1 flex-col px-5 pt-10 pb-5 gap-2">
+
+        {/* Logo avatar — floated up */}
+        <div className="absolute -top-7 left-5 size-14 rounded-xl overflow-hidden border-2 border-white bg-white"
+          style={{ boxShadow: "0 4px 16px -4px oklch(0.35 0.05 70 / 0.25)" }}
+        >
           {business.logo_url ? (
-            <Image 
-              src={business.logo_url} 
-              alt="logo" 
-              width={72} 
-              height={72}
-              className="size-[72px] shrink-0 rounded-full object-contain p-1" 
+            <Image
+              src={business.logo_url}
+              alt="logo"
+              width={56}
+              height={56}
+              className="size-full object-contain p-0.5"
             />
           ) : (
-            <span className="font-display grid size-[72px] shrink-0 place-items-center rounded-full bg-champagne text-xl tracking-widest text-ink">
+            <span className="flex size-full items-center justify-center bg-[oklch(0.955_0.024_88)] text-base font-bold tracking-tight text-[oklch(0.32_0.018_60)]">
               {(business.name || "1B").substring(0, 2).toUpperCase()}
             </span>
           )}
         </div>
-        
-        <div className="w-full">
-          <h3 className="font-serif text-[18px] font-bold leading-tight line-clamp-2 mb-1.5 tracking-wide text-ink">
-            {business.name}
-            {business.is_featured && <BadgeCheck className="inline-block ml-1.5 mb-0.5 size-[18px] shrink-0 text-gold" />}
-          </h3>
-          <p className="line-clamp-2 text-[13px] text-muted-foreground/90">
-            {business.tagline || business.short_description}
-          </p>
-        </div>
 
-        <p className="flex items-center justify-center gap-1 text-[13px] text-muted-foreground mt-1 w-full">
-          <MapPin className="size-3.5 text-gold shrink-0" />
+        {/* Business name */}
+        <h3 className="text-[15px] font-semibold leading-snug line-clamp-2 text-[oklch(0.18_0.012_60)] tracking-[-0.01em]">
+          {business.name}
+          {business.is_featured && (
+            <BadgeCheck className="inline-block ml-1.5 mb-0.5 size-[15px] shrink-0 text-amber-500" />
+          )}
+        </h3>
+
+        {/* Short desc */}
+        <p className="line-clamp-2 text-[12.5px] leading-relaxed text-[oklch(0.52_0.02_70)]">
+          {business.short_description}
+        </p>
+
+        {/* Location */}
+        <p className="flex items-center gap-1 text-[12px] text-[oklch(0.6_0.03_75)] mt-0.5">
+          <MapPin className="size-3 shrink-0 text-amber-500" />
           <span className="truncate">{firstLocation} · {reviewsCount} đánh giá</span>
         </p>
 
-        <div className="mt-auto flex flex-wrap justify-center gap-1.5 pt-3">
-          {(business.services_list || business.services || []).slice(0, 3).map((s: any) => (
-            <span
-              key={s.name}
-              className="rounded-full border border-gold/20 bg-champagne/30 px-3 py-1 text-[11px] text-ink"
-            >
-              {s.name}
-            </span>
-          ))}
-        </div>
+        {/* Service tags */}
+        {(business.services_list || business.services || []).length > 0 && (
+          <div className="mt-auto flex flex-wrap gap-1.5 pt-2 border-t border-[oklch(0.94_0.01_85)]">
+            {(business.services_list || business.services || []).slice(0, 3).map((s: any) => (
+              <span
+                key={s.name}
+                className="rounded-full px-2.5 py-0.5 text-[11px] font-medium text-[oklch(0.38_0.04_75)]"
+                style={{ background: "oklch(0.97 0.018 85)" }}
+              >
+                {s.name}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </Link>
   );

@@ -1,11 +1,11 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/server";
 
 export const metadata = {
   title: "Tin nhắn liên hệ | Admin Portal",
 };
 
 export default async function ContactsPage() {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data: contacts, error } = await supabase
     .from("contact_requests")
     .select("*")
