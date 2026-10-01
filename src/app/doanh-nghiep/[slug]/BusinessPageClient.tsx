@@ -640,11 +640,13 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
 
 
       {/* NÚT ZALO NỔI DÀNH CHO MOBILE */}
-      <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
-        <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="w-full h-[48px] bg-gradient-gold text-ink font-bold flex items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-sm uppercase tracking-wider">
-          Kết nối Zalo
-        </a>
-      </div>
+      {zaloLink !== '#' && (
+        <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
+          <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="w-full h-[48px] bg-gradient-gold text-ink font-bold flex items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-sm uppercase tracking-wider">
+            Kết nối Zalo
+          </a>
+        </div>
+      )}
       </div>
     </PageShell>
   );
