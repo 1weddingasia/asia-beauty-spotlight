@@ -165,10 +165,12 @@ export function SiteFooter() {
         <div>
           <p className="text-xs tracking-[0.25em] text-gold uppercase">Liên hệ</p>
           <ul className="mt-4 space-y-2 text-sm">
-            {/* FIX #12: Lấy từ site_settings thay vì hardcode */}
-            <li>{settings?.contact_email || "contact@1beauty.asia"}</li>
-            <li>{settings?.contact_phone || "+84 28 7300 1988"}</li>
-            <li>{settings?.contact_address || "TP. Hồ Chí Minh, Việt Nam"}</li>
+            <li>0918 731 411</li>
+            <li>
+              <Link href="/lien-he" className="transition-colors hover:text-gold">
+                Gửi tin nhắn
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
