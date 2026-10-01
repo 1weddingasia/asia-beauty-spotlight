@@ -135,7 +135,7 @@ export default async function SearchPage(props: {
               <SlidersHorizontal className="size-4" /> BỘ LỌC:
             </div>
             
-            <div className="flex flex-1 items-center gap-6 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full">
+            <div className="flex flex-1 items-center gap-6 overflow-x-auto pb-2 md:pb-0 no-scrollbar w-full">
               <div className="flex items-center gap-2 shrink-0">
                 <span className="text-xs font-medium tracking-wider text-muted-foreground uppercase mr-2">Danh mục</span>
                 <div className="flex gap-2">
