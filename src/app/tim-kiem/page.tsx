@@ -25,6 +25,72 @@ export default async function SearchPage(props: {
     searchBusinessesAction(q, category, location, page)
   ]);
 
+  let searchResultsContent = null;
+  if (error) {
+    searchResultsContent = (
+      <div className="text-center py-20 text-red-500">
+        Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.
+      </div>
+    );
+  } else if (results.length > 0) {
+    searchResultsContent = (
+      <>
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+          {results.map((b: any) => (
+            <BusinessCard key={b.slug} business={b} />
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="mt-12 flex justify-center gap-2">
+            {Array.from({ length: totalPages })
+              .map((_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || (p >= page - 2 && p <= page + 2))
+              .reduce((acc, p, i, arr) => {
+                if (i > 0 && arr[i - 1] !== p - 1) acc.push(-1);
+                acc.push(p);
+                return acc;
+              }, [] as number[])
+              .map((p, i) => {
+                if (p === -1) {
+                  return <span key={`ellipsis-${i}`} className="flex size-10 items-center justify-center text-muted-foreground">...</span>;
+                }
+                const isActive = p === page;
+                return (
+                  <Link
+                    key={p}
+                    href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: p.toString() }).toString()}`}
+                    className={`flex size-10 items-center justify-center rounded-full border transition-colors ${
+                      isActive 
+                        ? 'bg-gold border-gold text-ink font-bold' 
+                        : 'border-border bg-card hover:border-gold'
+                    }`}
+                  >
+                    {p}
+                  </Link>
+                );
+              })}
+          </div>
+        )}
+      </>
+    );
+  } else {
+    searchResultsContent = (
+      <div className="text-center py-20">
+        {page > 1 ? (
+          <>
+            <p className="text-muted-foreground mb-4">Trang này không có dữ liệu.</p>
+            <Link href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: '1' }).toString()}`} className="text-gold hover:underline">
+              Quay lại trang 1
+            </Link>
+          </>
+        ) : (
+          <p className="text-muted-foreground">Không tìm thấy doanh nghiệp nào phù hợp với điều kiện tìm kiếm.</p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <PageShell>
       <div className="relative border-b border-border">
@@ -124,65 +190,7 @@ export default async function SearchPage(props: {
             </button>
           </form>
           
-          {error ? (
-            <div className="text-center py-20 text-red-500">
-              Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.
-            </div>
-          ) : results.length > 0 ? (
-            <>
-              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-                {results.map((b: any) => (
-                  <BusinessCard key={b.slug} business={b} />
-                ))}
-              </div>
-
-              {totalPages > 1 && (
-                <div className="mt-12 flex justify-center gap-2">
-                  {/* Truncated pagination logic */}
-                  {Array.from({ length: totalPages })
-                    .map((_, i) => i + 1)
-                    .filter(p => p === 1 || p === totalPages || (p >= page - 2 && p <= page + 2))
-                    .reduce((acc, p, i, arr) => {
-                      if (i > 0 && arr[i - 1] !== p - 1) acc.push(-1); // -1 represents ellipsis
-                      acc.push(p);
-                      return acc;
-                    }, [] as number[])
-                    .map((p, i) => {
-                      if (p === -1) {
-                        return <span key={`ellipsis-${i}`} className="flex size-10 items-center justify-center text-muted-foreground">...</span>;
-                      }
-                      const isActive = p === page;
-                      return (
-                        <Link
-                          key={p}
-                          href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: p.toString() }).toString()}`}
-                          className={`flex size-10 items-center justify-center rounded-full border transition-colors ${
-                            isActive 
-                              ? 'bg-gold border-gold text-ink font-bold' 
-                              : 'border-border bg-card hover:border-gold'
-                          }`}
-                        >
-                          {p}
-                        </Link>
-                      );
-                    })}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-20">
-              {page > 1 ? (
-                <>
-                  <p className="text-muted-foreground mb-4">Trang này không có dữ liệu.</p>
-                  <Link href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: '1' }).toString()}`} className="text-gold hover:underline">
-                    Quay lại trang 1
-                  </Link>
-                </>
-              ) : (
-                <p className="text-muted-foreground">Không tìm thấy doanh nghiệp nào phù hợp với điều kiện tìm kiếm.</p>
-              )}
-            </div>
-          )}
+          {searchResultsContent}
         </div>
       </div>
     </PageShell>
