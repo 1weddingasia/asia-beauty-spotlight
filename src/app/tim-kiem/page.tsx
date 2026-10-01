@@ -47,7 +47,7 @@ export default async function SearchPage(props: {
               .map((_, i) => i + 1)
               .filter(p => p === 1 || p === totalPages || (p >= page - 2 && p <= page + 2))
               .reduce((acc, p, i, arr) => {
-                if (i > 0 && arr[i - 1] !== p - 1) acc.push(-1);
+                if (i > 0 && arr[i - 1] !== p - 1) acc.push(-1); // -1 represents ellipsis
                 acc.push(p);
                 return acc;
               }, [] as number[])
