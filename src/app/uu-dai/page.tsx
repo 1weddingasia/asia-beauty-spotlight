@@ -18,7 +18,7 @@ export default async function OffersPage() {
   // Lấy tất cả các doanh nghiệp đã được xuất bản
   const { data: businesses, error } = await supabase
     .from("businesses")
-    .select("slug, name, page_content, plan_id")
+    .select("slug, name, page_content")
     .eq("status", "published")
     .limit(500);
 
