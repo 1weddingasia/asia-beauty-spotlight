@@ -85,7 +85,7 @@ async function fetchPexelsFallback(category) {
   } catch { return []; }
 }
 
-async function generateContentWithAI(name, category, address, reviews) {
+async function generateContentWithAI(name, category, address, reviews, textContent = "") {
   if (!process.env.DEEPSEEK_API_KEY) return null;
   try {
     const prompt = `Tôi đang tạo hồ sơ cho doanh nghiệp làm đẹp:
@@ -93,14 +93,25 @@ Tên: ${name}
 Địa chỉ: ${address || 'Đang cập nhật'}
 Ngành nghề: ${category}
 Số đánh giá: ${reviews || 0}
+Nội dung lấy từ trang web/map: ${textContent.substring(0, 3000)}
 
-Yêu cầu viết bằng tiếng Việt:
-1. short_description: 1 câu mô tả ngắn gọn, hấp dẫn, chuẩn SEO (khoảng 15-20 chữ).
-2. description: Câu chuyện thương hiệu và giới thiệu dịch vụ (khoảng 3 đoạn văn). Văn phong chuyên nghiệp, sang trọng, thu hút khách hàng làm đẹp. Sử dụng thẻ HTML cơ bản (<p>, <b>, <ul>, <br>) để trình bày. KHÔNG dùng markdown hay \`\`\`.
-3. tagline: Slogan ngắn gọn (3-6 chữ).
-
-Trả về ĐÚNG MỘT JSON thuần túy (không bọc trong \`\`\`json), với cấu trúc:
-{"short_description": "...", "description": "...", "tagline": "..."}`;
+Yêu cầu phân tích và trả về DUY NHẤT một chuỗi JSON thuần túy (không bọc trong \`\`\`json), với cấu trúc ĐÚNG CHUẨN sau:
+{
+  "short_description": "1 câu mô tả ngắn gọn, hấp dẫn, chuẩn SEO (khoảng 15-20 chữ).",
+  "description": "Câu chuyện thương hiệu và giới thiệu dịch vụ (khoảng 3 đoạn văn). Dùng thẻ <p>, <b>, <ul>, <br>. KHÔNG dùng markdown hay \`\`\`.",
+  "tagline": "Slogan ngắn gọn (3-6 chữ).",
+  "category_slug": "Phân loại thành 1 mã (vd: spa-massage, salon-toc, tham-my-vien, nha-khoa, nail-mi)",
+  "location_slug": "Mã tỉnh/thành phố dựa vào địa chỉ (vd: ho-chi-minh, ha-noi, da-nang, can-tho)",
+  "socials": {
+    "facebook": "Link facebook nếu tìm thấy",
+    "zalo": "Link hoặc số zalo nếu tìm thấy",
+    "email": "Email nếu có"
+  },
+  "services": [
+    { "name": "Tên dịch vụ 1 (VD: Massage Body)", "description": "Mô tả ngắn dịch vụ 1", "price": "Liên hệ" },
+    { "name": "Tên dịch vụ 2", "description": "Mô tả ngắn dịch vụ 2", "price": "Liên hệ" }
+  ]
+}`;
     
     const res = await axios.post('https://api.deepseek.com/chat/completions', {
       model: 'deepseek-chat',
@@ -115,8 +126,14 @@ Trả về ĐÚNG MỘT JSON thuần túy (không bọc trong \`\`\`json), với
       timeout: 30000
     });
     const txt = res.data.choices[0].message.content;
-    return JSON.parse(txt.replace(/```json/g, '').replace(/```/g, '').trim());
+    const match = txt.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No JSON found");
+    const parsed = JSON.parse(match[0]);
+    process.stderr.write(`[AI Success] Generated content for ${name}\n`);
+    return parsed;
   } catch (e) {
+    process.stderr.write(`[AI Error] ${e.response?.data ? JSON.stringify(e.response.data) : e.message}\n`);
+    if (typeof txt !== 'undefined') process.stderr.write(`[AI Raw] ${txt}\n`);
     return null;
   }
 }
@@ -136,15 +153,33 @@ async function scrapeGoogleMaps(page, searchQuery) {
     // If it's a search results page (not a direct business page), click the first result
     const firstResult = await page.$('a[href*="/maps/place/"]');
     if (firstResult) {
-      await firstResult.click();
-      await page.waitForSelector('h1', { timeout: 10000 }).catch(() => {});
-      await delay(2500);
+      await Promise.all([
+        page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {}),
+        firstResult.click(),
+      ]);
+      await delay(3000);
     }
+    
+    // Attempt to expand hours
+    try {
+      const expandBtn = await page.$('[data-item-id="oh"] [aria-expanded="false"], [data-item-id="oh"]');
+      if (expandBtn) {
+        await expandBtn.click();
+        await delay(1000);
+      }
+    } catch(e) {}
 
     // ── EXTRACT BASIC INFO ──────────────────────────────────
     const basicInfoData = await page.evaluate(() => {
-      const title = document.querySelector('h1')?.innerText || null;
-
+      let title = null;
+      const h1s = Array.from(document.querySelectorAll('h1'));
+      for (const h1 of h1s) {
+        const text = h1.innerText?.trim();
+        if (text && text !== 'Results' && text !== 'Kết quả') {
+          title = text;
+        }
+      }
+      
       let rating = null, reviews = null;
       const ratingEl = document.querySelector('div.F7nice');
       if (ratingEl) {
@@ -173,13 +208,48 @@ async function scrapeGoogleMaps(page, searchQuery) {
       }
 
 
-      let working_hours = "Đang cập nhật";
-      const ohEl = document.querySelector('[data-item-id="oh"]');
-      if (ohEl) {
-        let ariaOh = ohEl.getAttribute('aria-label') || '';
-        ariaOh = ariaOh.replace(/Ẩn giờ hoạt động trong tuần\.?|Hide hours for the week\.?/gi, '').trim();
-        if (ariaOh) {
-          working_hours = ariaOh.split('. ').map(s => s.trim()).filter(Boolean).join('\n');
+      let working_hours = [];
+      
+      // Try to extract from table first
+      const table = document.querySelector('table');
+      if (table) {
+        // Find if this table looks like a hours table
+        const firstRowText = table.innerText.toLowerCase();
+        if (firstRowText.includes('monday') || firstRowText.includes('thứ') || firstRowText.includes('chủ nhật') || firstRowText.includes('sunday')) {
+          const rows = table.querySelectorAll('tr');
+          for (const row of rows) {
+            const tds = row.querySelectorAll('td');
+            if (tds.length >= 2) {
+              let day = tds[0].innerText.trim();
+              let hours = tds[1].innerText.trim();
+              if (day && hours) {
+                working_hours.push({ day, hours });
+              }
+            }
+          }
+        }
+      }
+
+      // Fallback to aria-label
+      if (working_hours.length === 0) {
+        const ohEl = document.querySelector('[data-item-id="oh"]');
+        if (ohEl) {
+          let ariaOh = ohEl.getAttribute('aria-label') || '';
+          ariaOh = ariaOh.replace(/Ẩn giờ hoạt động trong tuần\.?|Hide hours for the week\.?/gi, '').trim();
+          if (ariaOh) {
+            let chunks = ariaOh.split('.').map(s => s.trim()).filter(Boolean);
+            for (let chunk of chunks) {
+              let parts = chunk.split(',');
+              if (parts.length >= 2) {
+                let day = parts.shift().trim();
+                let hours = parts.join(',').trim();
+                working_hours.push({ day, hours });
+              }
+            }
+            if (working_hours.length === 0) {
+              working_hours = ariaOh; // fallback
+            }
+          }
         }
       }
       
@@ -223,11 +293,12 @@ async function scrapeGoogleMaps(page, searchQuery) {
       basicInfo.imgs = [...new Set([...basicInfo.imgs, ...moreImgs])];
     } catch (_) {}
 
-    // UPGRADE ALL IMAGES TO 4K
-    const hqImages = basicInfo.imgs
-      .map(upgradeImageUrl)
-      .filter(Boolean)
-      .slice(0, 15); // max 15 images
+    // UPGRADE ALL IMAGES TO 4K and Deduplicate
+    const hqImages = [...new Set(
+      basicInfo.imgs
+        .map(upgradeImageUrl)
+        .filter(Boolean)
+    )].slice(0, 15); // max 15 images
 
     const logoHq = basicInfo.logo ? upgradeImageUrl(basicInfo.logo) : null;
     const banners = hqImages.slice(0, 3);
@@ -288,7 +359,7 @@ async function run() {
       gallery: [...new Set([...(pc.gallery || []), ...(scraped.gallery || [])])].filter(Boolean),
       rating: pc.rating || (scraped.rating ? parseFloat(scraped.rating.replace(',', '.')) : undefined),
       reviews: pc.reviews || (scraped.reviews ? parseInt(scraped.reviews.replace(/[^\d]/g, '')) : undefined),
-      working_hours: scraped.working_hours && scraped.working_hours !== 'Đang cập nhật' ? scraped.working_hours : (pc.working_hours || []),
+      working_hours: (scraped.working_hours && Array.isArray(scraped.working_hours) && scraped.working_hours.length > 0) ? scraped.working_hours : (pc.working_hours || []),
     };
     let aiContent = null;
     if (!existing.description || !existing.short_description || !pc.tagline) {
@@ -370,10 +441,24 @@ async function run() {
     page_content,
   };
 
-  const { error } = await supabase.from('businesses').insert(payload);
+  const { data: insertedBiz, error } = await supabase.from('businesses').insert(payload).select('id').single();
   if (error) {
     process.stdout.write(JSON.stringify({ error: error.message }) + '\n');
     process.exit(0);
+  }
+
+  // Tự động link Danh mục và Địa điểm (business_categories / business_locations)
+  try {
+    const { data: c } = await supabase.from('directory_categories').select('id').eq('slug', category).single();
+    const { data: l } = await supabase.from('directory_locations').select('id').eq('slug', location).single();
+    if (c) {
+      await supabase.from('business_categories').upsert({ business_id: insertedBiz.id, category_id: c.id }, { onConflict: 'business_id,category_id' });
+    }
+    if (l) {
+      await supabase.from('business_locations').upsert({ business_id: insertedBiz.id, location_id: l.id }, { onConflict: 'business_id,location_id' });
+    }
+  } catch (err) {
+    // ignore linking errors silently for the API response
   }
   process.stdout.write(JSON.stringify({ success: true, name: bizName }) + '\n');
   process.exit(0);

@@ -68,12 +68,12 @@ export function BusinessCard({ business: dbBusiness }: { business: BusinessCardP
             <Image 
               src={business.logo_url} 
               alt="logo" 
-              width={44} 
-              height={44}
-              className="shrink-0 rounded-xl border border-gold-soft object-contain bg-white p-1" 
+              width={56} 
+              height={56}
+              className="shrink-0 rounded-full border border-gold object-contain bg-white p-1.5 shadow-md" 
             />
           ) : (
-            <span className="font-display grid size-11 shrink-0 place-items-center rounded-xl border border-gold-soft bg-champagne text-sm tracking-widest text-ink">
+            <span className="font-display grid size-14 shrink-0 place-items-center rounded-full border border-gold-soft bg-champagne text-sm tracking-widest text-ink shadow-md">
               {(business.name || "1B").substring(0, 2).toUpperCase()}
             </span>
           )}

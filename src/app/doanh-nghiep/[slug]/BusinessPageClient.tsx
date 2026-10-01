@@ -3,7 +3,8 @@
 import { PageShell } from "@/components/site/Layout";
 import { 
   BadgeCheck, Clock, Globe, MapPin, 
-  Phone, Sparkles, Star, ChevronLeft, ChevronRight, CheckCircle2, X, Ticket, Image as ImageIcon, ArrowUp, Navigation
+  Phone, Sparkles, Star, ChevronLeft, ChevronRight, CheckCircle2, X, Ticket, Image as ImageIcon, ArrowUp, Navigation,
+  Mail, MessageCircle
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,23 +50,30 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
     return () => clearInterval(interval);
   }, [heroApi]);
 
-  let heroSlides = b.banners?.length > 0 
+  let rawHeroSlides = b.banners?.length > 0 
     ? b.banners 
     : (b.gallery?.length > 0 ? b.gallery : [b.hero_image, b.cover_image].filter(Boolean));
-  if (heroSlides.length > 3) heroSlides = heroSlides.slice(0, 3);
-  if (heroSlides.length === 0) heroSlides = [getFallback(0), getFallback(1), getFallback(2)];
+  let heroSlides = Array.from(new Set(rawHeroSlides)).filter(Boolean) as string[];
+  
+  if (heroSlides.length > 0 && heroSlides.length < 3) {
+    while (heroSlides.length < 3) {
+      heroSlides.push(heroSlides[heroSlides.length - 1]);
+    }
+  } else if (heroSlides.length === 0) {
+    heroSlides = ["/images/placeholder.jpg", "/images/placeholder.jpg", "/images/placeholder.jpg"];
+  }
+  heroSlides = heroSlides.slice(0, 3);
 
   let galleryItems = b.gallery || [];
-  if (galleryItems.length > 0 && galleryItems.length < 4) {
-    const extra = (b.banners || []).filter((img: string) => !galleryItems.includes(img));
-    galleryItems = [...galleryItems, ...extra];
+  if (galleryItems.length === 0) galleryItems = heroSlides;
+  if (galleryItems.length > 0 && galleryItems.length < 6) {
+    while (galleryItems.length < 6) {
+      galleryItems = [...galleryItems, ...galleryItems].slice(0, 6);
+    }
   }
-  if (galleryItems.length === 0) {
-    galleryItems = [getFallback(3), getFallback(4), getFallback(5), getFallback(6)];
-  } else if (galleryItems.length < 4) {
-    const needed = 4 - galleryItems.length;
-    galleryItems = [...galleryItems, ...Array(needed).fill(null).map((_, i) => getFallback(7 + i))];
-  }
+
+  // State for Popup Lightbox
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const servicesItems = b.services && b.services.length > 0 
     ? b.services 
@@ -183,10 +191,10 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
           <div className="flex flex-col items-center md:items-end md:flex-row gap-6 pointer-events-auto">
             <motion.div 
               initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}
-              className="relative size-32 md:size-48 shrink-0 overflow-hidden rounded-full border-4 border-background bg-white shadow-luxe flex items-center justify-center"
+              className="relative size-32 md:size-48 shrink-0 overflow-hidden rounded-full border-[3px] border-gold bg-white shadow-2xl ring-4 ring-background flex items-center justify-center"
             >
               {b.logo_url ? (
-                <Image src={b.logo_url} alt={b.name} fill className="object-contain p-4 bg-white" />
+                <Image src={b.logo_url} alt={b.name} fill className="object-contain p-2 md:p-3 bg-white" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-champagne text-5xl font-display text-gold">
                   {b.name.substring(0, 1)}
@@ -290,12 +298,32 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                 <Phone className="size-4 md:size-5 text-gold shrink-0" />
                 <span className="text-xs md:text-sm font-medium">{b.phone || "Đang cập nhật"}</span>
               </div>
-              {zaloNumber && (
+              
+              {/* Facebook */}
+              {b.socials?.facebook && (
                 <div className="flex items-center gap-3">
-                  <div className="size-4 md:size-5 text-gold shrink-0 font-bold text-[10px] md:text-xs flex items-center justify-center border border-gold rounded-full">Z</div>
-                  <span className="text-xs md:text-sm font-medium">{b.zalo || b.phone}</span>
+                  <Globe className="size-4 md:size-5 text-gold shrink-0" />
+                  <a href={b.socials.facebook} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">Facebook Fanpage</a>
                 </div>
               )}
+
+              {/* Zalo */}
+              {(b.socials?.zalo || zaloNumber) && (
+                <div className="flex items-center gap-3">
+                  <MessageCircle className="size-4 md:size-5 text-gold shrink-0" />
+                  <a href={b.socials?.zalo || zaloLink} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">Chat Zalo</a>
+                </div>
+              )}
+
+              {/* Email */}
+              {(b.email || b.socials?.email) && (
+                <div className="flex items-center gap-3">
+                  <Mail className="size-4 md:size-5 text-gold shrink-0" />
+                  <a href={`mailto:${b.email || b.socials?.email}`} className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">{b.email || b.socials?.email}</a>
+                </div>
+              )}
+
+              {/* Website */}
               {b.website && (
                 <div className="flex items-center gap-3">
                   <Globe className="size-4 md:size-5 text-gold shrink-0" />
@@ -329,7 +357,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                   loading="lazy"
                   allowFullScreen
                   referrerPolicy="no-referrer-when-downgrade"
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(b.address + ' ' + (b.name || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent((b.address || '') + ' ' + (b.name || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                 ></iframe>
               </div>
             )}
@@ -374,8 +402,8 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                     className="bg-card border border-border rounded-2xl overflow-hidden h-full flex flex-col hover:border-gold hover:shadow-luxe transition-all cursor-pointer group"
                   >
                     <div className="w-full h-40 md:h-48 bg-secondary relative overflow-hidden">
-                      {s.image ? (
-                        <Image src={s.image} alt={s.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                      {s.image || galleryItems[idx % galleryItems.length] ? (
+                        <Image src={s.image || galleryItems[idx % galleryItems.length]} alt={s.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                       ) : (
                         <>
                           <div className="absolute inset-0 bg-gradient-to-tr from-champagne to-secondary opacity-50 group-hover:scale-110 transition-transform duration-700" />
@@ -386,11 +414,11 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                       )}
                     </div>
                     <div className="p-5 md:p-6 flex flex-col flex-1">
-                      <h3 className="text-lg md:text-xl font-display mb-2 group-hover:text-gold transition-colors">{s.name}</h3>
-                      <p className="text-xs md:text-sm text-muted-foreground flex-1 line-clamp-2 mb-4 leading-relaxed">
+                      <h3 className="text-lg md:text-xl font-display mb-3 group-hover:text-gold transition-colors">{s.name}</h3>
+                      <p className="text-xs md:text-sm text-muted-foreground flex-1 mb-5 leading-relaxed">
                         {s.description}
                       </p>
-                      <div className="pt-4 border-t border-border/50 flex items-center justify-between">
+                      <div className="pt-4 border-t border-border/50 flex items-center justify-between mt-auto">
                         <span className="font-semibold text-gold text-base md:text-lg">
                           {s.price || s.price_min || "Liên hệ"}
                         </span>
@@ -470,7 +498,11 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
           <div className="overflow-hidden -mx-6 px-6 md:mx-0 md:px-0" ref={galleryRef}>
             <div className="flex gap-3 md:gap-6">
               {galleryItems.map((img: string | null, idx: number) => (
-                <div key={idx} className="relative flex-[0_0_85%] md:flex-[0_0_40%] lg:flex-[0_0_30%] h-[250px] md:h-[400px] rounded-2xl overflow-hidden group bg-secondary/50 border border-border/50">
+                <div 
+                  key={idx} 
+                  className="relative flex-[0_0_85%] md:flex-[0_0_40%] lg:flex-[0_0_30%] h-[250px] md:h-[400px] rounded-2xl overflow-hidden group bg-secondary/50 border border-border/50 cursor-pointer"
+                  onClick={() => img && setLightboxImage(img)}
+                >
                   {img ? (
                     <Image
                       src={img}
@@ -489,8 +521,30 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
             </div>
           </div>
         </motion.section>
-
       </main>
+
+      {/* LIGHTBOX POPUP */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-4 md:p-8" 
+            onClick={() => setLightboxImage(null)}
+          >
+            <div className="relative w-full max-w-6xl aspect-video rounded-xl overflow-hidden">
+              <Image src={lightboxImage} alt="Phóng to" fill className="object-contain" />
+              <button 
+                onClick={() => setLightboxImage(null)}
+                className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/80 rounded-full w-10 h-10 flex items-center justify-center font-bold z-10 border border-white/20"
+              >
+                X
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* MODAL: CHI TIẾT DỊCH VỤ */}
       <AnimatePresence>

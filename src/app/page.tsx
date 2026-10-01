@@ -57,7 +57,7 @@ export default async function Index() {
 
   // --- OFFERS: Extract real offers from all businesses, rotate daily ---
   const allOffers = allBusinesses
-    .filter((b: any) => b.plan_id) // Only premium businesses
+    // .filter((b: any) => b.plan_id) // Only premium businesses
     .flatMap((b: any) => {
       const pc = b.page_content || {};
       return (pc.offers || []).map((o: any) => ({
