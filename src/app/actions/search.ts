@@ -52,7 +52,7 @@ export async function searchBusinessesAction(q: string, category: string, locati
 
   if (error) {
     console.error("Search error:", error);
-    return { results: [], count: 0, totalPages: 0, error: true };
+    return { results: [], count: 0, totalPages: 0, error: true, page: safePage };
   }
 
   const results = (data || []).map((b: any) => ({
@@ -64,6 +64,7 @@ export async function searchBusinessesAction(q: string, category: string, locati
   return {
     results,
     count: count || 0,
-    totalPages: Math.ceil((count || 0) / PAGE_SIZE)
+    totalPages: Math.ceil((count || 0) / PAGE_SIZE),
+    page: safePage
   };
 }

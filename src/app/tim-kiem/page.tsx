@@ -16,9 +16,10 @@ export default async function SearchPage(props: {
   const q = searchParams.q || "";
   const category = searchParams.category || "all";
   const location = searchParams.location || "all";
-  const page = parseInt(searchParams.page || "1", 10) || 1;
+  const rawPage = parseInt(searchParams.page || "1", 10) || 1;
+  const page = Math.max(1, rawPage);
 
-  const [categories, locations, { results, totalPages }] = await Promise.all([
+  const [categories, locations, { results, totalPages, error }] = await Promise.all([
     getCategoriesAction(),
     getLocationsAction(),
     searchBusinessesAction(q, category, location, page)
@@ -123,7 +124,11 @@ export default async function SearchPage(props: {
             </button>
           </form>
           
-          {results.length > 0 ? (
+          {error ? (
+            <div className="text-center py-20 text-red-500">
+              Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.
+            </div>
+          ) : results.length > 0 ? (
             <>
               <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
                 {results.map((b: any) => (
@@ -164,16 +169,18 @@ export default async function SearchPage(props: {
                 </div>
               )}
             </>
-          ) : page > 1 ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4">Trang này không có dữ liệu.</p>
-              <Link href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: '1' }).toString()}`} className="text-gold hover:underline">
-                Quay lại trang 1
-              </Link>
-            </div>
           ) : (
-            <div className="text-center py-20 text-muted-foreground">
-              Không tìm thấy doanh nghiệp nào phù hợp với điều kiện tìm kiếm.
+            <div className="text-center py-20">
+              {page > 1 ? (
+                <>
+                  <p className="text-muted-foreground mb-4">Trang này không có dữ liệu.</p>
+                  <Link href={`/tim-kiem?${new URLSearchParams({ q, category, location, page: '1' }).toString()}`} className="text-gold hover:underline">
+                    Quay lại trang 1
+                  </Link>
+                </>
+              ) : (
+                <p className="text-muted-foreground">Không tìm thấy doanh nghiệp nào phù hợp với điều kiện tìm kiếm.</p>
+              )}
             </div>
           )}
         </div>
