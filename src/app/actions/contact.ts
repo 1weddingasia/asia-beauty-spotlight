@@ -40,6 +40,31 @@ export async function submitContactForm(formData: FormData) {
     console.log(`- SĐT: ${phone}`);
     console.log(`- Lời nhắn: ${message}`);
 
+    // Telegram Bot Integration
+    const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+    const telegramChatId = process.env.TELEGRAM_CHAT_ID;
+
+    if (telegramToken && telegramChatId) {
+      const text = `🔔 *YÊU CẦU ĐĂNG KÝ MỚI*\n\n🏢 *Doanh nghiệp:* ${businessName}\n👤 *Người liên hệ:* ${contactName}\n📞 *SĐT:* ${phone}\n💬 *Lời nhắn:* ${message}`;
+      
+      try {
+        await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: telegramChatId,
+            text,
+            parse_mode: 'Markdown'
+          })
+        });
+        console.log("Sent notification to Telegram successfully.");
+      } catch (tgError) {
+        console.error("Error sending to Telegram:", tgError);
+      }
+    } else {
+      console.warn("Telegram Token or Chat ID is missing. Notification not sent to Telegram.");
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error("Error submitting contact form:", error);

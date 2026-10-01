@@ -111,23 +111,6 @@ export default function ContactPageClient({ address, phone, email }: ContactPage
               <li>• Hỗ trợ quảng cáo qua các chương trình Ưu đãi.</li>
             </ul>
           </div>
-          <div className="rounded-xl border border-border bg-card p-6">
-            <h3 className="text-lg font-medium">Thông tin hỗ trợ</h3>
-            <div className="mt-4 space-y-4 text-sm">
-              <p className="flex items-center gap-2">
-                <MapPin className="size-4 text-gold shrink-0" />
-                {address || "Khu Công nghệ cao, TP. Hồ Chí Minh"}
-              </p>
-              <p className="flex items-center gap-2">
-                <Phone className="size-4 text-gold shrink-0" />
-                {phone || "+84 28 7300 1988"}
-              </p>
-              <p className="flex items-center gap-2">
-                <Mail className="size-4 text-gold shrink-0" />
-                {email || "contact@1beauty.asia"}
-              </p>
-            </div>
-          </div>
         </aside>
       </section>
     </PageShell>
