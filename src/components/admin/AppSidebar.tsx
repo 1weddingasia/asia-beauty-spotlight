@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Store, Users, Settings, LogOut, Package, FileText, MapPin, List, CreditCard, MessageCircle, Zap } from "lucide-react";
+import { LayoutDashboard, Store, Users, Settings, LogOut, Package, FileText, MapPin, List, CreditCard, MessageCircle, Zap, TrendingUp } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +20,7 @@ import {
 const items = [
   { title: "Tổng quan", url: "/admin", icon: LayoutDashboard },
   { title: "Doanh nghiệp", url: "/admin/businesses", icon: Store },
+  { title: "Quản lý Leads B2B", url: "/admin/leads", icon: TrendingUp },
   { title: "⚡ AI Importer", url: "/admin/ai-import", icon: Zap },
   { title: "Danh mục Ngành", url: "/admin/categories", icon: List },
   { title: "Khu vực / Địa điểm", url: "/admin/locations", icon: MapPin },

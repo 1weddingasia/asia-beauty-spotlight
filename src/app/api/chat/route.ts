@@ -79,7 +79,7 @@ QUY TẮC BẮT BUỘC:
         });
 
         // Bắn Telegram thông báo Lead từ Chatbot
-        const telegramChatId = business.page_content?.telegram_chat_id;
+        const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
         if (telegramChatId) {
           const msg = `🤖 [AI CHATBOT] CÓ KHÁCH ĐỂ LẠI SĐT!\n\nTiệm: ${business.name}\nSĐT: ${phoneFound}\nNội dung chat: "${lastUserMsg.content}"\n👉 Anh/Chị gọi ngay để chốt nhé!`;
           sendTelegramAsync(telegramChatId, msg);

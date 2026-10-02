@@ -98,7 +98,7 @@ export async function POST(req: Request) {
     }
 
     // Async Telegram notification
-    const telegramChatId = business.page_content?.telegram_chat_id;
+    const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
     if (telegramChatId) {
       const msg = `🔔 CÓ KHÁCH NHẬN ƯU ĐÃI MỚI!\n\nTiệm: ${business.name}\nKhách hàng: ${customer_name || 'Không cung cấp'}\nSĐT: ${cleanPhone}\nGói: ${deal_name || 'Ưu đãi chung'}\nMã: ${voucher_code}\n\n👉 Anh/Chị hãy gọi ngay để chốt lịch!`;
       sendTelegramAsync(telegramChatId, msg);

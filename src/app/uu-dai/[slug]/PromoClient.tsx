@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin, Phone, CheckCircle2, Ticket } from "lucide-react";
 import { toast } from "sonner";
+import { ChatWidget } from "@/components/site/ChatWidget";
 
 export default function PromoClient({ business, bannerImg, avatar }: { business: { id: string, name: string, slug: string, address: string, page_content: any }, bannerImg: string, avatar: string }) {
   const [name, setName] = useState("");
@@ -149,6 +150,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           </div>
         )}
       </div>
+      <ChatWidget businessId={business.id} businessName={business.name} />
     </div>
   );
 }
