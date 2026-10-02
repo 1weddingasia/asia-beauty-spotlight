@@ -17,6 +17,7 @@ import { ImageUpload } from "@/components/ui/image-upload";
 function normalizeSlug(str: string): string {
   return str
     .toLowerCase()
+    .replace(/[đĐ]/g, 'd') // handle Vietnamese Đ before NFD
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '') // strip diacritics
     .replace(/[^a-z0-9]+/g, '-')
@@ -50,6 +51,9 @@ export default function BusinessEditorClient({
   const [business, setBusiness] = useState<any>(initialBusiness);
 
   const isNew = !initialBusiness;
+  const [siteOrigin, setSiteOrigin] = useState('');
+
+  useEffect(() => { setSiteOrigin(window.location.origin); }, []);
   const [formData, setFormData] = useState({
     name: initialBusiness?.name || "",
     address: initialBusiness?.address || "",
@@ -122,7 +126,7 @@ export default function BusinessEditorClient({
       const payload = {
         name: formData.name,
         address: formData.address,
-        slug: formData.slug || normalizeSlug(formData.name),
+        slug: formData.slug || normalizeSlug(formData.name) || 'ten-spa',
         status: formData.status,
         phone: pageContent.phone || null,
         email: pageContent.email || null,
@@ -229,10 +233,9 @@ export default function BusinessEditorClient({
           )}
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
             <Save className="mr-2 size-4" />
-            {(() => {
-              if (saving) return isNew ? 'Đang tạo...' : 'Đang lưu...';
-              return isNew ? 'Tạo Doanh Nghiệp' : 'Lưu thay đổi';
-            })()}
+            {saving
+              ? (isNew ? 'Đang tạo...' : 'Đang lưu...')
+              : (isNew ? 'Tạo Doanh Nghiệp' : 'Lưu thay đổi')}
           </Button>
         </div>
       </div>
@@ -322,7 +325,7 @@ export default function BusinessEditorClient({
                     placeholder="ten-doanh-nghiep (tự động nếu để trống)"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Địa chỉ: <b>{typeof window !== 'undefined' ? window.location.origin : ''}/doanh-nghiep/{formData.slug || normalizeSlug(formData.name) || 'ten-spa'}</b>
+                    Địa chỉ: <b>{siteOrigin}/doanh-nghiep/{formData.slug || normalizeSlug(formData.name) || 'ten-spa'}</b>
                   </p>
                 </div>
                 <div className="space-y-2">
