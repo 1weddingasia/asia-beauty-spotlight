@@ -100,10 +100,20 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
   const formatPrice = (price: number | string) => {
     if (!price) return "";
-    const numPrice = typeof price === 'string' ? Number(price.toString().replace(/\D/g, '')) : price;
-    if (!isNaN(numPrice) && numPrice > 0) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numPrice);
+    
+    if (typeof price === 'string') {
+      const trimmed = price.trim();
+      // Nếu là số thuần túy (có thể có khoảng trắng) thì format, nếu không thì giữ nguyên chữ (VD: "Liên hệ")
+      if (/^\d+$/.test(trimmed)) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(trimmed));
+      }
+      return price;
     }
+    
+    if (typeof price === 'number' && price > 0) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    }
+    
     return price;
   };
 
@@ -139,8 +149,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
         {/* Danh sách Deals */}
         <div className="space-y-4">
-          {deals.map(deal => (
-            <div key={deal.id} className="rounded-2xl border border-border/50 bg-white p-5 shadow-card relative overflow-hidden transition-all hover:border-gold/50">
+          {deals.length === 0 ? (
+            <div className="text-center p-8 bg-white rounded-2xl border">
+              <p className="text-muted-foreground">Hiện tại chưa có chương trình ưu đãi nào đang mở.</p>
+            </div>
+          ) : (
+            deals.map(deal => (
+              <div key={deal.id} className="rounded-2xl border border-border/50 bg-white p-5 shadow-card relative overflow-hidden transition-all hover:border-gold/50">
               {deal.badge && (
                   <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-bl-lg shadow-sm">
                     {deal.badge}
@@ -179,7 +194,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </Button>
                 </div>
               </div>
-            ))}
+            ))
+          )}
         </div>
       </div>
 
