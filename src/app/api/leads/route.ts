@@ -34,12 +34,6 @@ function generateVoucherCode(businessName: string) {
   return `1B-${prefix}-${rand}`;
 }
 
-function getVisitLabel(visitCount: number): string {
-  if (visitCount === 1) return '🟢 KHÁCH MỚI';
-  if (visitCount === 2) return '🟠 KHÁCH QUAY LẠI (Lần 2)';
-  if (visitCount >= 3) return `🔴 KHÁCH VIP (Đến lần thứ ${visitCount})`;
-  return '🟢 KHÁCH MỚI';
-}
 
 function escapeHtml(str: string): string {
   return str
@@ -151,16 +145,19 @@ export async function POST(req: Request) {
         ? `⭐ ĐƠN MỚI TỪ KHÁCH QUAY LẠI (Lần thứ ${visitNumber})`
         : `🔔 ĐƠN MỚI TỪ KHÁCH MỚI`;
 
-      const tip = isVIP
-        ? '⚡ Khách quen! Hãy dặn nhân viên phục vụ thật chu đáo!'
-        : isReturning ? '✨ Khách quay lại! Gọi ngay để chốt lịch!' : '👉 Gọi ngay để chốt lịch!';
+      let tip: string;
+      if (isVIP) {
+        tip = '⚡ Khách quen! Hãy dặn nhân viên phục vụ thật chu đáo!';
+      } else if (isReturning) {
+        tip = '✨ Khách quay lại! Gọi ngay để chốt lịch!';
+      } else {
+        tip = '👉 Gọi ngay để chốt lịch!';
+      }
 
       const msg = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
 
       sendTelegramAsync(telegramChatId, msg);
     }
-
-
     return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
   } catch (error) {
     console.error("API Leads Error:", error);

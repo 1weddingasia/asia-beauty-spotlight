@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Download, Phone, PhoneCall, CheckCircle, X, History } from "lucide-react";
@@ -30,8 +30,8 @@ export default function LeadsPage() {
   type HistoryRow = Pick<Lead, 'id' | 'created_at' | 'deal_name' | 'status'>;
   const [visitHistory, setVisitHistory] = useState<HistoryRow[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  // Track request ID to discard stale responses when user switches customers quickly
-  const historyReqRef = { current: 0 };
+  // Persist across renders so stale-response guard works correctly
+  const historyReqRef = useRef(0);
 
   function visitBadge(count?: number) {
     if (!count || count === 1) return { label: 'Khách mới', cls: 'bg-green-100 text-green-800' };
@@ -109,6 +109,10 @@ export default function LeadsPage() {
     }
     setHistoryLoading(false);
   };
+
+  // Total visit count from stored value (accurate even when history is limited to 20 rows)
+  const totalVisits = (lead: Lead) => lead.visit_count ?? 1;
+
 
   const toggleStatus = async (leadId: string, currentStatus: string) => {
     // new -> contacted -> served -> new (legacy: called -> served, closed -> new)
@@ -316,27 +320,37 @@ export default function LeadsPage() {
             </button>
           </div>
           <div className="px-6 py-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Lịch sử ghé tiệm ({visitHistory.length} lần)</p>
-            {historyLoading ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">Đang tải...</p>
-            ) : visitHistory.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">Chưa có dữ liệu</p>
-            ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {visitHistory.map((v, i) => (
-                  <div key={v.id} className={`flex items-start gap-3 p-3 rounded-xl ${i === 0 ? 'bg-gold/10 border border-gold/30' : 'bg-muted/40'}`}>
-                    <div className={`size-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${i === 0 ? 'bg-gold text-ink' : 'bg-muted text-muted-foreground'}`}>
-                      {visitHistory.length - i}
+            {(() => {
+              const total = totalVisits(selectedLead);
+              return (
+                <>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+                    Lịch sử ghé tiệm ({total} lần){total > 20 ? ' · Hiển thị 20 gần nhất' : ''}
+                  </p>
+                  {historyLoading ? (
+                    <p className="text-sm text-muted-foreground py-4 text-center">Đang tải...</p>
+                  ) : visitHistory.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4 text-center">Chưa có dữ liệu</p>
+                  ) : (
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {visitHistory.map((v, i) => (
+                        <div key={v.id} className={`flex items-start gap-3 p-3 rounded-xl ${i === 0 ? 'bg-gold/10 border border-gold/30' : 'bg-muted/40'}`}>
+                          <div className={`size-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${i === 0 ? 'bg-gold text-ink' : 'bg-muted text-muted-foreground'}`}>
+                            {total - i}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-ink truncate">{v.deal_name || 'Ưu đãi chung'}</p>
+                            <p className="text-xs text-muted-foreground">{format(new Date(v.created_at), 'HH:mm dd/MM/yyyy')}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-ink truncate">{v.deal_name || 'Ưu đãi chung'}</p>
-                      <p className="text-xs text-muted-foreground">{format(new Date(v.created_at), 'HH:mm dd/MM/yyyy')}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  )}
+                </>
+              );
+            })()}
           </div>
+
         </div>
       </div>
     )}
