@@ -59,7 +59,7 @@ QUY TẮC BẮT BUỘC:
 - Hotline: ${business.page_content?.phone || 'Chưa cập nhật'}
 - Địa chỉ: ${business.address || 'Chưa cập nhật'}
 - Bảng giá/Dịch vụ: ${JSON.stringify(business.page_content?.services || 'Đang cập nhật')}
-- Ưu đãi: ${JSON.stringify(business.page_content?.promotions || 'Đang cập nhật')}
+- Ưu đãi: ${JSON.stringify(business.page_content?.deals || business.page_content?.promotions || business.page_content?.offers || 'Đang cập nhật')}
 `;
 
     // 3. Xử lý "bắt" Số Điện Thoại tự động

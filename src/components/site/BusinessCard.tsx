@@ -22,7 +22,8 @@ export function BusinessCard({ business: dbBusiness }: { business: BusinessCardP
 
   const firstCategory = business.categories_list?.[0]?.name || business.category_slug || "Làm đẹp";
   const firstLocation = business.locations_list?.[0]?.name || business.location_slug || "Việt Nam";
-  const offer = business.offers && business.offers.length > 0 ? business.offers[0] : null;
+  const items = business.deals || business.offers || business.promotions || [];
+  const offer = items.length > 0 ? items[0] : null;
   const rating = business.rating || 5.0;
   const reviewsCount = business.reviews || 0;
 

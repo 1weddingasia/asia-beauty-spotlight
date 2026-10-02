@@ -60,7 +60,8 @@ export default async function Index() {
     // .filter((b: any) => b.plan_id) // Only premium businesses
     .flatMap((b: any) => {
       const pc = b.page_content || {};
-      return (pc.offers || []).map((o: any) => ({
+      const items = pc.deals || pc.offers || pc.promotions || [];
+      return items.map((o: any) => ({
         ...o,
         business: { slug: b.slug, name: b.name },
       }));
@@ -267,22 +268,22 @@ export default async function Index() {
                   </div>
                   <div className="relative">
                     <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
-                      {o.discount || "Ưu đãi"}
+                      {o.badge || o.discount || "Ưu đãi"}
                     </span>
                     <h3 className="mt-5 max-w-[280px] font-display text-2xl md:text-3xl">
                       {o.title}
                     </h3>
                     <p className="mt-3 text-sm text-muted-foreground line-clamp-2">
-                      {o.description}
+                      {o.note || o.description}
                     </p>
                     <div className="mt-6 flex flex-wrap items-center gap-4 text-xs font-medium uppercase tracking-wider text-ink">
                       <span className="flex items-center gap-1.5">
                         <Sparkles className="size-3.5 text-gold" />
                         {o.business.name}
                       </span>
-                      {o.validUntil && (
-                        <span className="text-muted-foreground">
-                          HSD: {o.validUntil.includes('-') ? new Date(o.validUntil).toLocaleDateString('vi-VN') : o.validUntil}
+                      {(o.promo_price || o.validUntil) && (
+                        <span className="text-muted-foreground font-bold">
+                          {o.promo_price || (o.validUntil.includes('-') ? new Date(o.validUntil).toLocaleDateString('vi-VN') : o.validUntil)}
                         </span>
                       )}
                       {o.code && (

@@ -30,7 +30,8 @@ export default async function OffersPage() {
   const allOffers = (businesses || [])
     .flatMap((b: any) => {
       const pc = b.page_content || {};
-      return (pc.offers || []).map((o: any) => ({
+      const items = pc.deals || pc.offers || pc.promotions || [];
+      return items.map((o: any) => ({
         ...o,
         business: { slug: b.slug, name: b.name },
       }));
@@ -69,7 +70,7 @@ export default async function OffersPage() {
             {allOffers.map((o: any, i: number) => (
               <Link
                 key={`${o.business.slug}-${i}`}
-                href={`/doanh-nghiep/${o.business.slug}`}
+                href={`/uu-dai/${o.business.slug}`}
                 className="group relative flex flex-col overflow-hidden rounded-3xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8"
               >
                 <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
@@ -77,12 +78,12 @@ export default async function OffersPage() {
                 </div>
                 <div className="relative flex-1">
                   <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
-                    {o.discount || "Ưu đãi"}
+                    {o.badge || o.discount || "Ưu đãi"}
                   </span>
                   <h3 className="mt-5 max-w-[280px] font-display text-2xl">
                     {o.title}
                   </h3>
-                  <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{o.description}</p>
+                  <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{o.note || o.description}</p>
                 </div>
                 <div className="relative mt-8 border-t border-gold-soft pt-6">
                   <div className="flex flex-wrap items-center gap-4 text-xs font-medium uppercase tracking-wider text-ink">
@@ -96,13 +97,9 @@ export default async function OffersPage() {
                       </span>
                     )}
                   </div>
-                  {o.validUntil && (
-                    <div className="mt-2 text-xs text-muted-foreground">
-                      HSD: {
-                        o.validUntil.includes('-') 
-                          ? new Date(o.validUntil).toLocaleDateString('vi-VN') 
-                          : o.validUntil
-                      }
+                  {(o.promo_price || o.validUntil) && (
+                    <div className="mt-2 text-xs font-bold text-muted-foreground">
+                      {o.promo_price || (o.validUntil.includes('-') ? new Date(o.validUntil).toLocaleDateString('vi-VN') : o.validUntil)}
                     </div>
                   )}
                 </div>
