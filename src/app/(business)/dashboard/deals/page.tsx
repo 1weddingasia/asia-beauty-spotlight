@@ -279,7 +279,7 @@ export default function DealsManagementPage() {
               <div style={{width:"180px",minHeight:"255px",background:"linear-gradient(160deg,#fffbf0,#fef3c7)",border:"2px solid #c8960c",borderRadius:"12px",padding:"16px",display:"flex",flexDirection:"column",alignItems:"center",gap:"10px",textAlign:"center"}}>
                 <div style={{background:"#c8960c",color:"#fff",fontSize:"7px",fontWeight:700,letterSpacing:"0.1em",padding:"2px 10px",borderRadius:"99px",textTransform:"uppercase"}}>Chương trình ưu đãi</div>
                 <div style={{fontSize:"11px",fontWeight:900,color:"#1a0a00",lineHeight:1.2}}>{business.name}</div>
-                <div style={{fontSize:"9px",fontWeight:700,color:"#c8960c",lineHeight:1.3}}>QUÉT MÃ NHẬN ƯU ĐÃI ĐỌC QUYỀN</div>
+                <div style={{fontSize:"9px",fontWeight:700,color:"#c8960c",lineHeight:1.3}}>QUÉT MÃ NH\u1eacN \u01afU \u0110\u00c3I \u0110\u1ed8C QUY\u1ec0N</div>
                 <div style={{background:"#fff",border:"2px solid #c8960c",borderRadius:"8px",padding:"6px"}}>
                   <img 
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : ''}/uu-dai/${business.slug}`)}&margin=4&color=3d2c00`} 
