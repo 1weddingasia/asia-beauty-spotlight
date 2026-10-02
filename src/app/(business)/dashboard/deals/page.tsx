@@ -60,16 +60,28 @@ export default function DealsManagementPage() {
         
         // Normalize existing deals
         let existingDeals = Array.isArray(content.deals) ? content.deals : [];
-        if (existingDeals.length === 0 && content.featured_deal) {
-          existingDeals = [{
-            id: generateId(),
-            title: content.featured_deal,
-            original_price: "Liên hệ",
-            promo_price: "Ưu đãi",
-            badge: "Độc Quyền 1Beauty",
-            note: "",
-            status: "active"
-          }];
+        if (existingDeals.length === 0) {
+          if (Array.isArray(content.offers) && content.offers.length > 0) {
+            existingDeals = content.offers.map((o: any) => ({
+              id: generateId(),
+              title: o.title || "",
+              original_price: "Liên hệ",
+              promo_price: o.promo_price || o.discount || "Ưu đãi",
+              badge: o.badge || "Hot",
+              note: o.description || o.note || (o.validUntil ? `HSD: ${o.validUntil}` : ""),
+              status: "active"
+            }));
+          } else if (content.featured_deal) {
+            existingDeals = [{
+              id: generateId(),
+              title: content.featured_deal,
+              original_price: "Liên hệ",
+              promo_price: "Ưu đãi",
+              badge: "Độc Quyền 1Beauty",
+              note: "",
+              status: "active"
+            }];
+          }
         }
         setDeals(existingDeals);
         setLoading(false);

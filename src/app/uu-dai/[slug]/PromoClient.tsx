@@ -37,18 +37,30 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   // Lấy danh sách deals từ JSON
   let rawDeals: Deal[] = Array.isArray(business.page_content?.deals) ? business.page_content.deals : [];
   
-  // Tương thích ngược: Nếu tiệm chưa cấu hình deals mảng, tạo 1 deal mặc định từ featured_deal cũ
+  // Tương thích ngược: Nếu tiệm chưa cấu hình deals mảng, lấy từ offers cũ hoặc tạo mặc định
   if (rawDeals.length === 0) {
-    rawDeals = [
-      {
-        id: "default-1",
-        title: business.page_content?.featured_deal || "Giảm ngay 20% cho lần đầu trải nghiệm",
-        original_price: "Liên hệ tiệm",
-        promo_price: "Ưu đãi sốc",
-        badge: "Độc quyền 1Beauty",
+    if (Array.isArray(business.page_content?.offers) && business.page_content.offers.length > 0) {
+      rawDeals = business.page_content.offers.map((o: any, i: number) => ({
+        id: `legacy-offer-${i}`,
+        title: o.title || "",
+        original_price: "Liên hệ",
+        promo_price: o.promo_price || o.discount || "Ưu đãi",
+        badge: o.badge || "Hot",
+        note: o.description || o.note || (o.validUntil ? `HSD: ${o.validUntil}` : ""),
         status: "active"
-      }
-    ];
+      }));
+    } else {
+      rawDeals = [
+        {
+          id: "default-1",
+          title: business.page_content?.featured_deal || "Giảm ngay 20% cho lần đầu trải nghiệm",
+          original_price: "Liên hệ tiệm",
+          promo_price: "Ưu đãi sốc",
+          badge: "Độc quyền 1Beauty",
+          status: "active"
+        }
+      ];
+    }
   }
 
   // Lọc deal đang chạy và giới hạn 5 deal
