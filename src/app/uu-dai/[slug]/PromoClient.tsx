@@ -8,7 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { MapPin, Phone, CheckCircle2, Ticket, Tag } from "lucide-react";
 import { toast } from "sonner";
-import { ChatWidget } from "@/components/site/ChatWidget";
+import dynamic from "next/dynamic";
+
+const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
+  ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
+});
 
 type Deal = {
   id: string;
@@ -31,7 +35,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Lấy danh sách deals từ JSON
-  let rawDeals: Deal[] = business.page_content?.deals || [];
+  let rawDeals: Deal[] = Array.isArray(business.page_content?.deals) ? business.page_content.deals : [];
   
   // Tương thích ngược: Nếu tiệm chưa cấu hình deals mảng, tạo 1 deal mặc định từ featured_deal cũ
   if (rawDeals.length === 0) {
@@ -95,8 +99,10 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const hotline = business.page_content?.phone || "1900 xxxx";
 
   const formatPrice = (price: number | string) => {
-    if (typeof price === 'number') {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    if (!price) return "";
+    const numPrice = typeof price === 'string' ? Number(price.toString().replace(/\D/g, '')) : price;
+    if (!isNaN(numPrice) && numPrice > 0) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numPrice);
     }
     return price;
   };
@@ -133,14 +139,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
         {/* Danh sách Deals */}
         <div className="space-y-4">
-          {deals.length === 0 ? (
-            <div className="text-center p-8 bg-white rounded-2xl border">
-              <p className="text-muted-foreground">Hiện tại chưa có chương trình ưu đãi nào.</p>
-            </div>
-          ) : (
-            deals.map(deal => (
-              <div key={deal.id} className="rounded-2xl border border-border/50 bg-white p-5 shadow-card relative overflow-hidden transition-all hover:border-gold/50">
-                {deal.badge && (
+          {deals.map(deal => (
+            <div key={deal.id} className="rounded-2xl border border-border/50 bg-white p-5 shadow-card relative overflow-hidden transition-all hover:border-gold/50">
+              {deal.badge && (
                   <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-bl-lg shadow-sm">
                     {deal.badge}
                   </div>
@@ -178,18 +179,18 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </Button>
                 </div>
               </div>
-            ))
-          )}
+            ))}
         </div>
       </div>
 
       {/* Modal / Dialog Form Nhận Mã */}
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
         setIsDialogOpen(open);
-        // Reset form khi đóng modal
-        if (!open && !voucher) {
+        if (!open) {
           setName("");
           setPhone("");
+          setVoucher("");
+          setSelectedDeal(null);
         }
       }}>
         <DialogContent className="sm:max-w-md rounded-2xl">
