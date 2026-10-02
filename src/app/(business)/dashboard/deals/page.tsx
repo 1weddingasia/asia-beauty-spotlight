@@ -36,10 +36,16 @@ export default function DealsManagementPage() {
         supabase.from("businesses").select("*").eq("owner_id", user.id).single()
           .then(({ data }) => {
             if (data) {
-              setBusiness(data);
-              const content = typeof data.page_content === 'string'
-                ? JSON.parse(data.page_content)
-                : (data.page_content || {});
+              let content: any = data.page_content || {};
+              if (typeof data.page_content === 'string') {
+                try {
+                  content = JSON.parse(data.page_content);
+                } catch (e) {
+                  console.error('Invalid page_content JSON:', e);
+                  content = {};
+                }
+              }
+              setBusiness({ ...data, page_content: content });
                 
               setTelegramId(content.telegram_chat_id || "");
               
@@ -197,7 +203,7 @@ export default function DealsManagementPage() {
             </div>
           ) : (
             deals.map((deal, idx) => (
-              <div key={deal.id} className={`p-5 rounded-xl border relative transition-colors ${deal.status === 'paused' ? 'bg-gray-50 border-gray-200' : 'bg-white border-gold/30 shadow-sm'}`}>
+              <div key={deal.id || idx} className={`p-5 rounded-xl border relative transition-colors ${deal.status === 'paused' ? 'bg-gray-50 border-gray-200' : 'bg-white border-gold/30 shadow-sm'}`}>
                 
                 <div className="absolute top-4 right-4 flex items-center gap-3">
                   <div className="flex items-center gap-2">
