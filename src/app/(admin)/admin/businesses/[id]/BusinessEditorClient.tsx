@@ -24,6 +24,8 @@ function normalizeSlug(str: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
+const DEFAULT_SLUG = 'ten-spa';
+
 const AMENITY_OPTIONS = [
   "Có chỗ đỗ xe",
   "Thanh toán thẻ",
@@ -126,7 +128,7 @@ export default function BusinessEditorClient({
       const payload = {
         name: formData.name,
         address: formData.address,
-        slug: formData.slug || normalizeSlug(formData.name) || 'ten-spa',
+        slug: formData.slug || normalizeSlug(formData.name) || DEFAULT_SLUG,
         status: formData.status,
         phone: pageContent.phone || null,
         email: pageContent.email || null,
@@ -325,7 +327,7 @@ export default function BusinessEditorClient({
                     placeholder="ten-doanh-nghiep (tự động nếu để trống)"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Địa chỉ: <b>{siteOrigin}/doanh-nghiep/{formData.slug || normalizeSlug(formData.name) || 'ten-spa'}</b>
+                    Địa chỉ: <b>{siteOrigin}/doanh-nghiep/{formData.slug || normalizeSlug(formData.name) || DEFAULT_SLUG}</b>
                   </p>
                 </div>
                 <div className="space-y-2">
