@@ -39,9 +39,12 @@ export default function BusinessEditorClient({
   const [saving, setSaving] = useState(false);
   const [business, setBusiness] = useState<any>(initialBusiness);
 
+  const isNew = !initialBusiness;
   const [formData, setFormData] = useState({
     name: initialBusiness?.name || "",
     address: initialBusiness?.address || "",
+    slug: initialBusiness?.slug || "",
+    status: initialBusiness?.status || "draft",
   });
 
   const getInitialPageContent = () => {
@@ -100,26 +103,49 @@ export default function BusinessEditorClient({
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase.from("businesses").update({
+      if (!formData.name.trim()) {
+        toast.error('Vui lòng nhập tên doanh nghiệp');
+        setSaving(false);
+        return;
+      }
+
+      const payload = {
         name: formData.name,
         address: formData.address,
+        slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        status: formData.status,
         phone: pageContent.phone || null,
         email: pageContent.email || null,
         website: pageContent.website || null,
         zalo: pageContent.zalo || null,
-        socials: { 
-          facebook: pageContent.facebook, 
-          instagram: pageContent.instagram, 
+        socials: {
+          facebook: pageContent.facebook,
+          instagram: pageContent.instagram,
           tiktok: pageContent.tiktok,
           youtube: pageContent.youtube
         },
         page_content: pageContent
-      }).eq("id", business.id);
+      };
 
-      if (error) throw error;
-      toast.success("Đã lưu thông tin doanh nghiệp");
+      if (isNew) {
+        const { data: inserted, error } = await supabase
+          .from('businesses')
+          .insert(payload)
+          .select('id')
+          .single();
+        if (error) throw error;
+        toast.success('Tạo doanh nghiệp thành công!');
+        router.push(`/admin/businesses/${inserted.id}`);
+      } else {
+        const { error } = await supabase
+          .from('businesses')
+          .update(payload)
+          .eq('id', business.id);
+        if (error) throw error;
+        toast.success('Đã lưu thông tin doanh nghiệp');
+      }
     } catch (error: any) {
-      toast.error("Lỗi khi lưu: " + error.message);
+      toast.error('Lỗi khi lưu: ' + error.message);
     } finally {
       setSaving(false);
     }
@@ -159,7 +185,7 @@ export default function BusinessEditorClient({
     handlePageContentChange("offers", newOffers);
   };
 
-  if (!business) return <div className="p-10 text-center text-red-500">Lỗi: Không tìm thấy doanh nghiệp.</div>;
+
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -167,20 +193,26 @@ export default function BusinessEditorClient({
         <Button variant="outline" size="icon" asChild>
           <Link href="/admin/businesses"><ChevronLeft className="size-4" /></Link>
         </Button>
-        <h1 className="text-2xl font-bold font-display text-gold">Chỉnh sửa Doanh nghiệp (Admin)</h1>
+        <h1 className="text-2xl font-bold font-display text-gold">
+          {isNew ? 'Tạo Doanh Nghiệp Mới' : 'Chỉnh sửa Doanh nghiệp (Admin)'}
+        </h1>
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <p className="text-muted-foreground text-sm">Chỉnh sửa toàn diện thông tin hiển thị của {business.name}.</p>
+          <p className="text-muted-foreground text-sm">
+            {isNew ? 'Điền thông tin để tạo doanh nghiệp mới trên hệ thống.' : `Chỉnh sửa toàn diện thông tin hiển thị của ${business?.name}.`}
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
-            <Link href={`/doanh-nghiep/${business.slug}`} target="_blank">Xem Trang Khách</Link>
-          </Button>
+          {!isNew && (
+            <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
+              <Link href={`/doanh-nghiep/${business?.slug}`} target="_blank">Xem Trang Khách</Link>
+            </Button>
+          )}
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
             <Save className="mr-2 size-4" />
-            {saving ? "Đang lưu..." : "Lưu thay đổi"}
+            {saving ? (isNew ? 'Đang tạo...' : 'Đang lưu...') : (isNew ? 'Tạo Doanh Nghiệp' : 'Lưu thay đổi')}
           </Button>
         </div>
       </div>
@@ -196,8 +228,14 @@ export default function BusinessEditorClient({
 
         <TabsContent value="overview" className="space-y-6">
           <div className="rounded-2xl border bg-card p-6 md:p-8 shadow-sm space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4 gap-4">
-              <h3 className="font-semibold text-xl">Quản lý Gói Thành viên</h3>
+            {isNew ? (
+              <div className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4 gap-4">
+                <h3 className="font-semibold text-xl">Thông tin Khởi tạo</h3>
+                <span className="text-sm text-muted-foreground">Sau khi tạo bạn có thể chỉnh sửa chi tiết.</span>
+              </div>
+            ) : (
+              <div className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4 gap-4">
+                <h3 className="font-semibold text-xl">Quản lý Gói Thành viên</h3>
               {(() => {
                 if (business.plan_tier === 'premium') {
                   return (
@@ -238,20 +276,46 @@ export default function BusinessEditorClient({
                   </div>
                 );
               })()}
-            </div>
-            
+              </div>
+            )}
+
             <h3 className="font-semibold text-xl pt-2">Thông tin Cơ bản</h3>
             
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Tên Doanh Nghiệp (Thương hiệu)</Label>
-                <Input value={formData.name || ""} onChange={(e) => handleChange("name", e.target.value)} />
+                <Input value={formData.name || ""} onChange={(e) => handleChange("name", e.target.value)} placeholder="VD: Spa Cô Ba Sài Gòn" />
               </div>
               <div className="space-y-2">
                 <Label>Khoảng giá trung bình</Label>
                 <Input value={pageContent.price_range || ""} onChange={(e) => handlePageContentChange("price_range", e.target.value)} placeholder="VD: 150.000đ - 2.000.000đ" />
               </div>
             </div>
+
+            {isNew && (
+              <div className="grid md:grid-cols-2 gap-6 pt-4 border-t">
+                <div className="space-y-2">
+                  <Label>Slug (URL của trang)</Label>
+                  <Input
+                    value={formData.slug}
+                    onChange={(e) => handleChange("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
+                    placeholder="ten-doanh-nghiep (tự động nếu để trống)"
+                  />
+                  <p className="text-xs text-muted-foreground">Địa chỉ: 1beauty.asia/doanh-nghiep/<b>{formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'ten-spa'}</b></p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Trạng thái</Label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => handleChange("status", e.target.value)}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <option value="draft">Draft (Nội bộ)</option>
+                    <option value="published">Đã đăng (Published)</option>
+                  </select>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label>Giới thiệu tóm tắt</Label>
