@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, LayoutDashboard, Store, Settings, Sparkles, ArrowLeft, Ticket } from "lucide-react";
+import { LogOut, LayoutDashboard, Store, Settings, Sparkles, ArrowLeft, Ticket, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default async function BusinessDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -57,6 +57,9 @@ export default async function BusinessDashboardLayout({ children }: { children: 
             </Link>
             <Link href="/dashboard/deals" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
               <Ticket className="size-4" /> Quản lý Ưu đãi (Deals)
+            </Link>
+            <Link href="/dashboard/leads" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+              <Users className="size-4" /> Danh sách Khách (Leads)
             </Link>
             <Link href="/dashboard/settings" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
               <Settings className="size-4" /> Cài đặt Tài khoản

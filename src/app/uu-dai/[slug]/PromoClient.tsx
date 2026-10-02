@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Ticket, Tag } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Ticket, Tag, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 
@@ -253,11 +253,19 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 <span className="text-2xl font-black tracking-widest text-ink">{voucher}</span>
               </div>
               
-              <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
-                <Link href={`tel:${hotline.replace(/\D/g, '')}`}>
-                  <Phone className="mr-2 size-5" /> Gọi điện đặt lịch ngay
-                </Link>
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
+                  <Link href={`tel:${hotline.replace(/\D/g, '')}`}>
+                    <Phone className="mr-2 size-5" /> Gọi Hotline Tiệm Ngay
+                  </Link>
+                </Button>
+                
+                <Button asChild variant="outline" className="w-full h-12 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl">
+                  <Link href={`https://zalo.me/${hotline.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="mr-2 size-5" /> Nhắn Zalo Cho Tiệm
+                  </Link>
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>

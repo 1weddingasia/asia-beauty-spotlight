@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Save, Plus, Trash2, Send } from "lucide-react";
+import { Save, Plus, Trash2, Send, QrCode } from "lucide-react";
 import { toast } from "sonner";
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -141,6 +141,31 @@ export default function DealsManagementPage() {
     setDeals(deals.filter((_, i) => i !== index));
   };
 
+  const downloadQR = async () => {
+    if (!business?.slug) return;
+    try {
+      const promoUrl = `${window.location.origin}/uu-dai/${business.slug}`;
+      const url = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(promoUrl)}`;
+      
+      toast.info("Đang tạo mã QR...");
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = `QR_Code_${business.slug}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("Đã tải mã QR thành công!");
+    } catch (error) {
+      toast.error("Không thể tải mã QR lúc này.");
+      console.error(error);
+    }
+  };
+
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải cấu hình...</div>;
   if (!business) return <div className="p-10 text-center text-red-500">Lỗi: Không tìm thấy thông tin doanh nghiệp.</div>;
 
@@ -151,10 +176,16 @@ export default function DealsManagementPage() {
           <h1 className="text-2xl font-bold font-display text-gold">Quản lý Ưu đãi (Deals)</h1>
           <p className="text-muted-foreground text-sm mt-1">Cài đặt các gói ưu đãi và Cấu hình nhận thông báo qua Telegram.</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
-          <Save className="mr-2 size-4" />
-          {saving ? "Đang lưu..." : "Lưu thay đổi"}
-        </Button>
+        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+          <Button onClick={downloadQR} variant="outline" className="border-gold text-gold hover:bg-gold/10 w-full md:w-auto">
+            <QrCode className="mr-2 size-4" />
+            Tải Mã QR Của Tiệm
+          </Button>
+          <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
+            <Save className="mr-2 size-4" />
+            {saving ? "Đang lưu..." : "Lưu thay đổi"}
+          </Button>
+        </div>
       </div>
 
       {/* Telegram Config Section */}
