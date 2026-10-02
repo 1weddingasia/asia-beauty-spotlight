@@ -46,6 +46,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Business not found" }, { status: 404 });
     }
 
+    // Tương tự logic hiển thị trên web (PromoClient), cung cấp deal mặc định nếu chưa có
+    let deals = business.page_content?.deals || business.page_content?.promotions || [];
+    if (deals.length === 0) {
+      if (Array.isArray(business.page_content?.offers) && business.page_content.offers.length > 0) {
+        deals = business.page_content.offers;
+      } else {
+        deals = [{
+          title: business.page_content?.featured_deal || "Giảm ngay 20% cho lần đầu trải nghiệm",
+          original_price: "Liên hệ tiệm",
+          promo_price: "Ưu đãi sốc",
+          badge: "Độc quyền 1Beauty"
+        }];
+      }
+    }
+
+    const services = business.page_content?.services || 'Đang cập nhật';
+
     // 2. Kẹp Context vào System Prompt
     const systemPrompt = `BẠN LÀ: Trợ lý lễ tân trực tuyến chuyên nghiệp của ${business.name}.
 QUY TẮC BẮT BUỘC:
@@ -58,8 +75,8 @@ QUY TẮC BẮT BUỘC:
 - Tên tiệm: ${business.name}
 - Hotline: ${business.page_content?.phone || 'Chưa cập nhật'}
 - Địa chỉ: ${business.address || 'Chưa cập nhật'}
-- Bảng giá/Dịch vụ: ${JSON.stringify(business.page_content?.services || 'Đang cập nhật')}
-- Ưu đãi: ${JSON.stringify(business.page_content?.deals || business.page_content?.promotions || business.page_content?.offers || 'Đang cập nhật')}
+- Bảng giá/Dịch vụ: ${JSON.stringify(services)}
+- Ưu đãi: ${JSON.stringify(deals)}
 `;
 
     // 3. Xử lý "bắt" Số Điện Thoại tự động
