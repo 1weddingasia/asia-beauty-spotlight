@@ -46,18 +46,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Business not found" }, { status: 404 });
     }
 
-    // Tương tự logic hiển thị trên web (PromoClient), cung cấp deal mặc định nếu chưa có
+    // Đồng bộ logic hiển thị trên web (PromoClient): không tự biên tự diễn deal ảo
     let deals = business.page_content?.deals || business.page_content?.promotions || [];
     if (deals.length === 0) {
       if (Array.isArray(business.page_content?.offers) && business.page_content.offers.length > 0) {
         deals = business.page_content.offers;
-      } else {
-        deals = [{
-          title: business.page_content?.featured_deal || "Giảm ngay 20% cho lần đầu trải nghiệm",
-          original_price: "Liên hệ tiệm",
-          promo_price: "Ưu đãi sốc",
-          badge: "Độc quyền 1Beauty"
-        }];
       }
     }
 

@@ -37,7 +37,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   // Lấy danh sách deals từ JSON
   let rawDeals: Deal[] = Array.isArray(business.page_content?.deals) ? business.page_content.deals : [];
   
-  // Tương thích ngược: Nếu tiệm chưa cấu hình deals mảng, lấy từ offers cũ hoặc tạo mặc định
+  // Tương thích ngược: Nếu tiệm chưa cấu hình deals mảng, lấy từ offers cũ
   if (rawDeals.length === 0) {
     if (Array.isArray(business.page_content?.offers) && business.page_content.offers.length > 0) {
       rawDeals = business.page_content.offers.map((o: any, i: number) => ({
@@ -49,17 +49,6 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         note: o.description || o.note || (o.validUntil ? `HSD: ${o.validUntil}` : ""),
         status: "active"
       }));
-    } else {
-      rawDeals = [
-        {
-          id: "default-1",
-          title: business.page_content?.featured_deal || "Giảm ngay 20% cho lần đầu trải nghiệm",
-          original_price: "Liên hệ tiệm",
-          promo_price: "Ưu đãi sốc",
-          badge: "Độc quyền 1Beauty",
-          status: "active"
-        }
-      ];
     }
   }
 
