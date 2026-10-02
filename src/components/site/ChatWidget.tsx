@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User } from "lucide-react";
+import { MessageCircle, X, Send, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -35,18 +35,26 @@ export function ChatWidget({ businessId, businessName }: { businessId: string, b
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           shop_id: businessId,
-          messages: [...messages.map(m => ({ role: m.role === 'system' ? 'assistant' : 'user', content: m.content })), { role: 'user', content: userMsg }]
+          messages: [
+            ...messages.filter(m => m.role !== 'error').map(m => ({ role: m.role === 'system' ? 'assistant' : 'user', content: m.content })),
+            { role: 'user', content: userMsg }
+          ]
         })
       });
+      
+      if (!res.ok) {
+        throw new Error(`Chat API error: ${res.status}`);
+      }
       const data = await res.json();
       
       if (data.reply) {
         setMessages(prev => [...prev, { role: 'system', content: data.reply }]);
       } else {
-        setMessages(prev => [...prev, { role: 'system', content: "Xin lỗi, hiện tại hệ thống đang bận. Bạn vui lòng gọi hotline để được hỗ trợ nhé." }]);
+        setMessages(prev => [...prev, { role: 'error', content: "Xin lỗi, hiện tại hệ thống đang bận. Bạn vui lòng gọi hotline để được hỗ trợ nhé." }]);
       }
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'system', content: "Mất kết nối mạng. Vui lòng thử lại sau." }]);
+      console.error(err);
+      setMessages(prev => [...prev, { role: 'error', content: "Mất kết nối mạng. Vui lòng thử lại sau." }]);
     } finally {
       setLoading(false);
     }
@@ -88,7 +96,13 @@ export function ChatWidget({ businessId, businessName }: { businessId: string, b
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/20" ref={scrollRef}>
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${msg.role === 'user' ? 'bg-gold text-ink rounded-tr-sm' : 'bg-white border shadow-sm rounded-tl-sm'}`}>
+                <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
+                  msg.role === 'user' 
+                    ? 'bg-gold text-ink rounded-tr-sm' 
+                    : msg.role === 'error'
+                      ? 'bg-red-50 text-red-600 border border-red-200 shadow-sm rounded-tl-sm'
+                      : 'bg-white border shadow-sm rounded-tl-sm'
+                }`}>
                   {msg.content}
                 </div>
               </div>

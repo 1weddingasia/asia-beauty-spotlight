@@ -6,7 +6,30 @@ import { Download, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function LeadsClient({ initialLeads }: { initialLeads: any[] }) {
+export type Lead = {
+  id: string;
+  created_at: string;
+  customer_name: string | null;
+  customer_phone: string | null;
+  voucher_code: string | null;
+  deal_name: string | null;
+  status: string;
+  businesses: { name: string } | null;
+};
+
+// Hàm escape CSV chống injection (Formula Injection) và xử lý ký tự đặc biệt
+const escapeCSV = (value: string | null | undefined) => {
+  if (!value) return '""';
+  // Ngăn chặn Excel tự động chạy công thức nếu nội dung bắt đầu bằng các ký tự đặc biệt
+  let safeValue = String(value);
+  if (/^[=+\-@]/.test(safeValue)) {
+    safeValue = "'" + safeValue;
+  }
+  // Escape dấu ngoặc kép bên trong bằng cách nhân đôi (" -> "")
+  return `"${safeValue.replace(/"/g, '""')}"`;
+};
+
+export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredLeads = initialLeads.filter(lead => 
@@ -21,10 +44,23 @@ export default function LeadsClient({ initialLeads }: { initialLeads: any[] }) {
     const headers = ["Ngày", "Doanh nghiệp", "Tên Khách Hàng", "Số Điện Thoại", "Mã Ưu Đãi", "Gói Dịch Vụ", "Trạng Thái"];
     
     const csvContent = filteredLeads.map(lead => {
-      const date = format(new Date(lead.created_at), "dd/MM/yyyy HH:mm");
+      let dateStr = "";
+      try {
+        const d = new Date(lead.created_at);
+        if (!isNaN(d.getTime())) dateStr = format(d, "dd/MM/yyyy HH:mm");
+      } catch (e) {}
+
       const businessName = lead.businesses?.name || "N/A";
-      // Bọc trong dấu nháy kép để xử lý dấu phẩy trong nội dung
-      return `"${date}","${businessName}","${lead.customer_name}","${lead.customer_phone}","${lead.voucher_code || ''}","${lead.deal_name || ''}","${lead.status}"`;
+      
+      return [
+        escapeCSV(dateStr),
+        escapeCSV(businessName),
+        escapeCSV(lead.customer_name),
+        escapeCSV(lead.customer_phone),
+        escapeCSV(lead.voucher_code),
+        escapeCSV(lead.deal_name),
+        escapeCSV(lead.status)
+      ].join(",");
     });
     
     const csvRows = [headers.join(","), ...csvContent].join("\n");
@@ -34,7 +70,7 @@ export default function LeadsClient({ initialLeads }: { initialLeads: any[] }) {
     
     const link = document.createElement("a");
     link.href = url;
-    link.download = `Leads_1Beauty_${format(new Date(), "dd-MM-yyyy")}.csv`;
+    link.download = `Leads_${format(new Date(), "dd-MM-yyyy")}.csv`;
     link.click();
     
     URL.revokeObjectURL(url);
@@ -94,7 +130,14 @@ export default function LeadsClient({ initialLeads }: { initialLeads: any[] }) {
                 filteredLeads.map((lead) => (
                   <tr key={lead.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-muted-foreground">
-                      {format(new Date(lead.created_at), "dd/MM/yyyy HH:mm")}
+                      {(() => {
+                        try {
+                          const d = new Date(lead.created_at);
+                          return isNaN(d.getTime()) ? "-" : format(d, "dd/MM/yyyy HH:mm");
+                        } catch (e) {
+                          return "-";
+                        }
+                      })()}
                     </td>
                     <td className="px-6 py-4 font-medium max-w-[200px] truncate">
                       {lead.businesses?.name || "Không xác định"}
@@ -114,8 +157,8 @@ export default function LeadsClient({ initialLeads }: { initialLeads: any[] }) {
                       <span className="text-muted-foreground">{lead.deal_name || "Trợ lý ảo AI Chat"}</span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
-                        Mới
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium capitalize">
+                        {lead.status || "Mới"}
                       </span>
                     </td>
                   </tr>
