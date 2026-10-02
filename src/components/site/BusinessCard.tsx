@@ -33,7 +33,7 @@ export function BusinessCard({ business: dbBusiness }: { business: BusinessCardP
 
   return (
     <Link
-      href={`/uu-dai/${business.slug}`}
+      href={`/doanh-nghiep/${business.slug}`}
       className="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-[oklch(0.92_0.012_85)] transition-all duration-500 hover:-translate-y-1.5"
       style={{ boxShadow: "0 4px 24px -8px oklch(0.35 0.05 70 / 0.15)" }}
       onMouseEnter={e => {

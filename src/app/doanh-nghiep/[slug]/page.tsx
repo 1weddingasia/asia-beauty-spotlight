@@ -41,7 +41,7 @@ export default async function Page({
     ...pageContent,
     ...dbBusiness, 
     services: pageContent.services || [],
-    offers: pageContent.offers || [],
+    offers: pageContent.deals || pageContent.offers || pageContent.promotions || [],
     gallery: pageContent.gallery || [],
     banners: pageContent.banners || [],
     about: dbBusiness.description || pageContent.description || '',
