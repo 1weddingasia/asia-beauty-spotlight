@@ -274,6 +274,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       </Dialog>
 
       <ChatWidget key={business.id} businessId={business.id} businessName={business.name} />
+      
+      <div className="mt-16 pb-8 text-center px-4">
+        <p className="text-xs text-muted-foreground">
+          Cổng đặt hẹn bảo trợ bởi 1Beauty.asia – Hotline hỗ trợ: <span className="font-semibold text-ink">090 909 0909</span>
+        </p>
+      </div>
     </div>
   );
 }

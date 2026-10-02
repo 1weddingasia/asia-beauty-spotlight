@@ -58,18 +58,27 @@ export function HeroSlider({ categories = [], locations = [] }: Props) {
             {active.kicker}
           </p>
           <div className="rule-gold mt-4" />
-          <h1 className="mt-6 text-4xl leading-tight text-background md:text-6xl">
-            {active.title}
+          <h1 className="mt-6 text-4xl leading-tight text-background md:text-5xl lg:text-6xl font-bold font-display">
+            Hệ Thống Cổng Đặt Hẹn & Nhận Ưu Đãi Làm Đẹp 1-Chạm
           </h1>
-          <p className="mt-5 max-w-xl text-base text-background/75">
-            {active.description}
+          <p className="mt-5 max-w-2xl text-lg text-background/90">
+            Giải pháp tự động hóa lịch hẹn và chống sót đơn dành riêng cho các Spa, Salon & Thẩm mỹ viện uy tín.
           </p>
-          <Link
-            href="/tim-kiem"
-            className="mt-8 inline-flex rounded-sm border border-gold/60 px-7 py-3 text-xs font-semibold tracking-[0.2em] text-gold uppercase transition-colors hover:bg-gold hover:text-ink"
-          >
-            {active.cta}
-          </Link>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link
+              href="https://zalo.me/0909090909"
+              target="_blank"
+              className="inline-flex items-center gap-2 rounded-sm bg-gold px-7 py-4 text-sm font-bold text-ink uppercase tracking-wider transition-colors hover:bg-gold/90"
+            >
+              🚀 Kích Hoạt Cổng Booking Cho Tiệm – Chỉ 500k/Năm
+            </Link>
+            <Link
+              href="#deals"
+              className="inline-flex rounded-sm border border-gold/60 px-7 py-4 text-sm font-bold tracking-wider text-gold uppercase transition-colors hover:bg-gold hover:text-ink"
+            >
+              Xem Các Ưu Đãi Đang Chạy
+            </Link>
+          </div>
         </div>
 
         {/* SearchBar nhận categories/locations từ server (không fetch lại) */}

@@ -147,6 +147,56 @@ export default async function Index() {
           )}
         </section>
 
+        {/* --- SECTION B2B: Giải Pháp 3-Trong-1 Cho Chủ Tiệm --- */}
+        <section className="mx-auto max-w-6xl px-6 py-20 border-t border-border">
+          <div className="rounded-3xl bg-gold/10 p-8 md:p-12 border border-gold/30 flex flex-col md:flex-row gap-12 items-center">
+            <div className="flex-1">
+              <p className="text-xs tracking-[0.3em] text-gold uppercase font-bold">Dành cho Chủ Tiệm</p>
+              <h2 className="mt-4 text-3xl md:text-4xl font-display font-bold text-ink">Giải Pháp 3-Trong-1 Cho Chủ Tiệm</h2>
+              <p className="mt-4 text-muted-foreground text-lg">Trọn gói mùa lễ chỉ với <span className="font-bold text-gold text-2xl">500.000đ/năm</span></p>
+              
+              <div className="mt-8 space-y-6">
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 size-12 rounded-full bg-gold/20 flex items-center justify-center text-gold"><LucideIcons.Smartphone className="size-6" /></div>
+                  <div>
+                    <h4 className="font-bold text-lg text-ink">Trang Đặt Lịch Riêng Biệt (/uu-dai/[ten-tiem])</h4>
+                    <p className="text-muted-foreground mt-1">Giao diện mobile sang trọng, khách bấm chọn gói và để lại số điện thoại trong 3 giây.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 size-12 rounded-full bg-gold/20 flex items-center justify-center text-gold"><LucideIcons.BellRing className="size-6" /></div>
+                  <div>
+                    <h4 className="font-bold text-lg text-ink">Chuông Báo Telegram Tức Thì</h4>
+                    <p className="text-muted-foreground mt-1">Khách vừa bấm đặt, điện thoại nổ chuông ngay lập tức, không lo trôi tin nhắn hay mất khách mùa cao điểm.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 size-12 rounded-full bg-gold/20 flex items-center justify-center text-gold"><LucideIcons.FileSpreadsheet className="size-6" /></div>
+                  <div>
+                    <h4 className="font-bold text-lg text-ink">Sổ Quản Lý Đơn & Xuất File Excel</h4>
+                    <p className="text-muted-foreground mt-1">Theo dõi khách hàng mỗi ngày, xuất file đối soát chỉ với 1 chạm.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-10">
+                <Link href="https://zalo.me/0909090909" target="_blank" className="inline-flex rounded-sm bg-gold px-8 py-4 font-bold text-ink hover:bg-gold/90 transition-colors uppercase tracking-wider text-sm shadow-lg">
+                  Kích Hoạt Cổng Booking Ngay
+                </Link>
+              </div>
+            </div>
+            <div className="flex-1 w-full relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+               <div className="absolute inset-0 bg-gradient-to-br from-ink to-ink/90 flex flex-col items-center justify-center p-8 text-center">
+                  <LucideIcons.Zap className="size-20 text-gold mb-6" />
+                  <h3 className="text-3xl font-bold font-display text-champagne mb-4">Cổng Booking Tự Động</h3>
+                  <p className="text-champagne/80 text-lg">Chống Sót Đơn - Tăng Doanh Thu Mùa Lễ</p>
+                  <div className="mt-8 px-6 py-3 bg-white/10 rounded-full border border-white/20 text-champagne backdrop-blur-sm">
+                    1Beauty.Asia Business
+                  </div>
+               </div>
+            </div>
+          </div>
+        </section>
+
         {/* --- SECTION 2: DOANH NGHIỆP NỔI BẬT (DB thật, xoay vòng 24h) --- */}
         <section className="border-t border-border bg-champagne/40">
           <div className="mx-auto max-w-6xl px-6 py-20">
@@ -189,7 +239,7 @@ export default async function Index() {
         </section>
 
         {/* --- SECTION 3: ƯU ĐÃI (Lấy từ page_content.offers của DN thật, xoay vòng 24h) --- */}
-        <section className="mx-auto max-w-6xl px-6 py-20">
+        <section id="deals" className="mx-auto max-w-6xl px-6 py-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs tracking-[0.3em] text-gold uppercase">Ưu đãi</p>
@@ -209,7 +259,7 @@ export default async function Index() {
               {rotatedOffers.map((o: any, idx: number) => (
                 <Link
                   key={idx}
-                  href={`/doanh-nghiep/${o.business.slug}`}
+                  href={`/uu-dai/${o.business.slug}`}
                   className="group relative overflow-hidden rounded-2xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8"
                 >
                   <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
