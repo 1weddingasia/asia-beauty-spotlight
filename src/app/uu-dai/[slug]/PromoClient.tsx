@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Ticket, Tag, MessageCircle } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Tag, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 

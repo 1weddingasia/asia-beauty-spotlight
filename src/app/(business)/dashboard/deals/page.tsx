@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,6 @@ export default function DealsManagementPage() {
   const [saving, setSaving] = useState(false);
   const [business, setBusiness] = useState<any>(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
-  const printRef = useRef<HTMLDivElement>(null);
 
   const [telegramId, setTelegramId] = useState("");
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -197,6 +196,11 @@ export default function DealsManagementPage() {
   const handlePrint = () => {
     const promoUrl = `${window.location.origin}/uu-dai/${business.slug}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(promoUrl)}&margin=10&color=3d2c00&bgcolor=fefdf8`;
+    const escapedName = business.name
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
     const printContent = `
       <!DOCTYPE html>
       <html lang="vi">
@@ -222,7 +226,7 @@ export default function DealsManagementPage() {
           .shop-name { font-size: 18pt; font-weight: 900; color: #1a0a00; line-height: 1.2; margin-bottom: 2mm; }
           .headline { font-size: 13pt; font-weight: 700; color: #c8960c; line-height: 1.3; margin-bottom: 6mm; }
           .qr-wrap { background: #fff; border: 3px solid #c8960c; border-radius: 6mm; padding: 6mm; box-shadow: 0 4px 24px rgba(200,150,12,0.2); }
-          .qr-wrap img { display: block; width: 50mm; height: 50mm; }
+          .qr-img { display: block; width: 50mm; height: 50mm; }
           .instructions { font-size: 9pt; color: #7c5800; margin-top: 5mm; line-height: 1.5; }
           .footer { font-size: 7pt; color: #b39000; border-top: 1px solid #e5c96a; padding-top: 4mm; width: 100%; }
         </style>
@@ -231,14 +235,14 @@ export default function DealsManagementPage() {
         <div class="standee">
           <div>
             <div class="top-badge">Chương trình ưu đãi đặc quyền</div>
-            <div class="shop-name">${business.name}</div>
-            <div class="headline">QUÉT MÃ – NHẬN ƯU ĐÃI<br/>GIẢM ĐẾN 50%</div>
+            <div class="shop-name">${escapedName}</div>
+            <div class="headline">QUÉT MÃ – NHẬN ƯU ĐÃI<br/>ĐỘC QUYỀN CHO BẠN</div>
           </div>
           <div>
             <div class="qr-wrap">
-              <img src="${qrUrl}" alt="QR Code" />
+              <img class="qr-img" src="${qrUrl}" alt="QR Code" />
             </div>
-            <div class="instructions">Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi trong 3 giây &#9996;</div>
+            <div class="instructions">Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi trong 3 giây ✌️</div>
           </div>
           <div class="footer">Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia</div>
         </div>
@@ -249,8 +253,8 @@ export default function DealsManagementPage() {
     if (!printWin) { toast.error("Trình duyệt chặn popup! Hãy cho phép popup và thử lại."); return; }
     printWin.document.write(printContent);
     printWin.document.close();
-    // Wait for QR image to load then print
-    printWin.onload = () => { setTimeout(() => { printWin.print(); }, 600); };
+    // Use fixed timeout after close() — onload is unreliable with document.write
+    setTimeout(() => { printWin.print(); }, 1200);
     setShowPrintModal(false);
   };
 
@@ -275,7 +279,7 @@ export default function DealsManagementPage() {
               <div style={{width:"180px",minHeight:"255px",background:"linear-gradient(160deg,#fffbf0,#fef3c7)",border:"2px solid #c8960c",borderRadius:"12px",padding:"16px",display:"flex",flexDirection:"column",alignItems:"center",gap:"10px",textAlign:"center"}}>
                 <div style={{background:"#c8960c",color:"#fff",fontSize:"7px",fontWeight:700,letterSpacing:"0.1em",padding:"2px 10px",borderRadius:"99px",textTransform:"uppercase"}}>Chương trình ưu đãi</div>
                 <div style={{fontSize:"11px",fontWeight:900,color:"#1a0a00",lineHeight:1.2}}>{business.name}</div>
-                <div style={{fontSize:"9px",fontWeight:700,color:"#c8960c",lineHeight:1.3}}>QUÉT MÃ NHẬN Ư U ĐÃI ĐẺN 50%</div>
+                <div style={{fontSize:"9px",fontWeight:700,color:"#c8960c",lineHeight:1.3}}>QUÉT MÃ NHẬN ƯU ĐÃI ĐỌC QUYỀN</div>
                 <div style={{background:"#fff",border:"2px solid #c8960c",borderRadius:"8px",padding:"6px"}}>
                   <img 
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : ''}/uu-dai/${business.slug}`)}&margin=4&color=3d2c00`} 
@@ -438,3 +442,4 @@ export default function DealsManagementPage() {
     </div>
   );
 }
+

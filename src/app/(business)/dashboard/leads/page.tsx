@@ -68,7 +68,7 @@ export default function LeadsPage() {
   };
 
   const toggleStatus = async (leadId: string, currentStatus: string) => {
-    // new -> contacted -> served -> new
+    // new -> contacted -> served -> new (legacy: called -> served, closed -> new)
     let newStatus = "contacted";
     if (currentStatus === "contacted" || currentStatus === "called") newStatus = "served";
     if (currentStatus === "served" || currentStatus === "closed") newStatus = "new";
@@ -139,7 +139,7 @@ export default function LeadsPage() {
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải danh sách...</div>;
 
   const filteredLeads = searchPhone.trim()
-    ? leads.filter(l => l.customer_phone.replace(/\D/g, '').includes(searchPhone.replace(/\D/g, '')))
+    ? leads.filter(l => (l.customer_phone || '').replace(/\D/g, '').includes(searchPhone.replace(/\D/g, '')))
     : leads;
 
   return (
