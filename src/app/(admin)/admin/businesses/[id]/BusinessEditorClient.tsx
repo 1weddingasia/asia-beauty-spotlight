@@ -13,6 +13,16 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { ImageUpload } from "@/components/ui/image-upload";
 
+/** Normalize a string into a valid URL slug */
+function normalizeSlug(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // strip diacritics
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 const AMENITY_OPTIONS = [
   "Có chỗ đỗ xe",
   "Thanh toán thẻ",
@@ -112,7 +122,7 @@ export default function BusinessEditorClient({
       const payload = {
         name: formData.name,
         address: formData.address,
-        slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        slug: formData.slug || normalizeSlug(formData.name),
         status: formData.status,
         phone: pageContent.phone || null,
         email: pageContent.email || null,
@@ -133,7 +143,14 @@ export default function BusinessEditorClient({
           .insert(payload)
           .select('id')
           .single();
-        if (error) throw error;
+        if (error) {
+          if (error.code === '23505') {
+            toast.error('Slug này đã tồn tại. Hãy đặt slug khác hoặc đổi tên doanh nghiệp.');
+            setSaving(false);
+            return;
+          }
+          throw error;
+        }
         toast.success('Tạo doanh nghiệp thành công!');
         router.push(`/admin/businesses/${inserted.id}`);
       } else {
@@ -212,7 +229,10 @@ export default function BusinessEditorClient({
           )}
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
             <Save className="mr-2 size-4" />
-            {saving ? (isNew ? 'Đang tạo...' : 'Đang lưu...') : (isNew ? 'Tạo Doanh Nghiệp' : 'Lưu thay đổi')}
+            {(() => {
+              if (saving) return isNew ? 'Đang tạo...' : 'Đang lưu...';
+              return isNew ? 'Tạo Doanh Nghiệp' : 'Lưu thay đổi';
+            })()}
           </Button>
         </div>
       </div>
@@ -301,7 +321,9 @@ export default function BusinessEditorClient({
                     onChange={(e) => handleChange("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
                     placeholder="ten-doanh-nghiep (tự động nếu để trống)"
                   />
-                  <p className="text-xs text-muted-foreground">Địa chỉ: 1beauty.asia/doanh-nghiep/<b>{formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'ten-spa'}</b></p>
+                  <p className="text-xs text-muted-foreground">
+                    Địa chỉ: <b>{typeof window !== 'undefined' ? window.location.origin : ''}/doanh-nghiep/{formData.slug || normalizeSlug(formData.name) || 'ten-spa'}</b>
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label>Trạng thái</Label>
