@@ -4,6 +4,7 @@ import { Metadata } from "next";
 
 export const revalidate = 0; // Cache disabled for dev
 import BusinessPageClient from "./BusinessPageClient";
+import { ChatWidget } from "@/components/site/ChatWidget";
 
 export async function generateMetadata({
   params,
@@ -47,5 +48,10 @@ export default async function Page({
     hours: pageContent.working_hours || []
   };
 
-  return <BusinessPageClient business={b} />;
+  return (
+    <>
+      <BusinessPageClient business={b} />
+      <ChatWidget key={dbBusiness.id} businessId={dbBusiness.id} businessName={b.name} />
+    </>
+  );
 }

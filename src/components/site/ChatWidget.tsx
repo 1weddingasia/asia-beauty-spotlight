@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 
 export function ChatWidget({ businessId, businessName }: { businessId: string, businessName: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<{role: 'user'|'system', content: string}[]>([
+  const [messages, setMessages] = useState<{role: 'user'|'system'|'error', content: string}[]>([
     { role: 'system', content: `Chào bạn, mình là trợ lý AI của ${businessName}. Mình có thể tư vấn bảng giá, dịch vụ hoặc giúp bạn đặt lịch hẹn. Bạn cần hỗ trợ gì ạ?` }
   ]);
   const [input, setInput] = useState("");

@@ -22,11 +22,20 @@ const escapeCSV = (value: string | null | undefined) => {
   if (!value) return '""';
   // Ngăn chặn Excel tự động chạy công thức nếu nội dung bắt đầu bằng các ký tự đặc biệt
   let safeValue = String(value);
-  if (/^[=+\-@]/.test(safeValue)) {
+  if (/^[=+\-@\t\r]/.test(safeValue)) {
     safeValue = "'" + safeValue;
   }
   // Escape dấu ngoặc kép bên trong bằng cách nhân đôi (" -> "")
   return `"${safeValue.replace(/"/g, '""')}"`;
+};
+
+const formatLeadDate = (dateStr: string, fallback = "-") => {
+  try {
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? fallback : format(d, "dd/MM/yyyy HH:mm");
+  } catch (e) {
+    return fallback; // Ignored parsing error
+  }
 };
 
 export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) {
@@ -44,12 +53,7 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
     const headers = ["Ngày", "Doanh nghiệp", "Tên Khách Hàng", "Số Điện Thoại", "Mã Ưu Đãi", "Gói Dịch Vụ", "Trạng Thái"];
     
     const csvContent = filteredLeads.map(lead => {
-      let dateStr = "";
-      try {
-        const d = new Date(lead.created_at);
-        if (!isNaN(d.getTime())) dateStr = format(d, "dd/MM/yyyy HH:mm");
-      } catch (e) {}
-
+      const dateStr = formatLeadDate(lead.created_at, "");
       const businessName = lead.businesses?.name || "N/A";
       
       return [
@@ -130,14 +134,7 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
                 filteredLeads.map((lead) => (
                   <tr key={lead.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-muted-foreground">
-                      {(() => {
-                        try {
-                          const d = new Date(lead.created_at);
-                          return isNaN(d.getTime()) ? "-" : format(d, "dd/MM/yyyy HH:mm");
-                        } catch (e) {
-                          return "-";
-                        }
-                      })()}
+                      {formatLeadDate(lead.created_at)}
                     </td>
                     <td className="px-6 py-4 font-medium max-w-[200px] truncate">
                       {lead.businesses?.name || "Không xác định"}
