@@ -23,6 +23,7 @@ export default function LeadsPage() {
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [business, setBusiness] = useState<any>(null);
+  const [searchPhone, setSearchPhone] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -67,10 +68,10 @@ export default function LeadsPage() {
   };
 
   const toggleStatus = async (leadId: string, currentStatus: string) => {
-    // new -> contacted -> closed -> new
+    // new -> contacted -> served -> new
     let newStatus = "contacted";
-    if (currentStatus === "contacted") newStatus = "closed";
-    if (currentStatus === "closed") newStatus = "new";
+    if (currentStatus === "contacted" || currentStatus === "called") newStatus = "served";
+    if (currentStatus === "served" || currentStatus === "closed") newStatus = "new";
     
     // Optimistic update
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
@@ -106,7 +107,7 @@ export default function LeadsPage() {
     };
 
     const getStatusText = (status: string) => {
-      if (status === 'closed') return "Đã chốt";
+      if (status === 'served' || status === 'closed') return "Đã phục vụ";
       if (status === 'contacted' || status === 'called') return "Đã liên hệ";
       return "Chưa gọi";
     };
@@ -137,6 +138,10 @@ export default function LeadsPage() {
 
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải danh sách...</div>;
 
+  const filteredLeads = searchPhone.trim()
+    ? leads.filter(l => l.customer_phone.replace(/\D/g, '').includes(searchPhone.replace(/\D/g, '')))
+    : leads;
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -151,12 +156,30 @@ export default function LeadsPage() {
         </Button>
       </div>
 
+      {/* Ô tìm kiếm SĐT nhanh */}
+      <div className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3 shadow-sm">
+        <Phone className="size-4 text-gold shrink-0" />
+        <input
+          type="tel"
+          inputMode="numeric"
+          placeholder="Khách đọc SĐT — gõ 3-4 số cuối để tìm ngay..."
+          value={searchPhone}
+          onChange={e => setSearchPhone(e.target.value)}
+          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        />
+        {searchPhone && (
+          <button onClick={() => setSearchPhone('')} className="text-xs text-muted-foreground hover:text-ink">
+            Xóa
+          </button>
+        )}
+      </div>
+
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        {leads.length === 0 ? (
+        {filteredLeads.length === 0 ? (
           <div className="p-10 text-center text-muted-foreground flex flex-col items-center">
             <Phone className="size-10 mb-4 opacity-20" />
-            <p>Chưa có khách hàng nào đăng ký ưu đãi.</p>
-            <p className="text-sm mt-1">Hãy chia sẻ trang ưu đãi của bạn để thu hút khách nhé!</p>
+            <p>{searchPhone ? `Không tìm thấy khách nào với số "${searchPhone}"` : 'Chưa có khách hàng nào đăng ký ưu đãi.'}</p>
+            {!searchPhone && <p className="text-sm mt-1">Hãy chia sẻ trang ưu đãi của bạn để thu hút khách nhé!</p>}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -171,7 +194,7 @@ export default function LeadsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {leads.map((lead) => (
+                {filteredLeads.map((lead) => (
                   <tr key={lead.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-muted-foreground">
                       <div className="font-medium text-ink">
@@ -190,14 +213,14 @@ export default function LeadsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium ${
-                        lead.status === 'closed' 
-                          ? 'bg-blue-100 text-blue-800' 
+                        (lead.status === 'served' || lead.status === 'closed')
+                          ? 'bg-purple-100 text-purple-800' 
                           : (lead.status === 'contacted' || lead.status === 'called')
                           ? 'bg-green-100 text-green-800'
                           : 'bg-amber-100 text-amber-800'
                       }`}>
-                        {lead.status === 'closed' ? (
-                          <><CheckCircle className="size-3" /> Đã chốt</>
+                        {(lead.status === 'served' || lead.status === 'closed') ? (
+                          <><CheckCircle className="size-3" /> Đã phục vụ</>
                         ) : (lead.status === 'contacted' || lead.status === 'called') ? (
                           <><PhoneCall className="size-3" /> Đã liên hệ</>
                         ) : (
@@ -207,12 +230,12 @@ export default function LeadsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Button 
-                        variant={(lead.status === 'contacted' || lead.status === 'called' || lead.status === 'closed') ? "outline" : "default"}
+                        variant={(lead.status === 'contacted' || lead.status === 'called' || lead.status === 'served' || lead.status === 'closed') ? "outline" : "default"}
                         size="sm"
                         onClick={() => toggleStatus(lead.id, lead.status || 'new')}
-                        className={(lead.status === 'contacted' || lead.status === 'called' || lead.status === 'closed') ? "" : "bg-gold text-ink hover:bg-gold/90"}
+                        className={(lead.status === 'contacted' || lead.status === 'called' || lead.status === 'served' || lead.status === 'closed') ? "" : "bg-gold text-ink hover:bg-gold/90"}
                       >
-                        {lead.status === 'closed' ? "Mở lại" : (lead.status === 'contacted' || lead.status === 'called') ? "Chốt khách" : "Đã gọi"}
+                        {(lead.status === 'served' || lead.status === 'closed') ? "Mở lại" : (lead.status === 'contacted' || lead.status === 'called') ? "Đã phục vụ" : "Đã gọi"}
                       </Button>
                     </td>
                   </tr>

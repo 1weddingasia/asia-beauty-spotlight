@@ -258,24 +258,33 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           ) : (
             <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
               <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-              <p className="text-sm text-muted-foreground mb-6">Bạn hãy chụp lại màn hình này và đưa cho nhân viên khi đến nhé.</p>
-              
-              <div className="inline-flex items-center justify-center gap-2 border-2 border-dashed border-green-500 bg-green-50 rounded-xl px-6 py-4 mb-6 relative w-full">
-                <Ticket className="size-6 text-green-600 shrink-0" />
-                <span className="text-2xl font-black tracking-widest text-ink">{voucher}</span>
+              <h3 className="text-lg font-bold text-ink mb-1">Giữ chỗ thành công! ༿</h3>
+              <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
+
+              {/* Mã ưu đãi = Số điện thoại */}
+              <div className="rounded-2xl border-2 border-gold bg-gradient-to-b from-yellow-50 to-amber-50 px-5 py-4 mb-3 text-left shadow-inner">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Mã ưu đãi của bạn</p>
+                <p className="text-3xl font-black tracking-widest text-gold">{phone}</p>
+                <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để nhận ngay mức giá ưu đãi</p>
               </div>
-              
+
+              {/* Gói đã chọn */}
+              <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Gói ưu đãi</p>
+                <p className="text-sm font-bold text-ink leading-snug">{selectedDeal?.title}</p>
+              </div>
+
               <div className="flex flex-col gap-3">
                 <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
                   <Link href={`tel:${hotline.replace(/\D/g, '')}`}>
-                    <Phone className="mr-2 size-5" /> Gọi Hotline Tiệm Ngay
+                    <Phone className="mr-2 size-5" /> Đặt lịch qua Hotline
                   </Link>
                 </Button>
                 
                 {hotline && hotline.replace(/\D/g, '').length >= 9 && (
                   <Button asChild variant="outline" className="w-full h-12 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl">
                     <Link href={`https://zalo.me/${hotline.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                      <MessageCircle className="mr-2 size-5" /> Nhắn Zalo Cho Tiệm
+                      <MessageCircle className="mr-2 size-5" /> Xác nhận qua Zalo
                     </Link>
                   </Button>
                 )}
