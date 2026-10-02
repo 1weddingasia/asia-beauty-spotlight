@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Save, Plus, Trash2, Send, MessageCircle } from "lucide-react";
+import { Save, Plus, Trash2, Send } from "lucide-react";
 import { toast } from "sonner";
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -33,14 +33,18 @@ export default function DealsManagementPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
-        supabase.from("businesses").select("*").eq("owner_id", user.id).single().then(({ data }) => {
-          if (data) {
-            setBusiness(data);
-            const content = data.page_content || {};
-            setTelegramId(content.telegram_chat_id || "");
-            
-            // Normalize existing deals
-            let existingDeals = content.deals || [];
+        supabase.from("businesses").select("*").eq("owner_id", user.id).single()
+          .then(({ data }) => {
+            if (data) {
+              setBusiness(data);
+              const content = typeof data.page_content === 'string'
+                ? JSON.parse(data.page_content)
+                : (data.page_content || {});
+                
+              setTelegramId(content.telegram_chat_id || "");
+              
+              // Normalize existing deals
+              let existingDeals = Array.isArray(content.deals) ? content.deals : [];
             if (existingDeals.length === 0 && content.featured_deal) {
               existingDeals = [{
                 id: generateId(),
@@ -54,9 +58,15 @@ export default function DealsManagementPage() {
             }
             setDeals(existingDeals);
           }
-          setLoading(false);
-        });
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+      } else {
+        setLoading(false);
       }
+    }).catch((err) => {
+      console.error(err);
+      setLoading(false);
     });
   }, []);
 
@@ -89,7 +99,8 @@ export default function DealsManagementPage() {
       setDeals(cleanDeals);
       toast.success("Đã lưu cấu hình Ưu đãi & Telegram!");
     } catch (err: any) {
-      toast.error("Lỗi khi lưu: " + err.message);
+      console.error("Lỗi khi lưu cấu hình ưu đãi:", err);
+      toast.error("Không thể lưu cấu hình. Vui lòng thử lại sau.");
     } finally {
       setSaving(false);
     }
@@ -114,7 +125,7 @@ export default function DealsManagementPage() {
     ]);
   };
 
-  const updateDeal = (index: number, field: keyof Deal, value: string) => {
+  const updateDeal = (index: number, field: keyof Deal, value: Deal[keyof Deal]) => {
     const newDeals = [...deals];
     newDeals[index] = { ...newDeals[index], [field]: value };
     setDeals(newDeals);
@@ -186,7 +197,7 @@ export default function DealsManagementPage() {
             </div>
           ) : (
             deals.map((deal, idx) => (
-              <div key={deal.id || idx} className={`p-5 rounded-xl border relative transition-colors ${deal.status === 'paused' ? 'bg-gray-50 border-gray-200' : 'bg-white border-gold/30 shadow-sm'}`}>
+              <div key={deal.id} className={`p-5 rounded-xl border relative transition-colors ${deal.status === 'paused' ? 'bg-gray-50 border-gray-200' : 'bg-white border-gold/30 shadow-sm'}`}>
                 
                 <div className="absolute top-4 right-4 flex items-center gap-3">
                   <div className="flex items-center gap-2">
