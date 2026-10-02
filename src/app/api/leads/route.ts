@@ -37,7 +37,15 @@ function generateVoucherCode(businessName: string) {
 function getVisitLabel(visitCount: number): string {
   if (visitCount === 1) return '🟢 KHÁCH MỚI';
   if (visitCount === 2) return '🟠 KHÁCH QUAY LẠI (Lần 2)';
-  return `🔴 KHÁCH VIP (Đến lần thứ ${visitCount})`;
+  if (visitCount >= 3) return `🔴 KHÁCH VIP (Đến lần thứ ${visitCount})`;
+  return '🟢 KHÁCH MỚI';
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 // Fire and forget telegram alert
@@ -95,7 +103,6 @@ export async function POST(req: Request) {
 
     const prevCount = previousVisits?.length ?? 0;
     const visitNumber = prevCount + 1; // This will be the Nth visit after insert
-    const visitLabel = getVisitLabel(visitNumber);
 
     const voucher_code = generateVoucherCode(business.name);
 
@@ -122,6 +129,10 @@ export async function POST(req: Request) {
       const isVIP = visitNumber >= 3;
       const isReturning = visitNumber >= 2;
 
+      // Escape user-supplied HTML to prevent Telegram parse_mode injection
+      const safeName = escapeHtml(customer_name || 'Không cung cấp');
+      const safeDeal = escapeHtml(deal_name || 'Ưu đãi chung');
+
       // Build visit history summary (last 3 visits)
       let historyNote = '';
       if (previousVisits && previousVisits.length > 0) {
@@ -129,7 +140,7 @@ export async function POST(req: Request) {
         const lines = recent.map(v => {
           const d = new Date(v.created_at);
           const dateStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
-          return `  • ${dateStr}: ${v.deal_name || 'Ưu đãi chung'}`;
+          return `  • ${dateStr}: ${escapeHtml(v.deal_name || 'Ưu đãi chung')}`;
         });
         historyNote = `\n📋 Lịch sử ghé tiệm:\n${lines.join('\n')}`;
       }
@@ -140,10 +151,15 @@ export async function POST(req: Request) {
         ? `⭐ ĐƠN MỚI TỪ KHÁCH QUAY LẠI (Lần thứ ${visitNumber})`
         : `🔔 ĐƠN MỚI TỪ KHÁCH MỚI`;
 
-      const msg = `<b>${header}</b>\n\n👤 Khách: ${customer_name || 'Không cung cấp'}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${deal_name || 'Ưu đãi chung'}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${isVIP ? '⚡ Đây là khách quen! Hãy dặn nhân viên phục vụ thật chu đáo!' : isReturning ? '✨ Khách quay lại! Gọi ngay để chốt lịch!' : '👉 Gọi ngay để chốt lịch!'}`;
+      const tip = isVIP
+        ? '⚡ Khách quen! Hãy dặn nhân viên phục vụ thật chu đáo!'
+        : isReturning ? '✨ Khách quay lại! Gọi ngay để chốt lịch!' : '👉 Gọi ngay để chốt lịch!';
+
+      const msg = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
 
       sendTelegramAsync(telegramChatId, msg);
     }
+
 
     return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
   } catch (error) {
@@ -151,4 +167,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });
   }
 }
-

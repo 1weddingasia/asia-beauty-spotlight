@@ -26,12 +26,16 @@ export default function LeadsPage() {
   const [business, setBusiness] = useState<any>(null);
   const [searchPhone, setSearchPhone] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [visitHistory, setVisitHistory] = useState<Lead[]>([]);
+
+  type HistoryRow = Pick<Lead, 'id' | 'created_at' | 'deal_name' | 'status'>;
+  const [visitHistory, setVisitHistory] = useState<HistoryRow[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  // Track request ID to discard stale responses when user switches customers quickly
+  const historyReqRef = { current: 0 };
 
   function visitBadge(count?: number) {
     if (!count || count === 1) return { label: 'Khách mới', cls: 'bg-green-100 text-green-800' };
-    if (count === 2) return { label: `Quày lại - Lần ${count}`, cls: 'bg-orange-100 text-orange-800' };
+    if (count === 2) return { label: `Quay lại - Lần ${count}`, cls: 'bg-orange-100 text-orange-800' };
     return { label: `⭐ VIP - Lần ${count}`, cls: 'bg-purple-100 text-purple-700 font-bold' };
   }
 
@@ -87,13 +91,22 @@ export default function LeadsPage() {
   const openHistory = async (lead: Lead) => {
     setSelectedLead(lead);
     setHistoryLoading(true);
-    const { data } = await supabase
+    setVisitHistory([]);
+    const reqId = ++historyReqRef.current;
+    const { data, error } = await supabase
       .from("business_leads")
       .select("id, created_at, deal_name, status")
       .eq("business_id", lead.business_id)
       .eq("customer_phone", lead.customer_phone)
-      .order("created_at", { ascending: false });
-    setVisitHistory((data as Lead[]) || []);
+      .order("created_at", { ascending: false })
+      .limit(20);
+    if (reqId !== historyReqRef.current) return; // stale response — discard
+    if (error) {
+      console.error(error);
+      toast.error("Không tải được lịch sử ghé tiệm");
+    } else {
+      setVisitHistory((data || []) as HistoryRow[]);
+    }
     setHistoryLoading(false);
   };
 
