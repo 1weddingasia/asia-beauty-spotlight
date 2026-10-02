@@ -121,11 +121,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     <div className="min-h-screen bg-muted/30 pb-20 md:pb-0">
       {/* Cover Image */}
       <div className="relative h-80 md:h-[450px] w-full overflow-hidden">
-        <Image src={bannerImg} alt={business.name} fill className="object-cover" priority />
+        <Image src={bannerImg} alt={business.name} fill sizes="100vw" quality={85} className="object-cover" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
-          <div className="size-16 md:size-24 rounded-full border-4 border-gold overflow-hidden bg-white shrink-0 shadow-lg">
-            <Image src={avatar} alt="Logo" width={96} height={96} className="w-full h-full object-cover" />
+          <div className="size-16 md:size-24 rounded-full border-4 border-gold overflow-hidden bg-white shrink-0 shadow-lg relative">
+            <Image src={avatar} alt="Logo" fill sizes="(max-width: 768px) 64px, 96px" className="object-cover" />
           </div>
           <div className="pb-1">
             <h1 className="text-2xl md:text-3xl font-bold text-white shadow-sm">{business.name}</h1>

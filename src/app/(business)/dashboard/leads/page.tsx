@@ -25,22 +25,29 @@ export default function LeadsPage() {
   const [business, setBusiness] = useState<any>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user }, error }) => {
-      if (user && !error) {
-        supabase.from("businesses").select("*").eq("owner_id", user.id).single()
-          .then(({ data }) => {
-            if (data) {
-              setBusiness(data);
-              fetchLeads(data.id);
-            } else {
-              setLoading(false);
-            }
-          })
-          .catch(() => setLoading(false));
-      } else {
+    async function loadData() {
+      try {
+        const { data: { user }, error: authErr } = await supabase.auth.getUser();
+        if (authErr || !user) {
+          setLoading(false);
+          return;
+        }
+
+        const { data: bData, error: dbErr } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
+        if (dbErr || !bData) {
+          setLoading(false);
+          return;
+        }
+
+        setBusiness(bData);
+        fetchLeads(bData.id);
+      } catch (err) {
+        console.error(err);
         setLoading(false);
       }
-    }).catch(() => setLoading(false));
+    }
+    
+    loadData();
   }, []);
 
   const fetchLeads = async (businessId: string) => {
@@ -60,7 +67,10 @@ export default function LeadsPage() {
   };
 
   const toggleStatus = async (leadId: string, currentStatus: string) => {
-    const newStatus = currentStatus === "new" ? "called" : "new";
+    // new -> contacted -> closed -> new
+    let newStatus = "contacted";
+    if (currentStatus === "contacted") newStatus = "closed";
+    if (currentStatus === "closed") newStatus = "new";
     
     // Optimistic update
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
@@ -95,13 +105,19 @@ export default function LeadsPage() {
       return `"${clean}"`;
     };
 
+    const getStatusText = (status: string) => {
+      if (status === 'closed') return "Đã chốt";
+      if (status === 'contacted' || status === 'called') return "Đã liên hệ";
+      return "Chưa gọi";
+    };
+
     const headers = ["Ngày đặt", "Tên khách", "Số điện thoại", "Gói Ưu đãi", "Trạng thái"];
     const csvData = leads.map(l => [
       escapeCSV(format(new Date(l.created_at), 'dd/MM/yyyy HH:mm')),
       escapeCSV(l.customer_name),
       escapeCSV(l.customer_phone),
       escapeCSV(l.deal_name),
-      escapeCSV(l.status === 'called' ? "Đã gọi" : "Chưa gọi")
+      escapeCSV(getStatusText(l.status))
     ]);
     
     const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
@@ -173,24 +189,30 @@ export default function LeadsPage() {
                       {lead.deal_name}
                     </td>
                     <td className="px-6 py-4">
-                      {lead.status === 'called' ? (
-                        <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          <CheckCircle className="size-3" /> Đã gọi
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                          <PhoneCall className="size-3" /> Chưa gọi
-                        </span>
-                      )}
+                      <span className={`inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium ${
+                        lead.status === 'closed' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : (lead.status === 'contacted' || lead.status === 'called')
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-amber-100 text-amber-800'
+                      }`}>
+                        {lead.status === 'closed' ? (
+                          <><CheckCircle className="size-3" /> Đã chốt</>
+                        ) : (lead.status === 'contacted' || lead.status === 'called') ? (
+                          <><PhoneCall className="size-3" /> Đã liên hệ</>
+                        ) : (
+                          <><PhoneCall className="size-3" /> Chưa gọi</>
+                        )}
+                      </span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Button 
-                        variant={lead.status === 'called' ? "outline" : "default"}
+                        variant={(lead.status === 'contacted' || lead.status === 'called' || lead.status === 'closed') ? "outline" : "default"}
                         size="sm"
                         onClick={() => toggleStatus(lead.id, lead.status || 'new')}
-                        className={lead.status === 'called' ? "" : "bg-gold text-ink hover:bg-gold/90"}
+                        className={(lead.status === 'contacted' || lead.status === 'called' || lead.status === 'closed') ? "" : "bg-gold text-ink hover:bg-gold/90"}
                       >
-                        {lead.status === 'called' ? "Đánh dấu Chưa gọi" : "Đã gọi chốt lịch"}
+                        {lead.status === 'closed' ? "Mở lại" : (lead.status === 'contacted' || lead.status === 'called') ? "Chốt khách" : "Đã gọi"}
                       </Button>
                     </td>
                   </tr>

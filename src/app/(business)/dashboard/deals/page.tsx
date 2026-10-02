@@ -31,49 +31,55 @@ export default function DealsManagementPage() {
   const [deals, setDeals] = useState<Deal[]>([]);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        supabase.from("businesses").select("*").eq("owner_id", user.id).single()
-          .then(({ data }) => {
-            if (data) {
-              let content: any = data.page_content || {};
-              if (typeof data.page_content === 'string') {
-                try {
-                  content = JSON.parse(data.page_content);
-                } catch (e) {
-                  console.error('Invalid page_content JSON:', e);
-                  content = {};
-                }
-              }
-              setBusiness({ ...data, page_content: content });
-                
-              setTelegramId(content.telegram_chat_id || "");
-              
-              // Normalize existing deals
-              let existingDeals = Array.isArray(content.deals) ? content.deals : [];
-            if (existingDeals.length === 0 && content.featured_deal) {
-              existingDeals = [{
-                id: generateId(),
-                title: content.featured_deal,
-                original_price: "Liên hệ",
-                promo_price: "Ưu đãi",
-                badge: "Độc Quyền 1Beauty",
-                note: "",
-                status: "active"
-              }];
-            }
-            setDeals(existingDeals);
+    async function loadData() {
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+          setLoading(false);
+          return;
+        }
+
+        const { data, error: dbError } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
+        if (dbError || !data) {
+          setLoading(false);
+          return;
+        }
+
+        let content: any = data.page_content || {};
+        if (typeof data.page_content === 'string') {
+          try {
+            content = JSON.parse(data.page_content);
+          } catch (e) {
+            console.error('Invalid page_content JSON:', e);
+            content = {};
           }
-        })
-        .catch(console.error)
-        .finally(() => setLoading(false));
-      } else {
+        }
+        setBusiness({ ...data, page_content: content });
+          
+        setTelegramId(content.telegram_chat_id || "");
+        
+        // Normalize existing deals
+        let existingDeals = Array.isArray(content.deals) ? content.deals : [];
+        if (existingDeals.length === 0 && content.featured_deal) {
+          existingDeals = [{
+            id: generateId(),
+            title: content.featured_deal,
+            original_price: "Liên hệ",
+            promo_price: "Ưu đãi",
+            badge: "Độc Quyền 1Beauty",
+            note: "",
+            status: "active"
+          }];
+        }
+        setDeals(existingDeals);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
         setLoading(false);
       }
-    }).catch((err) => {
-      console.error(err);
-      setLoading(false);
-    });
+    }
+    
+    loadData();
   }, []);
 
   const handleSave = async () => {

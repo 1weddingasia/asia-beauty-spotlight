@@ -170,6 +170,8 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                     src={slideUrl}
                     alt={`${b.name} Banner ${index + 1}`}
                     fill
+                    sizes="100vw"
+                    quality={85}
                     className="object-cover"
                     priority={index === 0}
                   />
@@ -194,7 +196,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
               className="relative size-32 md:size-48 shrink-0 overflow-hidden rounded-full border-[3px] border-gold bg-white shadow-2xl ring-4 ring-background flex items-center justify-center"
             >
               {b.logo_url ? (
-                <Image src={b.logo_url} alt={b.name} fill className="object-contain p-2 md:p-3 bg-white" />
+                <Image src={b.logo_url} alt={b.name} fill sizes="(max-width: 768px) 128px, 192px" className="object-contain p-2 md:p-3 bg-white" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-champagne text-5xl font-display text-gold">
                   {b.name.substring(0, 1)}
@@ -403,7 +405,7 @@ export default function BusinessPageClient({ business: b }: { business: any }) {
                   >
                     <div className="w-full h-40 md:h-48 bg-secondary relative overflow-hidden">
                       {s.image || galleryItems[idx % galleryItems.length] ? (
-                        <Image src={s.image || galleryItems[idx % galleryItems.length]} alt={s.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <Image src={s.image || galleryItems[idx % galleryItems.length]} alt={s.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                       ) : (
                         <>
                           <div className="absolute inset-0 bg-gradient-to-tr from-champagne to-secondary opacity-50 group-hover:scale-110 transition-transform duration-700" />
