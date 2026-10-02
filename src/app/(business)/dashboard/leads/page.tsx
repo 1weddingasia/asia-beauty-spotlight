@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Download, Phone, PhoneCall, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
 
 type Lead = {
   id: string;
@@ -26,8 +25,8 @@ export default function LeadsPage() {
   const [business, setBusiness] = useState<any>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
+    supabase.auth.getUser().then(({ data: { user }, error }) => {
+      if (user && !error) {
         supabase.from("businesses").select("*").eq("owner_id", user.id).single()
           .then(({ data }) => {
             if (data) {
@@ -36,9 +35,12 @@ export default function LeadsPage() {
             } else {
               setLoading(false);
             }
-          });
+          })
+          .catch(() => setLoading(false));
+      } else {
+        setLoading(false);
       }
-    });
+    }).catch(() => setLoading(false));
   }, []);
 
   const fetchLeads = async (businessId: string) => {
@@ -61,7 +63,7 @@ export default function LeadsPage() {
     const newStatus = currentStatus === "new" ? "called" : "new";
     
     // Optimistic update
-    setLeads(leads.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
     
     const { error } = await supabase
       .from("business_leads")
@@ -71,7 +73,7 @@ export default function LeadsPage() {
     if (error) {
       toast.error("Lỗi khi cập nhật trạng thái");
       // Revert
-      setLeads(leads.map(l => l.id === leadId ? { ...l, status: currentStatus } : l));
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: currentStatus } : l));
     } else {
       toast.success("Đã cập nhật trạng thái cuộc gọi");
     }
@@ -83,14 +85,23 @@ export default function LeadsPage() {
       return;
     }
     
-    // Create CSV content
+    // Create CSV content safely
+    const escapeCSV = (str: string) => {
+      if (!str) return '""';
+      const clean = str.toString().replace(/"/g, '""');
+      if (/^[=+\-@]/.test(clean)) {
+        return `"'${clean}"`;
+      }
+      return `"${clean}"`;
+    };
+
     const headers = ["Ngày đặt", "Tên khách", "Số điện thoại", "Gói Ưu đãi", "Trạng thái"];
     const csvData = leads.map(l => [
-      format(new Date(l.created_at), 'dd/MM/yyyy HH:mm'),
-      `"${l.customer_name}"`,
-      `"${l.customer_phone}"`,
-      `"${l.deal_name}"`,
-      l.status === 'called' ? "Đã gọi" : "Chưa gọi"
+      escapeCSV(format(new Date(l.created_at), 'dd/MM/yyyy HH:mm')),
+      escapeCSV(l.customer_name),
+      escapeCSV(l.customer_phone),
+      escapeCSV(l.deal_name),
+      escapeCSV(l.status === 'called' ? "Đã gọi" : "Chưa gọi")
     ]);
     
     const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
@@ -105,6 +116,7 @@ export default function LeadsPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải danh sách...</div>;

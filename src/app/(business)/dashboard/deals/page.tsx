@@ -149,6 +149,8 @@ export default function DealsManagementPage() {
       
       toast.info("Đang tạo mã QR...");
       const response = await fetch(url);
+      if (!response.ok) throw new Error(`QR API error: ${response.status}`);
+      
       const blob = await response.blob();
       const objectUrl = URL.createObjectURL(blob);
       
@@ -158,6 +160,7 @@ export default function DealsManagementPage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      URL.revokeObjectURL(objectUrl);
       
       toast.success("Đã tải mã QR thành công!");
     } catch (error) {

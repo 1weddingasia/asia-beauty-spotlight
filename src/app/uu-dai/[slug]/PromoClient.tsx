@@ -260,11 +260,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </Link>
                 </Button>
                 
-                <Button asChild variant="outline" className="w-full h-12 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl">
-                  <Link href={`https://zalo.me/${hotline.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="mr-2 size-5" /> Nhắn Zalo Cho Tiệm
-                  </Link>
-                </Button>
+                {hotline && hotline.replace(/\D/g, '').length >= 9 && (
+                  <Button asChild variant="outline" className="w-full h-12 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl">
+                    <Link href={`https://zalo.me/${hotline.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="mr-2 size-5" /> Nhắn Zalo Cho Tiệm
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           )}
