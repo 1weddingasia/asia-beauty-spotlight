@@ -34,6 +34,12 @@ function generateVoucherCode(businessName: string) {
   return `1B-${prefix}-${rand}`;
 }
 
+function getVisitLabel(visitCount: number): string {
+  if (visitCount === 1) return '🟢 KHÁCH MỚI';
+  if (visitCount === 2) return '🟠 KHÁCH QUAY LẠI (Lần 2)';
+  return `🔴 KHÁCH VIP (Đến lần thứ ${visitCount})`;
+}
+
 // Fire and forget telegram alert
 function sendTelegramAsync(chatId: string, message: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -43,7 +49,7 @@ function sendTelegramAsync(chatId: string, message: string) {
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text: message })
+    body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'HTML' })
   }).catch(err => console.error("Telegram error:", err));
 }
 
@@ -79,9 +85,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Doanh nghiệp không tồn tại' }, { status: 404 });
     }
 
+    // --- MINI-CRM: Count previous visits for this phone at this business ---
+    const { data: previousVisits } = await supabase
+      .from('business_leads')
+      .select('id, created_at, deal_name')
+      .eq('business_id', business_id)
+      .eq('customer_phone', cleanPhone)
+      .order('created_at', { ascending: false });
+
+    const prevCount = previousVisits?.length ?? 0;
+    const visitNumber = prevCount + 1; // This will be the Nth visit after insert
+    const visitLabel = getVisitLabel(visitNumber);
+
     const voucher_code = generateVoucherCode(business.name);
 
-    // Insert lead
+    // Insert lead with visit_count for dashboard display
     const { error: insertError } = await supabase
       .from('business_leads')
       .insert({
@@ -90,6 +108,7 @@ export async function POST(req: Request) {
         customer_phone: cleanPhone,
         deal_name: deal_name || 'Nhận Ưu Đãi Chung',
         voucher_code,
+        visit_count: visitNumber,
       });
 
     if (insertError) {
@@ -97,16 +116,39 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Lỗi hệ thống' }, { status: 500 });
     }
 
-    // Async Telegram notification
+    // --- SMART TELEGRAM NOTIFICATION ---
     const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
     if (telegramChatId) {
-      const msg = `🔔 CÓ KHÁCH NHẬN ƯU ĐÃI MỚI!\n\nTiệm: ${business.name}\nKhách hàng: ${customer_name || 'Không cung cấp'}\nSĐT: ${cleanPhone}\nGói: ${deal_name || 'Ưu đãi chung'}\nMã: ${voucher_code}\n\n👉 Anh/Chị hãy gọi ngay để chốt lịch!`;
+      const isVIP = visitNumber >= 3;
+      const isReturning = visitNumber >= 2;
+
+      // Build visit history summary (last 3 visits)
+      let historyNote = '';
+      if (previousVisits && previousVisits.length > 0) {
+        const recent = previousVisits.slice(0, 3);
+        const lines = recent.map(v => {
+          const d = new Date(v.created_at);
+          const dateStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
+          return `  • ${dateStr}: ${v.deal_name || 'Ưu đãi chung'}`;
+        });
+        historyNote = `\n📋 Lịch sử ghé tiệm:\n${lines.join('\n')}`;
+      }
+
+      const header = isVIP
+        ? `🏆 ĐƠN MỚI TỪ KHÁCH VIP (Đến tiệm lần thứ ${visitNumber})`
+        : isReturning
+        ? `⭐ ĐƠN MỚI TỪ KHÁCH QUAY LẠI (Lần thứ ${visitNumber})`
+        : `🔔 ĐƠN MỚI TỪ KHÁCH MỚI`;
+
+      const msg = `<b>${header}</b>\n\n👤 Khách: ${customer_name || 'Không cung cấp'}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${deal_name || 'Ưu đãi chung'}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${isVIP ? '⚡ Đây là khách quen! Hãy dặn nhân viên phục vụ thật chu đáo!' : isReturning ? '✨ Khách quay lại! Gọi ngay để chốt lịch!' : '👉 Gọi ngay để chốt lịch!'}`;
+
       sendTelegramAsync(telegramChatId, msg);
     }
 
-    return NextResponse.json({ success: true, voucher_code });
+    return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
   } catch (error) {
     console.error("API Leads Error:", error);
     return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });
   }
 }
+

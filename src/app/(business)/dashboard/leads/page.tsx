@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Download, Phone, PhoneCall, CheckCircle } from "lucide-react";
+import { Download, Phone, PhoneCall, CheckCircle, X, History } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -16,6 +16,7 @@ type Lead = {
   voucher_code: string;
   status: string;
   created_at: string;
+  visit_count?: number;
 };
 
 export default function LeadsPage() {
@@ -24,6 +25,15 @@ export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [business, setBusiness] = useState<any>(null);
   const [searchPhone, setSearchPhone] = useState("");
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [visitHistory, setVisitHistory] = useState<Lead[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  function visitBadge(count?: number) {
+    if (!count || count === 1) return { label: 'Khách mới', cls: 'bg-green-100 text-green-800' };
+    if (count === 2) return { label: `Quày lại - Lần ${count}`, cls: 'bg-orange-100 text-orange-800' };
+    return { label: `⭐ VIP - Lần ${count}`, cls: 'bg-purple-100 text-purple-700 font-bold' };
+  }
 
   useEffect(() => {
     async function loadData() {
@@ -62,9 +72,29 @@ export default function LeadsPage() {
       console.error(error);
       toast.error("Lỗi khi tải danh sách khách hàng");
     } else {
-      setLeads(data || []);
+      // If visit_count not stored in DB, compute from frequency in this result set
+      const phoneSeen: Record<string, number> = {};
+      const enriched = (data || []).reverse().map(lead => {
+        const p = lead.customer_phone || '';
+        phoneSeen[p] = (phoneSeen[p] || 0) + 1;
+        return { ...lead, visit_count: lead.visit_count ?? phoneSeen[p] };
+      }).reverse();
+      setLeads(enriched);
     }
     setLoading(false);
+  };
+
+  const openHistory = async (lead: Lead) => {
+    setSelectedLead(lead);
+    setHistoryLoading(true);
+    const { data } = await supabase
+      .from("business_leads")
+      .select("id, created_at, deal_name, status")
+      .eq("business_id", lead.business_id)
+      .eq("customer_phone", lead.customer_phone)
+      .order("created_at", { ascending: false });
+    setVisitHistory((data as Lead[]) || []);
+    setHistoryLoading(false);
   };
 
   const toggleStatus = async (leadId: string, currentStatus: string) => {
@@ -188,7 +218,8 @@ export default function LeadsPage() {
                 <tr>
                   <th className="px-6 py-4 font-semibold">Giờ đặt</th>
                   <th className="px-6 py-4 font-semibold">Khách hàng</th>
-                  <th className="px-6 py-4 font-semibold">Gói ưu đãi</th>
+                  <th className="px-6 py-4 font-semibold hidden md:table-cell">Gói ưu đãi</th>
+                  <th className="px-6 py-4 font-semibold">Lần ghé</th>
                   <th className="px-6 py-4 font-semibold">Trạng thái</th>
                   <th className="px-6 py-4 font-semibold text-right">Hành động</th>
                 </tr>
@@ -208,8 +239,19 @@ export default function LeadsPage() {
                       <div className="font-bold text-ink">{lead.customer_name}</div>
                       <div className="text-gold font-medium">{lead.customer_phone}</div>
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground max-w-[200px] truncate" title={lead.deal_name}>
+                    <td className="px-6 py-4 text-muted-foreground max-w-[160px] truncate hidden md:table-cell" title={lead.deal_name}>
                       {lead.deal_name}
+                    </td>
+                    <td className="px-6 py-4">
+                      {(() => { const b = visitBadge(lead.visit_count); return (
+                        <button
+                          onClick={() => openHistory(lead)}
+                          className={`inline-flex items-center gap-1 py-1 px-2.5 rounded-full text-xs cursor-pointer hover:opacity-80 transition-opacity ${b.cls}`}
+                          title="Xem lịch sử ghé tiệm"
+                        >
+                          <History className="size-3" />{b.label}
+                        </button>
+                      );})()}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium ${
@@ -246,5 +288,44 @@ export default function LeadsPage() {
         )}
       </div>
     </div>
+
+    {/* Visit History Modal */}
+    {selectedLead && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedLead(null)}>
+        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center justify-between px-6 py-4 border-b">
+            <div>
+              <h3 className="font-bold text-lg text-ink">{selectedLead.customer_name}</h3>
+              <p className="text-sm text-gold font-medium">{selectedLead.customer_phone}</p>
+            </div>
+            <button onClick={() => setSelectedLead(null)} className="text-muted-foreground hover:text-ink">
+              <X className="size-5" />
+            </button>
+          </div>
+          <div className="px-6 py-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Lịch sử ghé tiệm ({visitHistory.length} lần)</p>
+            {historyLoading ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">Đang tải...</p>
+            ) : visitHistory.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">Chưa có dữ liệu</p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {visitHistory.map((v, i) => (
+                  <div key={v.id} className={`flex items-start gap-3 p-3 rounded-xl ${i === 0 ? 'bg-gold/10 border border-gold/30' : 'bg-muted/40'}`}>
+                    <div className={`size-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${i === 0 ? 'bg-gold text-ink' : 'bg-muted text-muted-foreground'}`}>
+                      {visitHistory.length - i}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-ink truncate">{v.deal_name || 'Ưu đãi chung'}</p>
+                      <p className="text-xs text-muted-foreground">{format(new Date(v.created_at), 'HH:mm dd/MM/yyyy')}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
   );
 }
