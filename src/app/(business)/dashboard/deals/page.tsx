@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
@@ -29,6 +29,7 @@ export default function DealsManagementPage() {
   const [showPrintModal, setShowPrintModal] = useState(false);
 
   const [telegramId, setTelegramId] = useState("");
+  const [standeeTagline, setStandeeTagline] = useState("");
   const [deals, setDeals] = useState<Deal[]>([]);
 
   useEffect(() => {
@@ -58,6 +59,7 @@ export default function DealsManagementPage() {
         setBusiness({ ...data, page_content: content });
           
         setTelegramId(content.telegram_chat_id || "");
+        setStandeeTagline(content.standee_tagline || "");
         
         // Normalize existing deals
         let existingDeals = Array.isArray(content.deals) ? content.deals : [];
@@ -109,6 +111,7 @@ export default function DealsManagementPage() {
       const updatedContent = {
         ...(business.page_content || {}),
         telegram_chat_id: telegramId,
+        standee_tagline: standeeTagline,
         deals: cleanDeals
       };
 
@@ -236,7 +239,7 @@ export default function DealsManagementPage() {
           <div>
             <div class="top-badge">Chương trình ưu đãi đặc quyền</div>
             <div class="shop-name">${escapedName}</div>
-            <div class="headline">QUÉT MÃ – NHẬN ƯU ĐÃI<br/>ĐỘC QUYỀN CHO BẠN</div>
+            ${standeeTagline.trim() ? `<div class="headline">QUÉT MÃ – NHẬN ƯU ĐÃI<br/>${standeeTagline.trim().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : '<div class="headline">QUÉT MÃ<br/>NHẬN ƯU ĐÃI</div>'}
           </div>
           <div>
             <div class="qr-wrap">
@@ -279,7 +282,7 @@ export default function DealsManagementPage() {
               <div style={{width:"180px",minHeight:"255px",background:"linear-gradient(160deg,#fffbf0,#fef3c7)",border:"2px solid #c8960c",borderRadius:"12px",padding:"16px",display:"flex",flexDirection:"column",alignItems:"center",gap:"10px",textAlign:"center"}}>
                 <div style={{background:"#c8960c",color:"#fff",fontSize:"7px",fontWeight:700,letterSpacing:"0.1em",padding:"2px 10px",borderRadius:"99px",textTransform:"uppercase"}}>Chương trình ưu đãi</div>
                 <div style={{fontSize:"11px",fontWeight:900,color:"#1a0a00",lineHeight:1.2}}>{business.name}</div>
-                <div style={{fontSize:"9px",fontWeight:700,color:"#c8960c",lineHeight:1.3}}>QUÉT MÃ NH\u1eacN \u01afU \u0110\u00c3I \u0110\u1ed8C QUY\u1ec0N</div>
+                <div style={{fontSize:"9px",fontWeight:700,color:"#c8960c",lineHeight:1.3}}>{standeeTagline.trim() ? `QUÉT MÃ NHẬN ƯU ĐÃI – ${standeeTagline.trim()}` : 'QUÉT MÃ – NHẬN ƯU ĐÃI'}</div>
                 <div style={{background:"#fff",border:"2px solid #c8960c",borderRadius:"8px",padding:"6px"}}>
                   <img 
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : ''}/uu-dai/${business.slug}`)}&margin=4&color=3d2c00`} 
@@ -346,6 +349,19 @@ export default function DealsManagementPage() {
             * Hiện tại 1Beauty.Asia sẽ hỗ trợ bạn cấu hình trực tiếp mã ID này. 
             Trong tương lai, bạn chỉ cần bấm 1 nút để kết nối tự động.
           </p>
+        </div>
+
+        {/* Standee Tagline */}
+        <div className="mt-4 pt-4 border-t border-blue-100">
+          <Label className="font-semibold text-ink">Dòng chữ phụ trên bảng QR để bàn</Label>
+          <Input
+            placeholder="VD: Tặng 1 buổi massage miễn phí, Giảm 30% lần đầu... (để trống nếu không cần)"
+            value={standeeTagline}
+            onChange={e => setStandeeTagline(e.target.value)}
+            className="bg-white mt-2"
+            maxLength={60}
+          />
+          <p className="text-xs text-muted-foreground mt-1 italic">* Dòng này sẽ in trực tiếp lên bảng QR để bàn. Để trống nếu không muốn ghi gì thêm.</p>
         </div>
       </div>
 
