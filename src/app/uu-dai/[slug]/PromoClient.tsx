@@ -12,7 +12,7 @@ import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SiteHeader } from "@/components/site/Layout";
+import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -187,7 +187,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
             {banners.map((img: string, idx: number) => (
-              <CarouselItem key={idx} className="relative h-full w-full">
+              <CarouselItem key={idx} className="relative h-[100svh] w-full">
                 <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={100} className="object-cover scale-105 animate-ken-burns" priority={idx === 0} />
               </CarouselItem>
             ))}
@@ -632,6 +632,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           Được thực hiện bởi <Link href="/lien-he" className="font-semibold text-ink hover:text-gold transition-colors">1Beauty.asia</Link>
         </p>
       </div>
+      
+      <SiteFooter />
     </div>
   );
 }
