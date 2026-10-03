@@ -8,9 +8,9 @@ import { toast } from "sonner";
 import { Shield, Sparkles, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
-export default function LoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams();
   const [view, setView] = useState<"login" | "register" | "forgot">("login");
   
@@ -315,5 +315,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50/50">Đang tải...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
