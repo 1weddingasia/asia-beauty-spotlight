@@ -21,6 +21,7 @@ import {
   UserMinus
 } from "lucide-react";
 import Link from "next/link";
+import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
 
 const PRICING_AMOUNT = "500.000đ";
 const SETUP_TIME = "15 phút";
@@ -529,6 +530,7 @@ export default function GioiThieuPage() {
         </div>
       </section>
 
+      <PlatformChatWidget />
     </div>
   );
 }

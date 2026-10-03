@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle, Zap, Star, Users } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { HeroSlider } from "@/components/site/HeroSlider";
+import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
 import { createStaticClient } from "@/utils/supabase/server";
 
 export const revalidate = 3600;
@@ -254,6 +255,7 @@ export default async function HomePage() {
       </section>
 
       <SiteFooter />
+      <PlatformChatWidget />
     </div>
   );
 }
