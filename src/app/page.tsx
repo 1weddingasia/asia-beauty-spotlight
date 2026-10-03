@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle, Zap, Star, Users } from "lucide-react";
+import { ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle, Zap, Star, Users, Bot } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
@@ -97,18 +97,18 @@ export default async function HomePage() {
       {/* 3 TÍNH NĂNG CỐT LÕI                               */}
       {/* ═══════════════════════════════════════════════════ */}
       <section className="py-20 md:py-28 bg-background">
-        <div className="mx-auto max-w-5xl px-6">
+        <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-14">
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Hệ thống 3-trong-1</p>
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Hệ thống 4-trong-1</p>
             <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">
               Tất cả những gì tiệm bạn cần
             </h2>
-            <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-              Một hệ thống duy nhất thay thế toàn bộ: trang web giới thiệu, form đặt lịch, và phần mềm quản lý khách hàng.
+            <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+              Một hệ thống duy nhất thay thế toàn bộ: trang web giới thiệu, form đặt lịch, phần mềm quản lý khách hàng và nhân viên trực page 24/7.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 icon: <QrCode className="size-8 text-gold" />,
@@ -119,7 +119,7 @@ export default async function HomePage() {
               },
               {
                 icon: <Bell className="size-8 text-gold" />,
-                title: "Chuông Telegram < 1 giây",
+                title: "Chuông Telegram < 1s",
                 badge: "Không sót đơn",
                 desc: "Mỗi khi có khách để lại số điện thoại, điện thoại của bạn/quản lý nổ chuông Telegram ngay lập tức. Tin nhắn ghi rõ: Tên, SĐT, Gói chọn và Khách mới/VIP.",
                 highlight: "Gọi ngay khi khách đang nóng"
@@ -130,14 +130,21 @@ export default async function HomePage() {
                 badge: "Giữ chân khách VIP",
                 desc: "Mọi khách hàng đều được lưu lại với tag tự động: Khách mới, Quay lại, VIP. Xuất Excel cuối tháng để chăm sóc qua Zalo, SMS vào dịp lễ Tết.",
                 highlight: "Biết khách cũ để phục vụ tốt hơn"
+              },
+              {
+                icon: <Bot className="size-8 text-gold" />,
+                title: "Bot AI Trực 24/7",
+                badge: "Chăm sóc tự động",
+                desc: "Chatbot thông minh học thuộc mọi bảng giá, dịch vụ của tiệm. Tự động trả lời khách hàng 24/7, xin thông tin và chốt sale ngay cả khi bạn đang ngủ.",
+                highlight: "Không bỏ lỡ khách hàng ban đêm"
               }
             ].map((f, i) => (
-              <div key={i} className="group rounded-3xl border border-gold-soft bg-champagne p-8 transition-all hover:-translate-y-1 hover:shadow-card hover:border-gold">
+              <div key={i} className="group rounded-3xl border border-gold-soft bg-champagne p-6 transition-all hover:-translate-y-1 hover:shadow-card hover:border-gold">
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-gold">
                   {f.badge}
                 </div>
                 <div className="mb-4">{f.icon}</div>
-                <h3 className="font-display text-xl text-ink mb-3">{f.title}</h3>
+                <h3 className="font-display text-lg text-ink mb-3">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4">{f.desc}</p>
                 <p className="text-xs font-bold text-gold">✓ {f.highlight}</p>
               </div>
