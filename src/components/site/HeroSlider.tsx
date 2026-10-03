@@ -1,103 +1,45 @@
 "use client";
-import Link from "next/link";
-import NextImage from "next/image";
+
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
-import { heroSlides } from "@/data/directory";
-import { cn } from "@/lib/utils";
-import { SearchBar } from "./SearchBar";
+const slides = [
+  "/images/luxury_spa_slider_1.png",
+  "/images/luxury_spa_slider_2.png",
+  "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=1920&q=80"
+];
 
-type Category = { slug: string; name: string };
-type Location = { slug: string; name: string };
-
-type Props = {
-  categories?: Category[];
-  locations?: Location[];
-};
-
-export function HeroSlider({ categories = [], locations = [] }: Props) {
-  const [index, setIndex] = useState(0);
-  const active = heroSlides[index]!;
+export function HeroSlider() {
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setIndex((i) => (i + 1) % heroSlides.length), 6500);
-    return () => clearInterval(id);
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
-    <section className="relative min-h-[86vh] w-full overflow-hidden bg-ink">
-      {heroSlides.map((slide, i) => (
+    <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* Lớp phủ đen để chữ dễ đọc */}
+      <div className="absolute inset-0 bg-ink/75 md:bg-ink/60 z-10 mix-blend-multiply" />
+      
+      {slides.map((slide, index) => (
         <div
-          key={slide.title}
-          className={cn(
-            "absolute inset-0 transition-opacity duration-1000",
-            i === index ? "opacity-100" : "opacity-0",
-          )}
-          aria-hidden={i !== index}
+          key={slide}
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            index === current ? "opacity-100" : "opacity-0"
+          }`}
         >
-          <NextImage
-            src={slide.image}
-            alt={slide.title}
+          <Image
+            src={slide}
+            alt="1Beauty Spa"
             fill
-            priority={i === 0}
-            sizes="100vw"
-            className={cn(
-              "object-cover transition-transform duration-[7000ms] ease-out",
-              i === index ? "scale-105" : "scale-100",
-            )}
+            className="object-cover"
+            priority={index === 0}
           />
-
-          <div className="absolute inset-0 bg-ink/55" />
-          <div className="overlay-ink absolute inset-0" />
         </div>
       ))}
-
-      <div className="relative mx-auto flex min-h-[86vh] max-w-6xl flex-col justify-end gap-8 px-6 pt-32 pb-16">
-        <div className="max-w-2xl">
-          <p className="text-xs tracking-[0.35em] text-gold uppercase">
-            {active.kicker}
-          </p>
-          <div className="rule-gold mt-4" />
-          <h1 className="mt-6 text-4xl leading-tight text-background md:text-5xl lg:text-6xl font-bold font-display">
-            Hệ Thống Cổng Đặt Hẹn & Nhận Ưu Đãi Làm Đẹp 1-Chạm
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-background/90">
-            Giải pháp tự động hóa lịch hẹn và chống sót đơn dành riêng cho các Spa, Salon & Thẩm mỹ viện uy tín.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link
-              href="https://zalo.me/0909090909"
-              target="_blank"
-              className="inline-flex items-center gap-2 rounded-sm bg-gold px-7 py-4 text-sm font-bold text-ink uppercase tracking-wider transition-colors hover:bg-gold/90"
-            >
-              🚀 Kích Hoạt Cổng Booking Cho Tiệm – Chỉ 500k/Năm
-            </Link>
-            <Link
-              href="#deals"
-              className="inline-flex rounded-sm border border-gold/60 px-7 py-4 text-sm font-bold tracking-wider text-gold uppercase transition-colors hover:bg-gold hover:text-ink"
-            >
-              Xem Các Ưu Đãi Đang Chạy
-            </Link>
-          </div>
-        </div>
-
-        {/* SearchBar nhận categories/locations từ server (không fetch lại) */}
-        <SearchBar categories={categories} locations={locations} />
-
-        <div className="flex gap-2">
-          {heroSlides.map((s, i) => (
-            <button
-              key={s.title}
-              onClick={() => setIndex(i)}
-              aria-label={`Slide ${i + 1}`}
-              className={cn(
-                "h-0.5 w-12 transition-all",
-                i === index ? "bg-gradient-gold" : "bg-background/30",
-              )}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }

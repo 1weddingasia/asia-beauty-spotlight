@@ -117,7 +117,6 @@
 
 @utility font-display {
   font-family: var(--font-display);
-  font-weight: 500;
 }
 
 @utility text-gradient-gold {

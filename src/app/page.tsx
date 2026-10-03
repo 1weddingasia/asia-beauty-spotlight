@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle, Zap, Star, Users } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
+import { HeroSlider } from "@/components/site/HeroSlider";
 import { createStaticClient } from "@/utils/supabase/server";
 
 export const revalidate = 3600;
@@ -30,12 +31,9 @@ export default async function HomePage() {
       {/* ═══════════════════════════════════════════════════ */}
       {/* HERO — Headline B2B                                */}
       {/* ═══════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-ink pt-24 pb-20 md:pt-32 md:pb-28">
-        {/* Decorative background */}
-        <div className="absolute inset-0 opacity-10"
-          style={{ backgroundImage: 'radial-gradient(ellipse at 30% 50%, #c8960c 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #c8960c 0%, transparent 50%)' }}
-        />
-        <div className="relative mx-auto max-w-5xl px-6 text-center">
+      <section className="relative overflow-hidden bg-ink pt-28 pb-24 md:pt-36 md:pb-32">
+        <HeroSlider />
+        <div className="relative mx-auto max-w-5xl px-6 text-center z-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-gold uppercase mb-8">
             <Zap className="size-3" />
             Giải pháp chìa khóa trao tay — 500.000đ/năm
@@ -55,11 +53,11 @@ export default async function HomePage() {
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/uu-dai/yuki-spa"
-              className="group inline-flex items-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-xl hover:bg-gold/90 hover:scale-105 transition-all"
+              href="/uu-dai/yuki-beauty-and-spa"
+              className="group inline-flex items-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-xl hover:bg-gold-soft hover:scale-105 transition-all"
             >
               <Sparkles className="size-5" />
-              Xem Demo Ngay (Yuki Spa)
+              Xem Demo Tiệm (Luxury Spa)
               <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
