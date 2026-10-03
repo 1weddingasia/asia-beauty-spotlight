@@ -67,9 +67,11 @@ export default async function BusinessDashboardPage() {
   const prevMonthLeads = prevMonthResult.error ? null : (prevMonthResult.count ?? null);
 
   // Top 3 deals phổ biến nhất – tổng hợp chính xác từ DB via RPC
-  const topDeals: [string, number][] = (dealsResult.data ?? []).map(
-    (r: { deal_name: string; lead_count: number }) => [r.deal_name, Number(r.lead_count)]
-  );
+  const topDeals: [string, number][] = dealsResult.error
+    ? []
+    : (dealsResult.data ?? []).map(
+        (r: { deal_name: string; lead_count: number }) => [r.deal_name, Number(r.lead_count)]
+      );
 
 
   // Tăng trưởng so cùng khoảng ngày tháng trước (month-to-date vs same period last month)
