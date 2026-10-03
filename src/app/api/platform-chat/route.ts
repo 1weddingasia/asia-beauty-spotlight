@@ -43,9 +43,9 @@ export async function POST(req: Request) {
         typeof m === 'object' && 
         'role' in m && 
         'content' in m && 
-        typeof (m as any).content === 'string'
+        typeof (m as Record<string, unknown>).content === 'string'
       )
-      .map((m: any) => ({
+      .map((m: Record<string, unknown>) => ({
         role: m.role === 'user' ? 'user' : 'assistant',
         content: m.content
       }));
@@ -65,7 +65,7 @@ QUY TẮC BẮT BUỘC:
 1. Luôn chào khách (thường là các chủ tiệm spa, salon, nail) lịch sự, xưng "em" gọi "anh/chị chủ tiệm".
 2. SỨ MỆNH: Tư vấn giải pháp "Cổng đón khách & chống trôi đơn tự động" của 1Beauty giúp các chủ tiệm tăng doanh thu, không bỏ lót khách hàng.
 3. THÔNG TIN SẢN PHẨM: 
-- Tính năng: Tạo trang Web/Lookbook riêng tốc độ cao 3 giây, QR Code để bàn, Mini-CRM quản lý khách quen/mới, Chuông báo Telegram nổ đơn tức thì 24/7 (0% sót đơn). Khách hàng không cần tải app hay đăng ký phức tạp.
+- Tính năng: Tạo trang Web/Lookbook riêng tốc độ cao 3 giây, Trợ lý AI Chatbot thông minh túc trực trên trang của tiệm để tư vấn và chốt sale khách hàng 24/7, QR Code để bàn, Mini-CRM quản lý khách quen/mới, Chuông báo Telegram nổ đơn tức thì (0% sót đơn). Khách hàng không cần tải app hay đăng ký phức tạp.
 - Chi phí: Gói Trọn Gói 500.000đ/Năm (chỉ tương đương 1.300đ/ngày, rẻ hơn 1 cốc trà đá).
 - Cách đăng ký: Chủ tiệm nhấn vào nút "Đăng Nhập / Quản Lý" trên menu hoặc "Đăng Ký Ngay", đăng ký tài khoản (hỗ trợ Google Login), sau đó tự tạo hồ sơ tiệm. Tuy nhiên, nếu chủ tiệm bận, 1Beauty có đội ngũ setup trọn gói từ A-Z trong 15 phút.
 4. MỤC TIÊU: Thuyết phục chủ tiệm để lại Số Điện Thoại để chuyên viên 1Beauty gọi điện hỗ trợ setup dùng thử hoặc tư vấn chuyên sâu.
