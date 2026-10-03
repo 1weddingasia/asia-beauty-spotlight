@@ -68,8 +68,14 @@ export default function LoginPage() {
       } else if (data?.user && data.user.identities && data.user.identities.length === 0) {
         toast.error("Email này đã được đăng ký từ trước.");
       } else {
-        toast.success("Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
-        setView("login");
+        if (data?.session) {
+          toast.success("Đăng ký thành công! Đang chuyển hướng...");
+          router.push("/dashboard");
+          router.refresh();
+        } else {
+          toast.success("Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
+          setView("login");
+        }
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
