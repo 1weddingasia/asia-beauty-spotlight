@@ -31,20 +31,20 @@ export async function POST(request: Request) {
 
     let isAuthenticated = false;
 
-    // Cách 1: Xác thực bằng Token (Authorization: Apikey <secret> hoặc Bearer <secret>)
     if (authHeader) {
-      const authBuf = Buffer.from(authHeader);
-      const expectedApikeyBuf = Buffer.from(`Apikey ${secret}`);
-      const expectedBearerBuf = Buffer.from(`Bearer ${secret}`);
-      if (
-        (authBuf.length === expectedApikeyBuf.length && crypto.timingSafeEqual(authBuf, expectedApikeyBuf)) ||
-        (authBuf.length === expectedBearerBuf.length && crypto.timingSafeEqual(authBuf, expectedBearerBuf))
-      ) {
+      // Token might come as "Bearer <secret>", "Apikey <secret>", or just "<secret>"
+      const tokenParts = authHeader.split(' ');
+      const tokenValue = tokenParts.length > 1 ? tokenParts[tokenParts.length - 1] : authHeader;
+      
+      const tokenBuf = Buffer.from(tokenValue);
+      const secretBuf = Buffer.from(secret);
+      
+      if (tokenBuf.length === secretBuf.length && crypto.timingSafeEqual(tokenBuf, secretBuf)) {
         isAuthenticated = true;
       }
     } 
     // Cách 2: Xác thực bằng HMAC-SHA256 Signature (Nếu SePay có hỗ trợ gửi x-sepay-signature)
-    else if (signature) {
+    if (!isAuthenticated && signature) {
       const expectedSignature = crypto
         .createHmac('sha256', secret)
         .update(rawBody)
