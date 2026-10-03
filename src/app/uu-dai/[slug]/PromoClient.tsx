@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
@@ -166,13 +166,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     : [bannerImg];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-[#FCFAF5] pb-20 md:pb-0">
       {/* Premium Hero Section */}
-      <div className="relative h-[65vh] md:h-[70vh] w-full overflow-hidden group">
+      <div className="relative h-[75vh] md:h-[85vh] w-full overflow-hidden group">
         <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
             {banners.map((img: string, idx: number) => (
-              <CarouselItem key={idx} className="relative h-[65vh] md:h-[70vh] w-full">
+              <CarouselItem key={idx} className="relative h-[75vh] md:h-[85vh] w-full">
                 <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={100} className="object-cover scale-105 animate-ken-burns" priority={idx === 0} />
               </CarouselItem>
             ))}
@@ -201,27 +201,35 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-12 -mt-10 relative z-10">
-        <div className="text-center mb-8 bg-white p-6 rounded-3xl shadow-xl border border-border/50">
-          <h2 className="text-2xl md:text-3xl font-black text-ink flex items-center justify-center gap-3">
-            <Tag className="size-8 text-gold" />
+      <div className="max-w-5xl mx-auto px-4 py-12 -mt-16 md:-mt-24 relative z-10">
+        <div className="text-center mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-black text-ink flex flex-col md:flex-row items-center justify-center gap-3">
+            <Tag className="size-8 md:size-10 text-gold" />
             ƯU ĐÃI ĐỘC QUYỀN
           </h2>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-4 text-base md:text-lg">
             Chọn một ưu đãi bên dưới và lưu lại để sử dụng khi đến tiệm.
           </p>
         </div>
 
         {/* Danh sách Deals */}
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {deals.length === 0 ? (
             <div className="text-center p-12 bg-white rounded-3xl border border-dashed">
               <p className="text-muted-foreground">Hiện tại chưa có chương trình ưu đãi nào đang mở.</p>
             </div>
           ) : (
             deals.map(deal => (
-              <div key={deal.id} className="group rounded-3xl bg-white p-1 shadow-xl shadow-slate-200/50 relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.01]">
-                <div className="rounded-[1.3rem] border border-gold/20 bg-gradient-to-br from-white to-amber-50/30 p-6 md:p-8 h-full">
+              <div 
+                key={deal.id} 
+                onClick={() => {
+                  setSelectedDeal(deal);
+                  setVoucher("");
+                  setIsDialogOpen(true);
+                }}
+                className="group rounded-3xl bg-white p-1.5 shadow-xl shadow-gold/10 relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer flex flex-col h-full border border-gold/20"
+              >
+                <div className="rounded-[1.4rem] border border-gold/30 bg-gradient-to-br from-white to-champagne/50 p-6 md:p-8 flex flex-col h-full relative">
                   {deal.badge && (
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-rose-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
                       {deal.badge}
@@ -233,14 +241,14 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </h3>
                   
                   {deal.note && (
-                    <p className="text-sm text-muted-foreground mb-6 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      <span className="font-semibold text-slate-700">Lưu ý:</span> {deal.note}
+                    <p className="text-sm text-muted-foreground mb-8 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm grow">
+                      <span className="font-semibold text-ink">Lưu ý:</span> {deal.note}
                     </p>
                   )}
                   
-                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-6 pt-6 border-t border-slate-200/60">
+                  <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mt-auto pt-6 border-t border-gold/20">
                     <div>
-                      <div className="text-sm font-medium text-slate-400 line-through mb-1">
+                      <div className="text-sm font-medium text-muted-foreground line-through mb-1">
                         {formatPrice(deal.original_price)}
                       </div>
                       <div className="text-3xl font-black text-red-600 leading-none">
@@ -249,12 +257,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     </div>
                     
                     <Button 
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation(); // Ngăn onClick thẻ cha chạy 2 lần
                         setSelectedDeal(deal);
                         setVoucher("");
                         setIsDialogOpen(true);
                       }}
-                      className="w-full md:w-auto bg-gradient-to-r from-gold to-amber-500 text-ink font-bold hover:from-amber-400 hover:to-gold shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-transform active:scale-95"
+                      className="w-full xl:w-auto bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-ink font-bold hover:brightness-110 shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border border-[#D4AF37]/50"
                     >
                       Nhận và Lưu Ưu Đãi
                     </Button>
@@ -267,19 +276,20 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
         {/* Danh sách Dịch vụ / Sản phẩm */}
         {services.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl md:text-3xl font-black text-ink text-center mb-8">
+          <div className="mt-24">
+            <h2 className="text-2xl md:text-3xl font-black text-ink text-center mb-10 flex items-center justify-center gap-3">
+              <Sparkles className="size-6 md:size-8 text-gold" />
               DANH MỤC DỊCH VỤ
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service: any, index: number) => (
-                <div key={index} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex gap-4 items-center">
+                <div key={index} className="bg-white rounded-3xl p-5 shadow-sm border border-gold/20 flex flex-row gap-4 items-center transition-all duration-500 hover:shadow-xl hover:shadow-gold/10 hover:-translate-y-1.5 hover:scale-105 hover:border-gold/50 cursor-pointer group">
                   {service.image_url && (
-                    <div className="size-20 rounded-xl overflow-hidden relative shrink-0 bg-slate-100">
-                      <Image src={service.image_url} alt={service.name} fill className="object-cover" />
+                    <div className="size-24 rounded-2xl overflow-hidden relative shrink-0 bg-slate-100 shadow-inner group-hover:shadow-md transition-shadow">
+                      <Image src={service.image_url} alt={service.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                     </div>
                   )}
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-ink line-clamp-2">{service.name}</h4>
                     {service.description && (
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
