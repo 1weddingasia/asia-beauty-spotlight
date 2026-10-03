@@ -1,357 +1,261 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Sparkles, Ticket } from "lucide-react";
-
-export const revalidate = 3600; // Cache for 1 hour
-import { BusinessCard } from "@/components/site/BusinessCard";
-import { HeroSlider } from "@/components/site/HeroSlider";
+import { ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle, Zap, Star, Users } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
-import { getPublishedBusinesses } from "@/data/business";
-import { getCategoriesAction, getLocationsAction } from "@/app/actions/search";
-import React from "react";
-import * as LucideIcons from "lucide-react";
+import { createStaticClient } from "@/utils/supabase/server";
 
-/** Deterministic shuffle based on daily seed — same result all day, changes every 24h */
-function seededShuffle<T>(arr: T[], seed: number): T[] {
-  const result = [...arr];
-  let s = seed;
-  for (let i = result.length - 1; i > 0; i--) {
-    s = (s * 9301 + 49297) % 233280;
-    const j = Math.floor((s / 233280) * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
+export const revalidate = 3600;
 
-export default async function Index() {
-  const today = new Date();
-  // Seed changes every 24h (based on date only, not time)
-  const dateSeed =
-    today.getFullYear() * 10000 +
-    (today.getMonth() + 1) * 100 +
-    today.getDate();
+export const metadata = {
+  title: "1Beauty.Asia — Cổng Bắt Khách 1-Chạm Cho Tiệm Làm Đẹp",
+  description: "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
+};
 
-  const [allBusinesses, categories, locations] = await Promise.all([
-    getPublishedBusinesses(50), // Fetch enough for rotation pool
-    getCategoriesAction(),
-    getLocationsAction(),
-  ]);
+export default async function HomePage() {
+  const supabase = createStaticClient();
 
-  // --- FEATURED BUSINESSES: New first, then 24h random rotation ---
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  const newlyAdded = allBusinesses.filter(
-    (b: any) => new Date(b.created_at) > sevenDaysAgo
-  );
-  const olderFeatured = allBusinesses.filter(
-    (b: any) => new Date(b.created_at) <= sevenDaysAgo && b.is_featured
-  );
-  const olderAll = allBusinesses.filter(
-    (b: any) => new Date(b.created_at) <= sevenDaysAgo && !b.is_featured
-  );
+  // Lấy số lượng tiệm đang hoạt động để social proof
+  const { count: activeShops } = await supabase
+    .from('businesses')
+    .select('*', { count: 'exact', head: true })
+    .in('status', ['published', 'active', 'trial']);
 
-  // Priority: newly added → featured (shuffled) → others (shuffled)
-  const rotatedFeatured = [
-    ...newlyAdded,
-    ...seededShuffle(olderFeatured, dateSeed),
-    ...seededShuffle(olderAll, dateSeed + 1),
-  ].slice(0, 6);
-
-  // --- OFFERS: Extract real offers from all businesses, rotate daily ---
-  const allOffers = allBusinesses
-    // .filter((b: any) => b.plan_id) // Only premium businesses
-    .flatMap((b: any) => {
-      const pc = b.page_content || {};
-      const items = pc.deals || pc.offers || pc.promotions || [];
-      return items.map((o: any) => ({
-        ...o,
-        business: { slug: b.slug, name: b.name },
-      }));
-    })
-    .filter((o: any) => {
-      const now = new Date();
-      if (o.validFrom) {
-        let startDate = new Date(`${o.validFrom}T00:00:00`);
-        if (startDate && startDate > now) return false;
-      }
-      if (o.validUntil) {
-        let endDate;
-        if (o.validUntil.includes('/')) {
-          const parts = o.validUntil.split('/');
-          if (parts.length === 3) endDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
-        } else {
-          endDate = new Date(`${o.validUntil}T23:59:59`);
-        }
-        if (endDate && endDate < now) return false;
-      }
-      return true;
-    });
-  const rotatedOffers = seededShuffle(allOffers, dateSeed + 2).slice(0, 4);
+  const { count: totalLeads } = await supabase
+    .from('business_leads')
+    .select('*', { count: 'exact', head: true });
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-      <main className="flex-1">
-        <HeroSlider categories={categories} locations={locations} />
+      <SiteHeader solid />
 
-        {/* --- SECTION 1: DANH MỤC (DB thật) --- */}
-        <section className="mx-auto max-w-6xl px-6 py-20">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-xs tracking-[0.3em] text-gold uppercase">Danh mục</p>
-              <div className="rule-gold mt-3" />
-              <h2 className="mt-5 text-3xl md:text-4xl">Khám phá theo lĩnh vực</h2>
-            </div>
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* HERO — Headline B2B                                */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden bg-ink pt-24 pb-20 md:pt-32 md:pb-28">
+        {/* Decorative background */}
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(ellipse at 30% 50%, #c8960c 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #c8960c 0%, transparent 50%)' }}
+        />
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-gold uppercase mb-8">
+            <Zap className="size-3" />
+            Giải pháp chìa khóa trao tay — 500.000đ/năm
+          </div>
+
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight">
+            Cổng Bắt Khách{" "}
+            <span className="text-gradient-gold">1-Chạm</span>
+            <br />cho Tiệm Làm Đẹp
+          </h1>
+
+          <p className="mt-6 text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+            Khách quét QR → Chọn deal → Để số điện thoại →{" "}
+            <span className="text-gold font-semibold">Tiệm nghe chuông Telegram ngay lập tức.</span>{" "}
+            Không cần app. Không cần kỹ thuật.
+          </p>
+
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/tim-kiem"
-              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-gold"
+              href="/uu-dai/yuki-spa"
+              className="group inline-flex items-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-xl hover:bg-gold/90 hover:scale-105 transition-all"
             >
-              Xem tất cả <ArrowRight className="size-4" />
+              <Sparkles className="size-5" />
+              Xem Demo Ngay (Yuki Spa)
+              <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-          </div>
-
-          {categories.length > 0 ? (
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {categories.map((c: any) => {
-                const categoryIcons: Record<string, string> = {
-                  'spa-thu-gian': 'Droplets',
-                  'clinic-tham-my': 'Gem',
-                  'salon-toc': 'Scissors',
-                  'nails-mi': 'Brush',
-                  'nha-khoa': 'Smile',
-                  'yoga-fitness': 'Activity'
-                };
-                const iconName = c.icon || categoryIcons[c.slug] || "Sparkles";
-                const Icon = (LucideIcons as any)[iconName] || LucideIcons.Sparkles;
-                
-                return (
-                  <Link
-                    key={c.slug}
-                    href={`/tim-kiem?category=${c.slug}`}
-                    className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-5 transition-all hover:border-gold hover:shadow-md"
-                  >
-                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-champagne text-gold transition-colors group-hover:bg-gold group-hover:text-ink">
-                      <Icon className="size-5" strokeWidth={2} />
-                    </div>
-                    <div>
-                      <h3 className="font-display text-lg font-bold text-ink transition-colors group-hover:text-gold">{c.name}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                        {c.description || "Khám phá danh mục này"}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="mt-10 text-center text-muted-foreground">
-              Chưa có danh mục nào. Hãy thêm danh mục trong Admin.
-            </p>
-          )}
-        </section>
-
-        {/* --- SECTION B2B: Giải Pháp 3-Trong-1 Cho Chủ Tiệm --- */}
-        <section className="mx-auto max-w-6xl px-6 py-20 border-t border-border">
-          <div className="rounded-3xl bg-gold/10 p-8 md:p-12 border border-gold/30 flex flex-col md:flex-row gap-12 items-center">
-            <div className="flex-1">
-              <p className="text-xs tracking-[0.3em] text-gold uppercase font-bold">Dành cho Chủ Tiệm</p>
-              <h2 className="mt-4 text-3xl md:text-4xl font-display font-bold text-ink">Giải Pháp 3-Trong-1 Cho Chủ Tiệm</h2>
-              <p className="mt-4 text-muted-foreground text-lg">Trọn gói mùa lễ chỉ với <span className="font-bold text-gold text-2xl">500.000đ/năm</span></p>
-              
-              <div className="mt-8 space-y-6">
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 size-12 rounded-full bg-gold/20 flex items-center justify-center text-gold"><LucideIcons.Smartphone className="size-6" /></div>
-                  <div>
-                    <h4 className="font-bold text-lg text-ink">Trang Đặt Lịch Riêng Biệt (/uu-dai/[ten-tiem])</h4>
-                    <p className="text-muted-foreground mt-1">Giao diện mobile sang trọng, khách bấm chọn gói và để lại số điện thoại trong 3 giây.</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 size-12 rounded-full bg-gold/20 flex items-center justify-center text-gold"><LucideIcons.BellRing className="size-6" /></div>
-                  <div>
-                    <h4 className="font-bold text-lg text-ink">Chuông Báo Telegram Tức Thì</h4>
-                    <p className="text-muted-foreground mt-1">Khách vừa bấm đặt, điện thoại nổ chuông ngay lập tức, không lo trôi tin nhắn hay mất khách mùa cao điểm.</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 size-12 rounded-full bg-gold/20 flex items-center justify-center text-gold"><LucideIcons.FileSpreadsheet className="size-6" /></div>
-                  <div>
-                    <h4 className="font-bold text-lg text-ink">Sổ Quản Lý Đơn & Xuất File Excel</h4>
-                    <p className="text-muted-foreground mt-1">Theo dõi khách hàng mỗi ngày, xuất file đối soát chỉ với 1 chạm.</p>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-10">
-                <Link href="https://zalo.me/0909090909" target="_blank" className="inline-flex rounded-sm bg-gold px-8 py-4 font-bold text-ink hover:bg-gold/90 transition-colors uppercase tracking-wider text-sm shadow-lg">
-                  Kích Hoạt Cổng Booking Ngay
-                </Link>
-              </div>
-            </div>
-            <div className="flex-1 w-full relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
-               <div className="absolute inset-0 bg-gradient-to-br from-ink to-ink/90 flex flex-col items-center justify-center p-8 text-center">
-                  <LucideIcons.Zap className="size-20 text-gold mb-6" />
-                  <h3 className="text-3xl font-bold font-display text-champagne mb-4">Cổng Booking Tự Động</h3>
-                  <p className="text-champagne/80 text-lg">Chống Sót Đơn - Tăng Doanh Thu Mùa Lễ</p>
-                  <div className="mt-8 px-6 py-3 bg-white/10 rounded-full border border-white/20 text-champagne backdrop-blur-sm">
-                    1Beauty.Asia Business
-                  </div>
-               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* --- SECTION 2: DOANH NGHIỆP NỔI BẬT (DB thật, xoay vòng 24h) --- */}
-        <section className="border-t border-border bg-champagne/40">
-          <div className="mx-auto max-w-6xl px-6 py-20">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-xs tracking-[0.3em] text-gold uppercase">Tuyển chọn</p>
-                <div className="rule-gold mt-3" />
-                <h2 className="mt-5 text-3xl md:text-4xl">Doanh nghiệp nổi bật</h2>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Cập nhật mỗi ngày — ưu tiên doanh nghiệp mới nhất
-                </p>
-              </div>
-              <Link
-                href="/tim-kiem"
-                className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-gold"
-              >
-                Xem tất cả <ArrowRight className="size-4" />
-              </Link>
-            </div>
-
-            {rotatedFeatured.length > 0 ? (
-              <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {rotatedFeatured.map((b: any) => (
-                  <BusinessCard key={b.slug} business={b} />
-                ))}
-              </div>
-            ) : (
-              <div className="mt-10 rounded-2xl border border-dashed border-border p-12 text-center">
-                <Sparkles className="mx-auto size-10 text-gold/40" />
-                <p className="mt-4 text-muted-foreground">
-                  Chưa có doanh nghiệp nào. Hãy thêm trong{" "}
-                  <Link href="/admin/businesses" className="text-gold underline">
-                    Admin
-                  </Link>
-                  .
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* --- SECTION 3: ƯU ĐÃI (Lấy từ page_content.offers của DN thật, xoay vòng 24h) --- */}
-        <section id="deals" className="mx-auto max-w-6xl px-6 py-20">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-xs tracking-[0.3em] text-gold uppercase">Ưu đãi</p>
-              <div className="rule-gold mt-3" />
-              <h2 className="mt-5 text-3xl md:text-4xl">Đặc quyền dành cho bạn</h2>
-            </div>
-            <Link
-              href="/uu-dai"
-              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-gold"
-            >
-              Tất cả ưu đãi <ArrowRight className="size-4" />
-            </Link>
-          </div>
-
-          {rotatedOffers.length > 0 ? (
-            <div className="mt-10 grid gap-6 md:grid-cols-2">
-              {rotatedOffers.map((o: any, idx: number) => (
-                <Link
-                  key={idx}
-                  href={`/uu-dai/${o.business.slug}`}
-                  className="group relative overflow-hidden rounded-2xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8"
-                >
-                  <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
-                    <Ticket className="size-32 text-gold" />
-                  </div>
-                  <div className="relative">
-                    <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase">
-                      {o.badge || o.discount || "Ưu đãi"}
-                    </span>
-                    <h3 className="mt-5 max-w-[280px] font-display text-2xl md:text-3xl">
-                      {o.title}
-                    </h3>
-                    <p className="mt-3 text-sm text-muted-foreground line-clamp-2">
-                      {o.note || o.description}
-                    </p>
-                    <div className="mt-6 flex flex-wrap items-center gap-4 text-xs font-medium uppercase tracking-wider text-ink">
-                      <span className="flex items-center gap-1.5">
-                        <Sparkles className="size-3.5 text-gold" />
-                        {o.business.name}
-                      </span>
-                      {(o.promo_price || o.validUntil) && (
-                        <span className="text-muted-foreground font-bold">
-                          {o.promo_price || (o.validUntil.includes('-') ? new Date(o.validUntil).toLocaleDateString('vi-VN') : o.validUntil)}
-                        </span>
-                      )}
-                      {o.code && (
-                        <span className="rounded bg-gold/10 px-2 py-0.5 font-mono text-gold border border-gold/30">
-                          {o.code}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="mt-10 rounded-2xl border border-dashed border-border p-12 text-center">
-              <Ticket className="mx-auto size-10 text-gold/40" />
-              <p className="mt-4 text-muted-foreground">
-                Chưa có ưu đãi nào. Hãy thêm ưu đãi khi chỉnh sửa doanh nghiệp trong Admin.
-              </p>
-            </div>
-          )}
-        </section>
-
-        {/* --- SECTION 4: ĐỊA ĐIỂM (DB thật) --- */}
-        <section className="border-t border-border bg-ink text-background">
-          <div className="mx-auto max-w-6xl px-6 py-20 text-center">
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Địa điểm</p>
-            <div className="rule-gold mx-auto mt-3" />
-            <h2 className="mt-5 font-display text-3xl md:text-4xl">Có mặt khắp Việt Nam</h2>
-            {locations.length > 0 ? (
-              <div className="mt-12 flex flex-wrap justify-center gap-3">
-                {locations.map((l: any) => (
-                  <Link
-                    key={l.slug}
-                    href={`/tim-kiem?location=${l.slug}`}
-                    className="rounded-full border border-background/20 bg-background/5 px-6 py-2.5 text-sm transition-colors hover:bg-gold hover:text-ink hover:border-gold"
-                  >
-                    {l.name}
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-10 text-background/50">Chưa có địa điểm nào.</p>
-            )}
-          </div>
-        </section>
-
-        {/* --- SECTION 5: CTA --- */}
-        <section className="border-t border-border bg-champagne">
-          <div className="mx-auto max-w-4xl px-6 py-24 text-center">
-            <BadgeCheck className="mx-auto size-12 text-gold" />
-            <h2 className="mt-6 font-display text-3xl md:text-5xl">
-              Bạn sở hữu một thương hiệu làm đẹp?
-            </h2>
-            <p className="mt-6 text-muted-foreground md:text-lg">
-              Tham gia 1Beauty.Asia ngay hôm nay để tiếp cận hàng ngàn khách hàng tiềm năng.
-              Khởi tạo hồ sơ doanh nghiệp miễn phí chỉ trong 5 phút.
-            </p>
             <Link
               href="/lien-he"
-              className="bg-gradient-gold mx-auto mt-10 flex w-fit items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold tracking-[0.2em] text-ink uppercase transition-opacity hover:opacity-90"
+              className="inline-flex items-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
             >
-              Đăng ký doanh nghiệp <ArrowRight className="size-4" />
+              📞 Liên hệ kích hoạt
             </Link>
           </div>
-        </section>
-      </main>
+
+          {/* Social proof numbers */}
+          {(activeShops || totalLeads) ? (
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-white/60 text-sm">
+              {activeShops ? (
+                <div className="flex items-center gap-2">
+                  <Users className="size-4 text-gold" />
+                  <span><strong className="text-white">{activeShops}</strong> tiệm đang dùng</span>
+                </div>
+              ) : null}
+              {totalLeads ? (
+                <div className="flex items-center gap-2">
+                  <Bell className="size-4 text-gold" />
+                  <span><strong className="text-white">{totalLeads.toLocaleString()}</strong> khách hàng đã đăng ký</span>
+                </div>
+              ) : null}
+              <div className="flex items-center gap-2">
+                <Star className="size-4 text-gold" />
+                <span><strong className="text-white">500.000đ</strong>/năm trọn gói</span>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* 3 TÍNH NĂNG CỐT LÕI                               */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 bg-background">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="text-center mb-14">
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Hệ thống 3-trong-1</p>
+            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">
+              Tất cả những gì tiệm bạn cần
+            </h2>
+            <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
+              Một hệ thống duy nhất thay thế toàn bộ: trang web giới thiệu, form đặt lịch, và phần mềm quản lý khách hàng.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: <QrCode className="size-8 text-gold" />,
+                title: "Landing Page Riêng",
+                badge: "Mặt tiền số",
+                desc: "Tiệm bạn có ngay 1 trang web chuyên nghiệp tại địa chỉ 1beauty.asia/uu-dai/[ten-tiem]. Đăng link lên bio TikTok, Facebook, Google Maps — khách bấm vào là thấy deal ngay.",
+                highlight: "Không chia traffic với đối thủ"
+              },
+              {
+                icon: <Bell className="size-8 text-gold" />,
+                title: "Chuông Telegram < 1 giây",
+                badge: "Không sót đơn",
+                desc: "Mỗi khi có khách để lại số điện thoại, điện thoại của bạn/quản lý nổ chuông Telegram ngay lập tức. Tin nhắn ghi rõ: Tên, SĐT, Gói chọn và Khách mới/VIP.",
+                highlight: "Gọi ngay khi khách đang nóng"
+              },
+              {
+                icon: <Smartphone className="size-8 text-gold" />,
+                title: "Sổ Khách Mini-CRM",
+                badge: "Giữ chân khách VIP",
+                desc: "Mọi khách hàng đều được lưu lại với tag tự động: Khách mới, Quay lại, VIP. Xuất Excel cuối tháng để chăm sóc qua Zalo, SMS vào dịp lễ Tết.",
+                highlight: "Biết khách cũ để phục vụ tốt hơn"
+              }
+            ].map((f, i) => (
+              <div key={i} className="group rounded-3xl border border-gold-soft bg-champagne p-8 transition-all hover:-translate-y-1 hover:shadow-card hover:border-gold">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-gold">
+                  {f.badge}
+                </div>
+                <div className="mb-4">{f.icon}</div>
+                <h3 className="font-display text-xl text-ink mb-3">{f.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{f.desc}</p>
+                <p className="text-xs font-bold text-gold">✓ {f.highlight}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* LUỒNG 5 BƯỚC                                       */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-20 bg-muted/40 border-y border-border">
+        <div className="mx-auto max-w-4xl px-6">
+          <div className="text-center mb-12">
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Cực kỳ đơn giản</p>
+            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">Khách hàng chỉ cần 3 bước</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { step: "01", title: "Quét QR hoặc bấm link", desc: "Khách thấy deal rõ ràng với giá khuyến mãi ngay lập tức." },
+              { step: "02", title: "Để lại số điện thoại", desc: "Popup đơn giản, chỉ cần nhập SĐT. Không cần đăng ký tài khoản." },
+              { step: "03", title: "Đến tiệm nhận ưu đãi", desc: "Khách đọc SĐT tại quầy — đó chính là mã giảm giá của họ." },
+            ].map((s) => (
+              <div key={s.step} className="flex flex-col items-start p-6 bg-background rounded-2xl border border-border">
+                <span className="text-5xl font-black text-gold/20 leading-none">{s.step}</span>
+                <h3 className="mt-3 font-bold text-ink text-lg">{s.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* BẢNG GIÁ                                           */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 bg-background">
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <p className="text-xs tracking-[0.3em] text-gold uppercase">Minh bạch, không ẩn phí</p>
+          <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">Một mức giá. Đầy đủ tính năng.</h2>
+          <p className="mt-4 text-muted-foreground">Không cần ký hợp đồng dài hạn. Không bị ép mua thêm gói.</p>
+
+          <div className="mt-10 relative rounded-3xl border-2 border-gold bg-champagne p-10 shadow-card">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold text-ink text-xs font-black px-5 py-1.5 rounded-full uppercase tracking-widest">
+              Trọn gói
+            </div>
+            <div className="flex items-end justify-center gap-2 mt-2">
+              <span className="text-6xl font-black text-ink">500K</span>
+              <span className="text-xl text-muted-foreground mb-2">/năm</span>
+            </div>
+            <p className="text-muted-foreground mt-2">Năm 2 trở đi chỉ 200.000đ - 300.000đ/năm duy trì hạ tầng</p>
+
+            <ul className="mt-8 space-y-3 text-left max-w-xs mx-auto">
+              {[
+                "Landing Page ưu đãi riêng của tiệm",
+                "Chuông Telegram bắn tức thì < 1 giây",
+                "Sổ quản lý khách Mini-CRM",
+                "Bảng QR Standee A5 (in ngay trên web)",
+                "Xuất danh sách khách ra Excel",
+                "Hỗ trợ cài đặt & bàn giao tận tay",
+                "Dùng thử miễn phí 7 ngày",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-3 text-sm text-ink">
+                  <CheckCircle className="size-4 text-gold mt-0.5 shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/lien-he"
+                className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-lg hover:bg-gold/90 hover:scale-105 transition-all"
+              >
+                ⚡ Kích Hoạt Cổng Ngay
+              </Link>
+              <Link
+                href="/uu-dai/yuki-spa"
+                className="inline-flex items-center justify-center gap-2 border border-gold/40 text-gold px-8 py-4 rounded-2xl text-lg hover:bg-gold/10 transition-colors"
+              >
+                Xem trang Demo trước
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* CTA CUỐI TRANG                                     */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-20 bg-ink text-center">
+        <div className="mx-auto max-w-2xl px-6">
+          <h2 className="font-display text-3xl md:text-4xl text-white">
+            Mỗi ngày không có hệ thống là{" "}
+            <span className="text-gold">một ngày mất khách</span>
+          </h2>
+          <p className="mt-4 text-white/70">
+            Liên hệ Anh Lợi ngay hôm nay. Tiệm bạn sẽ có hệ thống hoàn chỉnh trong vòng 15 phút.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/lien-he"
+              className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg hover:bg-gold/90 transition-all hover:scale-105"
+            >
+              📞 Nhắn Zalo Ngay
+            </Link>
+            <Link
+              href="/uu-dai"
+              className="inline-flex items-center justify-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
+            >
+              Khám phá Ưu đãi
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <SiteFooter />
     </div>
   );
 }
-

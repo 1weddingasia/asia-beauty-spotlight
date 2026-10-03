@@ -6,9 +6,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Tag, MessageCircle } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import { useEffect } from "react";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -24,7 +26,7 @@ type Deal = {
   status?: string;
 };
 
-export default function PromoClient({ business, bannerImg, avatar }: { business: { id: string, name: string, slug: string, address: string, page_content: any }, bannerImg: string, avatar: string }) {
+export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string, avatar: string }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,6 +35,29 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   // Modal state
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [savedDeals, setSavedDeals] = useState<string[]>([]);
+  
+  // Carousel state
+  const [api, setApi] = useState<CarouselApi>();
+
+  // Tự động chuyển slide
+  useEffect(() => {
+    if (!api) return;
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [api]);
+
+  // Tải danh sách deal đã lưu từ localStorage
+  if (typeof window !== 'undefined' && savedDeals.length === 0) {
+    const local = localStorage.getItem('saved_deals_1beauty');
+    if (local) {
+      try {
+        setSavedDeals(JSON.parse(local));
+      } catch (e) {}
+    }
+  }
 
   // Lấy danh sách deals từ JSON
   let rawDeals: Deal[] = Array.isArray(business.page_content?.deals) ? business.page_content.deals : [];
@@ -66,6 +91,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       toast.error("Vui lòng nhập số điện thoại hợp lệ");
       return;
     }
+
+    // Kiểm tra xem đã lưu ưu đãi này chưa
+    const dealKey = `${business.id}_${selectedDeal.id}_${cleanPhone}`;
+    if (savedDeals.includes(dealKey)) {
+      toast.error("Bạn đã nhận ưu đãi này rồi. Vui lòng chọn ưu đãi khác.");
+      return;
+    }
     
     setLoading(true);
     try {
@@ -76,7 +108,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           business_id: business.id,
           customer_name: name,
           customer_phone: phone,
-          deal_name: selectedDeal.title // Gửi chính xác tên Deal khách chọn
+          deal_name: selectedDeal.title
         })
       });
       
@@ -88,7 +120,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         toast.error("Không nhận được mã ưu đãi. Vui lòng thử lại.");
       } else {
         setVoucher(data.voucher_code);
-        toast.success("Giữ chỗ ưu đãi thành công!");
+        toast.success("Lưu ưu đãi thành công!");
+        
+        // Lưu vào localStorage
+        const updatedSavedDeals = [...savedDeals, dealKey];
+        setSavedDeals(updatedSavedDeals);
+        localStorage.setItem('saved_deals_1beauty', JSON.stringify(updatedSavedDeals));
       }
     } catch (err) {
       toast.error("Lỗi kết nối mạng");
@@ -96,6 +133,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       setLoading(false);
     }
   };
+
+  const services = Array.isArray(business.page_content?.services) ? business.page_content.services : [];
 
   const hotline = business.page_content?.phone || "1900 xxxx";
 
@@ -118,85 +157,212 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     return price;
   };
 
+  const b = business;
+  const zaloNumber = b.zalo || (hotline ? hotline.replace(/[^0-9]/g, '') : '');
+  const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
+
+  const banners = Array.isArray(b.page_content?.banners) && b.page_content.banners.length > 0
+    ? b.page_content.banners 
+    : [bannerImg];
+
   return (
-    <div className="min-h-screen bg-muted/30 pb-20 md:pb-0">
-      {/* Cover Image */}
-      <div className="relative h-80 md:h-[450px] w-full overflow-hidden">
-        <Image src={bannerImg} alt={business.name} fill sizes="100vw" quality={85} className="object-cover" priority />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-        <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
-          <div className="size-16 md:size-24 rounded-full border-4 border-gold overflow-hidden bg-white shrink-0 shadow-lg relative">
-            <Image src={avatar} alt="Logo" fill sizes="(max-width: 768px) 64px, 96px" className="object-cover" />
+    <div className="min-h-screen bg-slate-50 pb-20 md:pb-0">
+      {/* Premium Hero Section */}
+      <div className="relative h-[65vh] md:h-[70vh] w-full overflow-hidden group">
+        <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
+          <CarouselContent className="h-full">
+            {banners.map((img: string, idx: number) => (
+              <CarouselItem key={idx} className="relative h-[65vh] md:h-[70vh] w-full">
+                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={100} className="object-cover scale-105 animate-ken-burns" priority={idx === 0} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {banners.length > 1 && (
+            <div className="absolute inset-y-0 w-full flex items-center justify-between px-4 pointer-events-none z-20">
+              <CarouselPrevious className="relative left-0 pointer-events-auto bg-black/20 hover:bg-black/40 text-white border-0 opacity-0 group-hover:opacity-100 transition-opacity h-12 w-12" />
+              <CarouselNext className="relative right-0 pointer-events-auto bg-black/20 hover:bg-black/40 text-white border-0 opacity-0 group-hover:opacity-100 transition-opacity h-12 w-12" />
+            </div>
+          )}
+        </Carousel>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90 pointer-events-none z-10" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-20">
+          <div className="size-24 md:size-32 rounded-full border-4 border-gold overflow-hidden bg-white shadow-2xl mb-6 relative">
+            <Image src={avatar} alt="Logo" fill sizes="(max-width: 768px) 96px, 128px" className="object-cover" />
           </div>
-          <div className="pb-1">
-            <h1 className="text-2xl md:text-3xl font-bold text-white shadow-sm">{business.name}</h1>
-            <p className="text-champagne text-sm md:text-base flex items-center gap-1 mt-1 opacity-90">
-              <MapPin className="size-4" /> {business.address || "Đang cập nhật địa chỉ"}
-            </p>
+          <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-3">
+            {business.name}
+          </h1>
+          <p className="text-champagne/90 text-sm md:text-lg flex items-center gap-2 mb-2 max-w-2xl text-center">
+            <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}
+          </p>
+          <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 text-white font-medium shadow-xl mt-4">
+            <Phone className="size-4 text-gold" /> {hotline}
           </div>
         </div>
       </div>
 
-      <div className="max-w-xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-ink flex items-center gap-2">
-            <Tag className="size-5 text-gold" />
-            Ưu đãi đặc quyền
+      <div className="max-w-3xl mx-auto px-4 py-12 -mt-10 relative z-10">
+        <div className="text-center mb-8 bg-white p-6 rounded-3xl shadow-xl border border-border/50">
+          <h2 className="text-2xl md:text-3xl font-black text-ink flex items-center justify-center gap-3">
+            <Tag className="size-8 text-gold" />
+            ƯU ĐÃI ĐỘC QUYỀN
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Đăng ký giữ chỗ ngay hôm nay để nhận mức giá tốt nhất. Số lượng có hạn!
+          <p className="text-muted-foreground mt-2">
+            Chọn một ưu đãi bên dưới và lưu lại để sử dụng khi đến tiệm.
           </p>
         </div>
 
         {/* Danh sách Deals */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {deals.length === 0 ? (
-            <div className="text-center p-8 bg-white rounded-2xl border">
+            <div className="text-center p-12 bg-white rounded-3xl border border-dashed">
               <p className="text-muted-foreground">Hiện tại chưa có chương trình ưu đãi nào đang mở.</p>
             </div>
           ) : (
             deals.map(deal => (
-              <div key={deal.id} className="rounded-2xl border border-border/50 bg-white p-5 shadow-card relative overflow-hidden transition-all hover:border-gold/50">
-              {deal.badge && (
-                  <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-bl-lg shadow-sm">
-                    {deal.badge}
-                  </div>
-                )}
-                
-                <h3 className="text-lg font-bold text-ink pr-16 leading-tight mb-2">
-                  {deal.title}
-                </h3>
-                
-                {deal.note && (
-                  <p className="text-xs text-muted-foreground mb-3 italic">
-                    * {deal.note}
-                  </p>
-                )}
-                
-                <div className="flex justify-between items-end mt-4 pt-4 border-t border-dashed">
-                  <div>
-                    <div className="text-sm text-muted-foreground line-through mb-1">
-                      {formatPrice(deal.original_price)}
+              <div key={deal.id} className="group rounded-3xl bg-white p-1 shadow-xl shadow-slate-200/50 relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.01]">
+                <div className="rounded-[1.3rem] border border-gold/20 bg-gradient-to-br from-white to-amber-50/30 p-6 md:p-8 h-full">
+                  {deal.badge && (
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-rose-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
+                      {deal.badge}
                     </div>
-                    <div className="text-2xl font-black text-red-600 leading-none">
-                      {formatPrice(deal.promo_price)}
-                    </div>
-                  </div>
+                  )}
                   
-                  <Button 
-                    onClick={() => {
-                      setSelectedDeal(deal);
-                      setVoucher("");
-                      setIsDialogOpen(true);
-                    }}
-                    className="bg-gold text-ink font-bold hover:bg-gold/90 shadow-md shadow-gold/20 h-10 px-6 rounded-xl"
-                  >
-                    Giữ Chỗ Ngay
-                  </Button>
+                  <h3 className="text-xl md:text-2xl font-bold text-ink pr-20 leading-tight mb-3">
+                    {deal.title}
+                  </h3>
+                  
+                  {deal.note && (
+                    <p className="text-sm text-muted-foreground mb-6 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      <span className="font-semibold text-slate-700">Lưu ý:</span> {deal.note}
+                    </p>
+                  )}
+                  
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-6 pt-6 border-t border-slate-200/60">
+                    <div>
+                      <div className="text-sm font-medium text-slate-400 line-through mb-1">
+                        {formatPrice(deal.original_price)}
+                      </div>
+                      <div className="text-3xl font-black text-red-600 leading-none">
+                        {formatPrice(deal.promo_price)}
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={() => {
+                        setSelectedDeal(deal);
+                        setVoucher("");
+                        setIsDialogOpen(true);
+                      }}
+                      className="w-full md:w-auto bg-gradient-to-r from-gold to-amber-500 text-ink font-bold hover:from-amber-400 hover:to-gold shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-transform active:scale-95"
+                    >
+                      Nhận và Lưu Ưu Đãi
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))
           )}
+        </div>
+
+        {/* Danh sách Dịch vụ / Sản phẩm */}
+        {services.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-2xl md:text-3xl font-black text-ink text-center mb-8">
+              DANH MỤC DỊCH VỤ
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {services.map((service: any, index: number) => (
+                <div key={index} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex gap-4 items-center">
+                  {service.image_url && (
+                    <div className="size-20 rounded-xl overflow-hidden relative shrink-0 bg-slate-100">
+                      <Image src={service.image_url} alt={service.name} fill className="object-cover" />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <h4 className="font-bold text-ink line-clamp-2">{service.name}</h4>
+                    {service.description && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
+                    )}
+                    <div className="mt-2 font-bold text-gold">
+                      {formatPrice(service.price)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Thông tin doanh nghiệp (About & Contact) */}
+        <div className="mt-20 pt-16 border-t border-slate-200">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-black text-ink">VỀ CHÚNG TÔI</h2>
+            <p className="text-muted-foreground mt-2">Thông tin liên hệ và không gian của {b.name}</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="md:col-span-2 space-y-6">
+              {b.short_description && (
+                <p className="text-lg font-medium text-ink leading-relaxed">
+                  {b.short_description}
+                </p>
+              )}
+              <div 
+                className="text-sm md:text-base text-muted-foreground leading-relaxed prose prose-slate"
+                dangerouslySetInnerHTML={{ __html: b.about || b.description || "Đang cập nhật giới thiệu chi tiết về doanh nghiệp." }}
+              />
+            </div>
+            
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm h-fit space-y-5">
+              <h3 className="font-bold text-xl border-b pb-3">Liên Hệ & Đặt Lịch</h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <MapPin className="size-5 text-gold shrink-0 mt-0.5" />
+                  <span className="text-sm text-muted-foreground">{b.address || "Đang cập nhật"}</span>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <Phone className="size-5 text-gold shrink-0" />
+                  <span className="text-sm font-medium">{hotline}</span>
+                </div>
+                
+                {(b.socials?.facebook) && (
+                  <div className="flex items-center gap-3">
+                    <Globe className="size-5 text-gold shrink-0" />
+                    <a href={b.socials.facebook} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-gold hover:underline line-clamp-1">Facebook Fanpage</a>
+                  </div>
+                )}
+                
+                <div className="flex items-start gap-3">
+                  <Clock className="size-5 text-gold shrink-0 mt-0.5" />
+                  <div className="flex-1 space-y-1">
+                    {Array.isArray(b.hours) ? (
+                      b.hours.map((wh: any, idx: number) => (
+                        <div key={idx} className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">{wh.day}</span>
+                          <span className="font-medium">{wh.hours}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-sm text-muted-foreground">{b.hours || "Đang cập nhật"}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {b.address && (
+                <div className="mt-4 rounded-xl overflow-hidden border h-[150px] bg-slate-100">
+                  <iframe
+                    width="100%" height="100%" style={{ border: 0 }} loading="lazy" allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent((b.address || '') + ' ' + (b.name || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  ></iframe>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -247,7 +413,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           ) : (
             <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
               <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-ink mb-1">Giữ chỗ thành công! ༿</h3>
+              <h3 className="text-lg font-bold text-ink mb-1">Lưu ưu đãi thành công! 🎉</h3>
               <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
 
               {/* Mã ưu đãi = Số điện thoại */}

@@ -56,7 +56,7 @@ export default function BusinessProfilePage() {
     banners: ["", "", ""],
     gallery: [],
     services: [],
-    offers: [],
+    deals: [],
     amenities: [],
     map_embed: "",
     booking_url: "",
@@ -187,16 +187,16 @@ export default function BusinessProfilePage() {
     handlePageContentChange("services", [...pageContent.services, { ...svc }]);
   };
 
-  const addOffer = () => {
-    handlePageContentChange("offers", [...(pageContent.offers || []), { title: "", code: "", discount: "", description: "", validFrom: "", validUntil: "" }]);
+  const addDeal = () => {
+    handlePageContentChange("deals", [...(pageContent.deals || []), { title: "", original_price: "", promo_price: "", badge: "", note: "" }]);
   };
-  const removeOffer = (index: number) => {
-    handlePageContentChange("offers", pageContent.offers.filter((_: any, i: number) => i !== index));
+  const removeDeal = (index: number) => {
+    handlePageContentChange("deals", pageContent.deals.filter((_: any, i: number) => i !== index));
   };
-  const updateOffer = (index: number, field: string, value: any) => {
-    const newOffers = [...pageContent.offers];
-    newOffers[index][field] = value;
-    handlePageContentChange("offers", newOffers);
+  const updateDeal = (index: number, field: string, value: any) => {
+    const newDeals = [...(pageContent.deals || [])];
+    newDeals[index][field] = value;
+    handlePageContentChange("deals", newDeals);
   };
 
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải thông tin...</div>;
@@ -226,7 +226,7 @@ export default function BusinessProfilePage() {
           <TabsTrigger value="contact">Liên hệ & Bản đồ</TabsTrigger>
           <TabsTrigger value="media">Hình ảnh</TabsTrigger>
           <TabsTrigger value="services">Bảng giá Dịch vụ</TabsTrigger>
-          <TabsTrigger value="offers" className="flex items-center gap-1">Khuyến mãi {!isPremium && <Lock className="size-3" />}</TabsTrigger>
+          <TabsTrigger value="deals" className="flex items-center gap-1">Khuyến mãi {!isPremium && <Lock className="size-3" />}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -514,7 +514,7 @@ export default function BusinessProfilePage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="offers" className="space-y-6">
+        <TabsContent value="deals" className="space-y-6">
           <div className="space-y-6 rounded-2xl border bg-card p-6 md:p-8 shadow-sm relative">
             {!isPremium && (
               <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center p-6 text-center border border-gold/50 rounded-xl">
@@ -529,51 +529,47 @@ export default function BusinessProfilePage() {
 
             <div className="flex items-center justify-between border-b pb-4">
               <h3 className="font-semibold text-xl flex items-center gap-2">
-                Chương trình Khuyến mãi / Ưu đãi {!isPremium && <Lock className="size-4 text-muted-foreground" />}
+                Các Gói Khuyến Mãi / Ưu Đãi {!isPremium && <Lock className="size-4 text-muted-foreground" />}
               </h3>
-              <Button onClick={addOffer} disabled={!isPremium} size="sm" variant="outline" className="text-gold border-gold hover:bg-gold/10">
+              <Button onClick={addDeal} disabled={!isPremium} size="sm" variant="outline" className="text-gold border-gold hover:bg-gold/10">
                 <Plus className="size-4 mr-2" /> Thêm Ưu đãi
               </Button>
             </div>
             
             <div className="space-y-4">
-              {(!pageContent.offers || pageContent.offers.length === 0) && (
+              {(!pageContent.deals || pageContent.deals.length === 0) && (
                 <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed">
-                  Chưa có khuyến mãi nào.
+                  Chưa có ưu đãi nào.
                 </div>
               )}
-              {(pageContent.offers || []).map((offer: any, i: number) => (
+              {(pageContent.deals || []).map((deal: any, i: number) => (
                 <div key={i} className="p-4 border rounded-xl bg-champagne/20 relative group">
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-1">
-                      <Label className="text-xs">Tiêu đề Ưu đãi</Label>
-                      <Input value={offer.title || ""} onChange={e => updateOffer(i, "title", e.target.value)} placeholder="Giảm 20% Lần Đầu" />
+                      <Label className="text-xs">Tên Ưu Đãi</Label>
+                      <Input value={deal.title || ""} onChange={e => updateDeal(i, "title", e.target.value)} placeholder="Trị mụn chuyên sâu" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">MÃ CODE (Tùy chọn)</Label>
-                      <Input value={offer.code || ""} onChange={e => updateOffer(i, "code", e.target.value)} placeholder="NEW20" />
+                      <Label className="text-xs">Nhãn nổi bật (Badge)</Label>
+                      <Input value={deal.badge || ""} onChange={e => updateDeal(i, "badge", e.target.value)} placeholder="HOT" />
                     </div>
                   </div>
-                  <div className="grid md:grid-cols-3 gap-4 mb-4">
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-1">
-                      <Label className="text-xs">Nhãn Nổi Bật (VD: -20%)</Label>
-                      <Input value={offer.discount || ""} onChange={e => updateOffer(i, "discount", e.target.value)} placeholder="-20%" />
+                      <Label className="text-xs">Giá gốc</Label>
+                      <Input value={deal.original_price || ""} onChange={e => updateDeal(i, "original_price", e.target.value)} placeholder="500000" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Ngày Bắt đầu</Label>
-                      <Input type="date" value={offer.validFrom || ""} onChange={e => updateOffer(i, "validFrom", e.target.value)} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">Ngày Kết thúc</Label>
-                      <Input type="date" value={offer.validUntil || ""} onChange={e => updateOffer(i, "validUntil", e.target.value)} />
+                      <Label className="text-xs">Giá Khuyến Mãi</Label>
+                      <Input value={deal.promo_price || ""} onChange={e => updateDeal(i, "promo_price", e.target.value)} placeholder="199000" />
                     </div>
                   </div>
                   <div className="space-y-1 mb-2">
-                    <Label className="text-xs">Mô tả Ưu đãi</Label>
-                    <Textarea value={offer.description || ""} onChange={e => updateOffer(i, "description", e.target.value)} placeholder="Áp dụng cho khách hàng mới..." rows={2} />
+                    <Label className="text-xs">Ghi chú (Lưu ý)</Label>
+                    <Textarea value={deal.note || ""} onChange={e => updateDeal(i, "note", e.target.value)} placeholder="Dành cho khách hàng mới..." rows={2} />
                   </div>
                   
-                  <Button variant="destructive" size="sm" onClick={() => removeOffer(i)} className="absolute top-4 right-4 h-8 px-2">
+                  <Button variant="destructive" size="sm" onClick={() => removeDeal(i)} className="absolute top-4 right-4 h-8 px-2">
                     <Trash2 className="size-4 mr-1" /> Xóa
                   </Button>
                 </div>

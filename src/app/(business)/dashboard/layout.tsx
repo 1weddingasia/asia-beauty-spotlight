@@ -15,7 +15,7 @@ export default async function BusinessDashboardLayout({ children }: { children: 
   // Lấy thông tin doanh nghiệp của user
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, plan_id, plan_tier, created_at")
+    .select("id, name, slug, plan_id, plan_tier, status, created_at")
     .eq("owner_id", user.id)
     .single();
 
@@ -27,8 +27,8 @@ export default async function BusinessDashboardLayout({ children }: { children: 
         </Link>
         <div className="ml-auto flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild>
-            <Link href={business ? `/doanh-nghiep/${business.slug}` : "/"}>
-              Xem trang hiển thị
+            <Link href={business ? `/uu-dai/${business.slug}` : "/"}>
+              Xem Trang Ưu Đãi
             </Link>
           </Button>
           <form action="/auth/signout" method="post">
@@ -67,48 +67,50 @@ export default async function BusinessDashboardLayout({ children }: { children: 
           </nav>
           <div className="p-4 mt-auto">
             {(() => {
-              if (business?.plan_tier === 'premium') {
+              const bizStatus = business?.status || 'trial';
+              
+              if (bizStatus === 'published' || bizStatus === 'active' || business?.plan_tier === 'premium') {
                 return (
                   <div className="rounded-xl bg-gradient-to-br from-green-500/20 to-green-500/5 p-4 border border-green-500/30">
                     <h4 className="font-bold text-sm mb-1 flex items-center gap-1 text-green-700">
-                      <Sparkles className="size-4" /> Đã kích hoạt Premium
+                      <Sparkles className="size-4" /> ✅ Đã kích hoạt
                     </h4>
-                    <p className="text-xs text-muted-foreground">Bạn đang sử dụng toàn bộ tính năng cao cấp của hệ thống.</p>
+                    <p className="text-xs text-muted-foreground">Trang ưu đãi của bạn đang hoạt động và hiển thị công khai.</p>
                   </div>
                 );
               }
               
-              const createdAt = business?.created_at ? new Date(business.created_at) : new Date();
-              const trialEndDate = new Date(createdAt);
-              trialEndDate.setDate(trialEndDate.getDate() + 30);
-              const now = new Date();
-              const isExpired = now > trialEndDate;
-              const daysLeft = Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-              
-              if (isExpired) {
+              if (bizStatus === 'suspended') {
                 return (
                   <div className="rounded-xl bg-gradient-to-br from-red-500/20 to-red-500/5 p-4 border border-red-500/30">
                     <h4 className="font-bold text-sm mb-1 flex items-center gap-1 text-red-700">
-                      Đã hết hạn dùng thử
+                      🚨 Trang đang bị tạm ngưng
                     </h4>
                     <p className="text-xs text-red-700/80 mb-3">
-                      Trang doanh nghiệp hiện đang bị khóa tạm thời. Vui lòng kích hoạt Premium.
+                      Vui lòng liên hệ 1Beauty.Asia để gia hạn và kích hoạt lại.
                     </p>
                     <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
-                      <Link href="/dashboard/upgrade">Kích hoạt Premium</Link>
+                      <Link href="/lien-he">Liên hệ gia hạn</Link>
                     </Button>
                   </div>
                 );
               }
+
+              // Trial: hiển thị số ngày còn lại
+              const createdAt = business?.created_at ? new Date(business.created_at) : new Date();
+              const trialEndDate = new Date(createdAt);
+              trialEndDate.setDate(trialEndDate.getDate() + 7); // 7 ngày dùng thử
+              const now = new Date();
+              const daysLeft = Math.max(0, Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
               
               return (
                 <div className="rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 p-4 border border-gold/30">
                   <h4 className="font-bold text-sm mb-1 flex items-center gap-1">
-                    <Sparkles className="size-4 text-gold" /> Dùng thử {daysLeft} ngày
+                    <Sparkles className="size-4 text-gold" /> Dùng thử — còn {daysLeft} ngày
                   </h4>
-                  <p className="text-xs text-muted-foreground mb-3">Nâng cấp Premium để duy trì hiển thị trang doanh nghiệp của bạn.</p>
+                  <p className="text-xs text-muted-foreground mb-3">Liên hệ 1Beauty để kích hoạt chính thức (500.000đ/năm).</p>
                   <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
-                    <Link href="/dashboard/upgrade">Nâng cấp ngay</Link>
+                    <Link href="/lien-he">Kích hoạt ngay</Link>
                   </Button>
                 </div>
               );

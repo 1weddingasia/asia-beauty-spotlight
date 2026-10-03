@@ -76,6 +76,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { GlobalPromoFAB } from '@/components/admin/GlobalPromoFAB';
+
 export default function RootLayout({
   children,
 }: {
@@ -96,6 +98,7 @@ export default function RootLayout({
         <Toaster />
         <Analytics />
         <BackToTop />
+        <GlobalPromoFAB />
       </body>
     </html>
   );

@@ -96,6 +96,12 @@ export async function POST(req: Request) {
       .order('created_at', { ascending: false });
 
     const prevCount = previousVisits?.length ?? 0;
+    
+    // Ngăn chặn lưu cùng 1 ưu đãi nhiều lần (Spam/Duplicate Backend Check)
+    if (previousVisits && previousVisits.some(v => v.deal_name === deal_name)) {
+      return NextResponse.json({ error: 'Bạn đã đăng ký nhận ưu đãi này rồi. Vui lòng chọn ưu đãi khác hoặc kiểm tra lại tin nhắn.' }, { status: 400 });
+    }
+
     const visitNumber = prevCount + 1; // This will be the Nth visit after insert
 
     const voucher_code = generateVoucherCode(business.name);
@@ -128,7 +134,7 @@ export async function POST(req: Request) {
       const safeDeal = escapeHtml(deal_name || 'Ưu đãi chung');
 
       // Build visit history summary (last 3 visits)
-      let historyNote = '';
+      let historyNote = ''
       if (previousVisits && previousVisits.length > 0) {
         const recent = previousVisits.slice(0, 3);
         const lines = recent.map(v => {
@@ -154,9 +160,18 @@ export async function POST(req: Request) {
         tip = '👉 Gọi ngay để chốt lịch!';
       }
 
-      const msg = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
+      // 🔔 KÊNH 1: Bắn về tiệm
+      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
+      sendTelegramAsync(telegramChatId, msgForShop);
 
-      sendTelegramAsync(telegramChatId, msg);
+      // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Beauty để giám sát toàn mạng
+      const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+      if (adminChatId && adminChatId !== telegramChatId) {
+        const safeBusinessName = escapeHtml(business.name || 'Không rõ tiệm');
+        const tagLabel = isVIP ? '🏆 VIP' : isReturning ? '⭐ Quay lại' : '🆕 Mới';
+        const msgForAdmin = `<b>📊 [TOÀN MẠNG] ${safeBusinessName}</b>\n\n${tagLabel} | 📞 ${cleanPhone} | 🎁 ${safeDeal}\nMã: ${voucher_code}`;
+        sendTelegramAsync(adminChatId, msgForAdmin);
+      }
     }
     return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
   } catch (error) {

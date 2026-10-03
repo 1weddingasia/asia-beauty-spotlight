@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, Pencil, Trash2, Eye, Upload, Link as LinkIcon } from "lucide-react";
+import { useState } from "react";
+import { Plus, Pencil, Trash2, Eye, Upload, Link as LinkIcon, Sparkles, ToggleLeft, Clock } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
@@ -11,6 +12,38 @@ import { useRouter } from "next/navigation";
 export default function BusinessesClient({ initialBusinesses }: { initialBusinesses: any[] }) {
   const supabase = createClient();
   const router = useRouter();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [loadingStatusId, setLoadingStatusId] = useState<string | null>(null);
+
+  const handleQuickPromo = async (id: string, name: string) => {
+    if (!confirm(`Tạo nhanh trang ưu đãi & tài khoản doanh nghiệp cho "${name}"?`)) return;
+
+    setLoadingId(id);
+    try {
+      const res = await fetch('/api/admin/quick-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId: id })
+      });
+      const data = await res.json();
+      
+      if (!res.ok) {
+        toast.error(data.error || "Có lỗi xảy ra");
+        return;
+      }
+
+      const { email, password } = data.account;
+      const accountInfo = `Email: ${email}\nPass: ${password}\n\nLink: ${window.location.origin}${data.promoLink}`;
+      
+      navigator.clipboard.writeText(accountInfo);
+      toast.success("Đã tạo thành công! Thông tin tài khoản đã được copy vào clipboard.", { duration: 8000 });
+      router.refresh();
+    } catch (err: any) {
+      toast.error("Lỗi kết nối");
+    } finally {
+      setLoadingId(null);
+    }
+  };
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Bạn có chắc chắn muốn xóa doanh nghiệp "${name}"? Hành động này không thể hoàn tác.`)) return;
@@ -23,6 +56,28 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
       router.refresh();
     }
   };
+
+  // Cycle: trial → published → suspended → trial
+  const cycleStatus = async (id: string, currentStatus: string) => {
+    const nextStatus = currentStatus === 'trial' ? 'published'
+      : currentStatus === 'published' ? 'suspended'
+      : currentStatus === 'active' ? 'suspended'
+      : 'published'; // suspended → published (gia hạn)
+
+    const label = nextStatus === 'published' ? 'Kích hoạt' : nextStatus === 'suspended' ? 'Tạm ngưng' : 'Dùng thử';
+    if (!confirm(`Đổi trạng thái sang "${label}"?`)) return;
+
+    setLoadingStatusId(id);
+    const { error } = await supabase.from('businesses').update({ status: nextStatus }).eq('id', id);
+    if (error) {
+      toast.error('Lỗi: ' + error.message);
+    } else {
+      toast.success(`Đã đổi trạng thái → ${label}`);
+      router.refresh();
+    }
+    setLoadingStatusId(null);
+  };
+
 
   return (
     <div className="space-y-6">
@@ -83,17 +138,24 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                      b.status === 'published' ? 'bg-green-100 text-green-800' : 
-                      b.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {b.status}
-                    </span>
-                    {b.is_featured && (
-                      <span className="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
-                        Featured
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                        (b.status === 'published' || b.status === 'active') ? 'bg-green-100 text-green-800' : 
+                        b.status === 'trial' ? 'bg-blue-100 text-blue-800' :
+                        b.status === 'suspended' ? 'bg-red-100 text-red-700' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {b.status === 'trial' ? '🕑 Thử nghiệm' 
+                          : b.status === 'suspended' ? '🚫 Tạm ngưng'
+                          : (b.status === 'published' || b.status === 'active') ? '✅ Hoạt động'
+                          : b.status}
                       </span>
-                    )}
+                      {b.is_featured && (
+                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
+                          Featured
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     {b.business_categories && b.business_categories.length > 0 
@@ -106,16 +168,28 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                       : (b.location || "---")}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="icon" asChild title="Xem trên web">
-                        <Link href={`/doanh-nghiep/${b.slug}`} target="_blank">
-                          <Eye className="size-4" />
+                    <div className="flex items-center justify-end gap-1">
+                      {/* Xem trang ưu đãi */}
+                      <Button variant="ghost" size="icon" asChild title="Xem trang ưu đãi">
+                        <Link href={`/uu-dai/${b.slug}`} target="_blank">
+                          <Eye className="size-4 text-gold" />
                         </Link>
                       </Button>
                       <Button variant="ghost" size="icon" asChild title="Chỉnh sửa">
                         <Link href={`/admin/businesses/${b.id}`}>
                           <Pencil className="size-4" />
                         </Link>
+                      </Button>
+                      {/* Nút đổi trạng thái: trial/published/suspended */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title={`Đổi trạng thái (hiện: ${b.status})`}
+                        disabled={loadingStatusId === b.id}
+                        onClick={() => cycleStatus(b.id, b.status)}
+                        className={b.status === 'suspended' ? 'text-red-500' : b.status === 'trial' ? 'text-blue-500' : 'text-green-600'}
+                      >
+                        <ToggleLeft className={`size-4 ${loadingStatusId === b.id ? 'animate-spin' : ''}`} />
                       </Button>
                       {!b.owner_id && b.claim_token && (
                         <Button 
@@ -129,6 +203,17 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                           }}
                         >
                           <LinkIcon className="size-4 text-green-600" />
+                        </Button>
+                      )}
+                      {!b.owner_id && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          title="Tạo Nhanh Trang Ưu Đãi & TK Doanh Nghiệp"
+                          disabled={loadingId === b.id}
+                          onClick={() => handleQuickPromo(b.id, b.name)}
+                        >
+                          <Sparkles className={`size-4 text-amber-500 ${loadingId === b.id ? 'animate-pulse' : ''}`} />
                         </Button>
                       )}
                       <Button 
