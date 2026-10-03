@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Shield, Sparkles, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -59,7 +58,7 @@ export default function LoginPage() {
         options: {
           data: {
             full_name: name,
-            role: "business", // default role for self-registered users
+            role: "owner", // default role for self-registered users
           }
         }
       });
