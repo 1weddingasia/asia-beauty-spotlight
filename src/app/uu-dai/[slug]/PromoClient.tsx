@@ -17,6 +17,8 @@ const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
 });
 
+import { SiteHeader } from "@/components/site/Layout";
+
 type Deal = {
   id: string;
   title: string;
@@ -178,13 +180,15 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     : [bannerImg];
 
   return (
-    <div className="min-h-screen bg-[#FCFAF5] pb-20 md:pb-0">
+    <div className="min-h-screen bg-[#FCFAF5] pb-20 md:pb-0 relative">
+      <SiteHeader solid={false} />
+      
       {/* Premium Hero Section */}
-      <div className="relative h-[75vh] md:h-[85vh] w-full overflow-hidden group">
+      <div className="relative h-screen w-full overflow-hidden group">
         <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
             {banners.map((img: string, idx: number) => (
-              <CarouselItem key={idx} className="relative h-[75vh] md:h-[85vh] w-full">
+              <CarouselItem key={idx} className="relative h-full w-full">
                 <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={100} className="object-cover scale-105 animate-ken-burns" priority={idx === 0} />
               </CarouselItem>
             ))}
@@ -357,76 +361,124 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           </div>
         )}
 
-        {/* Thông tin doanh nghiệp (About & Contact) */}
-        <div className="mt-20 pt-16 border-t border-slate-200">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-black font-display text-ink">VỀ CHÚNG TÔI</h2>
-            <p className="text-muted-foreground mt-2">Thông tin liên hệ và không gian của {b.name}</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
+        {/* ─── GIỚI THIỆU DOANH NGHIỆP ─── */}
+        <div className="mt-20 pt-16 border-t border-border/50">
+          <div className="grid md:grid-cols-3 gap-10 md:gap-12">
+            {/* Cột trái: Câu chuyện thương hiệu */}
             <div className="md:col-span-2 space-y-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-px bg-gold flex-1" />
+                <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold">Câu Chuyện Thương Hiệu</p>
+                <div className="h-px bg-gold flex-1" />
+              </div>
+
               {b.short_description && (
-                <p className="text-lg font-medium text-ink leading-relaxed">
+                <p className="text-base md:text-lg leading-relaxed text-ink font-medium">
                   {b.short_description}
                 </p>
               )}
-              <div 
-                className="text-sm md:text-base text-muted-foreground leading-relaxed prose prose-slate"
-                dangerouslySetInnerHTML={{ __html: b.about || b.description || "Đang cập nhật giới thiệu chi tiết về doanh nghiệp." }}
+
+              <div
+                className="text-sm md:text-base text-muted-foreground leading-relaxed space-y-4"
+                dangerouslySetInnerHTML={{ __html: b.about || b.description || "Nội dung đang được cập nhật." }}
               />
+
+              {b.amenities && b.amenities.length > 0 && (
+                <div className="pt-6 border-t border-border mt-8">
+                  <h3 className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold mb-4">Tiện Ích Không Gian</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {b.amenities.map((amenity: string, idx: number) => (
+                      <span key={idx} className="bg-champagne border border-gold-soft text-ink text-xs px-3 py-1.5 rounded-full">
+                        {amenity}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm h-fit space-y-5">
-              <h3 className="font-bold font-display text-2xl border-b pb-3">Liên Hệ & Đặt Lịch</h3>
-              
+
+            {/* Cột phải: Card liên hệ */}
+            <div className="bg-card rounded-3xl p-6 md:p-8 border border-border shadow-card h-fit space-y-6">
+              <h3 className="font-display text-lg md:text-xl border-b border-border pb-4">Thông tin liên hệ</h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <MapPin className="size-5 text-gold shrink-0 mt-0.5" />
-                  <span className="text-sm text-muted-foreground">{b.address || "Đang cập nhật"}</span>
+                  <MapPin className="size-4 md:size-5 text-gold shrink-0 mt-0.5" />
+                  <span className="text-xs md:text-sm text-muted-foreground leading-relaxed">{b.address || "Đang cập nhật"}</span>
                 </div>
-                
                 <div className="flex items-center gap-3">
-                  <Phone className="size-5 text-gold shrink-0" />
-                  <span className="text-sm font-medium">{hotline}</span>
+                  <Phone className="size-4 md:size-5 text-gold shrink-0" />
+                  <span className="text-xs md:text-sm font-medium">{hotline}</span>
                 </div>
-                
-                {(b.socials?.facebook) && (
+
+                {b.socials?.facebook && (
                   <div className="flex items-center gap-3">
-                    <Globe className="size-5 text-gold shrink-0" />
-                    <a href={b.socials.facebook} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-gold hover:underline line-clamp-1">Facebook Fanpage</a>
+                    <Globe className="size-4 md:size-5 text-gold shrink-0" />
+                    <a href={b.socials.facebook} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">Facebook Fanpage</a>
                   </div>
                 )}
-                
+
+                {(b.socials?.zalo || zaloLink !== '#') && (
+                  <div className="flex items-center gap-3">
+                    <MessageCircle className="size-4 md:size-5 text-gold shrink-0" />
+                    <a href={b.socials?.zalo || zaloLink} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline">Chat Zalo</a>
+                  </div>
+                )}
+
+                {(b.email || b.socials?.email) && (
+                  <div className="flex items-center gap-3">
+                    <Mail className="size-4 md:size-5 text-gold shrink-0" />
+                    <a href={`mailto:${b.email || b.socials?.email}`} className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">{b.email || b.socials?.email}</a>
+                  </div>
+                )}
+
+                {b.website && (
+                  <div className="flex items-center gap-3">
+                    <Globe className="size-4 md:size-5 text-gold shrink-0" />
+                    <a href={b.website.startsWith('http') ? b.website : `https://${b.website}`} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">
+                      {b.website.replace(/^https?:\/\//, '')}
+                    </a>
+                  </div>
+                )}
+
                 <div className="flex items-start gap-3">
-                  <Clock className="size-5 text-gold shrink-0 mt-0.5" />
+                  <Clock className="size-4 md:size-5 text-gold shrink-0 mt-0.5" />
                   <div className="flex-1 space-y-1">
                     {Array.isArray(b.hours) ? (
                       b.hours.map((wh: any, idx: number) => (
-                        <div key={idx} className="flex justify-between text-xs">
+                        <div key={idx} className="flex justify-between text-[11px] md:text-[13px]">
                           <span className="text-muted-foreground">{wh.day}</span>
-                          <span className="font-medium">{wh.hours}</span>
+                          <span className="font-medium text-foreground">{wh.hours}</span>
                         </div>
                       ))
                     ) : (
-                      <span className="text-sm text-muted-foreground">{b.hours || "Đang cập nhật"}</span>
+                      <span className="text-xs md:text-sm text-muted-foreground">{b.hours || "Đang cập nhật"}</span>
                     )}
                   </div>
                 </div>
               </div>
-              
+
               {b.address && (
-                <div className="mt-4 rounded-xl overflow-hidden border h-[150px] bg-slate-100">
+                <div className="mt-2 rounded-2xl overflow-hidden border border-border h-[200px] bg-secondary/30 relative">
                   <iframe
                     width="100%" height="100%" style={{ border: 0 }} loading="lazy" allowFullScreen
                     referrerPolicy="no-referrer-when-downgrade"
                     src={`https://maps.google.com/maps?q=${encodeURIComponent((b.address || '') + ' ' + (b.name || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                  ></iframe>
+                  />
                 </div>
               )}
+
+              <a
+                href={zaloLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full block bg-gradient-to-r from-gold to-gold-soft rounded-full px-6 py-4 text-center text-xs md:text-sm font-semibold tracking-[0.1em] text-ink uppercase hover:opacity-90 transition-opacity"
+              >
+                Liên Hệ Zalo
+              </a>
             </div>
           </div>
         </div>
+
       </div>
 
       {/* Modal / Dialog Form Nhận Mã */}
