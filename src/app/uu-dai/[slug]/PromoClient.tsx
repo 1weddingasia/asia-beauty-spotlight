@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
-import { useEffect } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -36,9 +37,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [savedDeals, setSavedDeals] = useState<string[]>([]);
+  const [selectedService, setSelectedService] = useState<any>(null);
   
   // Carousel state
   const [api, setApi] = useState<CarouselApi>();
+  const [servicesRef, servicesApi] = useEmblaCarousel({ loop: false, align: "start" });
+  const scrollPrevServices = useCallback(() => servicesApi && servicesApi.scrollPrev(), [servicesApi]);
+  const scrollNextServices = useCallback(() => servicesApi && servicesApi.scrollNext(), [servicesApi]);
 
   // Tự động chuyển slide
   useEffect(() => {
@@ -134,7 +139,14 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     }
   };
 
-  const services = Array.isArray(business.page_content?.services) ? business.page_content.services : [];
+  const services = Array.isArray(business.page_content?.services) && business.page_content.services.length > 0
+    ? business.page_content.services
+    : Array.isArray(business.services) && business.services.length > 0
+      ? business.services
+      : [];
+
+  // Fallback gallery for service images
+  const galleryItems = Array.isArray(business.page_content?.gallery) ? business.page_content.gallery : [];
 
   const hotline = business.page_content?.phone || "1900 xxxx";
 
@@ -284,32 +296,63 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           )}
         </div>
 
-        {/* Danh sách Dịch vụ / Sản phẩm */}
+        {/* ─── DANH MỤC DỊCH VỤ ─── */}
         {services.length > 0 && (
           <div className="mt-24">
-            <h2 className="text-2xl md:text-3xl font-black font-display text-ink text-center mb-10 flex items-center justify-center gap-3">
-              <Sparkles className="size-6 md:size-8 text-gold" />
-              DANH MỤC DỊCH VỤ
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service: any, index: number) => (
-                <div key={index} className="bg-white rounded-3xl p-5 shadow-sm border border-gold/20 flex flex-row gap-4 items-center transition-all duration-500 hover:shadow-xl hover:shadow-gold/10 hover:-translate-y-1.5 hover:scale-105 hover:border-gold/50 group">
-                  {(service.image || service.image_url) && (
-                    <div className="size-24 rounded-2xl overflow-hidden relative shrink-0 bg-slate-100 shadow-inner group-hover:shadow-md transition-shadow">
-                      <Image src={service.image || service.image_url} alt={service.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-ink line-clamp-2">{service.name}</h4>
-                    {service.description && (
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
-                    )}
-                    <div className="mt-2 font-bold text-gold">
-                      {formatPrice(service.price)}
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase mb-2">Bảng giá</p>
+                <h2 className="font-display text-2xl md:text-4xl text-ink">Dịch vụ nổi bật</h2>
+              </div>
+              <div className="hidden md:flex gap-2">
+                <button onClick={scrollPrevServices} className="grid size-10 place-items-center rounded-full border border-border bg-white hover:border-gold hover:text-gold transition-colors">
+                  <ChevronLeft className="size-5" />
+                </button>
+                <button onClick={scrollNextServices} className="grid size-10 place-items-center rounded-full border border-border bg-white hover:border-gold hover:text-gold transition-colors">
+                  <ChevronRight className="size-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="overflow-hidden -mx-4 px-4 md:mx-0 md:px-0" ref={servicesRef}>
+              <div className="flex gap-4 md:gap-6">
+                {services.map((s: any, idx: number) => (
+                  <div key={idx} className="flex-[0_0_85%] md:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
+                    <div
+                      onClick={() => setSelectedService(s)}
+                      className="bg-white border border-border rounded-2xl overflow-hidden h-full flex flex-col hover:border-gold hover:shadow-xl hover:shadow-gold/10 transition-all cursor-pointer group"
+                    >
+                      <div className="w-full h-40 md:h-48 bg-secondary relative overflow-hidden">
+                        {(s.image || s.image_url || galleryItems[idx % galleryItems.length]) ? (
+                          <Image
+                            src={s.image || s.image_url || galleryItems[idx % galleryItems.length]}
+                            alt={s.name}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Sparkles className="size-8 text-gold/40" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-5 md:p-6 flex flex-col flex-1">
+                        <h3 className="text-lg md:text-xl font-display text-ink mb-3 group-hover:text-gold transition-colors">{s.name}</h3>
+                        <p className="text-xs md:text-sm text-muted-foreground flex-1 mb-5 leading-relaxed line-clamp-3">
+                          {s.description || "Liên hệ để biết thêm chi tiết."}
+                        </p>
+                        <div className="pt-4 border-t border-border/50 flex items-center justify-between mt-auto">
+                          <span className="font-semibold text-gold text-base md:text-lg">
+                            {formatPrice(s.price || s.price_min) || "Liên hệ"}
+                          </span>
+                          <span className="text-[10px] md:text-xs uppercase tracking-wider text-muted-foreground group-hover:text-gold transition-colors">Chi tiết &rarr;</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -470,7 +513,67 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       </Dialog>
 
       <ChatWidget key={business.id} businessId={business.id} businessName={business.name} />
+
+      {/* MODAL: CHI TIẾT DỊCH VỤ */}
+      <AnimatePresence>
+        {selectedService && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 grid place-items-center bg-ink/80 p-4 md:p-6 backdrop-blur-sm overflow-y-auto"
+            onClick={() => setSelectedService(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-lg rounded-3xl border border-gold-soft bg-card overflow-hidden shadow-2xl my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-full h-40 md:h-56 bg-champagne relative">
+                {(selectedService.image || selectedService.image_url) ? (
+                  <Image
+                    src={selectedService.image || selectedService.image_url}
+                    alt={selectedService.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Sparkles className="size-10 md:size-12 text-gold/40" />
+                  </div>
+                )}
+                <button
+                  onClick={() => setSelectedService(null)}
+                  className="absolute top-4 right-4 grid size-8 md:size-10 place-items-center rounded-full bg-background/60 backdrop-blur-md text-foreground transition-colors hover:bg-background"
+                >
+                  <X className="size-4 md:size-5" />
+                </button>
+              </div>
+              <div className="p-6 md:p-8">
+                <h3 className="font-display text-xl md:text-3xl mb-3 md:mb-4 leading-tight text-ink">{selectedService.name}</h3>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-6">
+                  {selectedService.description || "Liên hệ để biết thêm thông tin chi tiết về dịch vụ này."}
+                </p>
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-champagne border border-gold-soft mb-6 md:mb-8">
+                  <span className="text-[10px] md:text-sm uppercase tracking-wider text-muted-foreground">Chi phí dự kiến</span>
+                  <span className="font-display text-xl md:text-2xl text-gold font-semibold">
+                    {formatPrice(selectedService.price || selectedService.price_min) || "Liên hệ"}
+                  </span>
+                </div>
+                <a
+                  href={zaloLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center w-full bg-gradient-to-r from-gold to-gold-soft rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity"
+                >
+                  Liên Hệ Zalo Tư Vấn
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
+
       <div className="mt-16 pb-8 text-center px-4">
         <p className="text-xs text-muted-foreground">
           Cổng đặt hẹn bảo trợ bởi 1Beauty.asia – Hotline hỗ trợ: <span className="font-semibold text-ink">090 909 0909</span>
