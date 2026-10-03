@@ -33,7 +33,8 @@ export default function UpgradePage() {
   const UPGRADE_AMOUNT = 500000;
   const BANK_ACC = "00003554020";
   const BANK_NAME = "TPBank";
-  const TRANSFER_CONTENT = `UPGRADE ${business.slug.toUpperCase()}`; 
+  // Ưu tiên dùng số điện thoại để dễ kiểm soát, nếu chưa có thì dùng Slug
+  const TRANSFER_CONTENT = business.phone ? business.phone : `UPGRADE ${business.slug.toUpperCase()}`; 
   const QR_URL = `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${UPGRADE_AMOUNT}&des=${TRANSFER_CONTENT}`;
 
   const handleCheckPayment = async () => {
