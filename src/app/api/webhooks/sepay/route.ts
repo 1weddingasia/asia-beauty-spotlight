@@ -42,6 +42,7 @@ export async function POST(request: Request) {
       if (tokenBuf.length === secretBuf.length && crypto.timingSafeEqual(tokenBuf, secretBuf)) {
         isAuthenticated = true;
       }
+    }
     // Cách 2: Xác thực bằng HMAC-SHA256 Signature (Nếu SePay có hỗ trợ gửi x-sepay-signature)
     if (!isAuthenticated && signature) {
       // SePay sends the signature as "sha256=..." or just "..."
@@ -66,8 +67,7 @@ export async function POST(request: Request) {
         error: 'Unauthorized', 
         debug: {
           authHeaderReceived: !!authHeader,
-          authHeaderLength: authHeader ? authHeader.length : 0,
-          secretLength: secret.length
+          signatureReceived: !!signature
         }
       }, { status: 401 });
     }
