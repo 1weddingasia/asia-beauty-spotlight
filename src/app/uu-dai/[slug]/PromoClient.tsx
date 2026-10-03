@@ -453,15 +453,15 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 <div className="flex items-start gap-3">
                   <Clock className="size-4 md:size-5 text-gold shrink-0 mt-0.5" />
                   <div className="flex-1 space-y-1">
-                    {Array.isArray(b.hours) ? (
-                      b.hours.map((wh: any, idx: number) => (
+                    {Array.isArray(b.page_content?.working_hours) ? (
+                      b.page_content.working_hours.map((wh: any, idx: number) => (
                         <div key={idx} className="flex justify-between text-[11px] md:text-[13px]">
                           <span className="text-muted-foreground">{wh.day}</span>
                           <span className="font-medium text-foreground">{wh.hours}</span>
                         </div>
                       ))
                     ) : (
-                      <span className="text-xs md:text-sm text-muted-foreground">{b.hours || "Đang cập nhật"}</span>
+                      <span className="text-xs md:text-sm text-muted-foreground">{b.page_content?.working_hours || "Đang cập nhật"}</span>
                     )}
                   </div>
                 </div>
