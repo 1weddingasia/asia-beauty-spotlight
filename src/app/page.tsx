@@ -53,7 +53,7 @@ export default async function HomePage() {
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/uu-dai/yuki-beauty-and-spa"
+              href="/uu-dai/luxury-spa-demo"
               className="group inline-flex items-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-xl hover:bg-gold-soft hover:scale-105 transition-all"
             >
               <Sparkles className="size-5" />
@@ -214,7 +214,7 @@ export default async function HomePage() {
                 ⚡ Kích Hoạt Cổng Ngay
               </Link>
               <Link
-                href="/uu-dai/yuki-beauty-and-spa"
+                href="/uu-dai/luxury-spa-demo"
                 className="inline-flex items-center justify-center gap-2 border border-gold/40 text-gold px-8 py-4 rounded-2xl text-lg hover:bg-gold/10 transition-colors"
               >
                 Xem trang Demo trước
