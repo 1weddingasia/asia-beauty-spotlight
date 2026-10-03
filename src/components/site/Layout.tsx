@@ -83,9 +83,10 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
         <div className="flex items-center gap-4 md:hidden">
           <Link 
             href="/login" 
+            aria-label="Đối Tác"
             className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
           >
-            <UserCircle2 className="size-4" />
+            <UserCircle2 className="size-4" aria-hidden="true" />
             <span className="hidden sm:inline">Đối Tác</span>
           </Link>
           <button
