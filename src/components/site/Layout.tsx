@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserCircle2 } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
 
@@ -80,27 +80,46 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
           )}
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((l) => (
-            <Link
-              key={l.to}
-              href={l.to}
-              className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${
-                solid ? "text-foreground" : "text-background/85"
-              }`}
-            >
-              {l.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex items-center gap-4 md:hidden">
+          <Link 
+            href="/login" 
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
+          >
+            <UserCircle2 className="size-4" />
+            <span className="hidden sm:inline">Đối Tác</span>
+          </Link>
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+            className={`${solid ? "text-foreground" : "text-background"}`}
+          >
+            {open ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
+        </div>
 
-        <button
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-          className={`md:hidden ${solid ? "text-foreground" : "text-background"}`}
-        >
-          {open ? <X className="size-6" /> : <Menu className="size-6" />}
-        </button>
+        <div className="hidden items-center gap-6 md:flex">
+          <nav className="flex items-center gap-8">
+            {navLinks.map((l) => (
+              <Link
+                key={l.to}
+                href={l.to}
+                className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${
+                  solid ? "text-foreground" : "text-background/85"
+                }`}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+          
+          <Link 
+            href="/login" 
+            className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
+          >
+            <UserCircle2 className="size-4" />
+            Đăng Nhập / Quản Lý
+          </Link>
+        </div>
       </div>
 
       {open && (
