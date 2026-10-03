@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { PageShell } from "@/components/site/Layout";
+import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
 
 export default function ContactPageClient() {
   const [sent, setSent] = useState(false);
@@ -107,6 +108,7 @@ export default function ContactPageClient() {
           </div>
         </aside>
       </section>
+      <PlatformChatWidget />
     </PageShell>
   );
 }

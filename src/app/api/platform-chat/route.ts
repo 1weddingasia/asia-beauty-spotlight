@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import { createAdminClient } from '@/utils/supabase/server';
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 
@@ -27,15 +26,37 @@ function sendTelegramAsync(chatId: string, message: string) {
 
 export async function POST(req: Request) {
   try {
+    if (!DEEPSEEK_API_KEY) {
+      return NextResponse.json({ error: "Chưa cấu hình API Key" }, { status: 500 });
+    }
+
     const { messages } = await req.json();
 
-    if (!messages || messages.length === 0) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json({ error: "Missing required fields or invalid format" }, { status: 400 });
+    }
+
+    // Type checking and sanitizing messages
+    const safeMessages = messages
+      .filter((m: unknown) => 
+        m !== null && 
+        typeof m === 'object' && 
+        'role' in m && 
+        'content' in m && 
+        typeof (m as any).content === 'string'
+      )
+      .map((m: any) => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.content
+      }));
+
+    if (safeMessages.length === 0) {
+      return NextResponse.json({ error: "No valid messages found" }, { status: 400 });
     }
 
     const today = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
-    const userMessages = messages.filter((m: any) => m.role === 'user');
-    const allUserTexts = userMessages.map((m: any) => m.content).join(' ');
+    const userMessages = safeMessages.filter(m => m.role === 'user');
+    const allUserTexts = userMessages.map(m => m.content).join(' ');
     const userPhoneFound = extractPhone(allUserTexts);
     const lastUserMsg = userMessages[userMessages.length - 1];
 
@@ -57,10 +78,11 @@ QUY TẮC BẮT BUỘC:
 `;
 
     // Gửi báo cáo Lead Telegram
-    if (lastUserMsg && extractPhone(lastUserMsg.content)) {
+    const lastMsgPhone = lastUserMsg ? extractPhone(lastUserMsg.content) : null;
+    if (lastMsgPhone) {
         const telegramChatId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
         if (telegramChatId) {
-          const msg = `🚀 [1BEAUTY LEAD] CÓ CHỦ TIỆM ĐỂ LẠI SĐT TRÊN WEB!\n\nSĐT: ${extractPhone(lastUserMsg.content)}\nNội dung: "${lastUserMsg.content}"\n👉 CSKH gọi ngay nhé!`;
+          const msg = `🚀 [1BEAUTY LEAD] CÓ CHỦ TIỆM ĐỂ LẠI SĐT TRÊN WEB!\n\nSĐT: ${lastMsgPhone}\nNội dung: "${lastUserMsg.content}"\n👉 CSKH gọi ngay nhé!`;
           sendTelegramAsync(telegramChatId, msg);
         }
     }
@@ -71,7 +93,7 @@ QUY TẮC BẮT BUỘC:
         model: "deepseek-chat",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages
+          ...safeMessages
         ],
         temperature: 0.6,
       },
