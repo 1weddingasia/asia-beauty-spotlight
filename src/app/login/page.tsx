@@ -40,8 +40,9 @@ export default function LoginPage() {
           router.push("/dashboard");
         }
       }
-    } catch (err: any) {
-      toast.error("Lỗi không mong muốn: " + err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error("Lỗi không mong muốn: " + msg);
     } finally {
       setLoading(false);
     }
@@ -58,19 +59,21 @@ export default function LoginPage() {
         options: {
           data: {
             full_name: name,
-            role: "owner", // default role for self-registered users
           }
         }
       });
 
       if (error) {
         toast.error("Đăng ký thất bại: " + error.message);
+      } else if (data?.user && data.user.identities && data.user.identities.length === 0) {
+        toast.error("Email này đã được đăng ký từ trước.");
       } else {
         toast.success("Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
         setView("login");
       }
-    } catch (err: any) {
-      toast.error("Lỗi không mong muốn: " + err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error("Lỗi không mong muốn: " + msg);
     } finally {
       setLoading(false);
     }
@@ -86,7 +89,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${window.location.origin}/dashboard`,
       });
 
       if (error) {
@@ -95,8 +98,9 @@ export default function LoginPage() {
         toast.success("Đã gửi link đặt lại mật khẩu! Vui lòng kiểm tra email.");
         setView("login");
       }
-    } catch (err: any) {
-      toast.error("Lỗi không mong muốn: " + err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error("Lỗi không mong muốn: " + msg);
     } finally {
       setLoading(false);
     }
@@ -106,7 +110,6 @@ export default function LoginPage() {
     <div className="flex min-h-screen bg-background">
       {/* Cột trái: Hình ảnh giới thiệu (ẩn trên mobile) */}
       <div className="hidden lg:flex w-1/2 relative bg-ink items-center justify-center p-12 overflow-hidden">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://placehold.co/1000x1500/000000/222222?text=Beauty+Texture')] bg-cover bg-center mix-blend-overlay" />
         <div className="absolute inset-0 bg-gradient-to-br from-gold/20 via-transparent to-transparent pointer-events-none" />
         
         <div className="relative z-10 text-center max-w-lg">
@@ -293,7 +296,7 @@ export default function LoginPage() {
 
           <div className="pt-8 text-center border-t border-border mt-8">
             <p className="text-xs text-muted-foreground">
-              Bằng việc đăng nhập hoặc đăng ký, bạn đồng ý với <a href="#" className="underline">Điều khoản dịch vụ</a> và <a href="#" className="underline">Chính sách bảo mật</a> của chúng tôi.
+              Bằng việc đăng nhập hoặc đăng ký, bạn đồng ý với <Link href="/lien-he" className="underline">Điều khoản dịch vụ</Link> và <Link href="/lien-he" className="underline">Chính sách bảo mật</Link> của chúng tôi.
             </p>
           </div>
         </div>
