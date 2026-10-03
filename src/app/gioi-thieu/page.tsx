@@ -17,7 +17,8 @@ import {
   Zap,
   Smartphone,
   Bot,
-  Sparkles
+  Sparkles,
+  UserMinus
 } from "lucide-react";
 import Link from "next/link";
 
@@ -132,6 +133,11 @@ export default function GioiThieuPage() {
                 icon: <Megaphone className="w-8 h-8 text-gold" />,
                 title: "Tiệm mới thiếu kênh tiếp cận",
                 desc: "Quán mới khai trương thường bị cô lập, thiếu kênh phủ sóng để cư dân quanh khu vực biết đến các chương trình ưu đãi."
+              },
+              {
+                icon: <UserMinus className="w-8 h-8 text-gold" />,
+                title: "Thất lạc dữ liệu khách hàng",
+                desc: "Thông tin khách rời rạc, bị mất. Không biết khách ghé bao nhiêu lần, là khách quen hay mới để có chương trình chăm sóc thân thiết."
               }
             ].map((item, idx) => (
               <motion.div 
