@@ -6,11 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Shield, Sparkles, Mail, Lock, User, ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
   const [view, setView] = useState<"login" | "register" | "forgot">("login");
+  
+  useEffect(() => {
+    if (searchParams?.get("tab") === "register") {
+      setView("register");
+    }
+  }, [searchParams]);
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

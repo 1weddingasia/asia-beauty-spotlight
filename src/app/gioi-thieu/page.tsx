@@ -522,7 +522,7 @@ export default function GioiThieuPage() {
               Cam kết bàn giao: Hoàn tất cài đặt & chạy thực tế trong {SETUP_TIME}.
             </p>
 
-            <Link href="/register" className="inline-block bg-gold text-ink font-bold uppercase tracking-widest px-12 py-5 rounded-sm hover:bg-white transition-all duration-300 transform hover:-translate-y-1">
+            <Link href="/login?tab=register" className="inline-block bg-gold text-ink font-bold uppercase tracking-widest px-12 py-5 rounded-sm hover:bg-white transition-all duration-300 transform hover:-translate-y-1">
               Đăng Ký Ngay
             </Link>
           </motion.div>
