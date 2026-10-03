@@ -84,28 +84,35 @@ export async function POST(request: Request) {
     const targetSlug = slugMatch ? slugMatch[1].toLowerCase() : null;
 
     // Tìm Số điện thoại
-    const phoneMatch = payload.content.match(/(0[3|5|7|8|9])+([0-9]{8})\b/);
-    const targetPhone = phoneMatch ? phoneMatch[0] : null;
+    const phoneMatch = payload.content.match(/(?:^|\D)(0(?:3|5|7|8|9)[0-9]{8})(?:\D|$)/);
+    const targetPhone = phoneMatch ? phoneMatch[1] : null;
 
     if (targetSlug || targetPhone) {
+      if (payload.transferAmount < 500000) {
+        console.log(`SePay webhook ignored: Transfer amount ${payload.transferAmount} is less than 500000`);
+        return NextResponse.json({ success: true, message: 'Transfer amount too small for upgrade' });
+      }
+
       let business = null;
 
       // 1. Tìm Business ID bằng slug hoặc phone
       if (targetSlug) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('businesses')
           .select('id, name')
           .eq('slug', targetSlug)
-          .single();
+          .maybeSingle();
+        if (error) console.error("Error finding business by slug:", error);
         business = data;
       }
       
       if (!business && targetPhone) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('businesses')
           .select('id, name')
           .eq('phone', targetPhone)
-          .single();
+          .maybeSingle();
+        if (error) console.error("Error finding business by phone:", error);
         business = data;
       }
 

@@ -108,7 +108,12 @@ export function PlatformChatWidget() {
                   {msg.content.split(/(!\[.*?\]\(.*?\))/g).map((part, i) => {
                     const match = part.match(/!\[(.*?)\]\((.*?)\)/);
                     if (match) {
-                      return <img key={i} src={match[2]} alt={match[1]} className="max-w-full rounded-md mt-2 shadow-sm border" />;
+                      const url = match[2];
+                      // Validate URL to prevent XSS / arbitrary requests
+                      if (url.startsWith('https://vietqr.app/') || url.startsWith('https://qr.sepay.vn/')) {
+                        return <img key={i} src={url} alt={match[1]} loading="lazy" className="max-w-full rounded-md mt-2 shadow-sm border" />;
+                      }
+                      return <span key={i} className="text-red-500 text-xs italic">[Hình ảnh không hợp lệ]</span>;
                     }
                     return <span key={i} className="whitespace-pre-wrap">{part}</span>;
                   })}
