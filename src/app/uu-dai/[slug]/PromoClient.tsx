@@ -373,9 +373,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
         {/* ─── GIỚI THIỆU DOANH NGHIỆP ─── */}
         <div className="mt-20 pt-16 border-t border-border/50">
-          <div className="grid md:grid-cols-3 gap-10 md:gap-12">
+          <div className="grid lg:grid-cols-5 gap-10 md:gap-12">
             {/* Cột trái: Câu chuyện thương hiệu */}
-            <div className="md:col-span-2 space-y-6">
+            <div className="lg:col-span-3 space-y-6">
               <div className="flex items-center gap-4 mb-6">
                 <div className="h-px bg-gold flex-1" />
                 <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold">Câu Chuyện Thương Hiệu</p>
@@ -388,10 +388,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 </p>
               )}
 
-              <div
-                className="text-sm md:text-base text-muted-foreground leading-relaxed space-y-4"
-                dangerouslySetInnerHTML={{ __html: b.about || b.description || "Nội dung đang được cập nhật." }}
-              />
+              {(b.about || b.description) && (
+                <div
+                  className="text-sm md:text-base text-muted-foreground leading-relaxed space-y-4"
+                  dangerouslySetInnerHTML={{ __html: b.about || b.description }}
+                />
+              )}
 
               {b.page_content?.amenities && b.page_content.amenities.length > 0 && (
                 <div className="pt-6 border-t border-border mt-8">
@@ -408,7 +410,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             </div>
 
             {/* Cột phải: Card liên hệ */}
-            <div className="bg-card rounded-3xl p-6 md:p-8 border border-border shadow-card h-fit space-y-6">
+            <div className="lg:col-span-2 bg-card rounded-3xl p-6 md:p-8 border border-border shadow-card h-fit space-y-6">
               <h3 className="font-display text-lg md:text-xl border-b border-border pb-4">Thông tin liên hệ</h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
