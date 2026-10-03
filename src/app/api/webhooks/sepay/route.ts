@@ -42,16 +42,19 @@ export async function POST(request: Request) {
       if (tokenBuf.length === secretBuf.length && crypto.timingSafeEqual(tokenBuf, secretBuf)) {
         isAuthenticated = true;
       }
-    } 
     // Cách 2: Xác thực bằng HMAC-SHA256 Signature (Nếu SePay có hỗ trợ gửi x-sepay-signature)
     if (!isAuthenticated && signature) {
-      const signatureTrimmed = signature.trim();
+      // SePay sends the signature as "sha256=..." or just "..."
+      const signatureValue = signature.replace(/^sha256=/, '').trim();
       const expectedSignature = crypto
         .createHmac('sha256', secret)
         .update(rawBody)
         .digest('hex');
       
-      if (signatureTrimmed.length === expectedSignature.length && crypto.timingSafeEqual(Buffer.from(signatureTrimmed), Buffer.from(expectedSignature))) {
+      const sigBuf = Buffer.from(signatureValue);
+      const expectedSigBuf = Buffer.from(expectedSignature);
+
+      if (sigBuf.length === expectedSigBuf.length && crypto.timingSafeEqual(sigBuf, expectedSigBuf)) {
         isAuthenticated = true;
       }
     }
