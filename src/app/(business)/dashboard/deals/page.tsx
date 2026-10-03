@@ -19,6 +19,7 @@ type Deal = {
   badge: string;
   note: string;
   status: "active" | "paused";
+  valid_until?: string;
 };
 
 export default function DealsManagementPage() {
@@ -71,8 +72,9 @@ export default function DealsManagementPage() {
               original_price: "Liên hệ",
               promo_price: o.promo_price || o.discount || "Ưu đãi",
               badge: o.badge || "Hot",
-              note: o.description || o.note || (o.validUntil ? `HSD: ${o.validUntil}` : ""),
-              status: "active"
+              note: o.description || o.note || "",
+              status: "active",
+              valid_until: o.validUntil || o.valid_until || ""
             }));
           } else if (content.featured_deal) {
             existingDeals = [{
@@ -82,7 +84,8 @@ export default function DealsManagementPage() {
               promo_price: "Ưu đãi",
               badge: "Độc Quyền 1Beauty",
               note: "",
-              status: "active"
+              status: "active",
+              valid_until: ""
             }];
           }
         }
@@ -148,7 +151,8 @@ export default function DealsManagementPage() {
         promo_price: "",
         badge: "",
         note: "",
-        status: "active"
+        status: "active",
+        valid_until: ""
       }
     ]);
   };
@@ -441,6 +445,15 @@ export default function DealsManagementPage() {
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label>Hạn sử dụng (Tùy chọn)</Label>
+                    <Input 
+                      placeholder="VD: 31/12/2026 hoặc Hết hôm nay" 
+                      value={deal.valid_until || ''}
+                      onChange={e => updateDeal(idx, 'valid_until', e.target.value)}
+                      className={deal.status === 'paused' ? 'opacity-70' : ''}
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
                     <Label>Ghi chú phụ (Note)</Label>
                     <Input 
                       placeholder="VD: Liệu trình 10 buổi - Bảo hành 5 năm" 

@@ -26,6 +26,7 @@ type Deal = {
   badge?: string;
   note?: string;
   status?: string;
+  valid_until?: string;
 };
 
 export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string, avatar: string }) {
@@ -77,8 +78,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         original_price: "Liên hệ",
         promo_price: o.promo_price || o.discount || "Ưu đãi",
         badge: o.badge || "Hot",
-        note: o.description || o.note || (o.validUntil ? `HSD: ${o.validUntil}` : ""),
-        status: "active"
+        note: o.description || o.note || "",
+        status: "active",
+        valid_until: o.validUntil || o.valid_until || ""
       }));
     }
   }
@@ -266,9 +268,18 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </h3>
                   
                   {deal.note && (
-                    <p className="text-sm text-muted-foreground mb-8 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm grow">
+                    <p className="text-sm text-muted-foreground mb-4 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm grow">
                       <span className="font-semibold text-ink">Lưu ý:</span> {deal.note}
                     </p>
+                  )}
+
+                  {!deal.note && <div className="grow" />}
+
+                  {deal.valid_until && (
+                    <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-red-600 bg-red-50 py-1.5 px-3 rounded-lg w-fit mb-4">
+                      <Clock className="size-3.5" />
+                      HSD: {deal.valid_until}
+                    </div>
                   )}
                   
                   <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mt-auto pt-6 border-t border-gold/20">

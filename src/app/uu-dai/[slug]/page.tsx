@@ -21,7 +21,7 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
   
   const { data: business } = await supabase
     .from('businesses')
-    .select('id, name, slug, address, status, page_content')
+    .select('id, name, slug, address, status, page_content, short_description, email, website, socials, hours, zalo')
     .eq('slug', slug)
     .single();
 
