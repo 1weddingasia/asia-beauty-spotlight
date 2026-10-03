@@ -90,7 +90,7 @@ QUY TẮC BẮT BUỘC:
 
 [4. CÁCH ĐĂNG KÝ VÀ THANH TOÁN]
 - Nếu khách có ý định thanh toán hoặc hỏi cách đóng tiền, HÃY GỬI NGAY đoạn mã này vào khung chat để hiển thị QR Code thanh toán:
-  \`![QR Thanh Toán](https://qr.sepay.vn/img?bank=TPBank&acc=00003554020&amount=500000&des=${userPhoneFound ? userPhoneFound : 'SĐT_CUA_ANH_CHI'})\`
+  \`![QR Thanh Toán](https://qr.sepay.vn/img?bank=TPBank&acc=00003554020&amount=500000&des=${userPhoneFound ? encodeURIComponent(userPhoneFound) : 'SDT_CUA_ANH_CHI'})\`
 - Dặn dò khách: "Anh/chị chỉ cần quét mã QR trên để thanh toán. Nội dung chuyển khoản ghi: [SỐ ĐIỆN THOẠI CỦA ANH/CHỊ]. Hệ thống sẽ tự động kích hoạt tài khoản VIP cho tiệm mình ngay lập tức ạ!"
 - Ngoài ra, chủ tiệm có thể nhấn vào "Đăng Nhập / Quản Lý" trên menu hoặc nút "Đăng Ký Ngay".
 - Hỗ trợ đăng nhập nhanh bằng Google.
