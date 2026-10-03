@@ -96,7 +96,7 @@ QUY TẮC BẮT BUỘC:
 
 [THÔNG TIN NGỮ CẢNH]:
 - Thời gian hiện tại: ${today}
-- Thông tin khách hàng đã biết: ${userPhoneFound ? \`Đã có SĐT là \${userPhoneFound}\` : 'Chưa cung cấp SĐT'}
+- Thông tin khách hàng đã biết: ${userPhoneFound ? `Đã có SĐT là ${userPhoneFound}` : 'Chưa cung cấp SĐT'}
 `;
 
     // Gửi báo cáo Lead Telegram

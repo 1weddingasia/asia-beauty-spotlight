@@ -34,7 +34,7 @@ export function PlatformChatWidget() {
 
     const userMsg = input;
     setInput("");
-    setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', content: userMsg }]);
+    setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: userMsg }]);
     setLoading(true);
 
     try {
@@ -55,13 +55,13 @@ export function PlatformChatWidget() {
       const data = await res.json();
       
       if (data.reply) {
-        setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: data.reply }]);
+        setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', content: data.reply }]);
       } else {
-        setMessages(prev => [...prev, { id: Date.now().toString(), role: 'error', content: "Xin lỗi, hiện tại hệ thống đang bận. Bạn vui lòng liên hệ admin để được hỗ trợ nhé." }]);
+        setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'error', content: "Xin lỗi, hiện tại hệ thống đang bận. Bạn vui lòng liên hệ admin để được hỗ trợ nhé." }]);
       }
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'error', content: "Mất kết nối mạng. Vui lòng thử lại sau." }]);
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'error', content: "Mất kết nối mạng. Vui lòng thử lại sau." }]);
     } finally {
       setLoading(false);
     }
