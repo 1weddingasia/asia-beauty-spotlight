@@ -215,13 +215,23 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         {/* Danh sách Deals */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {deals.length === 0 ? (
-            <div className="text-center p-12 bg-white rounded-3xl border border-dashed">
+            <div className="text-center p-12 bg-white rounded-3xl border border-dashed md:col-span-2">
               <p className="text-muted-foreground">Hiện tại chưa có chương trình ưu đãi nào đang mở.</p>
             </div>
           ) : (
             deals.map(deal => (
               <div 
                 key={deal.id} 
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedDeal(deal);
+                    setVoucher("");
+                    setIsDialogOpen(true);
+                  }
+                }}
                 onClick={() => {
                   setSelectedDeal(deal);
                   setVoucher("");
@@ -263,7 +273,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                         setVoucher("");
                         setIsDialogOpen(true);
                       }}
-                      className="w-full xl:w-auto bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-ink font-bold hover:brightness-110 shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border border-[#D4AF37]/50"
+                      className="w-full xl:w-auto bg-gradient-to-r from-gold to-gold-soft text-ink font-bold hover:brightness-110 shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border border-gold/50"
                     >
                       Nhận và Lưu Ưu Đãi
                     </Button>
@@ -283,7 +293,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service: any, index: number) => (
-                <div key={index} className="bg-white rounded-3xl p-5 shadow-sm border border-gold/20 flex flex-row gap-4 items-center transition-all duration-500 hover:shadow-xl hover:shadow-gold/10 hover:-translate-y-1.5 hover:scale-105 hover:border-gold/50 cursor-pointer group">
+                <div key={index} className="bg-white rounded-3xl p-5 shadow-sm border border-gold/20 flex flex-row gap-4 items-center transition-all duration-500 hover:shadow-xl hover:shadow-gold/10 hover:-translate-y-1.5 hover:scale-105 hover:border-gold/50 group">
                   {service.image_url && (
                     <div className="size-24 rounded-2xl overflow-hidden relative shrink-0 bg-slate-100 shadow-inner group-hover:shadow-md transition-shadow">
                       <Image src={service.image_url} alt={service.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
