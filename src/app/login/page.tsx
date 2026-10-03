@@ -70,8 +70,7 @@ export default function LoginPage() {
       } else {
         if (data?.session) {
           toast.success("Đăng ký thành công! Đang chuyển hướng...");
-          router.push("/dashboard");
-          router.refresh();
+          window.location.href = "/dashboard";
         } else {
           toast.success("Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
           setView("login");

@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { Store, Eye, TrendingUp, Sparkles } from "lucide-react";
+import { Store, Eye, TrendingUp, Sparkles, Users, Ticket, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -25,10 +25,57 @@ export default async function BusinessDashboardPage() {
     );
   }
 
-  // In the future, fetch real stats from an analytics table. For now, show placeholder.
-  const views = "---";
-  const clicks = "---";
-  
+  // --- REAL ANALYTICS from business_leads ---
+  const now = new Date();
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+  const [leadsAllResult, leadsMonthResult, dealsResult] = await Promise.all([
+    // Tổng leads từ trước đến nay
+    supabase
+      .from("business_leads")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", business.id),
+    // Leads trong tháng này
+    supabase
+      .from("business_leads")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", business.id)
+      .gte("created_at", firstDayOfMonth),
+    // Top 5 deals được quan tâm nhất
+    supabase
+      .from("business_leads")
+      .select("deal_name")
+      .eq("business_id", business.id)
+      .order("created_at", { ascending: false })
+      .limit(100),
+  ]);
+
+  const totalLeads = leadsAllResult.count ?? 0;
+  const monthLeads = leadsMonthResult.count ?? 0;
+
+  // Đếm tần suất xuất hiện của mỗi deal
+  const dealCounts: Record<string, number> = {};
+  for (const row of (dealsResult.data ?? [])) {
+    const d = row.deal_name || "Khác";
+    dealCounts[d] = (dealCounts[d] ?? 0) + 1;
+  }
+  const topDeals = Object.entries(dealCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  // Tỷ lệ tăng trưởng so với tháng trước
+  const firstDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+  const { count: prevMonthLeads } = await supabase
+    .from("business_leads")
+    .select("id", { count: "exact", head: true })
+    .eq("business_id", business.id)
+    .gte("created_at", firstDayPrevMonth)
+    .lt("created_at", firstDayOfMonth);
+
+  const growthPct = prevMonthLeads && prevMonthLeads > 0
+    ? Math.round(((monthLeads - prevMonthLeads) / prevMonthLeads) * 100)
+    : null;
+
   return (
     <div className="space-y-8">
       <div>
@@ -38,29 +85,42 @@ export default async function BusinessDashboardPage() {
         </p>
       </div>
       
+      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
+        {/* Tổng lượt đăng ký */}
         <div className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Lượt xem trang (Tháng này)</h3>
-            <Eye className="size-4 text-muted-foreground" />
+            <h3 className="tracking-tight text-sm font-medium">Tổng Khách Đăng Ký</h3>
+            <Users className="size-4 text-muted-foreground" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-muted-foreground">{views}</div>
-            <p className="text-xs text-muted-foreground">Đang thu thập dữ liệu...</p>
+            <div className="text-3xl font-bold">{totalLeads}</div>
+            <p className="text-xs text-muted-foreground mt-1">Lượt khách nhận mã ưu đãi từ trước đến nay</p>
           </div>
         </div>
-        
+
+        {/* Lượt đăng ký tháng này */}
         <div className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Click lấy SĐT / Zalo</h3>
+            <h3 className="tracking-tight text-sm font-medium">Khách Tháng Này</h3>
             <TrendingUp className="size-4 text-muted-foreground" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-muted-foreground">{clicks}</div>
-            <p className="text-xs text-muted-foreground">Đang thu thập dữ liệu...</p>
+            <div className="text-3xl font-bold">{monthLeads}</div>
+            {growthPct !== null ? (
+              <p className={`text-xs mt-1 font-semibold flex items-center gap-1 ${
+                growthPct >= 0 ? "text-green-600" : "text-red-500"
+              }`}>
+                <ArrowUpRight className={`size-3 ${growthPct < 0 ? "rotate-180" : ""}`} />
+                {growthPct >= 0 ? "+" : ""}{growthPct}% so với tháng trước
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground mt-1">Tháng đầu tiên</p>
+            )}
           </div>
         </div>
-        
+
+        {/* Gói hiện tại */}
         <div className="rounded-xl border border-gold/50 bg-gradient-to-br from-gold/10 to-transparent text-card-foreground shadow p-6 flex flex-col justify-between relative overflow-hidden">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
             <h3 className="tracking-tight text-sm font-medium">Gói hiện tại</h3>
@@ -74,6 +134,61 @@ export default async function BusinessDashboardPage() {
             <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
               <Link href="/dashboard/upgrade">Nâng cấp Gói</Link>
             </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Deals + Quick Links */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Top deals */}
+        <div className="rounded-xl border bg-card p-6 shadow">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-sm flex items-center gap-2">
+              <Ticket className="size-4 text-gold" /> Ưu Đãi Phổ Biến Nhất
+            </h3>
+            <Link href="/dashboard/deals" className="text-xs text-gold hover:underline">Quản lý &rarr;</Link>
+          </div>
+          {topDeals.length > 0 ? (
+            <div className="space-y-3">
+              {topDeals.map(([dealName, count], i) => (
+                <div key={dealName} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-muted-foreground w-5">{i + 1}.</span>
+                    <span className="text-sm truncate max-w-[200px]">{dealName}</span>
+                  </div>
+                  <span className="text-xs font-semibold bg-gold/10 text-gold px-2 py-0.5 rounded-full">
+                    {count} khách
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Chưa có khách nào đăng ký. Hãy tạo ưu đãi hấp dẫn!
+            </p>
+          )}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="rounded-xl border bg-card p-6 shadow">
+          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
+            <Eye className="size-4 text-gold" /> Thao tác nhanh
+          </h3>
+          <div className="space-y-3">
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link href="/dashboard/leads">→ Xem danh sách khách ({totalLeads} khách)</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link href="/dashboard/deals">→ Tạo / Sửa Ưu đãi</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link href="/dashboard/profile">→ Cập nhật thông tin Gian hàng</Link>
+            </Button>
+            {business.slug && (
+              <Button asChild className="w-full justify-start bg-gold/10 text-gold border border-gold/30 hover:bg-gold/20">
+                <Link href={`/uu-dai/${business.slug}`} target="_blank">→ Xem Trang Ưu Đãi của bạn ↗</Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
