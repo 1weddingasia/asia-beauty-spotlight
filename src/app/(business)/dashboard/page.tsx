@@ -27,33 +27,43 @@ export default async function BusinessDashboardPage() {
 
   // --- REAL ANALYTICS from business_leads ---
   const now = new Date();
+  const todayDayOfMonth = now.getDate();
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  // So sánh cùng khoảng thời gian đã trôi qua trong tháng trước (tránh bias đầu tháng)
+  const firstDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+  const sameDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, todayDayOfMonth).toISOString();
 
-  const [leadsAllResult, leadsMonthResult, dealsResult] = await Promise.all([
+  const [leadsAllResult, leadsMonthResult, dealsResult, prevMonthResult] = await Promise.all([
     // Tổng leads từ trước đến nay
     supabase
       .from("business_leads")
       .select("id", { count: "exact", head: true })
       .eq("business_id", business.id),
-    // Leads trong tháng này
+    // Leads từ đầu tháng đến hôm nay
     supabase
       .from("business_leads")
       .select("id", { count: "exact", head: true })
       .eq("business_id", business.id)
       .gte("created_at", firstDayOfMonth),
-    // Top 5 deals được quan tâm nhất
+    // Tất cả deal_name để tổng hợp top deals (không limit)
     supabase
       .from("business_leads")
       .select("deal_name")
+      .eq("business_id", business.id),
+    // Cùng số ngày đã trôi qua nhưng của tháng trước
+    supabase
+      .from("business_leads")
+      .select("id", { count: "exact", head: true })
       .eq("business_id", business.id)
-      .order("created_at", { ascending: false })
-      .limit(100),
+      .gte("created_at", firstDayPrevMonth)
+      .lte("created_at", sameDayPrevMonth),
   ]);
 
-  const totalLeads = leadsAllResult.count ?? 0;
-  const monthLeads = leadsMonthResult.count ?? 0;
+  const totalLeads = leadsAllResult.error ? 0 : (leadsAllResult.count ?? 0);
+  const monthLeads = leadsMonthResult.error ? 0 : (leadsMonthResult.count ?? 0);
+  const prevMonthLeads = prevMonthResult.error ? null : (prevMonthResult.count ?? null);
 
-  // Đếm tần suất xuất hiện của mỗi deal
+  // Tổng hợp top 3 deals phổ biến nhất (toàn bộ lịch sử)
   const dealCounts: Record<string, number> = {};
   for (const row of (dealsResult.data ?? [])) {
     const d = row.deal_name || "Khác";
@@ -63,18 +73,11 @@ export default async function BusinessDashboardPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
 
-  // Tỷ lệ tăng trưởng so với tháng trước
-  const firstDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-  const { count: prevMonthLeads } = await supabase
-    .from("business_leads")
-    .select("id", { count: "exact", head: true })
-    .eq("business_id", business.id)
-    .gte("created_at", firstDayPrevMonth)
-    .lt("created_at", firstDayOfMonth);
-
+  // Tăng trưởng so cùng khoảng ngày tháng trước (month-to-date vs same period last month)
   const growthPct = prevMonthLeads && prevMonthLeads > 0
     ? Math.round(((monthLeads - prevMonthLeads) / prevMonthLeads) * 100)
     : null;
+
 
   return (
     <div className="space-y-8">
