@@ -203,7 +203,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
       <div className="max-w-5xl mx-auto px-4 py-12 -mt-16 md:-mt-24 relative z-10">
         <div className="text-center mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-black text-ink flex flex-col md:flex-row items-center justify-center gap-3">
+          <h2 className="text-3xl md:text-4xl font-black font-display text-ink flex flex-col md:flex-row items-center justify-center gap-3">
             <Tag className="size-8 md:size-10 text-gold" />
             ƯU ĐÃI ĐỘC QUYỀN
           </h2>
@@ -246,7 +246,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     </div>
                   )}
                   
-                  <h3 className="text-xl md:text-2xl font-bold text-ink pr-20 leading-tight mb-3">
+                  <h3 className="text-xl md:text-2xl font-bold font-display text-ink pr-20 leading-tight mb-3">
                     {deal.title}
                   </h3>
                   
@@ -287,7 +287,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         {/* Danh sách Dịch vụ / Sản phẩm */}
         {services.length > 0 && (
           <div className="mt-24">
-            <h2 className="text-2xl md:text-3xl font-black text-ink text-center mb-10 flex items-center justify-center gap-3">
+            <h2 className="text-2xl md:text-3xl font-black font-display text-ink text-center mb-10 flex items-center justify-center gap-3">
               <Sparkles className="size-6 md:size-8 text-gold" />
               DANH MỤC DỊCH VỤ
             </h2>
@@ -317,7 +317,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         {/* Thông tin doanh nghiệp (About & Contact) */}
         <div className="mt-20 pt-16 border-t border-slate-200">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-black text-ink">VỀ CHÚNG TÔI</h2>
+            <h2 className="text-2xl md:text-3xl font-black font-display text-ink">VỀ CHÚNG TÔI</h2>
             <p className="text-muted-foreground mt-2">Thông tin liên hệ và không gian của {b.name}</p>
           </div>
           
@@ -335,7 +335,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             </div>
             
             <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm h-fit space-y-5">
-              <h3 className="font-bold text-xl border-b pb-3">Liên Hệ & Đặt Lịch</h3>
+              <h3 className="font-bold font-display text-2xl border-b pb-3">Liên Hệ & Đặt Lịch</h3>
               
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
