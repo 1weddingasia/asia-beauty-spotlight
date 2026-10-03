@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 const slides = [
-  "/images/luxury_spa_slider_1.png",
-  "/images/luxury_spa_slider_2.png",
-  "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=1920&q=80"
+  { url: "/images/luxury_spa_slider_1.png", alt: "Luxury spa interior with warm golden lighting" },
+  { url: "/images/luxury_spa_slider_2.png", alt: "Elegant champagne gold spa reception" },
+  { url: "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=1920&q=80", alt: "Minimalist luxury spa environment" }
 ];
 
 export function HeroSlider() {
@@ -26,15 +26,16 @@ export function HeroSlider() {
       
       {slides.map((slide, index) => (
         <div
-          key={slide}
+          key={slide.url}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
             index === current ? "opacity-100" : "opacity-0"
           }`}
         >
           <Image
-            src={slide}
-            alt="1Beauty Spa"
+            src={slide.url}
+            alt={slide.alt}
             fill
+            sizes="100vw"
             className="object-cover"
             priority={index === 0}
           />
