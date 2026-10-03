@@ -33,11 +33,12 @@ export async function POST(request: Request) {
 
     // Cách 1: Xác thực bằng Token (Authorization: Apikey <secret> hoặc Bearer <secret>)
     if (authHeader) {
-      const expectedApikey = `Apikey ${secret}`;
-      const expectedBearer = `Bearer ${secret}`;
+      const authBuf = Buffer.from(authHeader);
+      const expectedApikeyBuf = Buffer.from(`Apikey ${secret}`);
+      const expectedBearerBuf = Buffer.from(`Bearer ${secret}`);
       if (
-        (authHeader.length === expectedApikey.length && crypto.timingSafeEqual(Buffer.from(authHeader), Buffer.from(expectedApikey))) ||
-        (authHeader.length === expectedBearer.length && crypto.timingSafeEqual(Buffer.from(authHeader), Buffer.from(expectedBearer)))
+        (authBuf.length === expectedApikeyBuf.length && crypto.timingSafeEqual(authBuf, expectedApikeyBuf)) ||
+        (authBuf.length === expectedBearerBuf.length && crypto.timingSafeEqual(authBuf, expectedBearerBuf))
       ) {
         isAuthenticated = true;
       }
