@@ -51,12 +51,8 @@ export default async function BusinessDashboardPage() {
       .eq("business_id", business.id)
       .gte("created_at", firstDayOfMonth)
       .lt("created_at", endOfToday),
-    // Tất cả deal_name để tổng hợp top deals (giới hạn 500 để tránh unbounded query)
-    supabase
-      .from("business_leads")
-      .select("deal_name")
-      .eq("business_id", business.id)
-      .limit(500),
+    // Top deals: dùng RPC để GROUP BY chính xác trên DB, không bị giới hạn bởi limit client-side
+    supabase.rpc("get_top_deals_for_business", { p_business_id: business.id, p_limit: 3 }),
     // Cùng số ngày đã trôi qua nhưng của tháng trước (exclusive end để symmetric)
     supabase
       .from("business_leads")
@@ -70,15 +66,11 @@ export default async function BusinessDashboardPage() {
   const monthLeads = leadsMonthResult.error ? 0 : (leadsMonthResult.count ?? 0);
   const prevMonthLeads = prevMonthResult.error ? null : (prevMonthResult.count ?? null);
 
-  // Tổng hợp top 3 deals phổ biến nhất (toàn bộ lịch sử)
-  const dealCounts: Record<string, number> = {};
-  for (const row of (dealsResult.data ?? [])) {
-    const d = row.deal_name || "Khác";
-    dealCounts[d] = (dealCounts[d] ?? 0) + 1;
-  }
-  const topDeals = Object.entries(dealCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
+  // Top 3 deals phổ biến nhất – tổng hợp chính xác từ DB via RPC
+  const topDeals: [string, number][] = (dealsResult.data ?? []).map(
+    (r: { deal_name: string; lead_count: number }) => [r.deal_name, Number(r.lead_count)]
+  );
+
 
   // Tăng trưởng so cùng khoảng ngày tháng trước (month-to-date vs same period last month)
   const growthPct = prevMonthLeads && prevMonthLeads > 0
