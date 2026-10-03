@@ -103,7 +103,7 @@ QUY TẮC BẮT BUỘC:
 `;
 
     // Gửi báo cáo Lead Telegram
-    const lastMsgPhone = lastUserMsg ? extractPhone(lastUserMsg.content) : null;
+    const lastMsgPhone = lastUserMsg ? extractPhone(lastUserMsg.content as string) : null;
     if (lastMsgPhone) {
         const telegramChatId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
         if (telegramChatId) {
