@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const rawBody = await request.text();
     const signature = request.headers.get('x-sepay-signature');
     const authHeader = request.headers.get('authorization');
-    const secret = process.env.SEPAY_WEBHOOK_SECRET;
+    const secret = process.env.SEPAY_WEBHOOK_SECRET?.trim();
 
     if (!secret) {
       console.error("Missing SEPAY_WEBHOOK_SECRET in environment");
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     if (authHeader) {
       // Token might come as "Bearer <secret>", "Apikey <secret>", or just "<secret>"
       const tokenParts = authHeader.split(' ');
-      const tokenValue = tokenParts.length > 1 ? tokenParts[tokenParts.length - 1] : authHeader;
+      const tokenValue = (tokenParts.length > 1 ? tokenParts[tokenParts.length - 1] : authHeader).trim();
       
       const tokenBuf = Buffer.from(tokenValue);
       const secretBuf = Buffer.from(secret);
@@ -45,19 +45,28 @@ export async function POST(request: Request) {
     } 
     // Cách 2: Xác thực bằng HMAC-SHA256 Signature (Nếu SePay có hỗ trợ gửi x-sepay-signature)
     if (!isAuthenticated && signature) {
+      const signatureTrimmed = signature.trim();
       const expectedSignature = crypto
         .createHmac('sha256', secret)
         .update(rawBody)
         .digest('hex');
       
-      if (signature.length === expectedSignature.length && crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+      if (signatureTrimmed.length === expectedSignature.length && crypto.timingSafeEqual(Buffer.from(signatureTrimmed), Buffer.from(expectedSignature))) {
         isAuthenticated = true;
       }
     }
 
     if (!isAuthenticated) {
       console.error("Invalid SePay Token or Signature. HasAuthHeader:", !!authHeader, "HasSignature:", !!signature);
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Unauthorized', 
+        debug: {
+          authHeaderReceived: !!authHeader,
+          authHeaderLength: authHeader ? authHeader.length : 0,
+          secretLength: secret.length
+        }
+      }, { status: 401 });
     }
 
     const payload: SepayPayload = JSON.parse(rawBody);
