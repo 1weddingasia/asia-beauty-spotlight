@@ -21,25 +21,35 @@ export async function POST(request: Request) {
   try {
     const rawBody = await request.text();
     const signature = request.headers.get('x-sepay-signature');
+    const authHeader = request.headers.get('authorization');
     const secret = process.env.SEPAY_WEBHOOK_SECRET;
 
-    if (!secret || !signature) {
-      console.error("Missing SePay secret or signature");
-      return NextResponse.json({ success: false, error: 'Missing signature' }, { status: 401 });
+    if (!secret) {
+      console.error("Missing SEPAY_WEBHOOK_SECRET in environment");
+      return NextResponse.json({ success: false, error: 'Server configuration error' }, { status: 500 });
     }
 
-    // Xác thực HMAC-SHA256 theo chuẩn SePay
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(rawBody)
-      .digest('hex');
+    let isAuthenticated = false;
 
-    if (
-      signature.length !== expectedSignature.length || 
-      !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))
-    ) {
-      console.error("Invalid SePay Signature");
-      return NextResponse.json({ success: false, error: 'Invalid signature' }, { status: 401 });
+    // Cách 1: Xác thực bằng Token (Authorization: Apikey <secret> hoặc Bearer <secret>)
+    if (authHeader && (authHeader === `Apikey ${secret}` || authHeader === `Bearer ${secret}`)) {
+      isAuthenticated = true;
+    } 
+    // Cách 2: Xác thực bằng HMAC-SHA256 Signature (Nếu SePay có hỗ trợ gửi x-sepay-signature)
+    else if (signature) {
+      const expectedSignature = crypto
+        .createHmac('sha256', secret)
+        .update(rawBody)
+        .digest('hex');
+      
+      if (signature.length === expectedSignature.length && crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+        isAuthenticated = true;
+      }
+    }
+
+    if (!isAuthenticated) {
+      console.error("Invalid SePay Token or Signature. Header Auth:", authHeader, "Signature:", signature);
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const payload: SepayPayload = JSON.parse(rawBody);
