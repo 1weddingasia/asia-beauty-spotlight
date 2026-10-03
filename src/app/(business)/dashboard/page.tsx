@@ -29,9 +29,14 @@ export default async function BusinessDashboardPage() {
   const now = new Date();
   const todayDayOfMonth = now.getDate();
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-  // So sánh cùng khoảng thời gian đã trôi qua trong tháng trước (tránh bias đầu tháng)
+  // Exclusive end: ngày mai 00:00 → đảm bảo bao gồm hết hôm nay
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), todayDayOfMonth + 1).toISOString();
+  // Clamp ngày tháng trước để tránh tràn (VD: 31/03 → tháng 2 chỉ có 28 ngày)
+  const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+  const clampedDay = Math.min(todayDayOfMonth, prevMonthLastDay);
   const firstDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-  const sameDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, todayDayOfMonth).toISOString();
+  // Exclusive end: ngày clampedDay+1 của tháng trước → bao gồm hết ngày clampedDay
+  const endOfSameDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, clampedDay + 1).toISOString();
 
   const [leadsAllResult, leadsMonthResult, dealsResult, prevMonthResult] = await Promise.all([
     // Tổng leads từ trước đến nay
@@ -39,24 +44,26 @@ export default async function BusinessDashboardPage() {
       .from("business_leads")
       .select("id", { count: "exact", head: true })
       .eq("business_id", business.id),
-    // Leads từ đầu tháng đến hôm nay
+    // Leads từ đầu tháng đến hết hôm nay
     supabase
       .from("business_leads")
       .select("id", { count: "exact", head: true })
       .eq("business_id", business.id)
-      .gte("created_at", firstDayOfMonth),
-    // Tất cả deal_name để tổng hợp top deals (không limit)
+      .gte("created_at", firstDayOfMonth)
+      .lt("created_at", endOfToday),
+    // Tất cả deal_name để tổng hợp top deals (giới hạn 500 để tránh unbounded query)
     supabase
       .from("business_leads")
       .select("deal_name")
-      .eq("business_id", business.id),
-    // Cùng số ngày đã trôi qua nhưng của tháng trước
+      .eq("business_id", business.id)
+      .limit(500),
+    // Cùng số ngày đã trôi qua nhưng của tháng trước (exclusive end để symmetric)
     supabase
       .from("business_leads")
       .select("id", { count: "exact", head: true })
       .eq("business_id", business.id)
       .gte("created_at", firstDayPrevMonth)
-      .lte("created_at", sameDayPrevMonth),
+      .lt("created_at", endOfSameDayPrevMonth),
   ]);
 
   const totalLeads = leadsAllResult.error ? 0 : (leadsAllResult.count ?? 0);
@@ -77,6 +84,7 @@ export default async function BusinessDashboardPage() {
   const growthPct = prevMonthLeads && prevMonthLeads > 0
     ? Math.round(((monthLeads - prevMonthLeads) / prevMonthLeads) * 100)
     : null;
+
 
 
   return (
