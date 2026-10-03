@@ -30,8 +30,8 @@ export default function UpgradePage() {
   if (loading) return <div className="p-10 text-center">Đang tải...</div>;
   if (!business) return <div className="p-10 text-center">Lỗi: Không tìm thấy doanh nghiệp.</div>;
 
-  const UPGRADE_AMOUNT = 399000;
-  const BANK_ACC = "0918731411";
+  const UPGRADE_AMOUNT = 500000;
+  const BANK_ACC = "00003554020";
   const BANK_NAME = "TPBank";
   const TRANSFER_CONTENT = `UPGRADE ${business.slug.toUpperCase()}`; 
   const QR_URL = `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${UPGRADE_AMOUNT}&des=${TRANSFER_CONTENT}`;

@@ -74,51 +74,70 @@ export async function POST(request: Request) {
     }
 
     // Xử lý logic cấp phát membership gói VIP
-    // VD cú pháp chuyển khoản: "UPGRADE [SLUG]" hoặc "VIP [SLUG]"
+    // Hỗ trợ 2 cú pháp: 
+    // 1. "UPGRADE [SLUG]" hoặc "VIP [SLUG]"
+    // 2. Hoặc chỉ cần chứa Số điện thoại (10 số, bắt đầu bằng số 0)
     const contentUpper = payload.content.toUpperCase();
-    if (contentUpper.includes('UPGRADE') || contentUpper.includes('VIP')) {
-      // Trích xuất slug từ memo (nằm sau chữ UPGRADE hoặc VIP)
-      const match = contentUpper.match(/(?:UPGRADE|VIP)\s+([A-Z0-9-]+)/);
-      if (match && match[1]) {
-        const targetSlug = match[1].toLowerCase();
-        
-        // 1. Tìm Business ID bằng slug
-        const { data: business } = await supabase
+    
+    // Tìm Slug
+    const slugMatch = contentUpper.match(/(?:UPGRADE|VIP)\s+([A-Z0-9-]+)/);
+    const targetSlug = slugMatch ? slugMatch[1].toLowerCase() : null;
+
+    // Tìm Số điện thoại
+    const phoneMatch = payload.content.match(/(0[3|5|7|8|9])+([0-9]{8})\b/);
+    const targetPhone = phoneMatch ? phoneMatch[0] : null;
+
+    if (targetSlug || targetPhone) {
+      let business = null;
+
+      // 1. Tìm Business ID bằng slug hoặc phone
+      if (targetSlug) {
+        const { data } = await supabase
           .from('businesses')
           .select('id, name')
           .eq('slug', targetSlug)
           .single();
+        business = data;
+      }
+      
+      if (!business && targetPhone) {
+        const { data } = await supabase
+          .from('businesses')
+          .select('id, name')
+          .eq('phone', targetPhone)
+          .single();
+        business = data;
+      }
 
-        if (business) {
-          // 2. Lấy ID của gói VIP (ví dụ gói có tên 'VIP' hoặc gói có giá > 0 đầu tiên)
-          const { data: plan } = await supabase
-            .from('plans')
-            .select('id')
-            .eq('is_active', true)
-            .ilike('name', '%Premium%')
-            .limit(1)
-            .single();
+      if (business) {
+        // 2. Lấy ID của gói VIP (ví dụ gói có tên 'VIP' hoặc gói có giá > 0 đầu tiên)
+        const { data: plan } = await supabase
+          .from('plans')
+          .select('id')
+          .eq('is_active', true)
+          .ilike('name', '%Premium%')
+          .limit(1)
+          .single();
 
-          if (plan) {
-            // 3. Tạo membership mới (1 năm)
-            const expiresAt = new Date();
-            expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 năm
+        if (plan) {
+          // 3. Tạo membership mới (1 năm)
+          const expiresAt = new Date();
+          expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 năm
 
-            await supabase.from('memberships').insert({
-              business_id: business.id,
-              plan_id: plan.id,
-              status: 'active',
-              starts_at: new Date().toISOString(),
-              expires_at: expiresAt.toISOString(),
-            });
+          await supabase.from('memberships').insert({
+            business_id: business.id,
+            plan_id: plan.id,
+            status: 'active',
+            starts_at: new Date().toISOString(),
+            expires_at: expiresAt.toISOString(),
+          });
 
-            // 4. Update Business hiển thị "is_featured" và cập nhật plan_id, plan_tier
-            await supabase.from('businesses')
-              .update({ is_featured: true, plan_id: plan.id, plan_tier: 'premium' })
-              .eq('id', business.id);
+          // 4. Update Business hiển thị "is_featured" và cập nhật plan_id, plan_tier
+          await supabase.from('businesses')
+            .update({ is_featured: true, plan_id: plan.id, plan_tier: 'premium' })
+            .eq('id', business.id);
 
-            console.log(`Successfully upgraded business ${targetSlug} to VIP via SePay transaction ${payload.id}`);
-          }
+          console.log(`Successfully upgraded business ${business.name} to VIP via SePay transaction ${payload.id}`);
         }
       }
     }

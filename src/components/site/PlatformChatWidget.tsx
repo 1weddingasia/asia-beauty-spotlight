@@ -104,7 +104,14 @@ export function PlatformChatWidget() {
             {messages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${getBubbleClass(msg.role)}`}>
-                  {msg.content}
+                  {/* Tự động render hình ảnh nếu có cú pháp markdown ![alt](url) */}
+                  {msg.content.split(/(!\[.*?\]\(.*?\))/g).map((part, i) => {
+                    const match = part.match(/!\[(.*?)\]\((.*?)\)/);
+                    if (match) {
+                      return <img key={i} src={match[2]} alt={match[1]} className="max-w-full rounded-md mt-2 shadow-sm border" />;
+                    }
+                    return <span key={i} className="whitespace-pre-wrap">{part}</span>;
+                  })}
                 </div>
               </div>
             ))}

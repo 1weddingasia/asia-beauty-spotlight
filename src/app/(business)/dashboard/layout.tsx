@@ -110,7 +110,7 @@ export default async function BusinessDashboardLayout({ children }: { children: 
                   </h4>
                   <p className="text-xs text-muted-foreground mb-3">Liên hệ 1Beauty để kích hoạt chính thức (500.000đ/năm).</p>
                   <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
-                    <Link href="/lien-he">Kích hoạt ngay</Link>
+                    <Link href="/dashboard/upgrade">Kích hoạt ngay</Link>
                   </Button>
                 </div>
               );
