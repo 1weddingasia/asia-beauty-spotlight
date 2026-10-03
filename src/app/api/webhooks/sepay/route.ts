@@ -32,8 +32,15 @@ export async function POST(request: Request) {
     let isAuthenticated = false;
 
     // Cách 1: Xác thực bằng Token (Authorization: Apikey <secret> hoặc Bearer <secret>)
-    if (authHeader && (authHeader === `Apikey ${secret}` || authHeader === `Bearer ${secret}`)) {
-      isAuthenticated = true;
+    if (authHeader) {
+      const expectedApikey = `Apikey ${secret}`;
+      const expectedBearer = `Bearer ${secret}`;
+      if (
+        (authHeader.length === expectedApikey.length && crypto.timingSafeEqual(Buffer.from(authHeader), Buffer.from(expectedApikey))) ||
+        (authHeader.length === expectedBearer.length && crypto.timingSafeEqual(Buffer.from(authHeader), Buffer.from(expectedBearer)))
+      ) {
+        isAuthenticated = true;
+      }
     } 
     // Cách 2: Xác thực bằng HMAC-SHA256 Signature (Nếu SePay có hỗ trợ gửi x-sepay-signature)
     else if (signature) {
@@ -48,7 +55,7 @@ export async function POST(request: Request) {
     }
 
     if (!isAuthenticated) {
-      console.error("Invalid SePay Token or Signature. Header Auth:", authHeader, "Signature:", signature);
+      console.error("Invalid SePay Token or Signature. HasAuthHeader:", !!authHeader, "HasSignature:", !!signature);
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
