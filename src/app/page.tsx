@@ -8,7 +8,7 @@ import { createStaticClient } from "@/utils/supabase/server";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "1Beauty.Asia — Cổng Bắt Khách 1-Chạm Cho Tiệm Làm Đẹp",
+  title: "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp",
   description: "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
 };
 
@@ -41,7 +41,7 @@ export default async function HomePage() {
           </div>
 
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight">
-            Cổng Bắt Khách{" "}
+            Cổng Nhận Khách{" "}
             <span className="text-gradient-gold">1-Chạm</span>
             <br />cho Tiệm Làm Đẹp
           </h1>
