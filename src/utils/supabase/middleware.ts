@@ -40,15 +40,11 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
     
-    // Kiểm tra quyền hạn Chủ Doanh Nghiệp (Owner)
+    // Kiểm tra quyền hạn Admin
     const role = user.user_metadata?.role;
-    if (role === 'owner') {
-      if (request.nextUrl.pathname === '/admin' || 
-          request.nextUrl.pathname.startsWith('/admin/users') || 
-          request.nextUrl.pathname.startsWith('/admin/settings')) {
-        url.pathname = '/dashboard'; 
-        return NextResponse.redirect(url);
-      }
+    if (role !== 'admin' && role !== 'superadmin') {
+      url.pathname = '/dashboard'; 
+      return NextResponse.redirect(url);
     }
   }
 
@@ -63,7 +59,7 @@ export async function updateSession(request: NextRequest) {
   // Redirect away from login if already logged in
   if (request.nextUrl.pathname === '/login' && user) {
     const role = user.user_metadata?.role;
-    if (role === 'owner') {
+    if (role !== 'admin' && role !== 'superadmin') {
        url.pathname = '/dashboard'; 
     } else {
        url.pathname = '/admin';

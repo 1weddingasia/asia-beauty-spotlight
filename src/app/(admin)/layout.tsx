@@ -25,8 +25,8 @@ export default async function AdminLayout({
 
   // Kiểm tra role — chỉ admin/superadmin mới vào được /admin
   const role = user.user_metadata?.role;
-  if (role === "owner") {
-    // Owner (chủ doanh nghiệp) không có quyền truy cập admin panel
+  if (role !== "admin" && role !== "superadmin") {
+    // Chỉ admin mới có quyền vào, còn lại (owner, user mới, null) vào dashboard
     redirect("/dashboard");
   }
 
