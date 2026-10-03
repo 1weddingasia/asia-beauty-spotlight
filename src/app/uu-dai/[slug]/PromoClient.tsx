@@ -294,9 +294,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service: any, index: number) => (
                 <div key={index} className="bg-white rounded-3xl p-5 shadow-sm border border-gold/20 flex flex-row gap-4 items-center transition-all duration-500 hover:shadow-xl hover:shadow-gold/10 hover:-translate-y-1.5 hover:scale-105 hover:border-gold/50 group">
-                  {service.image_url && (
+                  {(service.image || service.image_url) && (
                     <div className="size-24 rounded-2xl overflow-hidden relative shrink-0 bg-slate-100 shadow-inner group-hover:shadow-md transition-shadow">
-                      <Image src={service.image_url} alt={service.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <Image src={service.image || service.image_url} alt={service.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
