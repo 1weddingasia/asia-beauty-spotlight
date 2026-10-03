@@ -97,8 +97,8 @@ export async function POST(req: Request) {
 
     const prevCount = previousVisits?.length ?? 0;
     
-    // Ngăn chặn lưu cùng 1 ưu đãi nhiều lần (Spam/Duplicate Backend Check)
-    if (previousVisits && previousVisits.some(v => v.deal_name === deal_name)) {
+    const normalizedDealName = deal_name || 'Nhận Ưu Đãi Chung';
+    if (previousVisits && previousVisits.some(v => (v.deal_name || 'Nhận Ưu Đãi Chung') === normalizedDealName)) {
       return NextResponse.json({ error: 'Bạn đã đăng ký nhận ưu đãi này rồi. Vui lòng chọn ưu đãi khác hoặc kiểm tra lại tin nhắn.' }, { status: 400 });
     }
 
@@ -113,7 +113,7 @@ export async function POST(req: Request) {
         business_id,
         customer_name: customer_name || 'Khách vãng lai',
         customer_phone: cleanPhone,
-        deal_name: deal_name || 'Nhận Ưu Đãi Chung',
+        deal_name: normalizedDealName,
         voucher_code,
         visit_count: visitNumber,
       });

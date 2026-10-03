@@ -188,7 +188,7 @@ export default function BusinessProfilePage() {
   };
 
   const addDeal = () => {
-    handlePageContentChange("deals", [...(pageContent.deals || []), { title: "", original_price: "", promo_price: "", badge: "", note: "" }]);
+    handlePageContentChange("deals", [...(pageContent.deals || []), { id: `deal-${Math.random().toString(36).substring(2, 9)}`, title: "", original_price: "", promo_price: "", badge: "", note: "", status: "active" }]);
   };
   const removeDeal = (index: number) => {
     handlePageContentChange("deals", pageContent.deals.filter((_: any, i: number) => i !== index));

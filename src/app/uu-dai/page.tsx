@@ -40,7 +40,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
         business: { slug: b.slug, name: b.name },
       }));
     })
-    .filter((o: any) => o.status !== 'paused' && (o.validFrom === undefined || isOfferActive(o.validFrom, o.validUntil)))
+    .filter((o: any) => o.status !== 'paused' && isOfferActive(o.validFrom, o.validUntil))
     .sort((a: any, b: any) => {
       const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
       const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
