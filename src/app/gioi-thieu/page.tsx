@@ -20,7 +20,9 @@ import {
   Sparkles
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+
+const PRICING_AMOUNT = "500.000đ";
+const SETUP_TIME = "15 phút";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 30 },
@@ -37,7 +39,7 @@ const staggerContainer = {
   }
 };
 
-export default function LookbookPage() {
+export default function GioiThieuPage() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden pt-20">
       
@@ -149,7 +151,7 @@ export default function LookbookPage() {
       </section>
 
       {/* II. GIẢI PHÁP */}
-      <section id="giai-phap" className="py-24 md:py-32 bg-ink text-white relative overflow-hidden">
+      <section id="giai-phap" className="py-24 md:py-32 bg-ink text-white relative overflow-hidden scroll-mt-20">
         <div className="absolute -right-20 top-20 text-[20vw] font-display text-white/5 font-bold leading-none select-none pointer-events-none">
           SOLUTION
         </div>
@@ -166,7 +168,7 @@ export default function LookbookPage() {
               Chìa Khóa Trao Tay Cho Chủ Tiệm
             </h2>
             <p className="text-xl md:text-2xl font-light leading-relaxed max-w-4xl mx-auto text-gray-300">
-              1Beauty.asia không phải là một phần mềm phức tạp bắt chủ tiệm phải học sử dụng. Chúng tôi cung cấp <strong className="text-white font-medium">giải pháp trọn gói A-Z</strong>: Tiệm chỉ cần gửi bảng giá, 1Beauty lo toàn bộ khâu kỹ thuật và bàn giao hệ thống hoàn chỉnh sẵn sàng đón khách sau 15 phút.
+              1Beauty.asia không phải là một phần mềm phức tạp bắt chủ tiệm phải học sử dụng. Chúng tôi cung cấp <strong className="text-white font-medium">giải pháp trọn gói A-Z</strong>: Tiệm chỉ cần gửi bảng giá, 1Beauty lo toàn bộ khâu kỹ thuật và bàn giao hệ thống hoàn chỉnh sẵn sàng đón khách sau {SETUP_TIME}.
             </p>
           </motion.div>
         </div>
@@ -404,10 +406,10 @@ export default function LookbookPage() {
               </thead>
               <tbody className="text-gray-300">
                 {[
-                  { crit: "Chi phí đầu tư", fz: "Miễn phí (nhưng tốn tiền nhân viên trực)", web: "5M – 10M VNĐ", beauty: "500.000đ/năm (Trọn gói)" },
+                  { crit: "Chi phí đầu tư", fz: "Miễn phí (nhưng tốn tiền nhân viên trực)", web: "5M – 10M VNĐ", beauty: `${PRICING_AMOUNT}/năm (Trọn gói)` },
                   { crit: "Tốc độ đón khách", fz: "Chậm (phụ thuộc người cầm máy)", web: "Rườm rà (nhiều bước đăng ký)", beauty: "3 giây (Chỉ cần 1 chạm điền SĐT)" },
                   { crit: "Nguy cơ sót đơn", fz: "Rất cao (trôi tin, khách thoát)", web: "Trung bình (khách lười điền form)", beauty: "0% (Chuông Telegram nổ tức thì)" },
-                  { crit: "Thời gian triển khai", fz: "Tự quản lý thủ công", web: "Mất 2 – 4 tuần lập trình", beauty: "Bàn giao dùng ngay trong 15 phút" },
+                  { crit: "Thời gian triển khai", fz: "Tự quản lý thủ công", web: "Mất 2 – 4 tuần lập trình", beauty: `Bàn giao dùng ngay trong ${SETUP_TIME}` },
                   { crit: "Quảng bá cộng đồng", fz: "Tự chạy quảng cáo", web: "Tự làm SEO", beauty: "Xuất hiện miễn phí trên Khám Phá" },
                 ].map((row, idx) => (
                   <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors">
@@ -487,7 +489,7 @@ export default function LookbookPage() {
             
             <div className="inline-block border-2 border-gold p-8 md:p-12 rounded-2xl mb-12 bg-black/30 backdrop-blur-sm">
               <div className="text-2xl text-gray-300 mb-2">Chi phí trọn gói</div>
-              <div className="text-5xl md:text-7xl font-bold text-gold mb-4">500.000đ<span className="text-2xl text-gray-400 font-normal">/Năm</span></div>
+              <div className="text-5xl md:text-7xl font-bold text-gold mb-4">{PRICING_AMOUNT}<span className="text-2xl text-gray-400 font-normal">/Năm</span></div>
               <p className="text-gray-400 italic">~ 1.300đ mỗi ngày (chưa bằng một cốc trà đá)</p>
             </div>
 
@@ -511,7 +513,7 @@ export default function LookbookPage() {
             </div>
 
             <p className="text-xl text-gold font-medium mb-10">
-              Cam kết bàn giao: Hoàn tất cài đặt & chạy thực tế trong 15 – 30 phút.
+              Cam kết bàn giao: Hoàn tất cài đặt & chạy thực tế trong {SETUP_TIME}.
             </p>
 
             <Link href="/register" className="inline-block bg-gold text-ink font-bold uppercase tracking-widest px-12 py-5 rounded-sm hover:bg-white transition-all duration-300 transform hover:-translate-y-1">
