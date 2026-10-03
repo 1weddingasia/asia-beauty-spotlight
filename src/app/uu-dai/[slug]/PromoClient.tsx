@@ -12,12 +12,11 @@ import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SiteHeader } from "@/components/site/Layout";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
 });
-
-import { SiteHeader } from "@/components/site/Layout";
 
 type Deal = {
   id: string;
@@ -184,7 +183,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       <SiteHeader solid={false} />
       
       {/* Premium Hero Section */}
-      <div className="relative h-screen w-full overflow-hidden group">
+      <div className="relative h-[100svh] w-full overflow-hidden group">
         <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
             {banners.map((img: string, idx: number) => (
@@ -383,11 +382,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 dangerouslySetInnerHTML={{ __html: b.about || b.description || "Nội dung đang được cập nhật." }}
               />
 
-              {b.amenities && b.amenities.length > 0 && (
+              {b.page_content?.amenities && b.page_content.amenities.length > 0 && (
                 <div className="pt-6 border-t border-border mt-8">
                   <h3 className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold mb-4">Tiện Ích Không Gian</h3>
                   <div className="flex flex-wrap gap-2">
-                    {b.amenities.map((amenity: string, idx: number) => (
+                    {b.page_content.amenities.map((amenity: string, idx: number) => (
                       <span key={idx} className="bg-champagne border border-gold-soft text-ink text-xs px-3 py-1.5 rounded-full">
                         {amenity}
                       </span>
@@ -417,17 +416,17 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </div>
                 )}
 
-                {(b.socials?.zalo || zaloLink !== '#') && (
+                {zaloLink !== '#' && (
                   <div className="flex items-center gap-3">
                     <MessageCircle className="size-4 md:size-5 text-gold shrink-0" />
-                    <a href={b.socials?.zalo || zaloLink} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline">Chat Zalo</a>
+                    <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline">Chat Zalo</a>
                   </div>
                 )}
 
-                {(b.email || b.socials?.email) && (
+                {b.email && (
                   <div className="flex items-center gap-3">
                     <Mail className="size-4 md:size-5 text-gold shrink-0" />
-                    <a href={`mailto:${b.email || b.socials?.email}`} className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">{b.email || b.socials?.email}</a>
+                    <a href={`mailto:${b.email}`} className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">{b.email}</a>
                   </div>
                 )}
 
@@ -467,14 +466,16 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 </div>
               )}
 
-              <a
-                href={zaloLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full block bg-gradient-to-r from-gold to-gold-soft rounded-full px-6 py-4 text-center text-xs md:text-sm font-semibold tracking-[0.1em] text-ink uppercase hover:opacity-90 transition-opacity"
-              >
-                Liên Hệ Zalo
-              </a>
+              {zaloLink !== '#' && (
+                <a
+                  href={zaloLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full block bg-gradient-to-r from-gold to-gold-soft rounded-full px-6 py-4 text-center text-xs md:text-sm font-semibold tracking-[0.1em] text-ink uppercase hover:opacity-90 transition-opacity"
+                >
+                  Liên Hệ Zalo
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -628,7 +629,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
       <div className="mt-16 pb-8 text-center px-4">
         <p className="text-xs text-muted-foreground">
-          Cổng đặt hẹn bảo trợ bởi 1Beauty.asia – Hotline hỗ trợ: <span className="font-semibold text-ink">090 909 0909</span>
+          Được thực hiện bởi <Link href="/lien-he" className="font-semibold text-ink hover:text-gold transition-colors">1Beauty.asia</Link>
         </p>
       </div>
     </div>
