@@ -2,14 +2,15 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { createAdminClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import jwt from 'jsonwebtoken';
 
 const openai = new OpenAI({
   baseURL: 'https://api.deepseek.com',
   apiKey: process.env.DEEPSEEK_API_KEY || '',
 });
 
-// A simple in-memory session or just use the claim_token as the adminToken for simplicity.
-// For production, a real JWT or session should be used.
+const JWT_SECRET = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'default_secret'; // Use a strong secret in production
+
 export async function POST(req: Request) {
   try {
     const { slug, messages, adminToken } = await req.json();
@@ -31,7 +32,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Business not found' }, { status: 404 });
     }
 
-    const isAdmin = (adminToken === business.claim_token && business.claim_token != null) || (adminToken === '123456');
+    // Verify admin token securely
+    let isAdmin = false;
+    if (adminToken && business.claim_token) {
+      try {
+        const decoded = jwt.verify(adminToken, JWT_SECRET) as any;
+        if (decoded.business_id === business.id && decoded.is_admin) {
+          isAdmin = true;
+        }
+      } catch (err) {
+        // Invalid token
+      }
+    }
 
     // Build the system prompt
     let systemPrompt = `Bạn là Trợ lý AI thông minh của nền tảng 1Booking / 1Beauty. Bạn đang hỗ trợ cho cơ sở ${business.name}.
@@ -128,21 +140,35 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
 
     if (responseMessage.tool_calls) {
       for (const tCall of responseMessage.tool_calls) {
-        const toolCall: any = tCall;
+        const toolCall = tCall as OpenAI.Chat.Completions.ChatCompletionMessageToolCall; // properly type
         const functionName = toolCall.function.name;
-        const functionArgs = JSON.parse(toolCall.function.arguments);
+        
+        let functionArgs;
+        try {
+          functionArgs = JSON.parse(toolCall.function.arguments);
+        } catch (e) {
+          toolResponses.push({
+            tool_call_id: toolCall.id,
+            role: "tool",
+            name: functionName,
+            content: "Lỗi: Không thể phân tích đối số của Tool.",
+          });
+          continue;
+        }
+
         let result = "";
 
         if (functionName === "authenticate_owner") {
-          if (functionArgs.passcode === business.claim_token || functionArgs.passcode === '123456') { // Fallback pass for demo
-            newToken = business.claim_token || '123456';
+          // Compare securely, no hardcoded fallbacks
+          if (business.claim_token && functionArgs.passcode === business.claim_token) {
+            newToken = jwt.sign({ business_id: business.id, is_admin: true }, JWT_SECRET, { expiresIn: '2h' });
             result = "Xác thực thành công! Bạn đã vào chế độ Quản Trị. Bạn có thể sử dụng các lệnh sửa đổi ngay bây giờ.";
           } else {
             result = "Sai mật khẩu hoặc Claim Token.";
           }
         } 
         else if (functionName === "update_business_info") {
-          if (!isAdmin && newToken !== (business.claim_token || '123456')) {
+          if (!isAdmin) {
             result = "Lỗi: Bạn chưa xác thực quyền admin!";
           } else {
             const updates: any = {};
@@ -151,19 +177,27 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             if (functionArgs.address) updates.address = functionArgs.address;
             if (functionArgs.description) updates.description = functionArgs.description;
             
-            await supabase.from('businesses').update(updates).eq('id', business.id);
-            isDataUpdated = true;
-            result = "Đã cập nhật thông tin cơ bản thành công!";
+            if (Object.keys(updates).length > 0) {
+              await supabase.from('businesses').update(updates).eq('id', business.id);
+              isDataUpdated = true;
+              result = "Đã cập nhật thông tin cơ bản thành công!";
+            } else {
+              result = "Không có thông tin nào để cập nhật.";
+            }
           }
         }
         else if (functionName === "update_services_or_deals") {
-          if (!isAdmin && newToken !== (business.claim_token || '123456')) {
+          if (!isAdmin) {
             result = "Lỗi: Bạn chưa xác thực quyền admin!";
+          } else if (functionArgs.target !== "services" && functionArgs.target !== "deals") {
+            result = "Lỗi: Target chỉ được phép là 'services' hoặc 'deals'.";
           } else {
+            const targetProp = functionArgs.target as "services" | "deals";
             const pageContent = business.page_content || {};
-            const targetArray = pageContent[functionArgs.target] || [];
+            const targetArray = pageContent[targetProp] || [];
             
             let newArray = [...targetArray];
+            let changed = false;
             
             if (functionArgs.action === 'add') {
               newArray.push({
@@ -172,27 +206,39 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
                 original_price: functionArgs.original_price,
                 description: functionArgs.description
               });
+              changed = true;
               result = `Đã thêm ${functionArgs.item_name} thành công!`;
             } else if (functionArgs.action === 'update') {
               const index = newArray.findIndex((item: any) => item.name?.toLowerCase().includes(functionArgs.item_name.toLowerCase()));
               if (index >= 0) {
                 newArray[index] = { ...newArray[index], price: functionArgs.price || newArray[index].price, original_price: functionArgs.original_price || newArray[index].original_price, description: functionArgs.description || newArray[index].description };
+                changed = true;
                 result = `Đã sửa ${functionArgs.item_name} thành công!`;
               } else {
                 result = `Không tìm thấy ${functionArgs.item_name} để sửa.`;
               }
             } else if (functionArgs.action === 'delete') {
+              const prevLen = newArray.length;
               newArray = newArray.filter((item: any) => !item.name?.toLowerCase().includes(functionArgs.item_name.toLowerCase()));
-              result = `Đã xóa ${functionArgs.item_name} thành công!`;
+              if (newArray.length < prevLen) {
+                changed = true;
+                result = `Đã xóa ${functionArgs.item_name} thành công!`;
+              } else {
+                result = `Không tìm thấy ${functionArgs.item_name} để xóa.`;
+              }
             }
 
-            pageContent[functionArgs.target] = newArray;
-            await supabase.from('businesses').update({ page_content: pageContent }).eq('id', business.id);
-            isDataUpdated = true;
+            if (changed) {
+              pageContent[targetProp] = newArray;
+              await supabase.from('businesses').update({ page_content: pageContent }).eq('id', business.id);
+              isDataUpdated = true;
+            }
           }
         }
         else if (functionName === "get_admin_links") {
-           result = "Link Telegram: https://t.me/OneBeautyBot \nLink CRM: https://1beauty.asia/dashboard/leads";
+           const telegramUrl = process.env.TELEGRAM_BOT_URL || "https://t.me/OneBeautyBot";
+           const crmUrl = process.env.CRM_URL || "https://1beauty.asia/dashboard/leads";
+           result = `Link Telegram: ${telegramUrl} \nLink CRM: ${crmUrl}`;
         }
 
         toolResponses.push({
@@ -214,7 +260,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
       });
 
       if (isDataUpdated) {
-        revalidatePath(`/uu-dai/[slug]`);
+        revalidatePath('/uu-dai/[slug]', 'page');
       }
 
       return NextResponse.json({

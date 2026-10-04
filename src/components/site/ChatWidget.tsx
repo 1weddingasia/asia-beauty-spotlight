@@ -22,10 +22,11 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
   
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const stored = sessionStorage.getItem("adminToken");
+      const storageKey = `adminToken:${slug || businessId}`;
+      const stored = sessionStorage.getItem(storageKey);
       if (stored) setAdminToken(stored);
     }
-  }, []);
+  }, [slug, businessId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -63,7 +64,9 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
       
       if (data.adminToken && data.adminToken !== adminToken) {
         setAdminToken(data.adminToken);
-        sessionStorage.setItem("adminToken", data.adminToken);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(`adminToken:${slug || businessId}`, data.adminToken);
+        }
       }
 
       if (data.reply) {
