@@ -2,6 +2,7 @@ import { PageShell } from "@/components/site/Layout";
 import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { createStaticClient } from "@/utils/supabase/server";
+import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
 
 import { isOfferActive } from "@/lib/date-utils";
 
@@ -181,6 +182,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
           </div>
         )}
       </div>
+      <PlatformChatWidget mode="b2c" />
     </PageShell>
   );
 }

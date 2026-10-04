@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Chưa cấu hình API Key" }, { status: 500 });
     }
 
-    const { messages } = await req.json();
+    const { messages, mode = 'b2b' } = await req.json();
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: "Missing required fields or invalid format" }, { status: 400 });
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     const userPhoneFound = extractPhone(allUserTexts);
     const lastUserMsg = userMessages[userMessages.length - 1];
 
-    const systemPrompt = `BẠN LÀ: Trợ lý kinh doanh B2B trực tuyến chuyên nghiệp của nền tảng 1Beauty.Asia.
+    const b2bPrompt = `BẠN LÀ: Trợ lý kinh doanh B2B trực tuyến chuyên nghiệp của nền tảng 1Beauty.Asia.
 QUY TẮC BẮT BUỘC:
 1. Luôn chào khách (thường là các chủ tiệm Spa, Salon, Nail, Thẩm mỹ) lịch sự, xưng "em" gọi "anh/chị chủ tiệm".
 2. SỨ MỆNH: Tư vấn giải pháp "Cổng đón khách & chống trôi đơn tự động" của 1Beauty giúp các chủ tiệm tăng doanh thu, không bao giờ bỏ sót khách hàng.
@@ -100,7 +100,25 @@ QUY TẮC BẮT BUỘC:
 [THÔNG TIN NGỮ CẢNH]:
 - Thời gian hiện tại: ${today}
 - Thông tin khách hàng đã biết: ${userPhoneFound ? `Đã có SĐT là ${userPhoneFound}` : 'Chưa cung cấp SĐT'}
-`;
+\`;
+
+    const b2cPrompt = \`BẠN LÀ: Trợ lý tư vấn làm đẹp chuyên nghiệp của cộng đồng 1Beauty.Asia.
+QUY TẮC BẮT BUỘC:
+1. Luôn chào khách lịch sự, xưng "em" gọi "anh/chị".
+2. SỨ MỆNH: Giúp người dùng tìm kiếm, tư vấn các dịch vụ làm đẹp (Spa, Thẩm mỹ, Nail, Mi...) và hướng dẫn họ nhận các ƯU ĐÃI (Deal) trên nền tảng 1Beauty.Asia.
+3. Nếu khách hỏi một dịch vụ cụ thể, hãy hướng dẫn họ sử dụng thanh tìm kiếm (Khám Phá Ưu Đãi) trên trang web để tìm tiệm phù hợp.
+4. KHÔNG tư vấn bệnh lý y khoa, chỉ tư vấn dịch vụ thẩm mỹ.
+5. Luôn nói chuyện một cách vui vẻ, thân thiện, và khuyên khách hàng nhanh tay lấy ưu đãi vì số lượng có hạn.
+
+[THÔNG TIN HỆ THỐNG]:
+- 1Beauty.Asia là nền tảng chuyên tổng hợp ưu đãi làm đẹp uy tín nhất.
+- Tại đây, khách hàng có thể đăng ký giữ chỗ và nhận mã ưu đãi từ hàng ngàn Spa.
+
+[THÔNG TIN NGỮ CẢNH]:
+- Thời gian hiện tại: \${today}
+\`;
+
+    const systemPrompt = mode === 'b2c' ? b2cPrompt : b2bPrompt;
 
     // Gửi báo cáo Lead Telegram
     const lastMsgPhone = lastUserMsg ? extractPhone(lastUserMsg.content as string) : null;

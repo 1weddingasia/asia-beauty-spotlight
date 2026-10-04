@@ -142,7 +142,7 @@ export default function DealsManagementPage() {
       setBusiness({ ...business, page_content: updatedContent });
       setDeals(cleanDeals);
       setCrossSells(crossSells);
-      toast.success("Đã lưu cấu hình Ưu đãi & Bán chéo!");
+      toast.success("Đã lưu cấu hình Ưu đãi & Mua kèm!");
     } catch (err: any) {
       console.error("Lỗi khi lưu cấu hình ưu đãi:", err);
       toast.error("Không thể lưu cấu hình. Vui lòng thử lại sau.");
@@ -509,18 +509,18 @@ export default function DealsManagementPage() {
       <div className="rounded-2xl border bg-card p-6 shadow-sm border-purple-100">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-lg font-bold text-ink text-purple-700">Dịch vụ & Sản phẩm bán chéo (Cross-sell/Upsell)</h2>
+            <h2 className="text-lg font-bold text-ink text-purple-700">Dịch vụ & Sản phẩm mua kèm (Cross-sell/Upsell)</h2>
             <p className="text-sm text-muted-foreground">Khách có thể chọn mua thêm các sản phẩm này trong popup đặt lịch.</p>
           </div>
           <Button onClick={addCrossSell} variant="outline" className="text-purple-600 border-purple-600 hover:bg-purple-50">
-            <Plus className="size-4 mr-2" /> Thêm Bán Chéo
+            <Plus className="size-4 mr-2" /> Thêm Mua Kèm
           </Button>
         </div>
 
         <div className="space-y-4">
           {crossSells.length === 0 ? (
             <div className="text-center py-6 bg-purple-50/50 border border-dashed rounded-xl">
-              <p className="text-muted-foreground">Chưa có sản phẩm bán chéo nào. Bán chéo giúp gia tăng doanh thu trên mỗi khách hàng!</p>
+              <p className="text-muted-foreground">Chưa có sản phẩm mua kèm nào. Gợi ý mua kèm giúp gia tăng doanh thu trên mỗi khách hàng!</p>
             </div>
           ) : (
             crossSells.map((cs, idx) => (

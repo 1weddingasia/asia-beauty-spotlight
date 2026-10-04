@@ -177,7 +177,7 @@ export default function LeadsPage() {
       return "Chưa gọi";
     };
 
-    const headers = ["Ngày đặt", "Tên khách", "Số điện thoại", "Gói Ưu đãi", "Bán chéo", "Trạng thái", "Ghi chú"];
+    const headers = ["Ngày đặt", "Tên khách", "Số điện thoại", "Gói Ưu đãi", "Sản phẩm mua kèm", "Trạng thái", "Ghi chú"];
     const csvData = leads.map(l => [
       escapeCSV(format(new Date(l.created_at), 'dd/MM/yyyy HH:mm')),
       escapeCSV(l.customer_name),
@@ -256,7 +256,7 @@ export default function LeadsPage() {
                 <tr>
                   <th className="px-6 py-4 font-semibold">Giờ đặt</th>
                   <th className="px-6 py-4 font-semibold">Khách hàng</th>
-                  <th className="px-6 py-4 font-semibold hidden md:table-cell">Gói ưu đãi & Bán chéo</th>
+                  <th className="px-6 py-4 font-semibold hidden md:table-cell">Gói ưu đãi & Mua kèm</th>
                   <th className="px-6 py-4 font-semibold">Lần ghé</th>
                   <th className="px-6 py-4 font-semibold">Trạng thái</th>
                   <th className="px-6 py-4 font-semibold">Ghi chú nhanh</th>

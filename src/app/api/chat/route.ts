@@ -55,6 +55,7 @@ export async function POST(req: Request) {
     }
 
     const services = business.page_content?.services || 'Đang cập nhật';
+    const crossSells = business.page_content?.cross_sells || [];
 
     // Xử lý thông tin khách từ lịch sử chat
     const userMessages = messages.filter((m: any) => m.role === 'user');
@@ -73,13 +74,15 @@ QUY TẮC BẮT BUỘC:
 5. Mục tiêu cao nhất: Khéo léo nhắc khách để lại Số Điện Thoại để nhận voucher giảm giá hoặc giữ lịch hẹn.
 6. NẾU KHÁCH ĐÃ CUNG CẤP SỐ ĐIỆN THOẠI (xem ở mục Thông tin khách đã biết): TUYỆT ĐỐI KHÔNG HỎI LẠI SĐT. Hãy ghi nhớ số này và tư vấn trực tiếp.
 7. Nếu khách hàng tỏ ý "chốt đơn", "đặt lịch hẹn", "mua liệu trình", bạn BẮT BUỘC phải chèn thêm đúng chuỗi "[CHOT_DON]" vào cuối câu trả lời của bạn.
+8. BÁN CHÉO (UPSELL/CROSS-SELL): Nếu khách có vẻ quan tâm hoặc đã đồng ý lấy ưu đãi, HÃY KHÉO LÉO tư vấn và mời khách mua/đăng ký thêm các "Sản phẩm/Dịch vụ mua kèm" (ưu đãi thêm) dưới đây để tiệm gia tăng doanh thu. Chỉ giới thiệu các sản phẩm mua kèm CÓ TRONG DANH SÁCH.
 
 [DỮ LIỆU TIỆM]:
 - Tên tiệm: ${business.name}
 - Hotline: ${business.page_content?.phone || 'Chưa cập nhật'}
 - Địa chỉ: ${business.address || 'Chưa cập nhật'}
 - Bảng giá/Dịch vụ: ${JSON.stringify(services)}
-- Ưu đãi: ${JSON.stringify(deals)}
+- Ưu đãi chính: ${JSON.stringify(deals)}
+- Sản phẩm/Dịch vụ mua kèm (Cross-sell): ${JSON.stringify(crossSells)}
 
 [THÔNG TIN NGỮ CẢNH]:
 - Thời gian hiện tại: ${today}

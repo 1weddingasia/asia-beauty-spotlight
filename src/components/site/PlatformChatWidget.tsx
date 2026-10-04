@@ -13,10 +13,13 @@ const getBubbleClass = (role: ChatMsg['role']) => {
   return 'bg-white border shadow-sm rounded-tl-sm';
 };
 
-export function PlatformChatWidget() {
+export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([
-    { id: '1', role: 'assistant', content: `Chào chủ tiệm, 1Beauty có thể giúp gì để tăng doanh thu cho quán bạn hôm nay?` }
+    { id: '1', role: 'assistant', content: mode === 'b2b' 
+      ? `Chào chủ tiệm, 1Beauty có thể giúp gì để tăng doanh thu cho quán bạn hôm nay?`
+      : `Chào bạn, bạn đang tìm kiếm ưu đãi làm đẹp hoặc dịch vụ gì hôm nay? 1Beauty sẽ hỗ trợ bạn ngay!`
+    }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,7 +48,8 @@ export function PlatformChatWidget() {
           messages: [
             ...messages.filter(m => m.role !== 'error').map(m => ({ role: m.role, content: m.content })),
             { role: 'user', content: userMsg }
-          ]
+          ],
+          mode
         })
       });
       
@@ -136,7 +140,7 @@ export function PlatformChatWidget() {
             <Input 
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="Nhập câu hỏi... (VD: 1Beauty là gì?)"
+              placeholder={mode === 'b2b' ? "Nhập câu hỏi... (VD: 1Beauty là gì?)" : "Nhập nhu cầu... (VD: Mình muốn tìm spa trị mụn)"}
               className="flex-1 rounded-full border-muted-foreground/20"
               disabled={loading}
             />
