@@ -55,6 +55,56 @@ function sendTelegramAsync(chatId: string, message: string) {
   }).catch(err => console.error("Telegram error:", err));
 }
 
+// ═════════════════════════════════════════════════
+// ZALO GATEWAY (abs-zalo-bot sidecar)
+// Tắt mặc định. Chỉ kích hoạt khi ZALO_ENABLED=true trong .env
+// ═════════════════════════════════════════════════
+
+// Round-robin counter for rotating Zalo sender accounts
+let zaloSenderIndex = 0;
+
+function getNextZaloSenderId(): string | null {
+  const senderIds = (process.env.ZALO_SENDER_IDS || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (senderIds.length === 0) return null;
+  const id = senderIds[zaloSenderIndex % senderIds.length];
+  zaloSenderIndex = (zaloSenderIndex + 1) % senderIds.length;
+  return id;
+}
+
+// Fire and forget Zalo alert via abs-zalo-bot sidecar HTTP API
+function sendZaloAsync(toUserId: string, message: string) {
+  if (process.env.ZALO_ENABLED !== 'true') return; // Feature flag — disabled by default
+
+  const sidecarUrl = process.env.ZALO_SIDECAR_URL;
+  const token = process.env.ZALO_SIDECAR_TOKEN;
+  if (!sidecarUrl || !token) {
+    console.warn('[Zalo] ZALO_SIDECAR_URL or ZALO_SIDECAR_TOKEN not set');
+    return;
+  }
+
+  const senderId = getNextZaloSenderId();
+  if (!senderId) {
+    console.warn('[Zalo] No ZALO_SENDER_IDS configured');
+    return;
+  }
+
+  // abs-zalo-bot REST API: POST /api/send-message
+  // See: https://github.com/teddiesloco/abs-zalo-bot
+  fetch(`${sidecarUrl}/api/send-message`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      senderId,    // Zalo account ID to send from (round-robin)
+      toUserId,    // Recipient's Zalo userId
+      message,     // Plain text message
+    }),
+    signal: AbortSignal.timeout(5000), // 5s timeout, never block main response
+  }).catch(err => console.error('[Zalo] Sidecar error:', err));
+}
+
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
@@ -172,7 +222,33 @@ export async function POST(req: Request) {
         const msgForAdmin = `<b>📊 [TOÀN MẠNG] ${safeBusinessName}</b>\n\n${tagLabel} | 📞 ${cleanPhone} | 🎁 ${safeDeal}\nMã: ${voucher_code}`;
         sendTelegramAsync(adminChatId, msgForAdmin);
       }
+
+      // 💬 KÊNH 3: ZALO GATEWAY — chỉ chạy khi ZALO_ENABLED=true trong .env
+      // Round-robin nhiều số Zalo phụ để phân tán tần suất, tránh bị checkpoint
+      if (process.env.ZALO_ENABLED === 'true') {
+        // Tin nhắn gọn cho chủ tiệm qua Zalo (plain text, không HTML)
+        const zaloShopMsg = [
+          `${isVIP ? '🏆 KHACH VIP' : isReturning ? '⭐ KHACH QUEN' : '🔔 KHACH MOI'} — ${business.name}`,
+          `👤 ${customer_name || 'Khach vang lai'}`,
+          `📞 SdT: ${cleanPhone}`,
+          `🎁 Goi: ${deal_name || 'Uu dai chung'}`,
+          `🏷 Ma: ${voucher_code}`,
+          previousVisits && previousVisits.length > 0 ? `📊 Da den: ${previousVisits.length} lan truoc` : '',
+          tip.replace(/<[^>]*>/g, ''), // strip HTML for plain Zalo text
+        ].filter(Boolean).join('\n');
+
+        const zaloShopId = (business.page_content as Record<string, string> | null)?.zalo_owner_id;
+        if (zaloShopId) sendZaloAsync(zaloShopId, zaloShopMsg);
+
+        // Bản sao giám sát cho Admin 1Beauty qua Zalo
+        const zaloAdminId = process.env.ZALO_ADMIN_ID;
+        if (zaloAdminId && zaloAdminId !== zaloShopId) {
+          const zaloAdminMsg = `[1BEAUTY MONITOR] ${business.name} | ${isVIP ? 'VIP' : isReturning ? 'Quen' : 'Moi'} | ${cleanPhone}`;
+          sendZaloAsync(zaloAdminId, zaloAdminMsg);
+        }
+      }
     }
+
     return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
   } catch (error) {
     console.error("API Leads Error:", error);
