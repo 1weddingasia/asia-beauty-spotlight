@@ -20,10 +20,11 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
   // Load admin token from session storage if exists
   const [adminToken, setAdminToken] = useState<string | null>(null);
   
+  const getAdminTokenKey = (slug?: string, businessId?: string) => `adminToken:${slug || businessId}`;
+
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storageKey = `adminToken:${slug || businessId}`;
-      const stored = sessionStorage.getItem(storageKey);
+      const stored = sessionStorage.getItem(getAdminTokenKey(slug, businessId));
       if (stored) setAdminToken(stored);
     }
   }, [slug, businessId]);
@@ -65,7 +66,7 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
       if (data.adminToken && data.adminToken !== adminToken) {
         setAdminToken(data.adminToken);
         if (typeof window !== 'undefined') {
-          sessionStorage.setItem(`adminToken:${slug || businessId}`, data.adminToken);
+          sessionStorage.setItem(getAdminTokenKey(slug, businessId), data.adminToken);
         }
       }
 

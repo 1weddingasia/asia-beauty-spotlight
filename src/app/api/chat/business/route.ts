@@ -9,10 +9,13 @@ const openai = new OpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY || '',
 });
 
-const JWT_SECRET = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'default_secret'; // Use a strong secret in production
-
 export async function POST(req: Request) {
   try {
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      throw new Error("JWT_SECRET is not configured");
+    }
+
     const { slug, messages, adminToken } = await req.json();
 
     if (!slug) {
@@ -36,12 +39,12 @@ export async function POST(req: Request) {
     let isAdmin = false;
     if (adminToken && business.claim_token) {
       try {
-        const decoded = jwt.verify(adminToken, JWT_SECRET) as any;
+        const decoded = jwt.verify(adminToken, JWT_SECRET) as { business_id: string; is_admin: boolean };
         if (decoded.business_id === business.id && decoded.is_admin) {
           isAdmin = true;
         }
       } catch (err) {
-        // Invalid token
+        console.warn('Admin token verification failed:', err instanceof Error ? err.message : err);
       }
     }
 
@@ -140,7 +143,8 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
 
     if (responseMessage.tool_calls) {
       for (const tCall of responseMessage.tool_calls) {
-        const toolCall = tCall as OpenAI.Chat.Completions.ChatCompletionMessageToolCall; // properly type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const toolCall = tCall as any; 
         const functionName = toolCall.function.name;
         
         let functionArgs;
@@ -162,6 +166,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
           // Compare securely, no hardcoded fallbacks
           if (business.claim_token && functionArgs.passcode === business.claim_token) {
             newToken = jwt.sign({ business_id: business.id, is_admin: true }, JWT_SECRET, { expiresIn: '2h' });
+            isAdmin = true; // Grant admin immediately for subsequent tools in this turn
             result = "Xác thực thành công! Bạn đã vào chế độ Quản Trị. Bạn có thể sử dụng các lệnh sửa đổi ngay bây giờ.";
           } else {
             result = "Sai mật khẩu hoặc Claim Token.";
@@ -226,6 +231,8 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
               } else {
                 result = `Không tìm thấy ${functionArgs.item_name} để xóa.`;
               }
+            } else {
+               result = "Lỗi: Hành động không hợp lệ. Chỉ chấp nhận 'add', 'update' hoặc 'delete'.";
             }
 
             if (changed) {
