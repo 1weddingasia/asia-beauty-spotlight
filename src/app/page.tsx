@@ -16,14 +16,23 @@ export default async function HomePage() {
   const supabase = createStaticClient();
 
   // Lấy số lượng tiệm đang hoạt động để social proof
-  const { count: activeShops } = await supabase
-    .from('businesses')
-    .select('*', { count: 'exact', head: true })
-    .in('status', ['published', 'active', 'trial']);
+  let activeShops = 0;
+  let totalLeads = 0;
 
-  const { count: totalLeads } = await supabase
-    .from('business_leads')
-    .select('*', { count: 'exact', head: true });
+  try {
+    const { count: shops } = await supabase
+      .from('businesses')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['published', 'active', 'trial']);
+    activeShops = shops || 0;
+
+    const { count: leads } = await supabase
+      .from('business_leads')
+      .select('*', { count: 'exact', head: true });
+    totalLeads = leads || 0;
+  } catch (error) {
+    console.error("Failed to fetch stats:", error);
+  }
 
   return (
     <div className="flex min-h-screen flex-col">

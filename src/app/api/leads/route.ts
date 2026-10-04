@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/server';
+import { z } from 'zod';
 
-// Basic in-memory rate limiter (Not perfect for serverless but meets basic requirements)
+// TODO (Phase 3): Replace this in-memory Map with Upstash Redis for proper Serverless Edge Rate Limiting.
+// Basic in-memory rate limiter (Not perfect for serverless but meets basic requirements for now)
 const rateLimits = new Map<string, { count: number, resetAt: number }>();
 
 function isRateLimited(ip: string): boolean {
@@ -24,9 +26,14 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-function isValidPhone(phone: string): boolean {
-  return /^(03|05|07|08|09)\d{8}$/.test(phone);
-}
+// Zod schema for input validation and sanitization
+const LeadSchema = z.object({
+  business_id: z.string().uuid("ID doanh nghiệp không hợp lệ"),
+  customer_name: z.string().max(100).optional().default('Khách vãng lai'),
+  customer_phone: z.string().regex(/^(03|05|07|08|09)\d{8}$/, "Số điện thoại không hợp lệ"),
+  deal_name: z.string().max(200).optional().default('Nhận Ưu Đãi Chung'),
+  cross_sell_items: z.string().max(500).optional().nullable()
+});
 
 function generateVoucherCode(businessName: string) {
   const prefix = businessName.substring(0, 3).toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -116,16 +123,20 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { business_id, customer_name, customer_phone, deal_name, cross_sell_items } = body;
-
-    if (!business_id || !customer_phone) {
-      return NextResponse.json({ error: 'Thiếu thông tin bắt buộc' }, { status: 400 });
+    
+    // Validate inputs using Zod
+    if (body.customer_phone) {
+        body.customer_phone = body.customer_phone.replace(/\D/g, '');
+    }
+    
+    const parsedData = LeadSchema.safeParse(body);
+    
+    if (!parsedData.success) {
+      const errorMessage = parsedData.error.issues?.[0]?.message || 'Dữ liệu không hợp lệ';
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    const cleanPhone = customer_phone.replace(/\D/g, '');
-    if (!isValidPhone(cleanPhone)) {
-      return NextResponse.json({ error: 'Số điện thoại không hợp lệ' }, { status: 400 });
-    }
+    const { business_id, customer_name, customer_phone: cleanPhone, deal_name: normalizedDealName, cross_sell_items } = parsedData.data;
 
     const supabase = await createAdminClient();
     
@@ -150,7 +161,6 @@ export async function POST(req: Request) {
 
     const prevCount = previousVisits?.length ?? 0;
     
-    const normalizedDealName = deal_name || 'Nhận Ưu Đãi Chung';
     if (previousVisits && previousVisits.some(v => (v.deal_name || 'Nhận Ưu Đãi Chung') === normalizedDealName)) {
       return NextResponse.json({ error: 'Bạn đã đăng ký nhận ưu đãi này rồi. Vui lòng chọn ưu đãi khác hoặc kiểm tra lại tin nhắn.' }, { status: 400 });
     }
@@ -209,7 +219,7 @@ export async function POST(req: Request) {
 
     // Escape user-supplied HTML to prevent Telegram parse_mode injection
     const safeName = escapeHtml(customer_name || 'Không cung cấp');
-    const safeDeal = escapeHtml(deal_name || 'Ưu đãi chung');
+    const safeDeal = escapeHtml(normalizedDealName);
 
     // Build visit history summary (last 3 visits)
     let historyNote = ''
@@ -251,7 +261,7 @@ export async function POST(req: Request) {
       `${zaloTag} — ${business.name}`,
       `👤 ${customer_name || 'Khach vang lai'}`,
       `📞 SdT: ${cleanPhone}`,
-      `🎁 Goi: ${deal_name || 'Uu dai chung'}`,
+      `🎁 Goi: ${normalizedDealName}`,
       cross_sell_items ? `🛒 Mua them: ${cross_sell_items}` : '',
       `🏷 Ma: ${voucher_code}`,
       previousVisits && previousVisits.length > 0 ? `📊 Da den: ${previousVisits.length} lan truoc` : '',

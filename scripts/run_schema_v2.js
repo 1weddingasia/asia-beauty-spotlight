@@ -2,7 +2,7 @@ const { Client } = require('pg');
 const sql = `
 -- Drop existing tables to start fresh (careful with dependencies)
 DROP TABLE IF EXISTS posts, memberships, plans, business_members, businesses, locations, categories CASCADE;
-DROP TABLE IF EXISTS business_revisions, business_categories, business_services, business_media, business_links, business_hours, plan_entitlements, payments, business_events, business_claims, ai_jobs, ai_sources, import_jobs, post_categories CASCADE;
+DROP TABLE IF EXISTS business_revisions, business_categories, business_services, business_media, business_links, business_hours, plan_entitlements, payments, business_events, business_claims, business_leads, ai_jobs, ai_sources, import_jobs, post_categories CASCADE;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -51,6 +51,13 @@ CREATE TABLE businesses (
     -- System
     status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'suspended', 'expired', 'archived')),
     is_featured BOOLEAN DEFAULT false,
+    page_content JSONB DEFAULT '{}'::jsonb,
+    plan_id UUID,
+    owner_id UUID,
+    category_slug TEXT,
+    location_slug TEXT,
+    plan_tier TEXT,
+    claim_token UUID,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -130,6 +137,20 @@ CREATE TABLE business_events (
     business_id UUID REFERENCES businesses(id) ON DELETE CASCADE,
     event_type TEXT NOT NULL CHECK (event_type IN ('business_view', 'phone_click', 'zalo_click', 'map_click', 'website_click', 'booking_click', 'social_click')),
     source TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE business_leads (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    business_id UUID REFERENCES businesses(id) ON DELETE CASCADE,
+    customer_name TEXT,
+    customer_phone TEXT,
+    deal_name TEXT,
+    voucher_code TEXT,
+    status TEXT DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'converted', 'cancelled')),
+    visit_count INTEGER DEFAULT 1,
+    notes TEXT,
+    cross_sell_items TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

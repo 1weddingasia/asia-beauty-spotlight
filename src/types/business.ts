@@ -1,34 +1,33 @@
 export type BusinessStatus = 'draft' | 'published' | 'suspended' | 'expired' | 'archived';
 
 export interface BusinessContent {
-  // Hero / Basic
-  tagline?: string;
-  hero_image?: string; // fallback to cover if empty
-  
-  // Services & Pricing
-  services_list?: {
-    id: string;
-    name: string;
-    description: string;
-    price_min: number;
-    price_max: number;
-    image_url: string;
-  }[];
-
-  // Gallery
-  gallery?: {
+  // Banners & Images
+  logo_url?: string;
+  banners?: string[];
+  gallery?: string[] | {
     id: string;
     url: string;
     caption?: string;
   }[];
 
-  // Business Hours overrides or detailed text
-  working_hours_text?: string;
+  // Contact Info overrides
+  phone?: string;
 
-  // Highlights/Amenities
+  // Services & Pricing
+  services?: any[];
+  
+  // Deals & Cross-Sells
+  deals?: any[];
+  offers?: any[]; // legacy
+  cross_sells?: any[];
+
+  // Info
+  working_hours?: any[] | string;
   amenities?: string[];
-
-  // Advanced features
+  
+  // Other basic
+  tagline?: string;
+  hero_image?: string;
   map_embed?: string;
   booking_url?: string;
   price_range?: string;
@@ -60,6 +59,12 @@ export interface Business {
   status: BusinessStatus;
   is_featured: boolean;
   page_content: BusinessContent;
+  plan_id: string | null;
+  owner_id: string | null;
+  category_slug: string | null;
+  location_slug: string | null;
+  plan_tier: string | null;
+  claim_token: string | null;
   created_at: string;
   updated_at: string;
 }
