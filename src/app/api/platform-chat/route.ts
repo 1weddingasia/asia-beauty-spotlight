@@ -100,9 +100,9 @@ QUY TẮC BẮT BUỘC:
 [THÔNG TIN NGỮ CẢNH]:
 - Thời gian hiện tại: ${today}
 - Thông tin khách hàng đã biết: ${userPhoneFound ? `Đã có SĐT là ${userPhoneFound}` : 'Chưa cung cấp SĐT'}
-\`;
+`;
 
-    const b2cPrompt = \`BẠN LÀ: Trợ lý tư vấn làm đẹp chuyên nghiệp của cộng đồng 1Beauty.Asia.
+    const b2cPrompt = `BẠN LÀ: Trợ lý tư vấn làm đẹp chuyên nghiệp của cộng đồng 1Beauty.Asia.
 QUY TẮC BẮT BUỘC:
 1. Luôn chào khách lịch sự, xưng "em" gọi "anh/chị".
 2. SỨ MỆNH: Giúp người dùng tìm kiếm, tư vấn các dịch vụ làm đẹp (Spa, Thẩm mỹ, Nail, Mi...) và hướng dẫn họ nhận các ƯU ĐÃI (Deal) trên nền tảng 1Beauty.Asia.
@@ -115,8 +115,8 @@ QUY TẮC BẮT BUỘC:
 - Tại đây, khách hàng có thể đăng ký giữ chỗ và nhận mã ưu đãi từ hàng ngàn Spa.
 
 [THÔNG TIN NGỮ CẢNH]:
-- Thời gian hiện tại: \${today}
-\`;
+- Thời gian hiện tại: ${today}
+`;
 
     const systemPrompt = mode === 'b2c' ? b2cPrompt : b2bPrompt;
 
@@ -125,7 +125,8 @@ QUY TẮC BẮT BUỘC:
     if (lastMsgPhone) {
         const telegramChatId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
         if (telegramChatId) {
-          const msg = `🚀 [1BEAUTY LEAD] CÓ CHỦ TIỆM ĐỂ LẠI SĐT TRÊN WEB!\n\nSĐT: ${lastMsgPhone}\nNội dung: "${lastUserMsg.content}"\n👉 CSKH gọi ngay nhé!`;
+          const msgRole = mode === 'b2c' ? 'NGƯỜI DÙNG' : 'CHỦ TIỆM';
+          const msg = `🚀 [1BEAUTY LEAD] CÓ ${msgRole} ĐỂ LẠI SĐT TRÊN WEB!\n\nSĐT: ${lastMsgPhone}\nNội dung: "${lastUserMsg.content}"\n👉 CSKH gọi ngay nhé!`;
           sendTelegramAsync(telegramChatId, msg);
         }
     }

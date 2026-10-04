@@ -55,7 +55,8 @@ export async function POST(req: Request) {
     }
 
     const services = business.page_content?.services || 'Đang cập nhật';
-    const crossSells = business.page_content?.cross_sells || [];
+    const rawCrossSells = Array.isArray(business.page_content?.cross_sells) ? business.page_content.cross_sells : [];
+    const crossSells = rawCrossSells.filter((c: any) => c.status !== 'paused');
 
     // Xử lý thông tin khách từ lịch sử chat
     const userMessages = messages.filter((m: any) => m.role === 'user');
