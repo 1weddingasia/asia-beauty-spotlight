@@ -4,8 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-export function ChatWidget({ businessId, businessName }: { businessId: string, businessName: string }) {
+export function ChatWidget({ businessId, businessName, slug }: { businessId: string, businessName: string, slug?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user'|'system'|'error', content: string}[]>([
     { role: 'system', content: `Chào bạn, mình là trợ lý AI của ${businessName}. Mình có thể tư vấn bảng giá, dịch vụ hoặc giúp bạn đặt lịch hẹn. Bạn cần hỗ trợ gì ạ?` }
@@ -13,6 +15,17 @@ export function ChatWidget({ businessId, businessName }: { businessId: string, b
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Load admin token from session storage if exists
+  const [adminToken, setAdminToken] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("adminToken");
+      if (stored) setAdminToken(stored);
+    }
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -30,11 +43,12 @@ export function ChatWidget({ businessId, businessName }: { businessId: string, b
     setLoading(true);
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/chat/business', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          shop_id: businessId,
+          slug: slug || businessId,
+          adminToken,
           messages: [
             ...messages.filter(m => m.role !== 'error').map(m => ({ role: m.role === 'system' ? 'assistant' : 'user', content: m.content })),
             { role: 'user', content: userMsg }
@@ -47,11 +61,22 @@ export function ChatWidget({ businessId, businessName }: { businessId: string, b
       }
       const data = await res.json();
       
+      if (data.adminToken && data.adminToken !== adminToken) {
+        setAdminToken(data.adminToken);
+        sessionStorage.setItem("adminToken", data.adminToken);
+      }
+
       if (data.reply) {
         setMessages(prev => [...prev, { role: 'system', content: data.reply }]);
       } else {
-        setMessages(prev => [...prev, { role: 'error', content: "Xin lỗi, hiện tại hệ thống đang bận. Bạn vui lòng gọi hotline để được hỗ trợ nhé." }]);
+        setMessages(prev => [...prev, { role: 'error', content: "Xin lỗi, hiện tại hệ thống đang bận. Bạn vui lòng thử lại sau nhé." }]);
       }
+
+      if (data.dataUpdated) {
+        toast.success("Đã cập nhật dữ liệu thành công!");
+        router.refresh();
+      }
+
     } catch (err) {
       console.error(err);
       setMessages(prev => [...prev, { role: 'error', content: "Mất kết nối mạng. Vui lòng thử lại sau." }]);
@@ -83,7 +108,7 @@ export function ChatWidget({ businessId, businessName }: { businessId: string, b
                 <Bot className="size-5 text-ink" />
               </div>
               <div>
-                <h3 className="font-bold text-sm leading-tight">Trợ lý AI</h3>
+                <h3 className="font-bold text-sm leading-tight">Trợ lý AI {adminToken ? '(Admin)' : ''}</h3>
                 <p className="text-xs text-champagne">{businessName}</p>
               </div>
             </div>
@@ -101,7 +126,7 @@ export function ChatWidget({ businessId, businessName }: { businessId: string, b
                     ? 'bg-gold text-ink rounded-tr-sm' 
                     : msg.role === 'error'
                       ? 'bg-red-50 text-red-600 border border-red-200 shadow-sm rounded-tl-sm'
-                      : 'bg-white border shadow-sm rounded-tl-sm'
+                      : 'bg-white border shadow-sm rounded-tl-sm whitespace-pre-wrap'
                 }`}>
                   {msg.content}
                 </div>
@@ -123,7 +148,7 @@ export function ChatWidget({ businessId, businessName }: { businessId: string, b
             <Input 
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="Nhập câu hỏi... (VD: Xin giá làm móng)"
+              placeholder={adminToken ? "Nhập lệnh... (Sửa giá/dịch vụ)" : "Nhập câu hỏi... (VD: Xin giá)"}
               className="flex-1 rounded-full border-muted-foreground/20"
               disabled={loading}
             />
