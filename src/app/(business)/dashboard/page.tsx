@@ -90,6 +90,61 @@ export default async function BusinessDashboardPage() {
         </p>
       </div>
       
+      {/* Top Deals + Quick Links */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Top deals */}
+        <div className="rounded-xl border bg-card p-6 shadow">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-sm flex items-center gap-2">
+              <Ticket className="size-4 text-gold" /> Báo cáo Top Ưu Đãi
+            </h3>
+            <Link href="/dashboard/deals" className="text-xs text-gold hover:underline">Quản lý &rarr;</Link>
+          </div>
+          {topDeals.length > 0 ? (
+            <div className="space-y-3">
+              {topDeals.map(([dealName, count], i) => (
+                <div key={dealName} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-muted-foreground w-5">{i + 1}.</span>
+                    <span className="text-sm truncate max-w-[200px]">{dealName}</span>
+                  </div>
+                  <span className="text-xs font-semibold bg-gold/10 text-gold px-2 py-0.5 rounded-full">
+                    {count} khách
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Chưa có khách nào đăng ký. Hãy tạo ưu đãi hấp dẫn!
+            </p>
+          )}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="rounded-xl border bg-card p-6 shadow">
+          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
+            <Eye className="size-4 text-gold" /> Thao tác nhanh
+          </h3>
+          <div className="space-y-3">
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link href="/dashboard/leads">→ Xem danh sách khách ({totalLeads} khách)</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link href="/dashboard/deals">→ Tạo / Sửa Ưu đãi</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start">
+              <Link href="/dashboard/profile">→ Cập nhật thông tin Gian hàng</Link>
+            </Button>
+            {business.slug && (
+              <Button asChild className="w-full justify-start bg-gold/10 text-gold border border-gold/30 hover:bg-gold/20">
+                <Link href={`/uu-dai/${business.slug}`} target="_blank">→ Xem Trang Ưu Đãi của bạn ↗</Link>
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         {/* Tổng lượt đăng ký */}
@@ -143,60 +198,7 @@ export default async function BusinessDashboardPage() {
         </div>
       </div>
 
-      {/* Top Deals + Quick Links */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Top deals */}
-        <div className="rounded-xl border bg-card p-6 shadow">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-sm flex items-center gap-2">
-              <Ticket className="size-4 text-gold" /> Ưu Đãi Phổ Biến Nhất
-            </h3>
-            <Link href="/dashboard/deals" className="text-xs text-gold hover:underline">Quản lý &rarr;</Link>
-          </div>
-          {topDeals.length > 0 ? (
-            <div className="space-y-3">
-              {topDeals.map(([dealName, count], i) => (
-                <div key={dealName} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-muted-foreground w-5">{i + 1}.</span>
-                    <span className="text-sm truncate max-w-[200px]">{dealName}</span>
-                  </div>
-                  <span className="text-xs font-semibold bg-gold/10 text-gold px-2 py-0.5 rounded-full">
-                    {count} khách
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Chưa có khách nào đăng ký. Hãy tạo ưu đãi hấp dẫn!
-            </p>
-          )}
-        </div>
 
-        {/* Quick Actions */}
-        <div className="rounded-xl border bg-card p-6 shadow">
-          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-            <Eye className="size-4 text-gold" /> Thao tác nhanh
-          </h3>
-          <div className="space-y-3">
-            <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/dashboard/leads">→ Xem danh sách khách ({totalLeads} khách)</Link>
-            </Button>
-            <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/dashboard/deals">→ Tạo / Sửa Ưu đãi</Link>
-            </Button>
-            <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/dashboard/profile">→ Cập nhật thông tin Gian hàng</Link>
-            </Button>
-            {business.slug && (
-              <Button asChild className="w-full justify-start bg-gold/10 text-gold border border-gold/30 hover:bg-gold/20">
-                <Link href={`/uu-dai/${business.slug}`} target="_blank">→ Xem Trang Ưu Đãi của bạn ↗</Link>
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

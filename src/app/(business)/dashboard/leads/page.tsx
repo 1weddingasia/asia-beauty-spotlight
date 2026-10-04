@@ -17,6 +17,8 @@ type Lead = {
   status: string;
   created_at: string;
   visit_count?: number;
+  cross_sell_items?: string;
+  notes?: string;
 };
 
 const HISTORY_LIMIT = 20;
@@ -119,13 +121,8 @@ export default function LeadsPage() {
   const historyTotal = selectedLead ? totalVisits(selectedLead) : 0;
 
 
-  const toggleStatus = async (leadId: string, currentStatus: string) => {
-    // new -> contacted -> served -> new (legacy: called -> served, closed -> new)
-    let newStatus = "contacted";
-    if (currentStatus === "contacted" || currentStatus === "called") newStatus = "served";
-    if (currentStatus === "served" || currentStatus === "closed") newStatus = "new";
-    
-    // Optimistic update
+  const updateStatus = async (leadId: string, newStatus: string) => {
+    const prevLeads = [...leads];
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
     
     const { error } = await supabase
@@ -135,11 +132,25 @@ export default function LeadsPage() {
       
     if (error) {
       toast.error("Lỗi khi cập nhật trạng thái");
-      // Revert
-      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: currentStatus } : l));
+      setLeads(prevLeads);
     } else {
-      toast.success("Đã cập nhật trạng thái cuộc gọi");
+      toast.success("Đã cập nhật trạng thái");
     }
+  };
+
+  const updateNotes = async (leadId: string, newNotes: string) => {
+    const { error } = await supabase
+      .from("business_leads")
+      .update({ notes: newNotes })
+      .eq("id", leadId);
+      
+    if (error) {
+      toast.error("Lỗi khi lưu ghi chú");
+    }
+  };
+
+  const handleNotesChange = (leadId: string, value: string) => {
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, notes: value } : l));
   };
 
   const exportExcel = () => {
@@ -160,17 +171,21 @@ export default function LeadsPage() {
 
     const getStatusText = (status: string) => {
       if (status === 'served' || status === 'closed') return "Đã phục vụ";
+      if (status === 'confirmed') return "Đã xác nhận";
+      if (status === 'cancelled') return "Hủy";
       if (status === 'contacted' || status === 'called') return "Đã liên hệ";
       return "Chưa gọi";
     };
 
-    const headers = ["Ngày đặt", "Tên khách", "Số điện thoại", "Gói Ưu đãi", "Trạng thái"];
+    const headers = ["Ngày đặt", "Tên khách", "Số điện thoại", "Gói Ưu đãi", "Bán chéo", "Trạng thái", "Ghi chú"];
     const csvData = leads.map(l => [
       escapeCSV(format(new Date(l.created_at), 'dd/MM/yyyy HH:mm')),
       escapeCSV(l.customer_name),
       escapeCSV(l.customer_phone),
       escapeCSV(l.deal_name),
-      escapeCSV(getStatusText(l.status))
+      escapeCSV(l.cross_sell_items || ''),
+      escapeCSV(getStatusText(l.status)),
+      escapeCSV(l.notes || '')
     ]);
     
     const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
@@ -241,10 +256,10 @@ export default function LeadsPage() {
                 <tr>
                   <th className="px-6 py-4 font-semibold">Giờ đặt</th>
                   <th className="px-6 py-4 font-semibold">Khách hàng</th>
-                  <th className="px-6 py-4 font-semibold hidden md:table-cell">Gói ưu đãi</th>
+                  <th className="px-6 py-4 font-semibold hidden md:table-cell">Gói ưu đãi & Bán chéo</th>
                   <th className="px-6 py-4 font-semibold">Lần ghé</th>
                   <th className="px-6 py-4 font-semibold">Trạng thái</th>
-                  <th className="px-6 py-4 font-semibold text-right">Hành động</th>
+                  <th className="px-6 py-4 font-semibold">Ghi chú nhanh</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -262,8 +277,13 @@ export default function LeadsPage() {
                       <div className="font-bold text-ink">{lead.customer_name}</div>
                       <div className="text-gold font-medium">{lead.customer_phone}</div>
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground max-w-[160px] truncate hidden md:table-cell" title={lead.deal_name}>
-                      {lead.deal_name}
+                    <td className="px-6 py-4 text-muted-foreground hidden md:table-cell">
+                      <div className="font-medium text-ink max-w-[160px] truncate" title={lead.deal_name}>{lead.deal_name}</div>
+                      {lead.cross_sell_items && (
+                        <div className="text-xs text-purple-600 font-medium mt-1 break-words">
+                          🛒 {lead.cross_sell_items}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       {(() => { const b = visitBadge(lead.visit_count); return (
@@ -277,31 +297,30 @@ export default function LeadsPage() {
                       );})()}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium ${
-                        (lead.status === 'served' || lead.status === 'closed')
-                          ? 'bg-purple-100 text-purple-800' 
-                          : (lead.status === 'contacted' || lead.status === 'called')
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}>
-                        {(lead.status === 'served' || lead.status === 'closed') ? (
-                          <><CheckCircle className="size-3" /> Đã phục vụ</>
-                        ) : (lead.status === 'contacted' || lead.status === 'called') ? (
-                          <><PhoneCall className="size-3" /> Đã liên hệ</>
-                        ) : (
-                          <><PhoneCall className="size-3" /> Chưa gọi</>
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <Button 
-                        variant={(lead.status === 'contacted' || lead.status === 'called' || lead.status === 'served' || lead.status === 'closed') ? "outline" : "default"}
-                        size="sm"
-                        onClick={() => toggleStatus(lead.id, lead.status || 'new')}
-                        className={(lead.status === 'contacted' || lead.status === 'called' || lead.status === 'served' || lead.status === 'closed') ? "" : "bg-gold text-ink hover:bg-gold/90"}
+                      <select
+                        value={['served', 'closed'].includes(lead.status) ? 'served' : ['contacted', 'called', 'confirmed'].includes(lead.status) ? 'confirmed' : lead.status === 'cancelled' ? 'cancelled' : 'new'}
+                        onChange={(e) => updateStatus(lead.id, e.target.value)}
+                        className={`text-xs font-bold rounded-xl px-3 py-2 outline-none cursor-pointer appearance-none ${
+                          ['served', 'closed'].includes(lead.status) ? 'bg-green-100 text-green-800 border-green-200' :
+                          ['contacted', 'called', 'confirmed'].includes(lead.status) ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                          lead.status === 'cancelled' ? 'bg-gray-100 text-gray-600 border-gray-200' :
+                          'bg-red-100 text-red-700 border-red-200'
+                        } border`}
                       >
-                        {(lead.status === 'served' || lead.status === 'closed') ? "Mở lại" : (lead.status === 'contacted' || lead.status === 'called') ? "Đã phục vụ" : "Đã gọi"}
-                      </Button>
+                        <option value="new">Chưa liên hệ</option>
+                        <option value="confirmed">Đã xác nhận</option>
+                        <option value="served">Khách đã đến</option>
+                        <option value="cancelled">Hủy / Không nghe máy</option>
+                      </select>
+                    </td>
+                    <td className="px-6 py-4">
+                      <textarea
+                        placeholder="Thêm ghi chú..."
+                        value={lead.notes || ''}
+                        onChange={(e) => handleNotesChange(lead.id, e.target.value)}
+                        onBlur={(e) => updateNotes(lead.id, e.target.value)}
+                        className="w-full text-xs bg-muted/30 border border-muted-foreground/20 rounded-md p-2 outline-none focus:border-gold resize-none h-12"
+                      />
                     </td>
                   </tr>
                 ))}

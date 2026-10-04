@@ -40,6 +40,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [savedDeals, setSavedDeals] = useState<string[]>([]);
   const [selectedService, setSelectedService] = useState<any>(null);
+  const [selectedCrossSells, setSelectedCrossSells] = useState<string[]>([]);
   
   // Carousel state
   const [api, setApi] = useState<CarouselApi>();
@@ -90,6 +91,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     .filter(d => d.status !== 'paused')
     .slice(0, 5);
 
+  const rawCrossSells = Array.isArray(business.page_content?.cross_sells) ? business.page_content.cross_sells : [];
+  const crossSells = rawCrossSells.filter((c: any) => c.status !== 'paused');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDeal) return;
@@ -116,7 +120,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           business_id: business.id,
           customer_name: name,
           customer_phone: phone,
-          deal_name: selectedDeal.title
+          deal_name: selectedDeal.title,
+          cross_sell_items: selectedCrossSells.join(", ")
         })
       });
       
@@ -503,6 +508,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           setPhone("");
           setVoucher("");
           setSelectedDeal(null);
+          setSelectedCrossSells([]);
         }
       }}>
         <DialogContent className="sm:max-w-md rounded-2xl">
@@ -535,7 +541,36 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   className="h-12 bg-muted/50 font-medium rounded-xl"
                 />
               </div>
-              <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl" disabled={loading}>
+
+              {crossSells.length > 0 && (
+                <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4 mt-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-purple-700 mb-3">Đăng ký dùng thêm khi đến tiệm</p>
+                  <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
+                    {crossSells.map((cs: any) => (
+                      <label key={cs.id} className="flex items-start gap-3 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          className="mt-1 flex-shrink-0 w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500 cursor-pointer"
+                          checked={selectedCrossSells.includes(cs.name)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedCrossSells([...selectedCrossSells, cs.name]);
+                            } else {
+                              setSelectedCrossSells(selectedCrossSells.filter(n => n !== cs.name));
+                            }
+                          }}
+                        />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink group-hover:text-purple-700 transition-colors">{cs.name}</p>
+                          <p className="text-xs text-muted-foreground">{formatPrice(cs.price)}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
                 {loading ? "Đang xử lý..." : "XÁC NHẬN GIỮ CHỖ"}
               </Button>
             </form>

@@ -116,7 +116,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { business_id, customer_name, customer_phone, deal_name } = body;
+    const { business_id, customer_name, customer_phone, deal_name, cross_sell_items } = body;
 
     if (!business_id || !customer_phone) {
       return NextResponse.json({ error: 'Thiếu thông tin bắt buộc' }, { status: 400 });
@@ -169,6 +169,7 @@ export async function POST(req: Request) {
         deal_name: normalizedDealName,
         voucher_code,
         visit_count: visitNumber,
+        cross_sell_items: cross_sell_items || null,
       });
 
     if (insertError) {
@@ -230,7 +231,8 @@ export async function POST(req: Request) {
         : `🔔 ĐƠN MỚI TỪ KHÁCH MỚI`;
 
       // 🔔 KÊNH 1: Bắn về tiệm
-      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
+      const crossSellStr = cross_sell_items ? `\n🛒 Bán chéo: ${escapeHtml(cross_sell_items)}` : '';
+      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}${crossSellStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
       sendTelegramAsync(telegramChatId, msgForShop);
 
       // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Beauty để giám sát toàn mạng
@@ -250,6 +252,7 @@ export async function POST(req: Request) {
       `👤 ${customer_name || 'Khach vang lai'}`,
       `📞 SdT: ${cleanPhone}`,
       `🎁 Goi: ${deal_name || 'Uu dai chung'}`,
+      cross_sell_items ? `🛒 Mua them: ${cross_sell_items}` : '',
       `🏷 Ma: ${voucher_code}`,
       previousVisits && previousVisits.length > 0 ? `📊 Da den: ${previousVisits.length} lan truoc` : '',
       tip.replace(/<[^>]*>/g, ''), // strip HTML for plain Zalo text

@@ -211,7 +211,7 @@ export default function BusinessProfilePage() {
         </div>
         <div className="flex items-center gap-3">
           <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
-            <Link href={`/doanh-nghiep/${business.slug}`} target="_blank">Xem Trang Khách</Link>
+            <Link href={`/uu-dai/${business.slug}`} target="_blank">Xem Trang Khách</Link>
           </Button>
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
             <Save className="mr-2 size-4" />

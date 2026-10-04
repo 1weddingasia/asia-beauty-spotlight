@@ -230,7 +230,7 @@ export default function BusinessEditorClient({
         <div className="flex items-center gap-3">
           {!isNew && (
             <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
-              <Link href={`/doanh-nghiep/${business?.slug}`} target="_blank">Xem Trang Khách</Link>
+              <Link href={`/uu-dai/${business?.slug}`} target="_blank">Xem Trang Khách</Link>
             </Button>
           )}
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
@@ -327,7 +327,7 @@ export default function BusinessEditorClient({
                     placeholder="ten-doanh-nghiep (tự động nếu để trống)"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Địa chỉ: <b>{siteOrigin}/doanh-nghiep/{formData.slug || normalizeSlug(formData.name) || DEFAULT_SLUG}</b>
+                    Địa chỉ: <b>{siteOrigin}/uu-dai/{formData.slug || normalizeSlug(formData.name) || DEFAULT_SLUG}</b>
                   </p>
                 </div>
                 <div className="space-y-2">

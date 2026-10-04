@@ -13,6 +13,7 @@ export default function AccountSettingsPage() {
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [saving, setSaving] = useState(false);
 
   const [businessSlug, setBusinessSlug] = useState("");
@@ -47,6 +48,11 @@ export default function AccountSettingsPage() {
   }, [supabase]);
 
   const handleSave = async () => {
+    if (password && password !== confirmPassword) {
+      toast.error("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+
     setSaving(true);
     try {
       let updatedSomething = false;
@@ -55,6 +61,7 @@ export default function AccountSettingsPage() {
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
         setPassword("");
+        setConfirmPassword("");
         updatedSomething = true;
       }
       
@@ -106,16 +113,31 @@ export default function AccountSettingsPage() {
             <p className="text-xs text-muted-foreground">Email là cố định. Vui lòng liên hệ Admin nếu muốn đổi.</p>
           </div>
 
-          <div className="space-y-2 pt-4">
-            <Label className="flex items-center gap-2">
-              <Lock className="size-4" /> Đổi Mật khẩu Mới
-            </Label>
-            <Input 
-              type="password" 
-              placeholder="Nhập mật khẩu mới (bỏ trống nếu không đổi)" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Lock className="size-4" /> Mật khẩu Mới
+              </Label>
+              <Input 
+                type="password" 
+                placeholder="Nhập mật khẩu mới (bỏ trống nếu không đổi)" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            {password && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                <Label className="flex items-center gap-2">
+                  <Lock className="size-4" /> Xác nhận Mật khẩu Mới (*)
+                </Label>
+                <Input 
+                  type="password" 
+                  placeholder="Nhập lại mật khẩu mới" 
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

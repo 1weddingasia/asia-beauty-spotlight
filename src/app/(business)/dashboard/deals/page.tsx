@@ -22,6 +22,13 @@ type Deal = {
   valid_until?: string;
 };
 
+type CrossSell = {
+  id: string;
+  name: string;
+  price: string;
+  status: "active" | "paused";
+};
+
 export default function DealsManagementPage() {
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
@@ -32,6 +39,7 @@ export default function DealsManagementPage() {
   const [telegramId, setTelegramId] = useState("");
   const [standeeTagline, setStandeeTagline] = useState("");
   const [deals, setDeals] = useState<Deal[]>([]);
+  const [crossSells, setCrossSells] = useState<CrossSell[]>([]);
 
   useEffect(() => {
     async function loadData() {
@@ -90,6 +98,10 @@ export default function DealsManagementPage() {
           }
         }
         setDeals(existingDeals);
+
+        let existingCrossSells = Array.isArray(content.cross_sells) ? content.cross_sells : [];
+        setCrossSells(existingCrossSells);
+
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -115,7 +127,8 @@ export default function DealsManagementPage() {
         ...(business.page_content || {}),
         telegram_chat_id: telegramId,
         standee_tagline: standeeTagline,
-        deals: cleanDeals
+        deals: cleanDeals,
+        cross_sells: crossSells
       };
 
       const { error } = await supabase
@@ -128,7 +141,8 @@ export default function DealsManagementPage() {
       // Update local state
       setBusiness({ ...business, page_content: updatedContent });
       setDeals(cleanDeals);
-      toast.success("Đã lưu cấu hình Ưu đãi & Telegram!");
+      setCrossSells(crossSells);
+      toast.success("Đã lưu cấu hình Ưu đãi & Bán chéo!");
     } catch (err: any) {
       console.error("Lỗi khi lưu cấu hình ưu đãi:", err);
       toast.error("Không thể lưu cấu hình. Vui lòng thử lại sau.");
@@ -165,6 +179,28 @@ export default function DealsManagementPage() {
 
   const removeDeal = (index: number) => {
     setDeals(deals.filter((_, i) => i !== index));
+  };
+
+  const addCrossSell = () => {
+    setCrossSells([
+      ...crossSells,
+      {
+        id: generateId(),
+        name: "",
+        price: "",
+        status: "active"
+      }
+    ]);
+  };
+
+  const updateCrossSell = (index: number, field: keyof CrossSell, value: CrossSell[keyof CrossSell]) => {
+    const newCS = [...crossSells];
+    newCS[index] = { ...newCS[index], [field]: value };
+    setCrossSells(newCS);
+  };
+
+  const removeCrossSell = (index: number) => {
+    setCrossSells(crossSells.filter((_, i) => i !== index));
   };
 
   const downloadQR = async () => {
@@ -468,6 +504,65 @@ export default function DealsManagementPage() {
           )}
         </div>
       </div>
+
+      {/* Cross-Sell Management Section */}
+      <div className="rounded-2xl border bg-card p-6 shadow-sm border-purple-100">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-bold text-ink text-purple-700">Dịch vụ & Sản phẩm bán chéo (Cross-sell/Upsell)</h2>
+            <p className="text-sm text-muted-foreground">Khách có thể chọn mua thêm các sản phẩm này trong popup đặt lịch.</p>
+          </div>
+          <Button onClick={addCrossSell} variant="outline" className="text-purple-600 border-purple-600 hover:bg-purple-50">
+            <Plus className="size-4 mr-2" /> Thêm Bán Chéo
+          </Button>
+        </div>
+
+        <div className="space-y-4">
+          {crossSells.length === 0 ? (
+            <div className="text-center py-6 bg-purple-50/50 border border-dashed rounded-xl">
+              <p className="text-muted-foreground">Chưa có sản phẩm bán chéo nào. Bán chéo giúp gia tăng doanh thu trên mỗi khách hàng!</p>
+            </div>
+          ) : (
+            crossSells.map((cs, idx) => (
+              <div key={cs.id || idx} className={`p-4 rounded-xl border relative transition-colors flex flex-col md:flex-row md:items-center gap-4 ${cs.status === 'paused' ? 'bg-gray-50 border-gray-200' : 'bg-white border-purple-200 shadow-sm'}`}>
+                <div className="flex-1 space-y-2">
+                  <Label>Tên Sản phẩm / Dịch vụ</Label>
+                  <Input 
+                    placeholder="VD: Tinh dầu dưỡng tóc, Mặt nạ phục hồi..." 
+                    value={cs.name}
+                    onChange={e => updateCrossSell(idx, 'name', e.target.value)}
+                    className={cs.status === 'paused' ? 'opacity-70' : ''}
+                  />
+                </div>
+                <div className="w-full md:w-48 space-y-2">
+                  <Label>Giá bán</Label>
+                  <Input 
+                    placeholder="VD: 150.000đ" 
+                    value={cs.price}
+                    onChange={e => updateCrossSell(idx, 'price', e.target.value)}
+                    className={cs.status === 'paused' ? 'opacity-70' : ''}
+                  />
+                </div>
+                <div className="flex items-center gap-4 mt-6 md:mt-0 pt-2">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs text-gray-500 whitespace-nowrap">
+                      {cs.status === 'active' ? 'Hiện' : 'Ẩn'}
+                    </Label>
+                    <Switch 
+                      checked={cs.status === 'active'}
+                      onCheckedChange={(checked) => updateCrossSell(idx, 'status', checked ? 'active' : 'paused')}
+                    />
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => removeCrossSell(idx)} className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
     </div>
   );
 }
