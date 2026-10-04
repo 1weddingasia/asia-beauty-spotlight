@@ -60,15 +60,14 @@ function sendTelegramAsync(chatId: string, message: string) {
 // Tắt mặc định. Chỉ kích hoạt khi ZALO_ENABLED=true trong .env
 // ═════════════════════════════════════════════════
 
-// Round-robin counter for rotating Zalo sender accounts
-let zaloSenderIndex = 0;
+const ZALO_SEND_MESSAGE_PATH = '/api/send-message';
 
-function getNextZaloSenderId(): string | null {
+function getRandomZaloSenderId(): string | null {
   const senderIds = (process.env.ZALO_SENDER_IDS || '').split(',').map(s => s.trim()).filter(Boolean);
   if (senderIds.length === 0) return null;
-  const id = senderIds[zaloSenderIndex % senderIds.length];
-  zaloSenderIndex = (zaloSenderIndex + 1) % senderIds.length;
-  return id;
+  // Use random selection instead of mutable round-robin state for better serverless compatibility
+  const randomIndex = Math.floor(Math.random() * senderIds.length);
+  return senderIds[randomIndex];
 }
 
 // Fire and forget Zalo alert via abs-zalo-bot sidecar HTTP API
@@ -82,27 +81,31 @@ function sendZaloAsync(toUserId: string, message: string) {
     return;
   }
 
-  const senderId = getNextZaloSenderId();
+  const senderId = getRandomZaloSenderId();
   if (!senderId) {
     console.warn('[Zalo] No ZALO_SENDER_IDS configured');
     return;
   }
 
-  // abs-zalo-bot REST API: POST /api/send-message
+  // abs-zalo-bot REST API
   // See: https://github.com/teddiesloco/abs-zalo-bot
-  fetch(`${sidecarUrl}/api/send-message`, {
+  fetch(`${sidecarUrl}${ZALO_SEND_MESSAGE_PATH}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({
-      senderId,    // Zalo account ID to send from (round-robin)
+      senderId,    // Zalo account ID to send from (randomized)
       toUserId,    // Recipient's Zalo userId
       message,     // Plain text message
     }),
     signal: AbortSignal.timeout(5000), // 5s timeout, never block main response
-  }).catch(err => console.error('[Zalo] Sidecar error:', err));
+  })
+  .then(res => {
+    if (!res.ok) console.error(`[Zalo] Sidecar responded ${res.status}`);
+  })
+  .catch(err => console.error('[Zalo] Sidecar error:', err));
 }
 
 export async function POST(req: Request) {
@@ -175,40 +178,56 @@ export async function POST(req: Request) {
 
     // --- SMART TELEGRAM NOTIFICATION ---
     const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
+    
+    const isVIP = visitNumber >= 3;
+    const isReturning = visitNumber >= 2;
+
+    // Computed tags to avoid nested ternaries
+    let customerTag = '🆕 Mới';
+    let zaloTag = '🔔 KHACH MOI';
+    let adminZaloTag = 'Moi';
+    
+    if (isVIP) {
+      customerTag = '🏆 VIP';
+      zaloTag = '🏆 KHACH VIP';
+      adminZaloTag = 'VIP';
+    } else if (isReturning) {
+      customerTag = '⭐ Quay lại';
+      zaloTag = '⭐ KHACH QUEN';
+      adminZaloTag = 'Quen';
+    }
+
+    let tip: string;
+    if (isVIP) {
+      tip = '⚡ Khách quen! Hãy dặn nhân viên phục vụ thật chu đáo!';
+    } else if (isReturning) {
+      tip = '✨ Khách quay lại! Gọi ngay để chốt lịch!';
+    } else {
+      tip = '👉 Gọi ngay để chốt lịch!';
+    }
+
+    // Escape user-supplied HTML to prevent Telegram parse_mode injection
+    const safeName = escapeHtml(customer_name || 'Không cung cấp');
+    const safeDeal = escapeHtml(deal_name || 'Ưu đãi chung');
+
+    // Build visit history summary (last 3 visits)
+    let historyNote = ''
+    if (previousVisits && previousVisits.length > 0) {
+      const recent = previousVisits.slice(0, 3);
+      const lines = recent.map(v => {
+        const d = new Date(v.created_at);
+        const dateStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
+        return `  • ${dateStr}: ${escapeHtml(v.deal_name || 'Ưu đãi chung')}`;
+      });
+      historyNote = `\n📋 Lịch sử ghé tiệm:\n${lines.join('\n')}`;
+    }
+
     if (telegramChatId) {
-      const isVIP = visitNumber >= 3;
-      const isReturning = visitNumber >= 2;
-
-      // Escape user-supplied HTML to prevent Telegram parse_mode injection
-      const safeName = escapeHtml(customer_name || 'Không cung cấp');
-      const safeDeal = escapeHtml(deal_name || 'Ưu đãi chung');
-
-      // Build visit history summary (last 3 visits)
-      let historyNote = ''
-      if (previousVisits && previousVisits.length > 0) {
-        const recent = previousVisits.slice(0, 3);
-        const lines = recent.map(v => {
-          const d = new Date(v.created_at);
-          const dateStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
-          return `  • ${dateStr}: ${escapeHtml(v.deal_name || 'Ưu đãi chung')}`;
-        });
-        historyNote = `\n📋 Lịch sử ghé tiệm:\n${lines.join('\n')}`;
-      }
-
       const header = isVIP
         ? `🏆 ĐƠN MỚI TỪ KHÁCH VIP (Đến tiệm lần thứ ${visitNumber})`
         : isReturning
         ? `⭐ ĐƠN MỚI TỪ KHÁCH QUAY LẠI (Lần thứ ${visitNumber})`
         : `🔔 ĐƠN MỚI TỪ KHÁCH MỚI`;
-
-      let tip: string;
-      if (isVIP) {
-        tip = '⚡ Khách quen! Hãy dặn nhân viên phục vụ thật chu đáo!';
-      } else if (isReturning) {
-        tip = '✨ Khách quay lại! Gọi ngay để chốt lịch!';
-      } else {
-        tip = '👉 Gọi ngay để chốt lịch!';
-      }
 
       // 🔔 KÊNH 1: Bắn về tiệm
       const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
@@ -218,35 +237,32 @@ export async function POST(req: Request) {
       const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
       if (adminChatId && adminChatId !== telegramChatId) {
         const safeBusinessName = escapeHtml(business.name || 'Không rõ tiệm');
-        const tagLabel = isVIP ? '🏆 VIP' : isReturning ? '⭐ Quay lại' : '🆕 Mới';
-        const msgForAdmin = `<b>📊 [TOÀN MẠNG] ${safeBusinessName}</b>\n\n${tagLabel} | 📞 ${cleanPhone} | 🎁 ${safeDeal}\nMã: ${voucher_code}`;
+        const msgForAdmin = `<b>📊 [TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | 🎁 ${safeDeal}\nMã: ${voucher_code}`;
         sendTelegramAsync(adminChatId, msgForAdmin);
       }
+    }
 
-      // 💬 KÊNH 3: ZALO GATEWAY — chỉ chạy khi ZALO_ENABLED=true trong .env
-      // Round-robin nhiều số Zalo phụ để phân tán tần suất, tránh bị checkpoint
-      if (process.env.ZALO_ENABLED === 'true') {
-        // Tin nhắn gọn cho chủ tiệm qua Zalo (plain text, không HTML)
-        const zaloShopMsg = [
-          `${isVIP ? '🏆 KHACH VIP' : isReturning ? '⭐ KHACH QUEN' : '🔔 KHACH MOI'} — ${business.name}`,
-          `👤 ${customer_name || 'Khach vang lai'}`,
-          `📞 SdT: ${cleanPhone}`,
-          `🎁 Goi: ${deal_name || 'Uu dai chung'}`,
-          `🏷 Ma: ${voucher_code}`,
-          previousVisits && previousVisits.length > 0 ? `📊 Da den: ${previousVisits.length} lan truoc` : '',
-          tip.replace(/<[^>]*>/g, ''), // strip HTML for plain Zalo text
-        ].filter(Boolean).join('\n');
+    // 💬 KÊNH 3: ZALO GATEWAY
+    // Tính năng này tắt/bật thông qua ZALO_ENABLED (được kiểm tra bên trong sendZaloAsync)
+    // Tin nhắn gọn cho chủ tiệm qua Zalo (plain text, không HTML)
+    const zaloShopMsg = [
+      `${zaloTag} — ${business.name}`,
+      `👤 ${customer_name || 'Khach vang lai'}`,
+      `📞 SdT: ${cleanPhone}`,
+      `🎁 Goi: ${deal_name || 'Uu dai chung'}`,
+      `🏷 Ma: ${voucher_code}`,
+      previousVisits && previousVisits.length > 0 ? `📊 Da den: ${previousVisits.length} lan truoc` : '',
+      tip.replace(/<[^>]*>/g, ''), // strip HTML for plain Zalo text
+    ].filter(Boolean).join('\n');
 
-        const zaloShopId = (business.page_content as Record<string, string> | null)?.zalo_owner_id;
-        if (zaloShopId) sendZaloAsync(zaloShopId, zaloShopMsg);
+    const zaloShopId = (business.page_content as Record<string, string> | null)?.zalo_owner_id;
+    if (zaloShopId) sendZaloAsync(zaloShopId, zaloShopMsg);
 
-        // Bản sao giám sát cho Admin 1Beauty qua Zalo
-        const zaloAdminId = process.env.ZALO_ADMIN_ID;
-        if (zaloAdminId && zaloAdminId !== zaloShopId) {
-          const zaloAdminMsg = `[1BEAUTY MONITOR] ${business.name} | ${isVIP ? 'VIP' : isReturning ? 'Quen' : 'Moi'} | ${cleanPhone}`;
-          sendZaloAsync(zaloAdminId, zaloAdminMsg);
-        }
-      }
+    // Bản sao giám sát cho Admin 1Beauty qua Zalo
+    const zaloAdminId = process.env.ZALO_ADMIN_ID;
+    if (zaloAdminId && zaloAdminId !== zaloShopId) {
+      const zaloAdminMsg = `[1BEAUTY MONITOR] ${business.name} | ${adminZaloTag} | ${cleanPhone}`;
+      sendZaloAsync(zaloAdminId, zaloAdminMsg);
     }
 
     return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
