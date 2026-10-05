@@ -61,6 +61,7 @@ export default function BusinessEditorClient({
     address: initialBusiness?.address || "",
     slug: initialBusiness?.slug || "",
     status: initialBusiness?.status || "draft",
+    claim_token: initialBusiness?.claim_token || "",
   });
 
   const getInitialPageContent = () => {
@@ -140,6 +141,7 @@ export default function BusinessEditorClient({
           tiktok: pageContent.tiktok,
           youtube: pageContent.youtube
         },
+        claim_token: formData.claim_token || null,
         page_content: pageContent
       };
 
@@ -314,6 +316,14 @@ export default function BusinessEditorClient({
               <div className="space-y-2">
                 <Label>Khoảng giá trung bình</Label>
                 <Input value={pageContent.price_range || ""} onChange={(e) => handlePageContentChange("price_range", e.target.value)} placeholder="VD: 150.000đ - 2.000.000đ" />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 pt-4">
+              <div className="space-y-2">
+                <Label>Passcode Chatbot (Mã bảo mật Admin)</Label>
+                <Input value={formData.claim_token || ""} onChange={(e) => handleChange("claim_token", e.target.value)} placeholder="VD: 123456" />
+                <p className="text-xs text-muted-foreground">Mã này dùng để chủ tiệm tự quản trị trang bằng Chatbot AI mà không cần đăng nhập.</p>
               </div>
             </div>
 

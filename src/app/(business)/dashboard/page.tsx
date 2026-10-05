@@ -198,6 +198,54 @@ export default async function BusinessDashboardPage() {
         </div>
       </div>
 
+      {/* AI Chatbot Power Tips */}
+      <div className="mt-8 rounded-xl border border-gold/30 bg-gradient-to-r from-gold/10 via-background to-gold/5 shadow-sm p-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+          <Sparkles className="size-24 text-gold" />
+        </div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="size-5 text-gold" />
+            <h3 className="font-bold text-lg text-gold">Quyền Năng Quản Trị Bằng AI Chatbot</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4 max-w-3xl">
+            Bạn có biết? Ngoài việc dùng trang Dashboard này, bạn có thể <b>sửa giá, thêm dịch vụ, hoặc đổi hình ảnh</b> bằng cách ra lệnh trực tiếp cho <b>Chatbot AI</b> ngay trên trang cửa hàng của bạn!
+          </p>
+          
+          <div className="bg-background rounded-lg p-4 border shadow-inner max-w-2xl mb-4">
+            <div className="text-sm">
+              <span className="text-muted-foreground">Mã bảo mật (Passcode) của bạn là: </span>
+              <span className="font-bold text-rose-600 text-lg tracking-widest bg-rose-50 px-2 py-1 rounded">
+                {business.claim_token ? business.claim_token : "CHƯA CẤP"}
+              </span>
+            </div>
+            {!business.claim_token && (
+              <p className="text-xs text-red-500 mt-2">Vui lòng liên hệ Admin để được cấp mã Passcode sử dụng tính năng này.</p>
+            )}
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+            <div>
+              <h4 className="font-semibold text-foreground mb-1">Cách sử dụng:</h4>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Vào <Link href={`/uu-dai/${business.slug}`} target="_blank" className="text-gold hover:underline">Trang Cửa Hàng</Link> của bạn.</li>
+                <li>Mở khung Chatbot ở góc phải bên dưới.</li>
+                <li>Nhập Passcode vào khung chat (hoặc bấm nút "🔑 Vào Quản Trị").</li>
+                <li>Chatbot sẽ chuyển sang chế độ Admin.</li>
+              </ol>
+            </div>
+            <div>
+              <h4 className="font-semibold text-foreground mb-1">Câu lệnh mẫu:</h4>
+              <ul className="list-disc list-inside space-y-1">
+                <li><i className="text-foreground/80">"Giảm giá combo gội đầu xuống 99k"</i></li>
+                <li><i className="text-foreground/80">"Thêm dịch vụ Nặn Mụn giá 250k"</i></li>
+                <li><i className="text-foreground/80">"Thay banner thành link http..."</i></li>
+                <li><i className="text-foreground/80">"Đổi mã bảo mật của tôi thành 8888"</i></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   );
