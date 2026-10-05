@@ -109,7 +109,7 @@ export default function UpgradePage() {
             </CardHeader>
             <CardContent className="flex flex-col items-center space-y-4">
               <div className="p-4 bg-white rounded-xl shadow-sm border inline-block">
-                <Image src={QR_URL} alt="Mã QR Thanh toán" width={250} height={250} className="rounded-lg" />
+                <img src={QR_URL} alt="Mã QR Thanh toán" width={250} height={250} className="rounded-lg object-contain" />
               </div>
               <div className="bg-muted p-4 rounded-lg w-full text-center space-y-1">
                 <p className="text-sm text-muted-foreground">Nội dung chuyển khoản (bắt buộc):</p>
