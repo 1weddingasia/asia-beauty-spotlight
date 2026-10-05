@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Store, Eye, TrendingUp, Sparkles, Users, Ticket, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import DashboardPrintQR from "./DashboardPrintQR";
 
 export default async function BusinessDashboardPage() {
   const supabase = await createClient();
@@ -197,6 +198,8 @@ export default async function BusinessDashboardPage() {
           </div>
         </div>
       </div>
+
+      <DashboardPrintQR business={business} />
 
       {/* AI Chatbot Power Tips */}
       <div className="mt-8 rounded-xl border border-gold/30 bg-gradient-to-r from-gold/10 via-background to-gold/5 shadow-sm p-6 relative overflow-hidden">
