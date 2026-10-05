@@ -143,6 +143,7 @@ export default function BusinessProfilePage() {
       const { error } = await supabase.from("businesses").update({
         name: formData.name,
         address: formData.address,
+        description: pageContent.description || null,
         phone: pageContent.phone || null,
         email: pageContent.email || null,
         website: pageContent.website || null,
