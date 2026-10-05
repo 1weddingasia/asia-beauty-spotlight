@@ -33,7 +33,7 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
       }
 
       const { email, password } = data.account;
-      const accountInfo = `Email: ${email}\nPass: ${password}\n\nLink: ${window.location.origin}${data.promoLink}`;
+      const accountInfo = `Email: ${email}\nPass: ${password}\n\nLink: https://1beauty.asia${data.promoLink}`;
       
       navigator.clipboard.writeText(accountInfo);
       toast.success("Đã tạo thành công! Thông tin tài khoản đã được copy vào clipboard.", { duration: 8000 });
@@ -197,7 +197,7 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                           size="icon" 
                           title="Copy Link Bàn Giao"
                           onClick={() => {
-                            const link = `${window.location.origin}/claim/${b.claim_token}`;
+                            const link = `https://1beauty.asia/claim/${b.claim_token}`;
                             navigator.clipboard.writeText(link);
                             toast.success("Đã copy link bàn giao!");
                           }}

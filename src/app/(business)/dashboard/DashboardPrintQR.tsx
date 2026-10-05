@@ -11,7 +11,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
   const standeeTagline = content.standee_tagline || "";
 
   const handlePrint = () => {
-    const promoUrl = `${window.location.origin}/uu-dai/${business.slug}`;
+    const promoUrl = `https://1beauty.asia/uu-dai/${business.slug}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(promoUrl)}&margin=10&color=3d2c00&bgcolor=fefdf8`;
     const escapedName = business.name
       .replace(/&/g, '&amp;')
@@ -77,7 +77,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
 
   const downloadQR = async () => {
     try {
-      const promoUrl = `${window.location.origin}/uu-dai/${business.slug}`;
+      const promoUrl = `https://1beauty.asia/uu-dai/${business.slug}`;
       const url = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(promoUrl)}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error(`QR API error: ${response.status}`);
@@ -99,7 +99,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
 
   if (!business || !business.slug) return null;
 
-  const demoQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : 'https://1beauty.asia'}/uu-dai/${business.slug}`)}&margin=4&color=3d2c00`;
+  const demoQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`https://1beauty.asia/uu-dai/${business.slug}`)}&margin=4&color=3d2c00`;
 
   return (
     <div className="mt-8 rounded-xl border bg-card shadow-sm p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">

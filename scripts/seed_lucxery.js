@@ -72,7 +72,11 @@ async function seedLucxery() {
   };
 
   // Check if it exists
-  const { data: existing } = await supabase.from('businesses').select('*').eq('slug', slug).single();
+  const { data: existing, error: lookupError } = await supabase.from('businesses').select('*').eq('slug', slug).maybeSingle();
+  if (lookupError) {
+    console.error("Error looking up business:", lookupError);
+    return;
+  }
 
   let res;
   if (existing) {
@@ -97,7 +101,7 @@ async function seedLucxery() {
       chatbot_passcode: passcode,
       zalo: '0901234567',
       owner_id,
-      status: 'active'
+      status: 'published'
     });
   }
 
@@ -108,4 +112,7 @@ async function seedLucxery() {
   }
 }
 
-seedLucxery();
+seedLucxery().catch((err) => {
+  console.error("Seed failed:", err);
+  process.exit(1);
+});

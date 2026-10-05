@@ -102,7 +102,7 @@ function LoginContent() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `https://1beauty.asia/dashboard`,
       });
 
       if (error) {
