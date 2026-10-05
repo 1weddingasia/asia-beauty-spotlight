@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
     const { error: updateError } = await supabase
       .from('businesses')
-      .update({ owner_id: userId, page_content, status: 'published' })
+      .update({ owner_id: userId, page_content, status: 'published', chatbot_passcode: password })
       .eq('id', businessId);
 
     if (updateError) {

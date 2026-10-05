@@ -33,7 +33,7 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
       }
 
       const { email, password } = data.account;
-      const accountInfo = `Email: ${email}\nPass: ${password}\n\nLink: https://1beauty.asia${data.promoLink}`;
+      const accountInfo = `Email: ${email}\nMật khẩu & Passcode Chatbot: ${password}\n\nLink: https://1beauty.asia${data.promoLink}`;
       
       navigator.clipboard.writeText(accountInfo);
       toast.success("Đã tạo thành công! Thông tin tài khoản đã được copy vào clipboard.", { duration: 8000 });
