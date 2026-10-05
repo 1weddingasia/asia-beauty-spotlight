@@ -65,7 +65,7 @@ Thông tin tiệm: SĐT ${business.phone || 'không có'}, Địa chỉ ${busine
 
     if (isAdmin) {
       systemPrompt += `\nQUAN TRỌNG: NGƯỜI DÙNG HIỆN TẠI LÀ QUẢN TRỊ VIÊN (CHỦ TIỆM) ĐÃ XÁC THỰC THÀNH CÔNG.
-Bạn CÓ QUYỀN VÀ BẮT BUỘC PHẢI gọi các Tool (update_business_info, update_images, update_services_or_deals) khi họ yêu cầu thêm/sửa/xóa thông tin, hình ảnh hoặc giá dịch vụ. KHÔNG ĐƯỢC yêu cầu mật khẩu nữa vì họ đã xác thực rồi.`;
+Bạn CÓ QUYỀN VÀ BẮT BUỘC PHẢI gọi các Tool (update_business_info, update_images, update_services_or_deals, update_passcode) khi họ yêu cầu thêm/sửa/xóa thông tin, đổi mã bảo mật, hình ảnh hoặc giá dịch vụ. KHÔNG ĐƯỢC yêu cầu mật khẩu nữa vì họ đã xác thực rồi.`;
     } else {
       systemPrompt += `\nNếu người dùng là khách: Hỗ trợ thân thiện, ngắn gọn.
 Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu cầu họ cung cấp Mật khẩu/Passcode (hoặc Claim Token) của tiệm để bật chế độ Quản trị. Đừng gọi hàm sửa nếu chưa có passcode.`;
@@ -149,6 +149,20 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
           parameters: {
             type: "object",
             properties: {}
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
+          name: "update_passcode",
+          description: "Thay đổi mã bảo mật (Claim Token / Passcode) của tiệm. Yêu cầu đã xác thực admin.",
+          parameters: {
+            type: "object",
+            properties: {
+              new_passcode: { type: "string", description: "Mã bảo mật mới" }
+            },
+            required: ["new_passcode"]
           }
         }
       }
@@ -316,6 +330,26 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
            const telegramUrl = process.env.TELEGRAM_BOT_URL || "https://t.me/OneBeautyBot";
            const crmUrl = process.env.CRM_URL || "https://1beauty.asia/dashboard/leads";
            result = `Link Telegram: ${telegramUrl} \nLink CRM: ${crmUrl}`;
+        }
+        else if (functionName === "update_passcode") {
+          if (!isAdmin) {
+            result = "Lỗi: Bạn chưa xác thực quyền admin!";
+          } else if (!functionArgs.new_passcode || functionArgs.new_passcode.length < 4) {
+            result = "Lỗi: Mã bảo mật mới quá ngắn (phải có ít nhất 4 ký tự).";
+          } else {
+            const { error } = await supabase
+              .from('businesses')
+              .update({ claim_token: functionArgs.new_passcode })
+              .eq('id', business.id);
+
+            if (error) {
+              result = "Lỗi hệ thống khi cập nhật mã bảo mật.";
+            } else {
+              // Update local variable immediately so subsequent tools in this turn might use it if they check it
+              business.claim_token = functionArgs.new_passcode;
+              result = `Đã đổi mã bảo mật thành công sang: ${functionArgs.new_passcode}. Lần sau vui lòng dùng mã này để truy cập.`;
+            }
+          }
         }
 
         toolResponses.push({
