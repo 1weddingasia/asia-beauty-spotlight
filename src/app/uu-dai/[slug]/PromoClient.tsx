@@ -158,16 +158,25 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     setInterceptType(type);
   };
 
-  const b = business;
-  const rawHotline = b.page_content?.phone || "1900 xxxx";
-  const zaloNumber = b.zalo || (rawHotline ? rawHotline.replace(/[^0-9]/g, '') : '');
+  const zaloNumber = business.zalo || (hotline ? hotline.replace(/[^0-9]/g, '') : '');
   const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
 
   const handleInterceptSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setInterceptLoading(true);
+    
+    // Mở tab mới ngay lập tức cho Zalo để tránh bị trình duyệt chặn pop-up sau await
+    let zaloWindow: Window | null = null;
+    if (interceptType === 'zalo') {
+      zaloWindow = window.open('', '_blank');
+    }
+
     try {
-      // 1. Lưu SĐT vào CRM Mini và gửi Telegram
+      // Thêm thời gian vào deal_name để tránh bị chặn duplicate (vì API có check trùng deal_name)
+      const timeStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const interceptDealName = interceptType === 'hotline' 
+        ? `Liên hệ qua Hotline (${timeStr})` 
+        : `Tư vấn Booking qua Zalo (${timeStr})`;
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -175,27 +184,34 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           business_id: business.id,
           customer_name: interceptName || (interceptType === 'hotline' ? 'Khách click Gọi Hotline' : 'Khách click Zalo Booking'),
           customer_phone: interceptPhone,
-          deal_name: interceptType === 'hotline' ? 'Liên hệ qua Hotline' : 'Tư vấn Booking qua Zalo'
+          deal_name: interceptDealName
         }),
       });
-      const data = await response.json();
+      
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (err) {}
+      
       if (!response.ok) {
-        toast.error(data.error || "Số điện thoại không hợp lệ");
+        toast.error((data as any).error || "Số điện thoại không hợp lệ");
+        if (zaloWindow) zaloWindow.close();
         setInterceptLoading(false);
         return;
       }
       
       // 2. Chuyển hướng
       if (interceptType === 'hotline') {
-        window.location.href = `tel:${rawHotline.replace(/\D/g, '')}`;
-      } else {
-        window.open(zaloLink, '_blank');
+        window.location.href = `tel:${hotline.replace(/\D/g, '')}`;
+      } else if (zaloWindow) {
+        zaloWindow.location.href = zaloLink;
       }
       setInterceptType(null);
       setInterceptPhone("");
       setInterceptName("");
     } catch (err) {
       toast.error("Lỗi kết nối");
+      if (zaloWindow) zaloWindow.close();
     } finally {
       setInterceptLoading(false);
     }
