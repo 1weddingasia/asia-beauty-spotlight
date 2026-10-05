@@ -230,18 +230,19 @@ CREATE TABLE posts (
 async function run() {
     require('dotenv').config({ path: require('path').join(__dirname, '..', '.env.local') });
     const connectionString = process.env.DATABASE_URL;
+    let client;
     try {
         if (!connectionString) {
             throw new Error('DATABASE_URL is not set in .env.local');
         }
-        const client = new Client({ connectionString });
+        client = new Client({ connectionString });
         await client.connect();
         await client.query(sql);
         console.log('Schema V2 successfully applied!');
     } catch(e) {
         console.error(e);
     } finally {
-        client.end();
+        if (client) client.end();
     }
 }
 run().catch(console.error);
