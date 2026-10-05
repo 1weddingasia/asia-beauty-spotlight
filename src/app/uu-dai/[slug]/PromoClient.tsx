@@ -158,6 +158,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     setInterceptType(type);
   };
 
+  const hotline = business.page_content?.phone || "1900 xxxx";
   const zaloNumber = business.zalo || (hotline ? hotline.replace(/[^0-9]/g, '') : '');
   const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
 
@@ -226,7 +227,6 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   // Fallback gallery for service images
   const galleryItems = Array.isArray(business.page_content?.gallery) ? business.page_content.gallery : [];
 
-  const hotline = business.page_content?.phone || "1900 xxxx";
 
   const formatPrice = (price: number | string) => {
     if (!price) return "";
