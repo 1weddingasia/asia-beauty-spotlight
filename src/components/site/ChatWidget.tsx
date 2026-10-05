@@ -159,10 +159,13 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
                   💡 <b>Mẹo:</b> Để thay hình (Logo, Banner, Dịch vụ...), hãy copy 1 đường link ảnh (từ Facebook, Zalo, Web...) và dán vào chat: "Đổi banner thành link: ..."
                 </p>
                 <div className="flex flex-wrap gap-1.5 pb-2 border-b border-muted/30">
-                  <button type="button" onClick={() => setInput("Sửa giá dịch vụ: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition truncate max-w-full">💰 Đổi giá</button>
-                  <button type="button" onClick={() => setInput("Thêm dịch vụ mới: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition truncate max-w-full">➕ Thêm DV</button>
-                  <button type="button" onClick={() => setInput("Thay logo thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition truncate max-w-full">🖼️ Thay Ảnh</button>
-                  <button type="button" onClick={() => setInput("Lấy link CRM và Telegram để quản lý khách hàng")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition truncate max-w-full">🔗 Lấy Link CRM</button>
+                  <button type="button" onClick={() => setInput("Sửa giá dịch vụ: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">💰 Đổi giá</button>
+                  <button type="button" onClick={() => setInput("Thêm dịch vụ mới: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">➕ Thêm DV</button>
+                  <button type="button" onClick={() => setInput("Thay logo thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">🖼️ Thay Logo</button>
+                  <button type="button" onClick={() => setInput("Thay banner thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">🖼️ Thay Banner</button>
+                  <button type="button" onClick={() => setInput("Đổi ảnh dịch vụ ... thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">📷 Ảnh Dịch vụ</button>
+                  <button type="button" onClick={() => setInput("Đổi ảnh ưu đãi ... thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">📷 Ảnh Ưu đãi</button>
+                  <button type="button" onClick={() => setInput("Cập nhật thông tin liên hệ: SĐT ..., Địa chỉ ...")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">📞 Đổi Liên hệ</button>
                 </div>
               </div>
             )}

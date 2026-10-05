@@ -9,6 +9,16 @@ const openai = new OpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY || '',
 });
 
+const isValidUrl = (url?: string) => {
+  if (!url) return true;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 export async function POST(req: Request) {
   try {
     const JWT_SECRET = process.env.JWT_SECRET;
@@ -212,20 +222,11 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
           } else {
             const pageContent = business.page_content || {};
             let changed = false;
-            
-            const isValidUrl = (url: string) => {
-              try {
-                const parsed = new URL(url);
-                return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-              } catch {
-                return false;
-              }
-            };
+            let errorMsg = "";
             
             if (functionArgs.logo_url) {
               if (!isValidUrl(functionArgs.logo_url)) {
-                result = "Lỗi: Link hình ảnh không hợp lệ.";
-                changed = false;
+                errorMsg += "Link logo không hợp lệ. ";
               } else {
                 pageContent.logo_url = functionArgs.logo_url;
                 changed = true;
@@ -233,12 +234,10 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             }
             if (functionArgs.banner_url) {
               if (!isValidUrl(functionArgs.banner_url)) {
-                result = "Lỗi: Link hình ảnh không hợp lệ.";
-                changed = false;
+                errorMsg += "Link banner không hợp lệ. ";
               } else {
-                // page_content.banners is an array of strings
-                pageContent.banners = [functionArgs.banner_url];
-                // Also update hero_image for the card
+                pageContent.banners = pageContent.banners || ["", "", ""];
+                pageContent.banners[0] = functionArgs.banner_url;
                 pageContent.hero_image = functionArgs.banner_url;
                 changed = true;
               }
@@ -247,9 +246,9 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             if (changed) {
               await supabase.from('businesses').update({ page_content: pageContent }).eq('id', business.id);
               isDataUpdated = true;
-              result = "Đã cập nhật hình ảnh (logo/banner) thành công!";
+              result = `Đã cập nhật hình ảnh thành công! ${errorMsg}`.trim();
             } else {
-              result = "Không có hình ảnh nào được cập nhật (url trống).";
+              result = errorMsg ? `Lỗi: ${errorMsg}` : "Không có hình ảnh nào được cập nhật (url trống).";
             }
           }
         }
@@ -266,16 +265,6 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             let newArray = [...targetArray];
             let changed = false;
             
-            const isValidUrl = (url?: string) => {
-              if (!url) return true; // optional
-              try {
-                const parsed = new URL(url);
-                return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-              } catch {
-                return false;
-              }
-            };
-
             if (functionArgs.image_url && !isValidUrl(functionArgs.image_url)) {
               result = "Lỗi: Link hình ảnh không hợp lệ.";
             } else if (functionArgs.action === 'add') {
