@@ -148,18 +148,33 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSend} className="p-3 bg-white border-t flex gap-2">
-            <Input 
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder={adminToken ? "Nhập lệnh... (Sửa giá/dịch vụ)" : "Nhập câu hỏi... (VD: Xin giá)"}
-              className="flex-1 rounded-full border-muted-foreground/20"
-              disabled={loading}
-            />
-            <Button type="submit" size="icon" className="rounded-full bg-gold text-ink hover:bg-gold/90 shrink-0" disabled={loading || !input.trim()}>
-              <Send className="size-4" />
-            </Button>
-          </form>
+          <div className="bg-white border-t flex flex-col">
+            {adminToken && (
+              <div className="p-3 pb-0">
+                <div className="text-[11px] text-green-600 font-medium mb-2 flex items-center justify-between">
+                  <span>🛡️ Chế độ Quản trị</span>
+                  <span className="text-muted-foreground font-normal">Tự động khoá sau 2h</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 pb-2 border-b border-muted/30">
+                  <button type="button" onClick={() => setInput("Sửa giá dịch vụ: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition truncate max-w-full">💰 Đổi giá</button>
+                  <button type="button" onClick={() => setInput("Thêm dịch vụ mới: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition truncate max-w-full">➕ Thêm DV</button>
+                  <button type="button" onClick={() => setInput("Lấy link CRM và Telegram để quản lý khách hàng")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition truncate max-w-full">🔗 Lấy Link CRM</button>
+                </div>
+              </div>
+            )}
+            <form onSubmit={handleSend} className="p-3 flex gap-2">
+              <Input 
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                placeholder={adminToken ? "Nhập lệnh... (Sửa giá/dịch vụ)" : "Nhập câu hỏi... (VD: Xin giá)"}
+                className="flex-1 rounded-full border-muted-foreground/20"
+                disabled={loading}
+              />
+              <Button type="submit" size="icon" className="rounded-full bg-gold text-ink hover:bg-gold/90 shrink-0" disabled={loading || !input.trim()}>
+                <Send className="size-4" />
+              </Button>
+            </form>
+          </div>
         </div>
       )}
     </>
