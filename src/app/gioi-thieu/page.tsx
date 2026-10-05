@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
+import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 
 const PRICING_AMOUNT = "500.000đ";
 const SETUP_TIME = "15 phút";
@@ -43,8 +44,8 @@ const staggerContainer = {
 
 export default function GioiThieuPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden pt-20">
-      
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
+      <SiteHeader solid={false} />
       {/* HERO SECTION */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-ink text-white">
         {/* Abstract elegant background shapes */}
@@ -531,6 +532,7 @@ export default function GioiThieuPage() {
       </section>
 
       <PlatformChatWidget />
+      <SiteFooter />
     </div>
   );
 }

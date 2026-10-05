@@ -102,7 +102,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
               {paginatedOffers.map((o: any, i: number) => (
                 <Link
                   key={`${o.business.slug}-${i}`}
-                  href={`/uu-dai/${o.business.slug}`}
+                  href={`/${o.business.slug}`}
                   className="group relative flex flex-col overflow-hidden rounded-3xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8 hover:-translate-y-1"
                 >
                   <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
