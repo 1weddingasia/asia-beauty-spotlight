@@ -173,7 +173,7 @@ export default async function HomePage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { step: "01", title: "Quét QR hoặc bấm link", desc: "Khách thấy deal rõ ràng với giá khuyến mãi ngay lập tức." },
+              { step: "01", title: "Quét QR hoặc bấm link", desc: "Khách thấy deal rõ ràng với giá ưu đãi ngay lập tức." },
               { step: "02", title: "Để lại số điện thoại", desc: "Popup đơn giản, chỉ cần nhập SĐT. Không cần đăng ký tài khoản." },
               { step: "03", title: "Đến tiệm nhận ưu đãi", desc: "Khách đọc SĐT tại quầy — đó chính là mã giảm giá của họ." },
             ].map((s) => (

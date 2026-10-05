@@ -8,7 +8,7 @@ import { isOfferActive } from "@/lib/date-utils";
 
 export const metadata = {
   title: "Khám phá Ưu đãi | 1Beauty.Asia",
-  description: "Tổng hợp các chương trình khuyến mãi, ưu đãi độc quyền từ các spa và thẩm mỹ viện.",
+  description: "Tổng hợp các chương trình ưu đãi độc quyền từ các spa và thẩm mỹ viện.",
 };
 
 export const revalidate = 3600; // Revalidate mỗi 1 tiếng
@@ -77,7 +77,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
           <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">Săn Deal Làm Đẹp</p>
           <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display">Khám Phá Ưu Đãi</h1>
           <p className="mt-6 text-lg text-gray-200 drop-shadow-md max-w-2xl mx-auto">
-            Hàng trăm chương trình khuyến mãi, giảm giá sốc từ các Spa & Thẩm mỹ viện uy tín trên 1Beauty.Asia.
+            Hàng trăm chương trình ưu đãi, giảm giá sốc từ các Spa & Thẩm mỹ viện uy tín trên 1Beauty.Asia.
           </p>
 
           <form action="/uu-dai" method="GET" className="mt-10 mx-auto w-full max-w-xl relative">

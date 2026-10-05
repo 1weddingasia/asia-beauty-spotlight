@@ -12,9 +12,10 @@ interface ImageUploadProps {
   onChange: (url: string) => void;
   bucket?: string;
   folder?: string;
+  className?: string;
 }
 
-export function ImageUpload({ value, onChange, bucket = "media", folder = "uploads" }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, bucket = "media", folder = "uploads", className }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const supabase = createClient();
 
@@ -66,10 +67,13 @@ export function ImageUpload({ value, onChange, bucket = "media", folder = "uploa
     }
   };
 
+  const defaultSize = "w-32 h-32 md:w-40 md:h-40";
+  const containerClass = className || defaultSize;
+
   return (
     <div className="flex flex-col gap-4">
       {value ? (
-        <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-xl border-2 border-border overflow-hidden group bg-white flex items-center justify-center">
+        <div className={`relative rounded-xl border-2 border-border overflow-hidden group bg-white flex items-center justify-center ${containerClass}`}>
           <img 
             src={value} 
             alt="Uploaded" 
@@ -88,7 +92,7 @@ export function ImageUpload({ value, onChange, bucket = "media", folder = "uploa
           </div>
         </div>
       ) : (
-        <label className="relative flex flex-col items-center justify-center w-32 h-32 md:w-40 md:h-40 border-2 border-dashed border-border rounded-xl cursor-pointer bg-muted/30 hover:bg-muted transition-colors">
+        <label className={`relative flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl cursor-pointer bg-muted/30 hover:bg-muted transition-colors ${containerClass}`}>
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             {isUploading ? (
               <Loader2 className="size-8 text-gold animate-spin mb-2" />

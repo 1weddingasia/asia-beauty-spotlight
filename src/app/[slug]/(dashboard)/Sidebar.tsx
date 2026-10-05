@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Store, Ticket, Users, Settings, Sparkles } from "lucide-react";
+import { LayoutDashboard, Store, Ticket, Users, Settings, Sparkles, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Sidebar({ 
@@ -30,7 +30,8 @@ export default function Sidebar({
       title: "NỘI DUNG & TIẾP THỊ",
       items: [
         { name: "Chỉnh sửa Gian hàng", href: `/${slug}/profile`, icon: Store },
-        { name: "Quản lý Ưu đãi (Deals)", href: `/${slug}/deals`, icon: Ticket },
+        { name: "Bảng giá Dịch vụ", href: `/${slug}/profile?tab=services`, icon: ClipboardList },
+        { name: "Quản lý Ưu đãi", href: `/${slug}/deals`, icon: Ticket },
       ]
     },
     {

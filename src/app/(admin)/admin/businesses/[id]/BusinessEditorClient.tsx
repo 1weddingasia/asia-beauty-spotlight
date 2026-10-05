@@ -250,7 +250,7 @@ export default function BusinessEditorClient({
           <TabsTrigger value="contact">Liên hệ & Bản đồ</TabsTrigger>
           <TabsTrigger value="media">Hình ảnh</TabsTrigger>
           <TabsTrigger value="services">Bảng giá Dịch vụ</TabsTrigger>
-          <TabsTrigger value="offers">Khuyến mãi</TabsTrigger>
+          <TabsTrigger value="offers">Ưu đãi</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -626,7 +626,7 @@ export default function BusinessEditorClient({
           <div className="space-y-6 rounded-2xl border bg-card p-6 md:p-8 shadow-sm relative">
             <div className="flex items-center justify-between border-b pb-4">
               <h3 className="font-semibold text-xl flex items-center gap-2">
-                Chương trình Khuyến mãi / Ưu đãi
+                Chương trình Ưu đãi
               </h3>
               <Button onClick={addOffer} size="sm" variant="outline" className="text-gold border-gold hover:bg-gold/10">
                 <Plus className="size-4 mr-2" /> Thêm Ưu đãi
@@ -636,7 +636,7 @@ export default function BusinessEditorClient({
             <div className="space-y-4">
               {(!pageContent.offers || pageContent.offers.length === 0) && (
                 <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed">
-                  Chưa có khuyến mãi nào.
+                  Chưa có ưu đãi nào.
                 </div>
               )}
               {(pageContent.offers || []).map((offer: any, i: number) => (

@@ -205,7 +205,7 @@ export default function BusinessProfilePage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold font-display text-gold">Chỉnh sửa Gian hàng</h1>
           <p className="text-muted-foreground text-sm mt-1">Cập nhật thông tin chi tiết để thu hút khách hàng tốt hơn.</p>
@@ -221,13 +221,13 @@ export default function BusinessProfilePage() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs defaultValue={typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tab') || "overview" : "overview"} className="w-full">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto md:h-12 gap-2 bg-muted p-2 rounded-xl mb-6">
           <TabsTrigger value="overview">Tổng quan</TabsTrigger>
           <TabsTrigger value="contact">Liên hệ & Bản đồ</TabsTrigger>
           <TabsTrigger value="media">Hình ảnh</TabsTrigger>
           <TabsTrigger value="services">Bảng giá Dịch vụ</TabsTrigger>
-          <TabsTrigger value="deals" className="flex items-center gap-1">Khuyến mãi {!isPremium && <Lock className="size-3" />}</TabsTrigger>
+          <TabsTrigger value="deals" className="flex items-center gap-1">Ưu đãi {!isPremium && <Lock className="size-3" />}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -483,6 +483,7 @@ export default function BusinessProfilePage() {
                     <ImageUpload 
                       value={svc.image} 
                       onChange={(url) => updateService(i, "image", url)} 
+                      className="w-full h-auto aspect-square"
                     />
                   </div>
                   <div className="flex-grow space-y-3">
@@ -521,7 +522,7 @@ export default function BusinessProfilePage() {
               <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center p-6 text-center border border-gold/50 rounded-xl">
                 <Lock className="size-8 text-gold mb-3" />
                 <h4 className="font-bold text-lg mb-2">Tính năng Premium</h4>
-                <p className="text-sm text-muted-foreground mb-4">Nâng cấp gói Premium để đăng tải Ưu đãi và Khuyến mãi lên trang chủ.</p>
+                <p className="text-sm text-muted-foreground mb-4">Nâng cấp gói Premium để đăng tải các chương trình Ưu đãi lên trang chủ.</p>
                 <Button asChild className="bg-gold text-ink hover:bg-gold/90">
                   <Link href={`/${business.slug}/upgrade`}>Nâng cấp 399k / Năm</Link>
                 </Button>
@@ -530,7 +531,7 @@ export default function BusinessProfilePage() {
 
             <div className="flex items-center justify-between border-b pb-4">
               <h3 className="font-semibold text-xl flex items-center gap-2">
-                Các Gói Khuyến Mãi / Ưu Đãi {!isPremium && <Lock className="size-4 text-muted-foreground" />}
+                Các Gói Ưu Đãi / Deals {!isPremium && <Lock className="size-4 text-muted-foreground" />}
               </h3>
               <Button onClick={addDeal} disabled={!isPremium} size="sm" variant="outline" className="text-gold border-gold hover:bg-gold/10">
                 <Plus className="size-4 mr-2" /> Thêm Ưu đãi
@@ -561,7 +562,7 @@ export default function BusinessProfilePage() {
                       <Input value={deal.original_price || ""} onChange={e => updateDeal(i, "original_price", e.target.value)} placeholder="500000" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Giá Khuyến Mãi</Label>
+                      <Label className="text-xs">Giá Ưu Đãi</Label>
                       <Input value={deal.promo_price || ""} onChange={e => updateDeal(i, "promo_price", e.target.value)} placeholder="199000" />
                     </div>
                   </div>

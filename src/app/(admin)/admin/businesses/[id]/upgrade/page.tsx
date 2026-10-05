@@ -88,7 +88,7 @@ export default function UpgradePage({ params }: { params: Promise<{ id: string }
             <CardContent className="space-y-4">
               <div className="text-4xl font-bold">{UPGRADE_AMOUNT.toLocaleString('vi-VN')}đ <span className="text-sm font-normal text-muted-foreground">/ năm</span></div>
               <ul className="space-y-3 pt-4">
-                {['Hiển thị Số điện thoại Hotline', 'Hiển thị Nút liên kết Zalo/Facebook', 'Tải lên không giới hạn hình ảnh (Gallery)', 'Đăng bài viết tuyển dụng / khuyến mãi', 'Ưu tiên hiển thị Top danh mục'].map((benefit, i) => (
+                {['Hiển thị Số điện thoại Hotline', 'Hiển thị Nút liên kết Zalo/Facebook', 'Tải lên không giới hạn hình ảnh (Gallery)', 'Đăng bài viết tuyển dụng / ưu đãi', 'Ưu tiên hiển thị Top danh mục'].map((benefit, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
                     <Check className="size-5 text-green-500 shrink-0" />
                     <span>{benefit}</span>
