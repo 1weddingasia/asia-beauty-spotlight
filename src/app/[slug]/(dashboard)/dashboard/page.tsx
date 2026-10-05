@@ -200,7 +200,7 @@ export default async function BusinessDashboardPage() {
               </Button>
             ) : (
               <Button size="sm" variant="outline" className="w-full border-gold text-gold cursor-default" tabIndex={-1}>
-                Gói tự động gia hạn
+                Gói đã được đăng ký
               </Button>
             )}
           </div>

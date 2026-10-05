@@ -68,7 +68,7 @@ export default function UpgradePage() {
           <Check className="size-12" />
         </div>
         <h2 className="text-3xl font-bold">Gian hàng của bạn đã là Premium!</h2>
-        <p className="text-muted-foreground text-lg">Bạn đã kích hoạt thành công Gói Premium. Hệ thống tự động gia hạn.</p>
+        <p className="text-muted-foreground text-lg">Bạn đã kích hoạt thành công Gói Premium.</p>
         <Button onClick={() => router.push(`/${business.slug}/dashboard`)} className="bg-gold text-ink">Quay lại Tổng quan</Button>
       </div>
     );
