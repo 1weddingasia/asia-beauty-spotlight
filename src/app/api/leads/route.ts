@@ -21,8 +21,12 @@ const memoryRateLimits = new Map<string, { count: number, resetAt: number }>();
 
 async function isRateLimited(ip: string): Promise<boolean> {
   if (ratelimit) {
-    const { success } = await ratelimit.limit(ip);
-    return !success;
+    try {
+      const { success } = await ratelimit.limit(ip);
+      return !success;
+    } catch (error) {
+      console.error('Rate limit (Upstash) error, falling back to memory limiter:', error);
+    }
   }
 
   // Fallback memory rate limiting
