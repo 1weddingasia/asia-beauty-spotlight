@@ -4,7 +4,6 @@ const path = require('path');
 function replaceInFile(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
   let newContent = content.replace(/\/uu-dai\//g, '/');
-  newContent = newContent.replace(/\/uu-dai/g, '/'); // For exact /uu-dai links
   
   if (content !== newContent) {
     fs.writeFileSync(filePath, newContent, 'utf8');

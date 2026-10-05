@@ -12,7 +12,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function seedLucxery() {
-  const slug = 'lucxery';
+  const slug = 'luxury-spa-demo';
   const name = 'Lucxery Beauty & Spa';
   const passcode = '888888';
   
@@ -80,7 +80,7 @@ async function seedLucxery() {
 
   let res;
   if (existing) {
-    console.log("Updating existing lucxery business...");
+    console.log("Updating existing luxury-spa-demo business...");
     res = await supabase.from('businesses').update({
       name,
       page_content,
@@ -88,7 +88,7 @@ async function seedLucxery() {
       zalo: '0901234567'
     }).eq('id', existing.id);
   } else {
-    console.log("Creating new lucxery business...");
+    console.log("Creating new luxury-spa-demo business...");
     // Just use a dummy user_id or existing owner_id if we have one. 
     // Let's get the first user to be the owner
     const { data: users } = await supabase.auth.admin.listUsers();
