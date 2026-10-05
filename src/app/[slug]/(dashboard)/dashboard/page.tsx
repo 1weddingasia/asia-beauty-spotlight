@@ -194,9 +194,15 @@ export default async function BusinessDashboardPage() {
             <p className="text-xs text-muted-foreground mb-4">
               {business.plan_tier === 'premium' ? 'Đang kích hoạt' : 'Gói cơ bản'}
             </p>
-            <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
-              <Link href={`/${business.slug}/upgrade`}>Nâng cấp Gói</Link>
-            </Button>
+            {business.plan_tier !== 'premium' ? (
+              <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
+                <Link href={`/${business.slug}/upgrade`}>Nâng cấp Gói</Link>
+              </Button>
+            ) : (
+              <Button size="sm" variant="outline" className="w-full border-gold text-gold cursor-default" tabIndex={-1}>
+                Gói tự động gia hạn
+              </Button>
+            )}
           </div>
         </div>
       </div>

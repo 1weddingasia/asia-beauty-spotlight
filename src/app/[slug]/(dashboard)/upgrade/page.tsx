@@ -40,24 +40,41 @@ export default function UpgradePage() {
   const handleCheckPayment = async () => {
     setChecking(true);
     try {
-      // Polling mock for now. In real life, webhook updates the DB, we check DB here.
+      // Connect to the real database to check if the SePay webhook has updated the plan tier
       const { data, error } = await supabase.from("businesses").select("plan_tier, status").eq("id", business.id).single();
       if (error) {
         console.error("Lỗi kiểm tra thanh toán:", error);
+        alert("Có lỗi xảy ra khi kiểm tra dữ liệu.");
       } else if (data && data.plan_tier === 'premium') { 
          setIsSuccess(true);
          setTimeout(() => {
-           router.push(`/dashboard`);
+           router.push(`/${business.slug}/dashboard`);
          }, 3000);
+      } else {
+         alert("Hệ thống chưa ghi nhận thanh toán hoặc giao dịch đang được xử lý. Vui lòng chờ 1-2 phút và thử lại!");
       }
     } catch (e) {
       console.error(e);
+      alert("Đã xảy ra sự cố mạng.");
     } finally {
       setChecking(false);
     }
   };
 
-  if (isSuccess || business.plan_tier === 'premium') {
+  if (business.plan_tier === 'premium' && !isSuccess) {
+    return (
+      <div className="max-w-2xl mx-auto space-y-8 py-12 text-center">
+        <div className="mx-auto size-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
+          <Check className="size-12" />
+        </div>
+        <h2 className="text-3xl font-bold">Gian hàng của bạn đã là Premium!</h2>
+        <p className="text-muted-foreground text-lg">Bạn đã kích hoạt thành công Gói Premium. Hệ thống tự động gia hạn.</p>
+        <Button onClick={() => router.push(`/${business.slug}/dashboard`)} className="bg-gold text-ink">Quay lại Tổng quan</Button>
+      </div>
+    );
+  }
+
+  if (isSuccess) {
     return (
       <div className="max-w-2xl mx-auto space-y-8 py-12 text-center">
         <div className="mx-auto size-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
