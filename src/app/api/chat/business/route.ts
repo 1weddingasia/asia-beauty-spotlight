@@ -100,6 +100,20 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
       {
         type: "function",
         function: {
+          name: "update_images",
+          description: "Cập nhật hình ảnh chung của tiệm bằng đường link (URL). Yêu cầu đã xác thực admin.",
+          parameters: {
+            type: "object",
+            properties: {
+              logo_url: { type: "string", description: "Link hình ảnh logo" },
+              hero_image: { type: "string", description: "Link hình ảnh banner/cover chính của trang" }
+            }
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
           name: "update_services_or_deals",
           description: "Thêm, Sửa hoặc Xóa dịch vụ/ưu đãi. Yêu cầu đã xác thực admin.",
           parameters: {
@@ -110,7 +124,8 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
               item_name: { type: "string", description: "Tên dịch vụ/ưu đãi" },
               price: { type: "string", description: "Giá mới (bắt buộc nếu add/update)" },
               original_price: { type: "string", description: "Giá gốc (nếu có)" },
-              description: { type: "string", description: "Mô tả ngắn gọn" }
+              description: { type: "string", description: "Mô tả ngắn gọn" },
+              image_url: { type: "string", description: "Link hình ảnh của dịch vụ/ưu đãi này" }
             },
             required: ["target", "action", "item_name"]
           }
@@ -191,6 +206,31 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             }
           }
         }
+        else if (functionName === "update_images") {
+          if (!isAdmin) {
+            result = "Lỗi: Bạn chưa xác thực quyền admin!";
+          } else {
+            const pageContent = business.page_content || {};
+            let changed = false;
+            
+            if (functionArgs.logo_url) {
+              pageContent.logo_url = functionArgs.logo_url;
+              changed = true;
+            }
+            if (functionArgs.hero_image) {
+              pageContent.hero_image = functionArgs.hero_image;
+              changed = true;
+            }
+            
+            if (changed) {
+              await supabase.from('businesses').update({ page_content: pageContent }).eq('id', business.id);
+              isDataUpdated = true;
+              result = "Đã cập nhật hình ảnh (logo/banner) thành công!";
+            } else {
+              result = "Không có hình ảnh nào được cập nhật (url trống).";
+            }
+          }
+        }
         else if (functionName === "update_services_or_deals") {
           if (!isAdmin) {
             result = "Lỗi: Bạn chưa xác thực quyền admin!";
@@ -209,14 +249,21 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
                 name: functionArgs.item_name,
                 price: functionArgs.price,
                 original_price: functionArgs.original_price,
-                description: functionArgs.description
+                description: functionArgs.description,
+                image_url: functionArgs.image_url
               });
               changed = true;
               result = `Đã thêm ${functionArgs.item_name} thành công!`;
             } else if (functionArgs.action === 'update') {
               const index = newArray.findIndex((item: any) => item.name?.toLowerCase().includes(functionArgs.item_name.toLowerCase()));
               if (index >= 0) {
-                newArray[index] = { ...newArray[index], price: functionArgs.price || newArray[index].price, original_price: functionArgs.original_price || newArray[index].original_price, description: functionArgs.description || newArray[index].description };
+                newArray[index] = { 
+                  ...newArray[index], 
+                  price: functionArgs.price || newArray[index].price, 
+                  original_price: functionArgs.original_price || newArray[index].original_price, 
+                  description: functionArgs.description || newArray[index].description,
+                  image_url: functionArgs.image_url || newArray[index].image_url
+                };
                 changed = true;
                 result = `Đã sửa ${functionArgs.item_name} thành công!`;
               } else {
