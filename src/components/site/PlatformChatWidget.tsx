@@ -86,9 +86,9 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-[90px] md:bottom-6 right-4 md:right-6 z-[50] w-[350px] max-w-[calc(100vw-32px)] h-[500px] max-h-[calc(100vh-120px)] bg-white rounded-2xl shadow-2xl flex flex-col border border-border/50 overflow-hidden animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-0 left-0 right-0 z-[100] w-full h-[80dvh] rounded-t-2xl md:left-auto md:bottom-6 md:right-6 md:w-[350px] md:h-[500px] md:max-h-[calc(100vh-120px)] bg-white md:rounded-2xl shadow-2xl flex flex-col border border-border/50 overflow-hidden animate-in slide-in-from-bottom-5">
           {/* Header */}
-          <div className="bg-ink text-white p-4 flex items-center justify-between">
+          <div className="bg-ink text-white p-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <div className="bg-gold p-2 rounded-full">
                 <Bot className="size-5 text-ink" />
@@ -136,7 +136,7 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSend} className="p-3 bg-white border-t flex gap-2">
+          <form onSubmit={handleSend} className="p-3 pb-safe bg-white border-t flex gap-2 shrink-0">
             <Input 
               value={input}
               onChange={e => setInput(e.target.value)}
