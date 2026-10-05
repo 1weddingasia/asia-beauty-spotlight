@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles, ChevronLeft, ChevronRight, X, BadgeCheck } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
@@ -293,8 +293,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           <div className="size-24 md:size-32 rounded-full border-4 border-gold overflow-hidden bg-white shadow-2xl mb-6 relative">
             <Image src={avatar} alt="Logo" fill sizes="(max-width: 768px) 96px, 128px" className="object-cover" />
           </div>
-          <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-3">
+          <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-3 flex items-center justify-center gap-2">
             {business.name}
+            {(business.plan_tier === 'premium' || business.is_featured) && (
+              <BadgeCheck className="size-8 md:size-10 text-blue-500 fill-white drop-shadow-md" />
+            )}
           </h1>
           <p className="text-champagne/90 text-sm md:text-lg flex items-center gap-2 mb-2 max-w-2xl text-center">
             <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}

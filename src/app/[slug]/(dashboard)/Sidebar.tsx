@@ -98,13 +98,13 @@ export default function Sidebar({
                 <Sparkles className="w-12 h-12 text-gold" />
               </div>
               <h4 className="font-bold text-sm mb-1 flex items-center gap-1">
-                <Sparkles className="size-4 text-gold" /> Trải nghiệm thử
+                <Sparkles className="size-4 text-gold" /> 7 ngày dùng thử
               </h4>
               <p className="text-xs text-muted-foreground relative z-10 mb-3">
                 Đăng ký gói dịch vụ chính thức để bật hiển thị công khai và nhận khách hàng.
               </p>
               <Button asChild size="sm" className="w-full bg-gold text-ink font-bold hover:bg-gold/90 text-xs h-8">
-                <Link href={`/bang-gia`}>Đăng ký ngay</Link>
+                <Link href={`/${slug}/upgrade`}>Kích hoạt ngay</Link>
               </Button>
             </div>
           );
