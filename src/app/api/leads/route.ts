@@ -55,7 +55,8 @@ const LeadSchema = z.object({
   customer_name: z.string().max(100).optional().default('Khách vãng lai'),
   customer_phone: z.string().regex(/^(03|05|07|08|09)\d{8}$/, "Số điện thoại không hợp lệ"),
   deal_name: z.string().max(200).optional().default('Nhận Ưu Đãi Chung'),
-  cross_sell_items: z.string().max(500).optional().nullable()
+  cross_sell_items: z.string().max(500).optional().nullable(),
+  booking_time: z.string().max(200).optional().nullable()
 });
 
 function generateVoucherCode(businessName: string) {
@@ -159,7 +160,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    const { business_id, customer_name, customer_phone: cleanPhone, deal_name: normalizedDealName, cross_sell_items } = parsedData.data;
+    const { business_id, customer_name, customer_phone: cleanPhone, deal_name: normalizedDealName, cross_sell_items, booking_time } = parsedData.data;
 
     const supabase = await createAdminClient();
     
@@ -174,35 +175,68 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Doanh nghiệp không tồn tại' }, { status: 404 });
     }
 
-    // --- MINI-CRM: Count previous visits for this phone at this business ---
+    // Upsert into business_customers
+    const { data: customerData, error: customerError } = await supabase
+      .from('business_customers')
+      .upsert({
+        business_id,
+        phone: cleanPhone,
+        name: customer_name || 'Khách vãng lai',
+        last_visit_at: new Date().toISOString()
+      }, { onConflict: 'business_id,phone' })
+      .select('id, total_visits')
+      .single();
+
+    if (customerError || !customerData) {
+      console.error("DB Customer Upsert Error:", customerError);
+      return NextResponse.json({ error: 'Lỗi hệ thống khi tạo khách hàng' }, { status: 500 });
+    }
+
+    const customerId = customerData.id;
+
+    // --- MINI-CRM: Count previous visits ---
     const { data: previousVisits } = await supabase
       .from('business_leads')
       .select('id, created_at, deal_name')
       .eq('business_id', business_id)
-      .eq('customer_phone', cleanPhone)
+      .eq('customer_id', customerId)
       .order('created_at', { ascending: false });
 
     const prevCount = previousVisits?.length ?? 0;
     
-    if (previousVisits && previousVisits.some(v => (v.deal_name || 'Nhận Ưu Đãi Chung') === normalizedDealName)) {
-      return NextResponse.json({ error: 'Bạn đã đăng ký nhận ưu đãi này rồi. Vui lòng chọn ưu đãi khác hoặc kiểm tra lại tin nhắn.' }, { status: 400 });
+    // Check if they booked the exact same deal within the last 2 minutes to prevent accidental double-clicks.
+    // We allow multiple bookings from the same phone number (e.g. booking for friends/family) after a short delay.
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+    if (previousVisits && previousVisits.some(v => 
+      (v.deal_name || 'Nhận Ưu Đãi Chung') === normalizedDealName && 
+      new Date(v.created_at) > twoMinutesAgo
+    )) {
+      return NextResponse.json({ error: 'Bạn vừa đăng ký ưu đãi này. Vui lòng đợi 2 phút nếu muốn đăng ký thêm cho người thân.' }, { status: 400 });
     }
 
     const visitNumber = prevCount + 1; // This will be the Nth visit after insert
 
+    // Update customer total_visits
+    await supabase
+      .from('business_customers')
+      .update({ total_visits: visitNumber })
+      .eq('id', customerId);
+
     const voucher_code = generateVoucherCode(business.name);
 
-    // Insert lead with visit_count for dashboard display
+    // Insert lead
     const { error: insertError } = await supabase
       .from('business_leads')
       .insert({
         business_id,
+        customer_id: customerId,
         customer_name: customer_name || 'Khách vãng lai',
         customer_phone: cleanPhone,
         deal_name: normalizedDealName,
         voucher_code,
         visit_count: visitNumber,
         cross_sell_items: cross_sell_items || null,
+        notes: booking_time ? `Lịch hẹn: ${booking_time}` : null,
       });
 
     if (insertError) {
@@ -265,7 +299,8 @@ export async function POST(req: Request) {
 
       // 🔔 KÊNH 1: Bắn về tiệm
       const crossSellStr = cross_sell_items ? `\n🛒 Bán chéo: ${escapeHtml(cross_sell_items)}` : '';
-      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}${crossSellStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
+      const bookingTimeStr = booking_time ? `\n🕒 Lịch hẹn: ${escapeHtml(booking_time)}` : '';
+      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
       sendTelegramAsync(telegramChatId, msgForShop);
 
       // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Beauty để giám sát toàn mạng

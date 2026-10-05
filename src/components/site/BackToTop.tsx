@@ -24,7 +24,7 @@ export function BackToTop() {
     <button
       onClick={scrollToTop}
       aria-label="Lên đầu trang"
-      className="fixed bottom-24 right-6 md:bottom-28 md:right-10 z-[999] grid size-10 md:size-12 place-items-center rounded-full bg-gold text-ink shadow-lg transition-transform hover:scale-110 active:scale-95 hover:shadow-xl"
+      className="fixed bottom-[150px] right-4 md:bottom-28 md:right-10 z-[40] grid size-10 md:size-12 place-items-center rounded-full bg-gold text-ink shadow-lg transition-transform hover:scale-110 active:scale-95 hover:shadow-xl"
     >
       <ArrowUp className="size-5 md:size-6" />
     </button>

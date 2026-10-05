@@ -19,6 +19,7 @@ type Deal = {
   badge: string;
   note: string;
   status: "active" | "paused";
+  valid_from?: string;
   valid_until?: string;
 };
 
@@ -86,6 +87,7 @@ export default function DealsManagementPage() {
               badge: "Độc Quyền 1Beauty",
               note: "",
               status: "active",
+              valid_from: "",
               valid_until: ""
             }];
           }
@@ -157,6 +159,7 @@ export default function DealsManagementPage() {
         badge: "",
         note: "",
         status: "active",
+        valid_from: "",
         valid_until: ""
       }
     ]);
@@ -295,9 +298,18 @@ export default function DealsManagementPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Hạn sử dụng (Tùy chọn)</Label>
+                    <Label>Thời gian bắt đầu (Tùy chọn)</Label>
                     <Input 
-                      placeholder="VD: 31/12/2026 hoặc Hết hôm nay" 
+                      type="datetime-local"
+                      value={deal.valid_from || ''}
+                      onChange={e => updateDeal(idx, 'valid_from', e.target.value)}
+                      className={deal.status === 'paused' ? 'opacity-70' : ''}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Thời gian kết thúc (Hết hạn)</Label>
+                    <Input 
+                      type="datetime-local"
                       value={deal.valid_until || ''}
                       onChange={e => updateDeal(idx, 'valid_until', e.target.value)}
                       className={deal.status === 'paused' ? 'opacity-70' : ''}

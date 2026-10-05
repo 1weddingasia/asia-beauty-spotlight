@@ -1,7 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, LayoutDashboard, Store, Settings, Sparkles, ArrowLeft, Ticket, Users } from "lucide-react";
+import { LogOut, Sparkles, LayoutDashboard, Store, Ticket, Users, Settings } from "lucide-react";
+import SidebarNav from "./SidebarNav";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
@@ -67,23 +68,7 @@ export default async function BusinessDashboardLayout({
               {business?.name || "Chưa có doanh nghiệp"}
             </h3>
           </div>
-          <nav className="flex-1 space-y-1 px-4">
-            <Link href={`/${slug}/dashboard`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
-              <LayoutDashboard className="size-4" /> Tổng quan
-            </Link>
-            <Link href={`/${slug}/profile`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
-              <Store className="size-4" /> Chỉnh sửa Gian hàng
-            </Link>
-            <Link href={`/${slug}/deals`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
-              <Ticket className="size-4" /> Quản lý Ưu đãi (Deals)
-            </Link>
-            <Link href={`/${slug}/leads`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
-              <Users className="size-4" /> Danh sách Khách (Leads)
-            </Link>
-            <Link href={`/${slug}/settings`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
-              <Settings className="size-4" /> Cài đặt Tài khoản
-            </Link>
-          </nav>
+          <SidebarNav slug={slug} />
           <div className="p-4 mt-auto">
             {(() => {
               const bizStatus = business?.status || 'trial';

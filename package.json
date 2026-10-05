@@ -86,5 +86,8 @@
     "husky": "^9.1.7",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "braces": ">=3.0.3"
   }
 }

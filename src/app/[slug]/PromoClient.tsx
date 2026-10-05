@@ -26,6 +26,7 @@ type Deal = {
   badge?: string;
   note?: string;
   status?: string;
+  valid_from?: string;
   valid_until?: string;
 };
 
@@ -42,6 +43,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const [savedDeals, setSavedDeals] = useState<string[]>([]);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [selectedCrossSells, setSelectedCrossSells] = useState<string[]>([]);
+  
+  // Booking fields
+  const [bookingDate, setBookingDate] = useState("Hôm nay");
+  const [bookingTime, setBookingTime] = useState("Chiều");
+  const [bookingService, setBookingService] = useState("");
   
   // Intercept modal state
   const [interceptType, setInterceptType] = useState<'hotline' | 'zalo' | null>(null);
@@ -113,13 +119,19 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
     // Kiểm tra xem đã lưu ưu đãi này chưa
     const dealKey = `${business.id}_${selectedDeal.id}_${cleanPhone}`;
-    if (savedDeals.includes(dealKey)) {
-      toast.error("Bạn đã nhận ưu đãi này rồi. Vui lòng chọn ưu đãi khác.");
-      return;
+    // Nếu là chế độ Booking, không cần lưu mảng savedDeals chặn duplicate
+    if (selectedDeal.id !== 'booking') {
+      if (savedDeals.includes(dealKey)) {
+        toast.error("Bạn đã nhận ưu đãi này rồi. Vui lòng chọn ưu đãi khác.");
+        return;
+      }
     }
     
     setLoading(true);
     try {
+      const actualDealName = selectedDeal.id === 'booking' ? (bookingService || selectedDeal.title) : selectedDeal.title;
+      const bTime = selectedDeal.id === 'booking' ? `${bookingTime} ${bookingDate}` : null;
+      
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -127,8 +139,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           business_id: business.id,
           customer_name: name,
           customer_phone: phone,
-          deal_name: selectedDeal.title,
-          cross_sell_items: selectedCrossSells.join(", ")
+          deal_name: actualDealName,
+          cross_sell_items: selectedCrossSells.join(", "),
+          booking_time: bTime
         })
       });
       
@@ -142,10 +155,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         setVoucher(data.voucher_code);
         toast.success("Lưu ưu đãi thành công!");
         
-        // Lưu vào localStorage
-        const updatedSavedDeals = [...savedDeals, dealKey];
-        setSavedDeals(updatedSavedDeals);
-        localStorage.setItem('saved_deals_1beauty', JSON.stringify(updatedSavedDeals));
+        // Lưu vào localStorage nếu không phải booking
+        if (selectedDeal.id !== 'booking') {
+          const updatedSavedDeals = [...savedDeals, dealKey];
+          setSavedDeals(updatedSavedDeals);
+          localStorage.setItem('saved_deals_1beauty', JSON.stringify(updatedSavedDeals));
+        }
       }
     } catch (err) {
       toast.error("Lỗi kết nối mạng");
@@ -337,7 +352,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         </DialogContent>
       </Dialog>
 
-      <div className="max-w-5xl mx-auto px-4 py-12 -mt-16 md:-mt-24 relative z-10">
+      <div id="deals-section" className="max-w-5xl mx-auto px-4 py-12 -mt-16 md:-mt-24 relative z-10">
         <div className="text-center mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-black font-display text-ink flex flex-col md:flex-row items-center justify-center gap-3">
             <Tag className="size-8 md:size-10 text-gold" />
@@ -355,12 +370,28 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               <p className="text-muted-foreground">Hiện tại chưa có chương trình ưu đãi nào đang mở.</p>
             </div>
           ) : (
-            deals.map(deal => (
+            deals.map(deal => {
+              const now = new Date();
+              const isUpcoming = deal.valid_from ? new Date(deal.valid_from) > now : false;
+              const isExpired = deal.valid_until ? new Date(deal.valid_until) < now : false;
+              const isDisabled = isUpcoming || isExpired;
+              
+              const formatDT = (dtStr: string) => {
+                if (!dtStr) return '';
+                if (!dtStr.includes('T')) return dtStr;
+                try {
+                  const d = new Date(dtStr);
+                  return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+                } catch { return dtStr; }
+              };
+
+              return (
               <div 
                 key={deal.id} 
                 role="button"
-                tabIndex={0}
+                tabIndex={isDisabled ? -1 : 0}
                 onKeyDown={(e) => {
+                  if (isDisabled) return;
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     setSelectedDeal(deal);
@@ -369,18 +400,33 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   }
                 }}
                 onClick={() => {
+                  if (isDisabled) return;
                   setSelectedDeal(deal);
                   setVoucher("");
                   setIsDialogOpen(true);
                 }}
-                className="group rounded-3xl bg-white p-1.5 shadow-xl shadow-gold/10 relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer flex flex-col h-full border border-gold/20"
+                className={`group rounded-3xl bg-white p-1.5 relative overflow-hidden transition-all duration-500 flex flex-col h-full border ${
+                  isDisabled 
+                    ? 'opacity-60 grayscale cursor-not-allowed border-gray-200' 
+                    : 'shadow-xl shadow-gold/10 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-gold/20'
+                }`}
               >
-                <div className="rounded-[1.4rem] border border-gold/30 bg-gradient-to-br from-white to-champagne/50 p-6 md:p-8 flex flex-col h-full relative">
-                  {deal.badge && (
+                <div className={`rounded-[1.4rem] border p-6 md:p-8 flex flex-col h-full relative ${
+                  isDisabled ? 'bg-gray-50 border-gray-200' : 'border-gold/30 bg-gradient-to-br from-white to-champagne/50'
+                }`}>
+                  {isExpired ? (
+                    <div className="absolute top-4 right-4 bg-gray-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
+                      Đã kết thúc
+                    </div>
+                  ) : isUpcoming ? (
+                    <div className="absolute top-4 right-4 bg-blue-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
+                      Sắp diễn ra
+                    </div>
+                  ) : deal.badge ? (
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-rose-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
                       {deal.badge}
                     </div>
-                  )}
+                  ) : null}
                   
                   <h3 className="text-xl md:text-2xl font-bold font-display text-ink pr-20 leading-tight mb-3">
                     {deal.title}
@@ -394,10 +440,22 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
                   {!deal.note && <div className="grow" />}
 
-                  {deal.valid_until && (
-                    <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-red-600 bg-red-50 py-1.5 px-3 rounded-lg w-fit mb-4">
-                      <Clock className="size-3.5" />
-                      HSD: {deal.valid_until}
+                  {(deal.valid_from || deal.valid_until) && (
+                    <div className={`flex flex-col gap-1 text-xs md:text-sm font-semibold py-1.5 px-3 rounded-lg w-fit mb-4 ${
+                      isDisabled ? 'bg-gray-200 text-gray-600' : 'bg-red-50 text-red-600'
+                    }`}>
+                      {deal.valid_from && (
+                        <div className="flex items-center gap-2">
+                          <Clock className="size-3.5" />
+                          Bắt đầu: {formatDT(deal.valid_from)}
+                        </div>
+                      )}
+                      {deal.valid_until && (
+                        <div className="flex items-center gap-2">
+                          <Clock className="size-3.5" />
+                          Hết hạn: {formatDT(deal.valid_until)}
+                        </div>
+                      )}
                     </div>
                   )}
                   
@@ -425,7 +483,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </div>
                 </div>
               </div>
-            ))
+            )})
           )}
         </div>
 
@@ -479,7 +537,18 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                           <span className="font-semibold text-gold text-base md:text-lg">
                             {formatPrice(s.price || s.price_min) || "Liên hệ"}
                           </span>
-                          <span className="text-[10px] md:text-xs uppercase tracking-wider text-muted-foreground group-hover:text-gold transition-colors">Chi tiết &rarr;</span>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setBookingService(s.name);
+                              setSelectedDeal({ id: 'booking', title: 'Đặt Lịch & Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
+                              setVoucher("");
+                              setIsDialogOpen(true);
+                            }}
+                            className="mt-2 text-[10px] md:text-xs font-bold text-white bg-gold py-1.5 px-4 rounded-full w-fit hover:bg-ink transition-colors shadow-sm"
+                          >
+                            Giữ Chỗ Ngay
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -656,7 +725,44 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 />
               </div>
 
-              {crossSells.length > 0 && (
+              {selectedDeal?.id === 'booking' && (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <select
+                      className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
+                      value={bookingDate}
+                      onChange={e => setBookingDate(e.target.value)}
+                    >
+                      <option value="Hôm nay">Hôm nay</option>
+                      <option value="Ngày mai">Ngày mai</option>
+                      <option value="Ngày khác">Ngày khác</option>
+                    </select>
+                    <select
+                      className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
+                      value={bookingTime}
+                      onChange={e => setBookingTime(e.target.value)}
+                    >
+                      <option value="Sáng">Sáng</option>
+                      <option value="Chiều">Chiều</option>
+                      <option value="Tối">Tối</option>
+                    </select>
+                  </div>
+                  <div>
+                    <select
+                      className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
+                      value={bookingService}
+                      onChange={e => setBookingService(e.target.value)}
+                    >
+                      <option value="">-- Chọn dịch vụ quan tâm (Tùy chọn) --</option>
+                      {b.page_content?.services?.map((s: any, idx: number) => (
+                        <option key={idx} value={s.name}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {selectedDeal?.id !== 'booking' && crossSells.length > 0 && (
                 <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4 mt-2">
                   <p className="text-xs font-semibold uppercase tracking-wider text-purple-700 mb-3">Đăng ký dùng thêm khi đến tiệm</p>
                   <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
@@ -798,6 +904,28 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <p className="text-xs text-muted-foreground">
           Được thực hiện bởi <Link href="/lien-he" className="font-semibold text-ink hover:text-gold transition-colors">1Beauty.asia</Link>
         </p>
+      </div>
+      
+      {/* Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-3 flex gap-3 md:hidden">
+        <button 
+          onClick={() => {
+            document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 hover:bg-gold hover:text-white transition-colors"
+        >
+          🎁 Nhận Ưu Đãi
+        </button>
+        <button 
+          onClick={() => {
+            setBookingService("");
+            setSelectedDeal({ id: 'booking', title: 'Đặt Hẹn Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
+            setIsDialogOpen(true);
+          }}
+          className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl hover:bg-gold transition-colors shadow-lg"
+        >
+          📅 Đặt Hẹn Ngay
+        </button>
       </div>
       
       <SiteFooter />

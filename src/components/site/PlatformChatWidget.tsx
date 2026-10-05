@@ -77,7 +77,7 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 bg-gold text-ink p-4 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2 animate-bounce"
+          className="fixed bottom-[90px] md:bottom-6 right-4 md:right-6 z-[45] bg-gold text-ink p-4 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2 animate-bounce"
         >
           <MessageCircle className="size-6" />
           <span className="font-bold hidden md:inline">Trợ lý 1Beauty</span>
@@ -86,7 +86,7 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[350px] max-w-[calc(100vw-32px)] h-[500px] max-h-[calc(100vh-100px)] bg-white rounded-2xl shadow-2xl flex flex-col border border-border/50 overflow-hidden animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-[90px] md:bottom-6 right-4 md:right-6 z-[50] w-[350px] max-w-[calc(100vw-32px)] h-[500px] max-h-[calc(100vh-120px)] bg-white rounded-2xl shadow-2xl flex flex-col border border-border/50 overflow-hidden animate-in slide-in-from-bottom-5">
           {/* Header */}
           <div className="bg-ink text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-2">

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Download, Phone, PhoneCall, CheckCircle, X, History } from "lucide-react";
+import { Download, Phone, CheckCircle, X, History, Users, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -21,6 +21,16 @@ type Lead = {
   notes?: string;
 };
 
+type Customer = {
+  id: string;
+  phone: string;
+  name: string;
+  total_visits: number;
+  last_visit_at: string;
+  created_at: string;
+  notes?: string;
+};
+
 const HISTORY_LIMIT = 20;
 
 export default function LeadsPage() {
@@ -30,8 +40,13 @@ export default function LeadsPage() {
   const [business, setBusiness] = useState<any>(null);
   const [searchPhone, setSearchPhone] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  
+  // New State for CRM
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [viewMode, setViewMode] = useState<'leads' | 'customers'>('leads');
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
-  type HistoryRow = Pick<Lead, 'id' | 'created_at' | 'deal_name' | 'status'>;
+  type HistoryRow = Pick<Lead, 'id' | 'created_at' | 'deal_name' | 'voucher_code' | 'status' | 'cross_sell_items' | 'notes'>;
   const [visitHistory, setVisitHistory] = useState<HistoryRow[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   // Persist across renders so stale-response guard works correctly
@@ -70,41 +85,46 @@ export default function LeadsPage() {
   }, []);
 
   const fetchLeads = async (businessId: string) => {
-    const { data, error } = await supabase
+    // 1. Fetch Bookings (Leads)
+    const { data: leadsData, error: leadsErr } = await supabase
       .from("business_leads")
       .select("*")
       .eq("business_id", businessId)
       .order("created_at", { ascending: false });
       
-    if (error) {
-      console.error(error);
+    if (leadsErr) {
+      console.error(leadsErr);
       toast.error("Lỗi khi tải danh sách khách hàng");
     } else {
-      // If visit_count not stored in DB, compute from frequency in this result set
-      const phoneSeen: Record<string, number> = {};
-      const enriched = (data || []).reverse().map(lead => {
-        const p = lead.customer_phone || '';
-        phoneSeen[p] = (phoneSeen[p] || 0) + 1;
-        return { ...lead, visit_count: lead.visit_count ?? phoneSeen[p] };
-      }).reverse();
-      setLeads(enriched);
+      setLeads(leadsData || []);
     }
+
+    // 2. Fetch Unique Customers
+    const { data: custData, error: custErr } = await supabase
+      .from("business_customers")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("last_visit_at", { ascending: false });
+
+    if (!custErr && custData) {
+      setCustomers(custData);
+    }
+
     setLoading(false);
   };
 
-  const openHistory = async (lead: Lead) => {
-    setSelectedLead(lead);
+  const fetchHistory = async (phone: string) => {
     setHistoryLoading(true);
     setVisitHistory([]);
     const reqId = ++historyReqRef.current;
     const { data, error } = await supabase
       .from("business_leads")
-      .select("id, created_at, deal_name, status")
-      .eq("business_id", lead.business_id)
-      .eq("customer_phone", lead.customer_phone)
+      .select("id, created_at, deal_name, voucher_code, status, cross_sell_items, notes")
+      .eq("business_id", business.id)
+      .eq("customer_phone", phone)
       .order("created_at", { ascending: false })
       .limit(HISTORY_LIMIT);
-    if (reqId !== historyReqRef.current) return; // stale response — discard
+    if (reqId !== historyReqRef.current) return;
     if (error) {
       console.error(error);
       toast.error("Không tải được lịch sử ghé tiệm");
@@ -114,11 +134,25 @@ export default function LeadsPage() {
     setHistoryLoading(false);
   };
 
+  const openHistory = async (lead: Lead) => {
+    setSelectedLead(lead);
+    setSelectedCustomer(null);
+    await fetchHistory(lead.customer_phone);
+  };
+
+  const openCustomerHistory = async (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setSelectedLead(null);
+    await fetchHistory(customer.phone);
+  };
+
   // Total visit count from stored value (accurate even when history is limited to HISTORY_LIMIT rows)
   const totalVisits = (lead: Lead) => lead.visit_count ?? 1;
 
   // Pre-compute for use in the history modal without an IIFE
-  const historyTotal = selectedLead ? totalVisits(selectedLead) : 0;
+  const historyTotal = selectedCustomer 
+    ? selectedCustomer.total_visits 
+    : (selectedLead ? totalVisits(selectedLead) : 0);
 
 
   const updateStatus = async (leadId: string, newStatus: string) => {
@@ -205,18 +239,27 @@ export default function LeadsPage() {
 
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải danh sách...</div>;
 
-  const filteredLeads = searchPhone.trim()
-    ? leads.filter(l => (l.customer_phone || '').replace(/\D/g, '').includes(searchPhone.replace(/\D/g, '')))
+  const searchTerm = searchPhone.trim().toLowerCase();
+  const filteredLeads = searchTerm
+    ? leads.filter(l => {
+        const phoneMatch = (l.customer_phone || '').replace(/\D/g, '').includes(searchTerm.replace(/\D/g, ''));
+        const codeMatch = (l.voucher_code || '').toLowerCase().includes(searchTerm);
+        return phoneMatch || codeMatch;
+      })
     : leads;
+
+  const filteredCustomers = searchTerm
+    ? customers.filter(c => (c.phone || '').replace(/\D/g, '').includes(searchTerm.replace(/\D/g, '')))
+    : customers;
 
   return (
     <>
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-gold">Danh sách Khách đặt (Leads)</h1>
+          <h1 className="text-2xl font-bold font-display text-gold">Quản lý Khách Hàng (CRM)</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Tổng hợp khách hàng đã đăng ký nhận ưu đãi từ trang Landing Page của bạn.
+            Ghi nhận khách hàng chuẩn CSKH: Mỗi SĐT là 1 khách hàng duy nhất.
           </p>
         </div>
         <Button onClick={exportExcel} variant="outline" className="border-green-600 text-green-700 hover:bg-green-50">
@@ -225,15 +268,14 @@ export default function LeadsPage() {
       </div>
 
       {/* Ô tìm kiếm SĐT nhanh */}
-      <div className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3 shadow-sm">
-        <Phone className="size-4 text-gold shrink-0" />
+      <div className="flex items-center gap-3 rounded-xl border-2 border-gold/40 bg-gold/5 px-4 py-3 shadow-sm">
+        <Phone className="size-5 text-gold shrink-0" />
         <input
-          type="tel"
-          inputMode="numeric"
-          placeholder="Khách đọc SĐT — gõ 3-4 số cuối để tìm ngay..."
+          type="text"
+          placeholder="TÌM SĐT HOẶC MÃ ĐỂ CHECK-IN (gõ 3-4 số cuối)..."
           value={searchPhone}
           onChange={e => setSearchPhone(e.target.value)}
-          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          className="flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-muted-foreground/70 text-ink"
         />
         {searchPhone && (
           <button onClick={() => setSearchPhone('')} className="text-xs text-muted-foreground hover:text-ink">
@@ -242,23 +284,86 @@ export default function LeadsPage() {
         )}
       </div>
 
+      <div className="flex gap-2 border-b">
+        <button
+          onClick={() => setViewMode('customers')}
+          className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-colors ${viewMode === 'customers' ? 'border-gold text-gold' : 'border-transparent text-muted-foreground hover:text-ink'}`}
+        >
+          <Users className="inline-block size-4 mr-2" />
+          Khách Hàng ({customers.length})
+        </button>
+        <button
+          onClick={() => setViewMode('leads')}
+          className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-colors ${viewMode === 'leads' ? 'border-gold text-gold' : 'border-transparent text-muted-foreground hover:text-ink'}`}
+        >
+          <CalendarDays className="inline-block size-4 mr-2" />
+          Quản lý Ưu đãi & Check-in ({leads.length})
+        </button>
+      </div>
+
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        {filteredLeads.length === 0 ? (
-          <div className="p-10 text-center text-muted-foreground flex flex-col items-center">
-            <Phone className="size-10 mb-4 opacity-20" />
-            <p>{searchPhone ? `Không tìm thấy khách nào với số "${searchPhone}"` : 'Chưa có khách hàng nào đăng ký ưu đãi.'}</p>
-            {!searchPhone && <p className="text-sm mt-1">Hãy chia sẻ trang ưu đãi của bạn để thu hút khách nhé!</p>}
-          </div>
-        ) : (
+        {viewMode === 'customers' && (
+          filteredCustomers.length === 0 ? (
+            <div className="p-10 text-center text-muted-foreground flex flex-col items-center">
+              <Users className="size-10 mb-4 opacity-20" />
+              <p>{searchPhone ? `Không tìm thấy khách hàng với số "${searchPhone}"` : 'Chưa có dữ liệu khách hàng.'}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
+                  <tr>
+                    <th className="px-6 py-4 font-semibold">Tên Khách Hàng</th>
+                    <th className="px-6 py-4 font-semibold">Số Điện Thoại</th>
+                    <th className="px-6 py-4 font-semibold text-center">Tổng Số Lượt Ghé</th>
+                    <th className="px-6 py-4 font-semibold">Lần Ghé Cuối</th>
+                    <th className="px-6 py-4 font-semibold">Lịch sử</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {filteredCustomers.map((c) => (
+                    <tr key={c.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-6 py-4 font-bold text-ink">{c.name}</td>
+                      <td className="px-6 py-4 font-medium text-gold">{c.phone}</td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full">{c.total_visits}</span>
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground">
+                        {format(new Date(c.last_visit_at), 'dd/MM/yyyy HH:mm')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => openCustomerHistory(c)}
+                          className="text-gold font-medium text-xs border border-gold rounded px-3 py-1.5 hover:bg-gold hover:text-white transition-colors"
+                        >
+                          Xem chi tiết
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
+
+        {viewMode === 'leads' && (
+          filteredLeads.length === 0 ? (
+            <div className="p-10 text-center text-muted-foreground flex flex-col items-center">
+              <Phone className="size-10 mb-4 opacity-20" />
+              <p>{searchPhone ? `Không tìm thấy khách nào với số "${searchPhone}"` : 'Chưa có khách hàng nào đăng ký ưu đãi.'}</p>
+              {!searchPhone && <p className="text-sm mt-1">Hãy chia sẻ trang ưu đãi của bạn để thu hút khách nhé!</p>}
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
                 <tr>
                   <th className="px-6 py-4 font-semibold">Giờ đặt</th>
                   <th className="px-6 py-4 font-semibold">Khách hàng</th>
-                  <th className="px-6 py-4 font-semibold hidden md:table-cell">Gói ưu đãi & Mua kèm</th>
+                  <th className="px-6 py-4 font-semibold hidden md:table-cell">Mã Ưu Đãi & Dịch vụ</th>
                   <th className="px-6 py-4 font-semibold">Lần ghé</th>
-                  <th className="px-6 py-4 font-semibold">Trạng thái</th>
+                  <th className="px-6 py-4 font-semibold">Ghi nhận Check-in</th>
                   <th className="px-6 py-4 font-semibold">Ghi chú nhanh</th>
                 </tr>
               </thead>
@@ -274,11 +379,19 @@ export default function LeadsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-bold text-ink">{lead.customer_name}</div>
-                      <div className="text-gold font-medium">{lead.customer_phone}</div>
+                      <button 
+                        onClick={() => openHistory(lead)} 
+                        className="text-left group cursor-pointer hover:bg-muted/50 p-2 -ml-2 rounded-lg transition-colors"
+                      >
+                        <div className="font-bold text-ink group-hover:text-gold transition-colors">{lead.customer_name}</div>
+                        <div className="text-gold font-medium">{lead.customer_phone}</div>
+                      </button>
                     </td>
                     <td className="px-6 py-4 text-muted-foreground hidden md:table-cell">
                       <div className="font-medium text-ink max-w-[160px] truncate" title={lead.deal_name}>{lead.deal_name}</div>
+                      <div className="mt-1 font-mono text-xs font-bold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded inline-block shadow-sm">
+                        Mã: {lead.voucher_code || 'N/A'}
+                      </div>
                       {lead.cross_sell_items && (
                         <div className="text-xs text-purple-600 font-medium mt-1 break-words">
                           🛒 {lead.cross_sell_items}
@@ -309,8 +422,8 @@ export default function LeadsPage() {
                       >
                         <option value="new">Chưa liên hệ</option>
                         <option value="confirmed">Đã xác nhận</option>
-                        <option value="served">Khách đã đến</option>
-                        <option value="cancelled">Hủy / Không nghe máy</option>
+                        <option value="served">✅ Đã Check-in (Khách đến)</option>
+                        <option value="cancelled">❌ Hủy / Không nghe máy</option>
                       </select>
                     </td>
                     <td className="px-6 py-4">
@@ -327,20 +440,21 @@ export default function LeadsPage() {
               </tbody>
             </table>
           </div>
+          )
         )}
       </div>
     </div>
 
     {/* Visit History Modal */}
-    {selectedLead && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedLead(null)}>
+    {(selectedLead || selectedCustomer) && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => { setSelectedLead(null); setSelectedCustomer(null); }}>
         <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
           <div className="flex items-center justify-between px-6 py-4 border-b">
             <div>
-              <h3 className="font-bold text-lg text-ink">{selectedLead.customer_name}</h3>
-              <p className="text-sm text-gold font-medium">{selectedLead.customer_phone}</p>
+              <h3 className="font-bold text-lg text-ink">{selectedCustomer ? selectedCustomer.name : selectedLead?.customer_name}</h3>
+              <p className="text-sm text-gold font-medium">{selectedCustomer ? selectedCustomer.phone : selectedLead?.customer_phone}</p>
             </div>
-            <button onClick={() => setSelectedLead(null)} className="text-muted-foreground hover:text-ink">
+            <button onClick={() => { setSelectedLead(null); setSelectedCustomer(null); }} className="text-muted-foreground hover:text-ink">
               <X className="size-5" />
             </button>
           </div>
@@ -361,7 +475,22 @@ export default function LeadsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-ink truncate">{v.deal_name || 'Ưu đãi chung'}</p>
-                      <p className="text-xs text-muted-foreground">{format(new Date(v.created_at), 'HH:mm dd/MM/yyyy')}</p>
+                      {v.voucher_code && (
+                        <p className="font-mono text-[10px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded inline-block mt-0.5 mb-1 shadow-sm">
+                          Mã: {v.voucher_code}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground mb-1">{format(new Date(v.created_at), 'HH:mm dd/MM/yyyy')}</p>
+                      {v.cross_sell_items && (
+                        <p className="text-xs text-purple-600 font-medium truncate" title={v.cross_sell_items}>
+                          🛒 {v.cross_sell_items}
+                        </p>
+                      )}
+                      {v.notes && (
+                        <p className="text-xs text-ink/70 italic mt-1 bg-white/50 p-1.5 rounded-md border border-black/5" title={v.notes}>
+                          "{v.notes}"
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}

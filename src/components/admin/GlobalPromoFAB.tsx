@@ -27,7 +27,7 @@ export function GlobalPromoFAB() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 left-6 md:bottom-10 md:left-10 z-[9999] flex items-center justify-center size-14 md:size-16 rounded-full bg-gradient-to-r from-gold to-amber-500 text-ink shadow-2xl hover:scale-105 transition-transform active:scale-95 group border-2 border-white/20"
+        className="fixed bottom-[90px] left-4 md:bottom-10 md:left-10 z-[9999] flex items-center justify-center size-14 md:size-16 rounded-full bg-gradient-to-r from-gold to-amber-500 text-ink shadow-2xl hover:scale-105 transition-transform active:scale-95 group border-2 border-white/20"
         title="Tạo nhanh trang Ưu Đãi"
       >
         <Sparkles className="size-6 animate-pulse" />
