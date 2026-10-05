@@ -14,6 +14,8 @@ export default function DashboardPrintQR({ business }: { business: any }) {
   const standeeTagline = content.standee_tagline || "";
   const [tagline, setTagline] = useState(standeeTagline);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const standeeRef = useRef<HTMLDivElement>(null);
 
   const saveTagline = async () => {
     setIsSaving(true);
