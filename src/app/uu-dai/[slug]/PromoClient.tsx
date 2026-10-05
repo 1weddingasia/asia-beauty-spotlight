@@ -42,6 +42,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const [selectedService, setSelectedService] = useState<any>(null);
   const [selectedCrossSells, setSelectedCrossSells] = useState<string[]>([]);
   
+  // Intercept modal state
+  const [interceptType, setInterceptType] = useState<'hotline' | 'zalo' | null>(null);
+  const [interceptPhone, setInterceptPhone] = useState("");
+  const [interceptName, setInterceptName] = useState("");
+  const [interceptLoading, setInterceptLoading] = useState(false);
+  
   // Carousel state
   const [api, setApi] = useState<CarouselApi>();
   const [servicesRef, servicesApi] = useEmblaCarousel({ loop: false, align: "start" });
@@ -147,6 +153,54 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     }
   };
 
+  const handleInterceptClick = (e: React.MouseEvent, type: 'hotline' | 'zalo') => {
+    e.preventDefault();
+    setInterceptType(type);
+  };
+
+  const b = business;
+  const rawHotline = b.page_content?.phone || "1900 xxxx";
+  const zaloNumber = b.zalo || (rawHotline ? rawHotline.replace(/[^0-9]/g, '') : '');
+  const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
+
+  const handleInterceptSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setInterceptLoading(true);
+    try {
+      // 1. Lưu SĐT vào CRM Mini và gửi Telegram
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          business_id: business.id,
+          customer_name: interceptName || (interceptType === 'hotline' ? 'Khách click Gọi Hotline' : 'Khách click Zalo Booking'),
+          customer_phone: interceptPhone,
+          deal_name: interceptType === 'hotline' ? 'Liên hệ qua Hotline' : 'Tư vấn Booking qua Zalo'
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        toast.error(data.error || "Số điện thoại không hợp lệ");
+        setInterceptLoading(false);
+        return;
+      }
+      
+      // 2. Chuyển hướng
+      if (interceptType === 'hotline') {
+        window.location.href = `tel:${rawHotline.replace(/\D/g, '')}`;
+      } else {
+        window.open(zaloLink, '_blank');
+      }
+      setInterceptType(null);
+      setInterceptPhone("");
+      setInterceptName("");
+    } catch (err) {
+      toast.error("Lỗi kết nối");
+    } finally {
+      setInterceptLoading(false);
+    }
+  };
+
   const services = Array.isArray(business.page_content?.services) && business.page_content.services.length > 0
     ? business.page_content.services
     : Array.isArray(business.services) && business.services.length > 0
@@ -177,12 +231,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     return price;
   };
 
-  const b = business;
-  const zaloNumber = b.zalo || (hotline ? hotline.replace(/[^0-9]/g, '') : '');
-  const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
-
-  const banners = Array.isArray(b.page_content?.banners) && b.page_content.banners.length > 0
-    ? b.page_content.banners 
+  const banners = Array.isArray(business.page_content?.banners) && business.page_content.banners.length > 0
+    ? business.page_content.banners 
     : [bannerImg];
 
   return (
@@ -218,17 +268,57 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-8">
-            <a href={`tel:${hotline.replace(/\D/g, '')}`} className="flex items-center justify-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-md px-6 py-3.5 md:py-3 rounded-full border border-white/20 text-white font-medium shadow-xl transition-all hover:scale-105 w-64 sm:w-auto">
+            <a href="#" onClick={(e) => handleInterceptClick(e, 'hotline')} className="flex items-center justify-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-md px-6 py-3.5 md:py-3 rounded-full border border-white/20 text-white font-medium shadow-xl transition-all hover:scale-105 w-64 sm:w-auto">
               <Phone className="size-4 text-gold" /> Gọi Hotline
             </a>
             {zaloLink !== '#' && (
-              <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110">
+              <a href="#" onClick={(e) => handleInterceptClick(e, 'zalo')} className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110">
                 <MessageCircle className="size-5" /> BOOKING / TƯ VẤN
               </a>
             )}
           </div>
         </div>
       </div>
+
+      <Dialog open={!!interceptType} onOpenChange={() => setInterceptType(null)}>
+        <DialogContent className="sm:max-w-[425px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold font-display text-ink">
+              {interceptType === 'hotline' ? 'Liên hệ Hotline' : 'Nhận tư vấn qua Zalo'}
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground text-sm">
+              Vui lòng để lại Số Điện Thoại để <b>{business.name}</b> chuẩn bị đón tiếp và giữ ưu đãi tốt nhất cho bạn nhé!
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleInterceptSubmit} className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Input 
+                placeholder="Tên của bạn (Tùy chọn)" 
+                value={interceptName} 
+                onChange={e => setInterceptName(e.target.value)} 
+                className="h-12 bg-white text-ink border-gray-200 focus:border-gold focus:ring-gold"
+              />
+            </div>
+            <div className="space-y-2">
+              <Input 
+                placeholder="Số điện thoại của bạn *" 
+                required 
+                type="tel" 
+                value={interceptPhone} 
+                onChange={e => setInterceptPhone(e.target.value)} 
+                className="h-12 bg-white text-ink border-gray-200 focus:border-gold focus:ring-gold font-medium"
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full h-12 bg-gold hover:bg-gold-soft text-ink font-bold text-lg rounded-xl transition-all hover:scale-[1.02]" 
+              disabled={interceptLoading}
+            >
+              {interceptLoading ? "Đang kết nối..." : (interceptType === 'hotline' ? "Tiếp tục gọi" : "Tiếp tục mở Zalo")}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <div className="max-w-5xl mx-auto px-4 py-12 -mt-16 md:-mt-24 relative z-10">
         <div className="text-center mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto">
