@@ -580,11 +580,10 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 </p>
               )}
 
-              {(b.about || b.description) && (
-                <div
-                  className="text-sm md:text-base text-muted-foreground leading-relaxed space-y-4"
-                  dangerouslySetInnerHTML={{ __html: b.about || b.description }}
-                />
+              {(b.page_content?.description || b.description) && (
+                <div className="text-sm md:text-base text-muted-foreground leading-relaxed space-y-4 whitespace-pre-wrap">
+                  {b.page_content?.description || b.description}
+                </div>
               )}
 
               {b.page_content?.amenities && b.page_content.amenities.length > 0 && (

@@ -18,17 +18,6 @@ export type Lead = {
   businesses: { name: string } | null;
 };
 
-// Hàm escape CSV chống injection (Formula Injection) và xử lý ký tự đặc biệt
-const escapeCSV = (value: string | null | undefined) => {
-  if (!value) return '""';
-  // Ngăn chặn Excel tự động chạy công thức nếu nội dung bắt đầu bằng các ký tự đặc biệt
-  let safeValue = String(value);
-  if (/^[=+\-@\t\r]/.test(safeValue)) {
-    safeValue = "'" + safeValue;
-  }
-  // Escape dấu ngoặc kép bên trong bằng cách nhân đôi (" -> "")
-  return `"${safeValue.replace(/"/g, '""')}"`;
-};
 
 const formatLeadDate = (dateStr: string, fallback = "-") => {
   try {
@@ -48,39 +37,40 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
     lead.businesses?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleExportCSV = () => {
-    if (filteredLeads.length === 0) return;
+  const handleExportExcel = () => {
+    if (filteredLeads.length === 0) {
+      toast.error("Chưa có dữ liệu để xuất");
+      return;
+    }
     
-    const headers = ["Ngày", "Doanh nghiệp", "Tên Khách Hàng", "Số Điện Thoại", "Mã Ưu Đãi", "Gói Dịch Vụ", "Trạng Thái"];
+    const escapeExcel = (value: string | null | undefined) => {
+      if (!value) return '';
+      const safeValue = String(value);
+      if (/^[=+\-@\t\r]/.test(safeValue)) {
+        return "'" + safeValue;
+      }
+      return safeValue;
+    };
     
-    const csvContent = filteredLeads.map(lead => {
-      const dateStr = formatLeadDate(lead.created_at, "");
-      const businessName = lead.businesses?.name || "N/A";
-      
-      return [
-        escapeCSV(dateStr),
-        escapeCSV(businessName),
-        escapeCSV(lead.customer_name),
-        escapeCSV(lead.customer_phone),
-        escapeCSV(lead.voucher_code),
-        escapeCSV(lead.deal_name),
-        escapeCSV(lead.status)
-      ].join(",");
+    const data = filteredLeads.map(lead => ({
+      "Ngày": formatLeadDate(lead.created_at, ""),
+      "Doanh nghiệp": escapeExcel(lead.businesses?.name || "N/A"),
+      "Tên Khách Hàng": escapeExcel(lead.customer_name),
+      "Số Điện Thoại": escapeExcel(lead.customer_phone),
+      "Mã Ưu Đãi": escapeExcel(lead.voucher_code),
+      "Gói Dịch Vụ": escapeExcel(lead.deal_name),
+      "Trạng Thái": escapeExcel(lead.status)
+    }));
+    
+    import("xlsx").then((XLSX) => {
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
+      XLSX.writeFile(workbook, `Leads_${format(new Date(), "dd-MM-yyyy")}.xlsx`);
+    }).catch((err) => {
+      console.error(err);
+      toast.error("Lỗi khi xuất file Excel");
     });
-    
-    const csvRows = [headers.join(","), ...csvContent].join("\n");
-    // Thêm BOM \uFEFF để Excel nhận diện chuẩn UTF-8 Tiếng Việt
-    const blob = new Blob(["\uFEFF" + csvRows], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `Leads_${format(new Date(), "dd-MM-yyyy")}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -93,8 +83,8 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
           </p>
         </div>
         
-        <Button onClick={handleExportCSV} className="bg-green-600 hover:bg-green-700 text-white flex gap-2">
-          <Download className="size-4" /> Xuất file Excel (CSV)
+        <Button onClick={handleExportExcel} className="bg-green-600 hover:bg-green-700 text-white flex gap-2">
+          <Download className="size-4" /> Xuất file Excel
         </Button>
       </div>
 

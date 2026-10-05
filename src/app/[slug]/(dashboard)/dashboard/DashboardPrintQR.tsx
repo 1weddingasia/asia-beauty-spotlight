@@ -1,7 +1,10 @@
 "use client";
 
-import { QrCode, Printer } from "lucide-react";
+import { useRef, useState } from "react";
+import { QrCode, Printer, Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import html2canvas from "html2canvas";
 
 export default function DashboardPrintQR({ business }: { business: any }) {
   let content = business.page_content || {};
@@ -9,75 +12,44 @@ export default function DashboardPrintQR({ business }: { business: any }) {
     try { content = JSON.parse(content); } catch (e) {}
   }
   const standeeTagline = content.standee_tagline || "";
+  const [isDownloading, setIsDownloading] = useState(false);
+  const standeeRef = useRef<HTMLDivElement>(null);
 
-  const handlePrint = () => {
-    const promoUrl = `https://1beauty.asia/${business.slug}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(promoUrl)}&margin=10&color=3d2c00&bgcolor=fefdf8`;
-    const escapedName = business.name
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-      
-    const printContent = `
-      <!DOCTYPE html>
-      <html lang="vi">
-      <head>
-        <meta charset="UTF-8">
-        <title>Mã QR Standee A5 - ${escapedName}</title>
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap');
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Be Vietnam Pro', sans-serif; background: #fff; }
-          @page { size: A5 portrait; margin: 0; }
-          .standee {
-            width: 148mm; height: 210mm;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: space-between;
-            padding: 14mm 12mm;
-            background: linear-gradient(160deg, #fffbf0 0%, #fff8e1 50%, #fef3c7 100%);
-            border: 3px solid #c8960c;
-            border-radius: 8mm;
-            text-align: center;
-            page-break-after: avoid;
-          }
-          .top-badge { background: #c8960c; color: #fff; font-size: 9pt; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 16px; border-radius: 99px; margin-bottom: 4mm; }
-          .shop-name { font-size: 18pt; font-weight: 900; color: #1a0a00; line-height: 1.2; margin-bottom: 2mm; }
-          .headline { font-size: 13pt; font-weight: 700; color: #c8960c; line-height: 1.3; margin-bottom: 6mm; }
-          .qr-wrap { background: #fff; border: 3px solid #c8960c; border-radius: 6mm; padding: 6mm; box-shadow: 0 4px 24px rgba(200,150,12,0.2); }
-          .qr-img { display: block; width: 50mm; height: 50mm; }
-          .instructions { font-size: 9pt; color: #7c5800; margin-top: 5mm; line-height: 1.5; }
-          .footer { font-size: 7pt; color: #b39000; border-top: 1px solid #e5c96a; padding-top: 4mm; width: 100%; }
-        </style>
-      </head>
-      <body>
-        <div class="standee">
-          <div>
-            <div class="top-badge">Chương trình ưu đãi đặc quyền</div>
-            <div class="shop-name">${escapedName}</div>
-            ${standeeTagline.trim() ? '<div class="headline">QUÉT MÃ – NHẬN ƯU ĐÃI<br/>' + standeeTagline.trim().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' : '<div class="headline">QUÉT MÃ<br/>NHẬN ƯU ĐÃI</div>'}
-          </div>
-          <div>
-            <div class="qr-wrap">
-              <img class="qr-img" src="${qrUrl}" alt="QR Code" />
-            </div>
-            <div class="instructions">Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi trong 3 giây ✌️</div>
-          </div>
-          <div class="footer">Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia</div>
-        </div>
-      </body>
-      </html>
-    `;
-    const printWin = window.open('', '_blank', 'width=600,height=800');
-    if (!printWin) { alert("Trình duyệt chặn popup! Hãy cho phép popup và thử lại."); return; }
-    printWin.document.write(printContent);
-    printWin.document.close();
-    setTimeout(() => { printWin.print(); }, 1200);
+  const promoUrl = `https://1beauty.asia/${business.slug}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(promoUrl)}&margin=10&color=3d2c00&bgcolor=fefdf8`;
+  
+  const escapedName = business.name
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+  const downloadStandee = async () => {
+    if (!standeeRef.current) return;
+    setIsDownloading(true);
+    try {
+      const canvas = await html2canvas(standeeRef.current, {
+        scale: 2, // High resolution
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+      const image = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = `Standee_QR_${business.slug}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Lỗi khi tạo ảnh Standee:", error);
+      alert("Không thể tải ảnh lúc này.");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const downloadQR = async () => {
     try {
-      const promoUrl = `https://1beauty.asia/${business.slug}`;
       const url = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(promoUrl)}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error(`QR API error: ${response.status}`);
@@ -99,7 +71,9 @@ export default function DashboardPrintQR({ business }: { business: any }) {
 
   if (!business || !business.slug) return null;
 
-  const demoQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`https://1beauty.asia/${business.slug}`)}&margin=4&color=3d2c00`;
+  const demoQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(promoUrl)}&margin=4&color=3d2c00`;
+
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   return (
     <div className="mt-8 rounded-xl border bg-card shadow-sm p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
@@ -112,14 +86,15 @@ export default function DashboardPrintQR({ business }: { business: any }) {
             <QrCode className="size-6 text-gold" /> Mã QR Gian Hàng & Ưu Đãi
           </h3>
           <p className="text-sm text-muted-foreground mt-2 max-w-xl">
-            Tải mã QR hoặc In Bảng để bàn (chuẩn khổ A5) với thiết kế chuyên nghiệp kiểu Momo. 
-            Thích hợp để dán tại quầy lễ tân, bàn tư vấn hoặc trên các ấn phẩm truyền thông để khách dễ dàng quét và nhận ưu đãi, booking ngay lập tức.
+            Tải mã QR hoặc xem trước Bảng để bàn (chuẩn khổ A5) với thiết kế chuyên nghiệp. 
+            Thích hợp để dán tại quầy lễ tân, bàn tư vấn hoặc trên ấn phẩm truyền thông.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
-          <Button onClick={handlePrint} className="bg-gold text-ink font-bold hover:bg-gold/90 transition-all hover:scale-105 shadow-md shadow-gold/20">
-            <Printer className="mr-2 size-4" /> In Bảng QR Để Bàn (A5)
+          <Button onClick={() => setIsPreviewOpen(true)} className="bg-gold text-ink font-bold hover:bg-gold/90 transition-all hover:scale-105 shadow-md shadow-gold/20">
+            <Eye className="mr-2 size-4" /> Xem trước & Tải Bảng (A5)
           </Button>
+
           <Button onClick={downloadQR} variant="outline" className="border-gold text-gold hover:bg-gold/10 transition-all hover:scale-105">
             <QrCode className="mr-2 size-4" /> Tải QR Ảnh (PNG)
           </Button>
@@ -127,10 +102,9 @@ export default function DashboardPrintQR({ business }: { business: any }) {
       </div>
 
       <div className="shrink-0 relative z-10 w-full md:w-auto flex justify-center">
-        {/* Standee Preview Box */}
         <div 
-          onClick={handlePrint}
-          title="Nhấn để in ngay"
+          onClick={() => setIsPreviewOpen(true)}
+          title="Nhấn để xem trước"
           className="cursor-pointer group relative"
           style={{
             width: "140px", 
@@ -172,6 +146,80 @@ export default function DashboardPrintQR({ business }: { business: any }) {
           </div>
         </div>
       </div>
+
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-[420px] p-6 max-h-[95vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center mb-4">Xem trước Standee</DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex justify-center mb-6">
+            <div 
+              ref={standeeRef}
+              style={{
+                width: "148mm", 
+                height: "210mm",
+                display: "flex", 
+                flexDirection: "column",
+                alignItems: "center", 
+                justifyContent: "space-between",
+                padding: "14mm 12mm",
+                background: "linear-gradient(160deg, #fffbf0 0%, #fff8e1 50%, #fef3c7 100%)",
+                border: "3px solid #c8960c",
+                borderRadius: "8mm",
+                textAlign: "center",
+                transformOrigin: "top center",
+                transform: "scale(0.6)",
+                marginBottom: "-80px", // adjust for scaling layout shift
+                fontFamily: "'Be Vietnam Pro', sans-serif"
+              }}
+            >
+              <div style={{width: "100%"}}>
+                <div style={{background: "#c8960c", color: "#fff", fontSize: "14px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", padding: "6px 16px", borderRadius: "99px", marginBottom: "16px", display: "inline-block"}}>
+                  Chương trình ưu đãi
+                </div>
+                <div style={{fontSize: "24px", fontWeight: 900, color: "#1a0a00", lineHeight: 1.2, marginBottom: "8px"}}>
+                  {business.name}
+                </div>
+                {standeeTagline.trim() ? (
+                  <div style={{fontSize: "18px", fontWeight: 700, color: "#c8960c", lineHeight: 1.3, marginBottom: "24px"}}>
+                    QUÉT MÃ – NHẬN ƯU ĐÃI<br/>{standeeTagline}
+                  </div>
+                ) : (
+                  <div style={{fontSize: "18px", fontWeight: 700, color: "#c8960c", lineHeight: 1.3, marginBottom: "24px"}}>
+                    QUÉT MÃ<br/>NHẬN ƯU ĐÃI
+                  </div>
+                )}
+              </div>
+              <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <div style={{background: "#fff", border: "3px solid #c8960c", borderRadius: "12px", padding: "16px", boxShadow: "0 4px 24px rgba(200,150,12,0.2)"}}>
+                  <img 
+                    src={qrUrl} 
+                    alt="QR Code" 
+                    style={{width: "180px", height: "180px", display: "block"}}
+                    crossOrigin="anonymous"
+                  />
+                </div>
+                <div style={{fontSize: "14px", color: "#7c5800", marginTop: "20px", lineHeight: 1.5}}>
+                  Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi trong 3 giây ✌️
+                </div>
+              </div>
+              <div style={{fontSize: "10px", color: "#b39000", borderTop: "1px solid #e5c96a", paddingTop: "12px", width: "100%", marginTop: "20px"}}>
+                Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 mt-4">
+            <Button onClick={downloadStandee} disabled={isDownloading} className="w-full bg-gold text-ink font-bold hover:bg-gold/90">
+              {isDownloading ? "Đang tạo ảnh..." : "Tải xuống Ảnh (PNG)"}
+            </Button>
+            <Button onClick={downloadQR} variant="outline" className="w-full border-gold text-gold hover:bg-gold/10">
+              Chỉ tải QR Code
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

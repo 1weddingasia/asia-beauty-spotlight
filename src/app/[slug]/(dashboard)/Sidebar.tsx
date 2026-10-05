@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { LayoutDashboard, Store, Ticket, Users, Settings, Sparkles, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +17,8 @@ export default function Sidebar({
   planTier?: string 
 }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get('tab');
 
   const menuGroups = [
     {
@@ -58,7 +60,14 @@ export default function Sidebar({
             </h4>
             <div className="space-y-1">
               {group.items.map((item, iIdx) => {
-                const isActive = pathname === item.href;
+                const itemUrl = new URL(item.href, 'http://localhost');
+                const itemPath = itemUrl.pathname;
+                const itemTab = itemUrl.searchParams.get('tab');
+                
+                // If item has no tab, it's active if current URL has no tab or tab matches
+                // Wait, if current URL is /slug/profile?other=1, currentTab is null. itemTab is null. Matches.
+                const isActive = pathname === itemPath && (itemTab === currentTab || (!itemTab && !currentTab));
+                
                 const Icon = item.icon;
                 return (
                   <Link

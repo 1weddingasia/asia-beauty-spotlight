@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,8 @@ const AMENITY_OPTIONS = [
 
 export default function BusinessProfilePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get('tab') || "overview";
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,6 +36,16 @@ export default function BusinessProfilePage() {
   // NOTE: Gallery & Offers are unlocked for all businesses during the launch phase (30-day trial).
   // Re-enable plan-tier gating when Free/VIP tiers are introduced.
   const [isPremium] = useState(true);
+
+  const handleTabChange = (val: string) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    if (val === "overview") {
+      newParams.delete('tab');
+    } else {
+      newParams.set('tab', val);
+    }
+    router.push(`?${newParams.toString()}`);
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -221,7 +233,7 @@ export default function BusinessProfilePage() {
         </div>
       </div>
 
-      <Tabs defaultValue={typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tab') || "overview" : "overview"} className="w-full">
+      <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto md:h-12 gap-2 bg-muted p-2 rounded-xl mb-6">
           <TabsTrigger value="overview">Tổng quan</TabsTrigger>
           <TabsTrigger value="contact">Liên hệ & Bản đồ</TabsTrigger>
