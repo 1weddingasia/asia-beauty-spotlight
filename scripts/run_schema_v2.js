@@ -228,7 +228,12 @@ CREATE TABLE posts (
 `;
 
 async function run() {
-    const client = new Client({ connectionString: 'postgresql://postgres.ejlltaigohemjagfzxxh:MYW_.Guf3YkQ4qi@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres' });
+    require('dotenv').config({ path: require('path').join(__dirname, '..', '.env.local') });
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+        throw new Error('DATABASE_URL is not set in .env.local');
+    }
+    const client = new Client({ connectionString });
     try {
         await client.connect();
         await client.query(sql);

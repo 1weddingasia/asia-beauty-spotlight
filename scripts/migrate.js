@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env.local') });
 const { Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
@@ -6,7 +6,10 @@ const path = require('path');
 async function runMigrations() {
     // Determine the DB connection string
     // Try process.env.DATABASE_URL first, fallback to the hardcoded one if not found
-    const connectionString = process.env.DATABASE_URL || 'postgresql://postgres.ejlltaigohemjagfzxxh:MYW_.Guf3YkQ4qi@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres';
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+        throw new Error('DATABASE_URL is not set. Configure it in .env.local before running migrations.');
+    }
     
     const client = new Client({ connectionString });
     
@@ -73,8 +76,9 @@ async function runMigrations() {
 
     } catch (e) {
         console.error('Migration failed:', e);
+        process.exitCode = 1;
     } finally {
-        await client.end();
+        await client.end().catch(() => {});
         console.log('🔌 Connection closed.');
     }
 }
