@@ -188,9 +188,11 @@ export default async function BusinessDashboardPage() {
             <Sparkles className="size-4 text-gold" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-gold uppercase">{business.plans?.name || 'FREE'}</div>
+            <div className="text-2xl font-bold text-gold uppercase">
+              {business.plan_tier === 'premium' ? 'PREMIUM' : 'FREE'}
+            </div>
             <p className="text-xs text-muted-foreground mb-4">
-              {business.plan_id ? 'Đang kích hoạt' : 'Gói cơ bản'}
+              {business.plan_tier === 'premium' ? 'Đang kích hoạt' : 'Gói cơ bản'}
             </p>
             <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
               <Link href={`/${business.slug}/upgrade`}>Nâng cấp Gói</Link>
