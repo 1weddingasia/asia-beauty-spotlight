@@ -201,14 +201,23 @@ export default function LeadsPage() {
       return "Chưa gọi";
     };
 
+    const escapeExcel = (str: string) => {
+      if (!str) return '';
+      const clean = str.toString();
+      if (/^[=+\-@]/.test(clean)) {
+        return `'${clean}`;
+      }
+      return clean;
+    };
+
     const data = leads.map(l => ({
       "Ngày đặt": format(new Date(l.created_at), 'dd/MM/yyyy HH:mm'),
-      "Tên khách": l.customer_name,
-      "Số điện thoại": l.customer_phone,
-      "Gói Ưu đãi": l.deal_name,
-      "Sản phẩm mua kèm": l.cross_sell_items || '',
+      "Tên khách": escapeExcel(l.customer_name),
+      "Số điện thoại": escapeExcel(l.customer_phone),
+      "Gói Ưu đãi": escapeExcel(l.deal_name),
+      "Sản phẩm mua kèm": escapeExcel(l.cross_sell_items || ''),
       "Trạng thái": getStatusText(l.status),
-      "Ghi chú": l.notes || ''
+      "Ghi chú": escapeExcel(l.notes || '')
     }));
 
     import("xlsx").then((XLSX) => {
