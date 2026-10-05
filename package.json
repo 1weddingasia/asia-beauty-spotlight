@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "postbuild": "next-sitemap",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:migrate": "node scripts/migrate.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
