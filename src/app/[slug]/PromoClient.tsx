@@ -680,7 +680,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                         />
                         <div className="flex-1">
                           <p className="text-sm font-medium text-ink group-hover:text-purple-700 transition-colors">{itemName}</p>
-                          {itemPrice && <p className="text-xs text-muted-foreground">{formatPrice(itemPrice)}</p>}
+                          {itemPrice != null && <p className="text-xs text-muted-foreground">{formatPrice(itemPrice)}</p>}
                         </div>
                       </label>
                       );
