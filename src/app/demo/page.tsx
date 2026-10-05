@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function DemoPage() {
-  redirect("/lucxery");
+  redirect("/luxury-spa-demo");
 }

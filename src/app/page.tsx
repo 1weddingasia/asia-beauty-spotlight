@@ -231,7 +231,7 @@ export default async function HomePage() {
                 ⚡ Kích Hoạt Cổng Ngay
               </Link>
               <Link
-                href="/lucxery"
+                href="/luxury-spa-demo"
                 className="inline-flex items-center justify-center gap-2 border border-gold/40 text-gold px-8 py-4 rounded-2xl text-lg hover:bg-gold/10 transition-colors"
               >
                 Xem trang Demo trước
