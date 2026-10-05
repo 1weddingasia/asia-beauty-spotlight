@@ -58,6 +58,7 @@ CREATE TABLE businesses (
     location_slug TEXT,
     plan_tier TEXT,
     claim_token UUID,
+    chatbot_passcode TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

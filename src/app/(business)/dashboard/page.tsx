@@ -215,7 +215,7 @@ export default async function BusinessDashboardPage() {
           <div className="bg-background rounded-lg p-4 border shadow-inner max-w-2xl mb-4">
             <div className="text-sm">
               <span className="text-muted-foreground">Mã bảo mật (Passcode) của bạn là: </span>
-              <span className="font-bold text-rose-600 text-lg tracking-widest bg-rose-50 px-2 py-1 rounded select-all cursor-pointer" title="Nhấn để copy">
+              <span className="font-bold text-rose-600 text-lg tracking-widest bg-rose-50 px-2 py-1 rounded select-all" title="Bôi đen để copy">
                 {business.chatbot_passcode ? business.chatbot_passcode : "CHƯA CẤP"}
               </span>
             </div>
