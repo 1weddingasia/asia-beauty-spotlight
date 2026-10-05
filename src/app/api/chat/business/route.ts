@@ -55,7 +55,7 @@ Thông tin tiệm: SĐT ${business.phone || 'không có'}, Địa chỉ ${busine
 
     if (isAdmin) {
       systemPrompt += `\nQUAN TRỌNG: NGƯỜI DÙNG HIỆN TẠI LÀ QUẢN TRỊ VIÊN (CHỦ TIỆM) ĐÃ XÁC THỰC THÀNH CÔNG.
-Bạn CÓ QUYỀN VÀ BẮT BUỘC PHẢI gọi các Tool (update_business_info, update_services_or_deals) khi họ yêu cầu thêm/sửa/xóa thông tin hoặc giá dịch vụ. KHÔNG ĐƯỢC yêu cầu mật khẩu nữa vì họ đã xác thực rồi.`;
+Bạn CÓ QUYỀN VÀ BẮT BUỘC PHẢI gọi các Tool (update_business_info, update_images, update_services_or_deals) khi họ yêu cầu thêm/sửa/xóa thông tin, hình ảnh hoặc giá dịch vụ. KHÔNG ĐƯỢC yêu cầu mật khẩu nữa vì họ đã xác thực rồi.`;
     } else {
       systemPrompt += `\nNếu người dùng là khách: Hỗ trợ thân thiện, ngắn gọn.
 Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu cầu họ cung cấp Mật khẩu/Passcode (hoặc Claim Token) của tiệm để bật chế độ Quản trị. Đừng gọi hàm sửa nếu chưa có passcode.`;
@@ -106,7 +106,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             type: "object",
             properties: {
               logo_url: { type: "string", description: "Link hình ảnh logo" },
-              hero_image: { type: "string", description: "Link hình ảnh banner/cover chính của trang" }
+              banner_url: { type: "string", description: "Link hình ảnh banner/cover chính của trang" }
             }
           }
         }
@@ -213,13 +213,35 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             const pageContent = business.page_content || {};
             let changed = false;
             
+            const isValidUrl = (url: string) => {
+              try {
+                const parsed = new URL(url);
+                return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+              } catch {
+                return false;
+              }
+            };
+            
             if (functionArgs.logo_url) {
-              pageContent.logo_url = functionArgs.logo_url;
-              changed = true;
+              if (!isValidUrl(functionArgs.logo_url)) {
+                result = "Lỗi: Link hình ảnh không hợp lệ.";
+                changed = false;
+              } else {
+                pageContent.logo_url = functionArgs.logo_url;
+                changed = true;
+              }
             }
-            if (functionArgs.hero_image) {
-              pageContent.hero_image = functionArgs.hero_image;
-              changed = true;
+            if (functionArgs.banner_url) {
+              if (!isValidUrl(functionArgs.banner_url)) {
+                result = "Lỗi: Link hình ảnh không hợp lệ.";
+                changed = false;
+              } else {
+                // page_content.banners is an array of strings
+                pageContent.banners = [functionArgs.banner_url];
+                // Also update hero_image for the card
+                pageContent.hero_image = functionArgs.banner_url;
+                changed = true;
+              }
             }
             
             if (changed) {
@@ -244,7 +266,19 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             let newArray = [...targetArray];
             let changed = false;
             
-            if (functionArgs.action === 'add') {
+            const isValidUrl = (url?: string) => {
+              if (!url) return true; // optional
+              try {
+                const parsed = new URL(url);
+                return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+              } catch {
+                return false;
+              }
+            };
+
+            if (functionArgs.image_url && !isValidUrl(functionArgs.image_url)) {
+              result = "Lỗi: Link hình ảnh không hợp lệ.";
+            } else if (functionArgs.action === 'add') {
               newArray.push({
                 name: functionArgs.item_name,
                 price: functionArgs.price,
