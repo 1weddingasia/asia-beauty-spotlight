@@ -63,7 +63,7 @@ export default async function HomePage() {
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/uu-dai/lucxery"
+              href="/lucxery"
               className="group inline-flex items-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-xl hover:bg-gold-soft hover:scale-105 transition-all"
             >
               <Sparkles className="size-5" />
@@ -123,7 +123,7 @@ export default async function HomePage() {
                 icon: <QrCode className="size-8 text-gold" />,
                 title: "Landing Page Riêng",
                 badge: "Mặt tiền số",
-                desc: "Tiệm bạn có ngay 1 trang web chuyên nghiệp tại địa chỉ 1beauty.asia/uu-dai/[ten-tiem]. Đăng link lên bio TikTok, Facebook, Google Maps — khách bấm vào là thấy deal ngay.",
+                desc: "Tiệm bạn có ngay 1 trang web chuyên nghiệp tại địa chỉ 1beauty.asia/[ten-tiem]. Đăng link lên bio TikTok, Facebook, Google Maps — khách bấm vào là thấy deal ngay.",
                 highlight: "Không chia traffic với đối thủ"
               },
               {
@@ -231,7 +231,7 @@ export default async function HomePage() {
                 ⚡ Kích Hoạt Cổng Ngay
               </Link>
               <Link
-                href="/uu-dai/lucxery"
+                href="/lucxery"
                 className="inline-flex items-center justify-center gap-2 border border-gold/40 text-gold px-8 py-4 rounded-2xl text-lg hover:bg-gold/10 transition-colors"
               >
                 Xem trang Demo trước
@@ -261,7 +261,7 @@ export default async function HomePage() {
               📞 Nhắn Zalo Ngay
             </Link>
             <Link
-              href="/uu-dai"
+              href="/"
               className="inline-flex items-center justify-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
             >
               Khám phá Ưu đãi

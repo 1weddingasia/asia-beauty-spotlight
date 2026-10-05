@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       account: { email, password },
-      promoLink: `/uu-dai/${business.slug}`
+      promoLink: `/${business.slug}`
     });
 
   } catch (error: any) {

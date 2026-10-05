@@ -92,7 +92,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       business: newBiz,
-      promoLink: `/uu-dai/${slug}`
+      promoLink: `/${slug}`
     });
 
   } catch (error: any) {

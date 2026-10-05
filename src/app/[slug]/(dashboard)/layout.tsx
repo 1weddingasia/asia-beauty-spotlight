@@ -10,7 +10,14 @@ export const metadata: Metadata = {
   description: "Quản lý gian hàng, ưu đãi, đơn đặt bàn và danh sách khách hàng của bạn trên hệ thống 1Beauty.Asia",
 };
 
-export default async function BusinessDashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function BusinessDashboardLayout({ 
+  children,
+  params
+}: { 
+  children: React.ReactNode,
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -22,8 +29,14 @@ export default async function BusinessDashboardLayout({ children }: { children: 
   const { data: business } = await supabase
     .from("businesses")
     .select("id, name, slug, plan_id, plan_tier, status, created_at")
+    .eq("slug", slug)
     .eq("owner_id", user.id)
     .single();
+
+  // If business not found or not owned by user, redirect
+  if (!business) {
+    redirect("/dashboard");
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
@@ -33,7 +46,7 @@ export default async function BusinessDashboardLayout({ children }: { children: 
         </Link>
         <div className="ml-auto flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild>
-            <Link href={business ? `/uu-dai/${business.slug}` : "/"}>
+            <Link href={business ? `/${business.slug}` : "/"}>
               Xem Trang Ưu Đãi
             </Link>
           </Button>
@@ -55,19 +68,19 @@ export default async function BusinessDashboardLayout({ children }: { children: 
             </h3>
           </div>
           <nav className="flex-1 space-y-1 px-4">
-            <Link href="/dashboard" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+            <Link href={`/${slug}/dashboard`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
               <LayoutDashboard className="size-4" /> Tổng quan
             </Link>
-            <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+            <Link href={`/${slug}/profile`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
               <Store className="size-4" /> Chỉnh sửa Gian hàng
             </Link>
-            <Link href="/dashboard/deals" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+            <Link href={`/${slug}/deals`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
               <Ticket className="size-4" /> Quản lý Ưu đãi (Deals)
             </Link>
-            <Link href="/dashboard/leads" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+            <Link href={`/${slug}/leads`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
               <Users className="size-4" /> Danh sách Khách (Leads)
             </Link>
-            <Link href="/dashboard/settings" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
+            <Link href={`/${slug}/settings`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted text-foreground">
               <Settings className="size-4" /> Cài đặt Tài khoản
             </Link>
           </nav>

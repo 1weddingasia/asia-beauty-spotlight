@@ -114,12 +114,12 @@ export default async function AdminDashboardPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-sm">{biz.name}</p>
-                    <p className="text-xs text-muted-foreground">/uu-dai/{biz.slug}</p>
+                    <p className="text-xs text-muted-foreground">/{biz.slug}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-black text-gold text-lg">{biz.count} đơn</span>
-                  <Link href={`/uu-dai/${biz.slug}`} target="_blank">
+                  <Link href={`/${biz.slug}`} target="_blank">
                     <ExternalLink className="size-4 text-muted-foreground hover:text-gold" />
                   </Link>
                 </div>

@@ -139,7 +139,7 @@ export default async function BusinessDashboardPage() {
             </Button>
             {business.slug && (
               <Button asChild className="w-full justify-start bg-gold/10 text-gold border border-gold/30 hover:bg-gold/20">
-                <Link href={`/uu-dai/${business.slug}`} target="_blank">→ Xem Trang Ưu Đãi của bạn ↗</Link>
+                <Link href={`/${business.slug}`} target="_blank">→ Xem Trang Ưu Đãi của bạn ↗</Link>
               </Button>
             )}
           </div>
@@ -231,7 +231,7 @@ export default async function BusinessDashboardPage() {
             <div>
               <h4 className="font-semibold text-foreground mb-1">Cách sử dụng:</h4>
               <ol className="list-decimal list-inside space-y-1">
-                <li>Vào {business.slug ? <Link href={`/uu-dai/${business.slug}`} target="_blank" className="text-gold hover:underline">Trang Cửa Hàng</Link> : <span className="text-gold">Trang Cửa Hàng</span>} của bạn.</li>
+                <li>Vào {business.slug ? <Link href={`/${business.slug}`} target="_blank" className="text-gold hover:underline">Trang Cửa Hàng</Link> : <span className="text-gold">Trang Cửa Hàng</span>} của bạn.</li>
                 <li>Mở khung Chatbot ở góc phải bên dưới.</li>
                 <li>Nhập Passcode vào khung chat (hoặc bấm nút "🔑 Vào Quản Trị").</li>
                 <li>Chatbot sẽ chuyển sang chế độ Admin.</li>

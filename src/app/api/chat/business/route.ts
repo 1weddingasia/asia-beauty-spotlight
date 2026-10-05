@@ -371,7 +371,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
       });
 
       if (isDataUpdated) {
-        revalidatePath('/uu-dai/[slug]', 'page');
+        revalidatePath('/[slug]', 'page');
       }
 
       return NextResponse.json({

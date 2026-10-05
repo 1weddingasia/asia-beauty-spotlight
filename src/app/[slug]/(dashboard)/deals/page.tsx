@@ -206,7 +206,7 @@ export default function DealsManagementPage() {
   const downloadQR = async () => {
     if (!business?.slug) return;
     try {
-      const promoUrl = `https://1beauty.asia/uu-dai/${business.slug}`;
+      const promoUrl = `https://1beauty.asia/${business.slug}`;
       const url = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(promoUrl)}`;
       
       toast.info("Đang tạo mã QR...");
@@ -237,7 +237,7 @@ export default function DealsManagementPage() {
   };
 
   const handlePrint = () => {
-    const promoUrl = `https://1beauty.asia/uu-dai/${business.slug}`;
+    const promoUrl = `https://1beauty.asia/${business.slug}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(promoUrl)}&margin=10&color=3d2c00&bgcolor=fefdf8`;
     const escapedName = business.name
       .replace(/&/g, '&amp;')
@@ -325,7 +325,7 @@ export default function DealsManagementPage() {
                 <div style={{fontSize:"9px",fontWeight:700,color:"#c8960c",lineHeight:1.3}}>{standeeTagline.trim() ? `QUÉT MÃ NHẬN ƯU ĐÃI – ${standeeTagline.trim()}` : 'QUÉT MÃ – NHẬN ƯU ĐÃI'}</div>
                 <div style={{background:"#fff",border:"2px solid #c8960c",borderRadius:"8px",padding:"6px"}}>
                   <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`https://1beauty.asia/uu-dai/${business.slug}`)}&margin=4&color=3d2c00`} 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`https://1beauty.asia/${business.slug}`)}&margin=4&color=3d2c00`} 
                     alt="QR" 
                     style={{width:"80px",height:"80px",display:"block"}}
                   />

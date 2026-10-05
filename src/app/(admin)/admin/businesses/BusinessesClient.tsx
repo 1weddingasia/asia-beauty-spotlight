@@ -171,7 +171,7 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                     <div className="flex items-center justify-end gap-1">
                       {/* Xem trang ưu đãi */}
                       <Button variant="ghost" size="icon" asChild title="Xem trang ưu đãi">
-                        <Link href={`/uu-dai/${b.slug}`} target="_blank">
+                        <Link href={`/${b.slug}`} target="_blank">
                           <Eye className="size-4 text-gold" />
                         </Link>
                       </Button>
