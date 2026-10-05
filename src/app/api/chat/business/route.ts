@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
     // Verify admin token securely
     let isAdmin = false;
-    if (adminToken && business.claim_token) {
+    if (adminToken && business.chatbot_passcode) {
       try {
         const decoded = jwt.verify(adminToken, JWT_SECRET) as { business_id: string; is_admin: boolean };
         if (decoded.business_id === business.id && decoded.is_admin) {
@@ -68,7 +68,7 @@ Thông tin tiệm: SĐT ${business.phone || 'không có'}, Địa chỉ ${busine
 Bạn CÓ QUYỀN VÀ BẮT BUỘC PHẢI gọi các Tool (update_business_info, update_images, update_services_or_deals, update_passcode) khi họ yêu cầu thêm/sửa/xóa thông tin, đổi mã bảo mật, hình ảnh hoặc giá dịch vụ. KHÔNG ĐƯỢC yêu cầu mật khẩu nữa vì họ đã xác thực rồi.`;
     } else {
       systemPrompt += `\nNếu người dùng là khách: Hỗ trợ thân thiện, ngắn gọn.
-Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu cầu họ cung cấp Mật khẩu/Passcode (hoặc Claim Token) của tiệm để bật chế độ Quản trị. Đừng gọi hàm sửa nếu chưa có passcode.`;
+Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu cầu họ cung cấp Mật khẩu/Passcode của tiệm để bật chế độ Quản trị. Đừng gọi hàm sửa nếu chưa có passcode.`;
     }
 
     const allMessages = [
@@ -156,7 +156,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         type: "function",
         function: {
           name: "update_passcode",
-          description: "Thay đổi mã bảo mật (Claim Token / Passcode) của tiệm. Yêu cầu đã xác thực admin.",
+          description: "Thay đổi mã bảo mật (Passcode) của tiệm. Yêu cầu đã xác thực admin.",
           parameters: {
             type: "object",
             properties: {
@@ -203,7 +203,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
 
         if (functionName === "authenticate_owner") {
           // Compare securely, no hardcoded fallbacks
-          if (business.claim_token && functionArgs.passcode === business.claim_token) {
+          if (business.chatbot_passcode && functionArgs.passcode === business.chatbot_passcode) {
             newToken = jwt.sign({ business_id: business.id, is_admin: true }, JWT_SECRET, { expiresIn: '2h' });
             isAdmin = true; // Grant admin immediately for subsequent tools in this turn
             result = "Xác thực thành công! Bạn đã vào chế độ Quản Trị. Bạn có thể sử dụng các lệnh sửa đổi ngay bây giờ.";
@@ -339,14 +339,14 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
           } else {
             const { error } = await supabase
               .from('businesses')
-              .update({ claim_token: functionArgs.new_passcode })
+              .update({ chatbot_passcode: functionArgs.new_passcode })
               .eq('id', business.id);
 
             if (error) {
               result = "Lỗi hệ thống khi cập nhật mã bảo mật.";
             } else {
               // Update local variable immediately so subsequent tools in this turn might use it if they check it
-              business.claim_token = functionArgs.new_passcode;
+              business.chatbot_passcode = functionArgs.new_passcode;
               result = `Đã đổi mã bảo mật thành công sang: ${functionArgs.new_passcode}. Lần sau vui lòng dùng mã này để truy cập.`;
             }
           }

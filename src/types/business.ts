@@ -65,6 +65,7 @@ export interface Business {
   location_slug: string | null;
   plan_tier: string | null;
   claim_token: string | null;
+  chatbot_passcode: string | null;
   created_at: string;
   updated_at: string;
 }

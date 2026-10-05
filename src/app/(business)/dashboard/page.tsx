@@ -215,11 +215,11 @@ export default async function BusinessDashboardPage() {
           <div className="bg-background rounded-lg p-4 border shadow-inner max-w-2xl mb-4">
             <div className="text-sm">
               <span className="text-muted-foreground">Mã bảo mật (Passcode) của bạn là: </span>
-              <span className="font-bold text-rose-600 text-lg tracking-widest bg-rose-50 px-2 py-1 rounded">
-                {business.claim_token ? business.claim_token : "CHƯA CẤP"}
+              <span className="font-bold text-rose-600 text-lg tracking-widest bg-rose-50 px-2 py-1 rounded select-all cursor-pointer" title="Nhấn để copy">
+                {business.chatbot_passcode ? business.chatbot_passcode : "CHƯA CẤP"}
               </span>
             </div>
-            {!business.claim_token && (
+            {!business.chatbot_passcode && (
               <p className="text-xs text-red-500 mt-2">Vui lòng liên hệ Admin để được cấp mã Passcode sử dụng tính năng này.</p>
             )}
           </div>
@@ -228,7 +228,7 @@ export default async function BusinessDashboardPage() {
             <div>
               <h4 className="font-semibold text-foreground mb-1">Cách sử dụng:</h4>
               <ol className="list-decimal list-inside space-y-1">
-                <li>Vào <Link href={`/uu-dai/${business.slug}`} target="_blank" className="text-gold hover:underline">Trang Cửa Hàng</Link> của bạn.</li>
+                <li>Vào {business.slug ? <Link href={`/uu-dai/${business.slug}`} target="_blank" className="text-gold hover:underline">Trang Cửa Hàng</Link> : <span className="text-gold">Trang Cửa Hàng</span>} của bạn.</li>
                 <li>Mở khung Chatbot ở góc phải bên dưới.</li>
                 <li>Nhập Passcode vào khung chat (hoặc bấm nút "🔑 Vào Quản Trị").</li>
                 <li>Chatbot sẽ chuyển sang chế độ Admin.</li>
