@@ -2,19 +2,38 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/server';
 import { z } from 'zod';
 
-// TODO (Phase 3): Replace this in-memory Map with Upstash Redis for proper Serverless Edge Rate Limiting.
-// Basic in-memory rate limiter (Not perfect for serverless but meets basic requirements for now)
-const rateLimits = new Map<string, { count: number, resetAt: number }>();
+import { Redis } from '@upstash/redis';
+import { Ratelimit } from '@upstash/ratelimit';
 
-function isRateLimited(ip: string): boolean {
+// Initialize Upstash Redis and Ratelimit (if keys are provided)
+const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redisToken }) : null;
+
+const ratelimit = redis ? new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(3, "5 m"), // 3 requests per 5 minutes
+  analytics: true,
+}) : null;
+
+// Fallback in-memory map for dev/testing when Upstash is not configured
+const memoryRateLimits = new Map<string, { count: number, resetAt: number }>();
+
+async function isRateLimited(ip: string): Promise<boolean> {
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    return !success;
+  }
+
+  // Fallback memory rate limiting
   const now = Date.now();
-  const limitWindow = 5 * 60 * 1000; // 5 minutes
+  const limitWindow = 5 * 60 * 1000;
   const maxRequests = 3;
 
-  let record = rateLimits.get(ip);
+  let record = memoryRateLimits.get(ip);
   if (!record || record.resetAt < now) {
     record = { count: 1, resetAt: now + limitWindow };
-    rateLimits.set(ip, record);
+    memoryRateLimits.set(ip, record);
     return false;
   }
 
@@ -118,7 +137,7 @@ function sendZaloAsync(toUserId: string, message: string) {
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    if (isRateLimited(ip)) {
+    if (await isRateLimited(ip)) {
       return NextResponse.json({ error: 'Quá nhiều yêu cầu. Vui lòng thử lại sau 5 phút.' }, { status: 429 });
     }
 
