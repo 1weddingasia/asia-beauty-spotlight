@@ -30,6 +30,7 @@ type Deal = {
 };
 
 export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string, avatar: string }) {
+  const b = business;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);

@@ -3,6 +3,12 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LogOut, LayoutDashboard, Store, Settings, Sparkles, ArrowLeft, Ticket, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Bảng điều khiển Gian hàng",
+  description: "Quản lý gian hàng, ưu đãi, đơn đặt bàn và danh sách khách hàng của bạn trên hệ thống 1Beauty.Asia",
+};
 
 export default async function BusinessDashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();

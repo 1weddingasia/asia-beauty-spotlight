@@ -4,7 +4,11 @@ import { QrCode, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardPrintQR({ business }: { business: any }) {
-  const standeeTagline = business.page_content?.standee_tagline || "";
+  let content = business.page_content || {};
+  if (typeof content === 'string') {
+    try { content = JSON.parse(content); } catch (e) {}
+  }
+  const standeeTagline = content.standee_tagline || "";
 
   const handlePrint = () => {
     const promoUrl = `${window.location.origin}/uu-dai/${business.slug}`;
@@ -51,11 +55,11 @@ export default function DashboardPrintQR({ business }: { business: any }) {
           <div>
             <div class="top-badge">Chương trình ưu đãi đặc quyền</div>
             <div class="shop-name">${escapedName}</div>
-            ${standeeTagline.trim() ? \`<div class="headline">QUÉT MÃ – NHẬN ƯU ĐÃI<br/>\${standeeTagline.trim().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>\` : '<div class="headline">QUÉT MÃ<br/>NHẬN ƯU ĐÃI</div>'}
+            ${standeeTagline.trim() ? '<div class="headline">QUÉT MÃ – NHẬN ƯU ĐÃI<br/>' + standeeTagline.trim().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' : '<div class="headline">QUÉT MÃ<br/>NHẬN ƯU ĐÃI</div>'}
           </div>
           <div>
             <div class="qr-wrap">
-              <img class="qr-img" src="\${qrUrl}" alt="QR Code" />
+              <img class="qr-img" src="${qrUrl}" alt="QR Code" />
             </div>
             <div class="instructions">Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi trong 3 giây ✌️</div>
           </div>
@@ -76,13 +80,13 @@ export default function DashboardPrintQR({ business }: { business: any }) {
       const promoUrl = `${window.location.origin}/uu-dai/${business.slug}`;
       const url = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(promoUrl)}`;
       const response = await fetch(url);
-      if (!response.ok) throw new Error(\`QR API error: \${response.status}\`);
+      if (!response.ok) throw new Error(`QR API error: ${response.status}`);
       const blob = await response.blob();
       const objectUrl = URL.createObjectURL(blob);
       
       const link = document.createElement("a");
       link.href = objectUrl;
-      link.download = \`QR_Code_\${business.slug}.png\`;
+      link.download = `QR_Code_${business.slug}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -93,9 +97,9 @@ export default function DashboardPrintQR({ business }: { business: any }) {
     }
   };
 
-  if (!business.slug) return null;
+  if (!business || !business.slug) return null;
 
-  const demoQrUrl = \`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=\${encodeURIComponent(\`https://1beauty.asia/uu-dai/\${business.slug}\`)}&margin=4&color=3d2c00\`;
+  const demoQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : 'https://1beauty.asia'}/uu-dai/${business.slug}`)}&margin=4&color=3d2c00`;
 
   return (
     <div className="mt-8 rounded-xl border bg-card shadow-sm p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
