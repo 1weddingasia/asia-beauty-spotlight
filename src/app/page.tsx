@@ -261,7 +261,7 @@ export default async function HomePage() {
               📞 Nhắn Zalo Ngay
             </Link>
             <Link
-              href="/"
+              href="/uu-dai"
               className="inline-flex items-center justify-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
             >
               Khám phá Ưu đãi

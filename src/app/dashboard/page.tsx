@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function DashboardRedirect() {
   const supabase = await createClient();
@@ -14,6 +15,7 @@ export default async function DashboardRedirect() {
     .from("businesses")
     .select("slug")
     .eq("owner_id", user.id)
+    .order("created_at", { ascending: true })
     .limit(1);
 
   if (businesses && businesses.length > 0) {
@@ -27,7 +29,7 @@ export default async function DashboardRedirect() {
       <div className="bg-card p-8 rounded-xl shadow-sm text-center max-w-md w-full border border-border">
         <h1 className="text-xl font-bold mb-4">Chưa có gian hàng</h1>
         <p className="text-muted-foreground mb-6">Bạn chưa sở hữu gian hàng nào trên hệ thống. Vui lòng liên hệ admin để được cấp gian hàng.</p>
-        <a href="/" className="px-4 py-2 bg-gold text-ink font-medium rounded-lg inline-block">Về trang chủ</a>
+        <Link href="/" className="px-4 py-2 bg-gold text-ink font-medium rounded-lg inline-block">Về trang chủ</Link>
       </div>
     </div>
   );

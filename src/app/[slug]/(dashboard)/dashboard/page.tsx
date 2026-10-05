@@ -99,7 +99,7 @@ export default async function BusinessDashboardPage() {
             <h3 className="font-semibold text-sm flex items-center gap-2">
               <Ticket className="size-4 text-gold" /> Báo cáo Top Ưu Đãi
             </h3>
-            <Link href="/dashboard/deals" className="text-xs text-gold hover:underline">Quản lý &rarr;</Link>
+            <Link href={`/${business.slug}/deals`} className="text-xs text-gold hover:underline">Quản lý &rarr;</Link>
           </div>
           {topDeals.length > 0 ? (
             <div className="space-y-3">
@@ -129,13 +129,13 @@ export default async function BusinessDashboardPage() {
           </h3>
           <div className="space-y-3">
             <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/dashboard/leads">→ Xem danh sách khách ({totalLeads} khách)</Link>
+              <Link href={`/${business.slug}/leads`}>→ Xem danh sách khách ({totalLeads} khách)</Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/dashboard/deals">→ Tạo / Sửa Ưu đãi</Link>
+              <Link href={`/${business.slug}/deals`}>→ Tạo / Sửa Ưu đãi</Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/dashboard/profile">→ Cập nhật thông tin Gian hàng</Link>
+              <Link href={`/${business.slug}/profile`}>→ Cập nhật thông tin Gian hàng</Link>
             </Button>
             {business.slug && (
               <Button asChild className="w-full justify-start bg-gold/10 text-gold border border-gold/30 hover:bg-gold/20">
@@ -193,7 +193,7 @@ export default async function BusinessDashboardPage() {
               {business.plan_id ? 'Đang kích hoạt' : 'Gói cơ bản'}
             </p>
             <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
-              <Link href="/dashboard/upgrade">Nâng cấp Gói</Link>
+              <Link href={`/${business.slug}/upgrade`}>Nâng cấp Gói</Link>
             </Button>
           </div>
         </div>

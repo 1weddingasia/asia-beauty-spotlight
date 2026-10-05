@@ -421,7 +421,7 @@ export default function BusinessProfilePage() {
                   <h4 className="font-bold text-lg mb-2">Tính năng Premium</h4>
                   <p className="text-sm text-muted-foreground mb-4">Nâng cấp để tải lên không giới hạn Thư viện Ảnh (Gallery) thực tế của Spa.</p>
                   <Button asChild className="bg-gold text-ink hover:bg-gold/90">
-                    <Link href="/dashboard/upgrade">Nâng cấp 399k / Năm</Link>
+                    <Link href={`/${business.slug}/upgrade`}>Nâng cấp 399k / Năm</Link>
                   </Button>
                 </div>
               )}
@@ -522,7 +522,7 @@ export default function BusinessProfilePage() {
                 <h4 className="font-bold text-lg mb-2">Tính năng Premium</h4>
                 <p className="text-sm text-muted-foreground mb-4">Nâng cấp gói Premium để đăng tải Ưu đãi và Khuyến mãi lên trang chủ.</p>
                 <Button asChild className="bg-gold text-ink hover:bg-gold/90">
-                  <Link href="/dashboard/upgrade">Nâng cấp 399k / Năm</Link>
+                  <Link href={`/${business.slug}/upgrade`}>Nâng cấp 399k / Năm</Link>
                 </Button>
               </div>
             )}
