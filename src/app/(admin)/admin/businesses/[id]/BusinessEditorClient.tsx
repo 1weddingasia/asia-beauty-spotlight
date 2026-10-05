@@ -325,6 +325,14 @@ export default function BusinessEditorClient({
                 <Input value={formData.chatbot_passcode || ""} onChange={(e) => handleChange("chatbot_passcode", e.target.value)} placeholder="VD: 123456" />
                 <p className="text-xs text-muted-foreground">Mã này dùng để chủ tiệm tự quản trị trang bằng Chatbot AI mà không cần đăng nhập.</p>
               </div>
+              <div className="space-y-2">
+                <Label>ID Telegram Nhận Thông Báo (Tùy chọn)</Label>
+                <Input value={pageContent.telegram_chat_id || ""} onChange={(e) => handlePageContentChange("telegram_chat_id", e.target.value)} placeholder="VD: 123456789" />
+                <p className="text-xs text-muted-foreground">
+                  Để nhận thông báo tức thì khi có khách Booking qua Chatbot hoặc Form ưu đãi. 
+                  <br/><i>Mẹo: Tìm bot <b>@userinfobot</b> trên Telegram và bấm /start để lấy dãy số ID của bạn.</i>
+                </p>
+              </div>
             </div>
 
             {isNew && (
