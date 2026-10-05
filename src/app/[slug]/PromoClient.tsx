@@ -30,6 +30,7 @@ type Deal = {
   valid_until?: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string, avatar: string }) {
   const b = business;
   const [name, setName] = useState("");
@@ -277,7 +278,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           <CarouselContent className="h-full">
             {banners.map((img: string, idx: number) => (
               <CarouselItem key={idx} className="relative h-[100svh] w-full">
-                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={100} className="object-cover scale-105 animate-ken-burns" priority={idx === 0} />
+                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-cover scale-105 md:animate-ken-burns" priority={idx === 0} />
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -355,8 +356,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         </DialogContent>
       </Dialog>
 
-      <div id="deals-section" className="max-w-5xl mx-auto px-4 py-12 -mt-16 md:-mt-24 relative z-10">
-        <div className="text-center mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-8 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto">
+      <div id="deals-section" className="max-w-5xl mx-auto px-4 py-8 md:py-12 -mt-16 md:-mt-24 relative z-10">
+        <div className="text-center mb-8 md:mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-black font-display text-ink flex flex-col md:flex-row items-center justify-center gap-3">
             <Tag className="size-8 md:size-10 text-gold" />
             ƯU ĐÃI ĐỘC QUYỀN
@@ -414,7 +415,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     : 'shadow-xl shadow-gold/10 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-gold/20'
                 }`}
               >
-                <div className={`rounded-[1.4rem] border p-6 md:p-8 flex flex-col h-full relative ${
+                <div className={`rounded-[1.4rem] border p-5 md:p-8 flex flex-col h-full relative ${
                   isDisabled ? 'bg-gray-50 border-gray-200' : 'border-gold/30 bg-gradient-to-br from-white to-champagne/50'
                 }`}>
                   {isExpired ? (
