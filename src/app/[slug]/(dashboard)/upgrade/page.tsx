@@ -87,7 +87,7 @@ export default function UpgradePage() {
             <CardContent className="space-y-4">
               <div className="text-4xl font-bold">{UPGRADE_AMOUNT.toLocaleString('vi-VN')}đ <span className="text-sm font-normal text-muted-foreground">/ năm</span></div>
               <div className="inline-block bg-rose-50 text-rose-600 font-bold px-3 py-1 rounded-full text-xs border border-rose-200">
-                🎁 Tặng kèm Chatbot trực trị giá 600.000đ/năm
+                🎁 Tặng kèm Chatbot trực tuyến trị giá 600.000đ/năm
               </div>
               <ul className="space-y-3 pt-4">
                 {['Hiển thị Số điện thoại (Bấm gọi ngay)', 'Nút liên kết Zalo & Facebook', 'Mở khóa Đăng ảnh không giới hạn', 'Tăng tỷ lệ hiển thị Top danh mục', 'Tích xanh uy tín'].map((benefit, i) => (
