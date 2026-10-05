@@ -75,7 +75,9 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
     const link = document.createElement("a");
     link.href = url;
     link.download = `Leads_${format(new Date(), "dd-MM-yyyy")}.csv`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
     
     URL.revokeObjectURL(url);
   };
