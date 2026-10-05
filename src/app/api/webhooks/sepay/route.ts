@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const signature = request.headers.get('x-sepay-signature');
     const timestamp = request.headers.get('x-sepay-timestamp') || '';
     const authHeader = request.headers.get('authorization');
-    const secret = process.env.SEPAY_WEBHOOK_SECRET?.trim();
+    const secret = process.env.SEPAY_WEBHOOK_SECRET?.replace(/['"]/g, '').trim();
 
     if (!secret) {
       console.error("Missing SEPAY_WEBHOOK_SECRET in environment");
