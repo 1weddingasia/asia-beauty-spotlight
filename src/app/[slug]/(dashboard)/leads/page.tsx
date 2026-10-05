@@ -192,16 +192,6 @@ export default function LeadsPage() {
       toast.error("Chưa có dữ liệu để xuất");
       return;
     }
-    
-    // Create CSV content safely
-    const escapeCSV = (str: string) => {
-      if (!str) return '""';
-      const clean = str.toString().replace(/"/g, '""');
-      if (/^[=+\-@]/.test(clean)) {
-        return `"'${clean}"`;
-      }
-      return `"${clean}"`;
-    };
 
     const getStatusText = (status: string) => {
       if (status === 'served' || status === 'closed') return "Đã phục vụ";
@@ -211,30 +201,25 @@ export default function LeadsPage() {
       return "Chưa gọi";
     };
 
-    const headers = ["Ngày đặt", "Tên khách", "Số điện thoại", "Gói Ưu đãi", "Sản phẩm mua kèm", "Trạng thái", "Ghi chú"];
-    const csvData = leads.map(l => [
-      escapeCSV(format(new Date(l.created_at), 'dd/MM/yyyy HH:mm')),
-      escapeCSV(l.customer_name),
-      escapeCSV(l.customer_phone),
-      escapeCSV(l.deal_name),
-      escapeCSV(l.cross_sell_items || ''),
-      escapeCSV(getStatusText(l.status)),
-      escapeCSV(l.notes || '')
-    ]);
-    
-    const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
-    // Add BOM for UTF-8 Excel support
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    const blob = new Blob([bom, csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `Danh_Sach_Khach_${business?.slug || '1beauty'}_${format(new Date(), 'ddMMyyyy')}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const data = leads.map(l => ({
+      "Ngày đặt": format(new Date(l.created_at), 'dd/MM/yyyy HH:mm'),
+      "Tên khách": l.customer_name,
+      "Số điện thoại": l.customer_phone,
+      "Gói Ưu đãi": l.deal_name,
+      "Sản phẩm mua kèm": l.cross_sell_items || '',
+      "Trạng thái": getStatusText(l.status),
+      "Ghi chú": l.notes || ''
+    }));
+
+    import("xlsx").then((XLSX) => {
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "KhachHang");
+      XLSX.writeFile(workbook, `Danh_Sach_Khach_${business?.slug || '1beauty'}_${format(new Date(), 'ddMMyyyy')}.xlsx`);
+    }).catch((err) => {
+      console.error(err);
+      toast.error("Lỗi khi tạo file Excel");
+    });
   };
 
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải danh sách...</div>;
