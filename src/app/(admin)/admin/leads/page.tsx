@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/server";
 import LeadsClient from "./LeadsClient";
 
 export const metadata = {
@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default async function LeadsPage() {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
 
   // Lấy danh sách leads kèm thông tin doanh nghiệp
   const { data: leads, error } = await supabase
