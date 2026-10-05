@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 
 const openai = new OpenAI({
   baseURL: 'https://api.deepseek.com',
-  apiKey: process.env.DEEPSEEK_API_KEY || '',
+  apiKey: process.env.DEEPSEEK_API_KEY || 'dummy_key',
 });
 
 const isValidUrl = (url?: string) => {
