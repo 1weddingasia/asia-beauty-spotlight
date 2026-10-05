@@ -217,8 +217,15 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           <p className="text-champagne/90 text-sm md:text-lg flex items-center gap-2 mb-2 max-w-2xl text-center">
             <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}
           </p>
-          <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 text-white font-medium shadow-xl mt-4">
-            <Phone className="size-4 text-gold" /> {hotline}
+          <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-8">
+            <a href={`tel:${hotline.replace(/\D/g, '')}`} className="flex items-center justify-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-md px-6 py-3.5 md:py-3 rounded-full border border-white/20 text-white font-medium shadow-xl transition-all hover:scale-105 w-64 sm:w-auto">
+              <Phone className="size-4 text-gold" /> Gọi Hotline
+            </a>
+            {zaloLink !== '#' && (
+              <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110">
+                <MessageCircle className="size-5" /> BOOKING / TƯ VẤN
+              </a>
+            )}
           </div>
         </div>
       </div>
