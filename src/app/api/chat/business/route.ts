@@ -334,8 +334,8 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         else if (functionName === "update_passcode") {
           if (!isAdmin) {
             result = "Lỗi: Bạn chưa xác thực quyền admin!";
-          } else if (!functionArgs.new_passcode || functionArgs.new_passcode.length < 4) {
-            result = "Lỗi: Mã bảo mật mới quá ngắn (phải có ít nhất 4 ký tự).";
+          } else if (typeof functionArgs.new_passcode !== 'string' || functionArgs.new_passcode.length < 4) {
+            result = "Lỗi: Mã bảo mật mới phải là văn bản và có ít nhất 4 ký tự.";
           } else {
             const { error } = await supabase
               .from('businesses')
