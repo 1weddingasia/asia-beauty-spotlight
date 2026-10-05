@@ -660,26 +660,31 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4 mt-2">
                   <p className="text-xs font-semibold uppercase tracking-wider text-purple-700 mb-3">Đăng ký dùng thêm khi đến tiệm</p>
                   <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
-                    {crossSells.map((cs: any) => (
-                      <label key={cs.id} className="flex items-start gap-3 cursor-pointer group">
+                    {crossSells.map((cs: any, index: number) => {
+                      const itemName = typeof cs === 'string' ? cs : cs.name;
+                      const itemPrice = typeof cs === 'string' ? null : cs.price;
+                      
+                      return (
+                      <label key={cs.id || index} className="flex items-start gap-3 cursor-pointer group">
                         <input
                           type="checkbox"
                           className="mt-1 flex-shrink-0 w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500 cursor-pointer"
-                          checked={selectedCrossSells.includes(cs.name)}
+                          checked={selectedCrossSells.includes(itemName)}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setSelectedCrossSells([...selectedCrossSells, cs.name]);
+                              setSelectedCrossSells([...selectedCrossSells, itemName]);
                             } else {
-                              setSelectedCrossSells(selectedCrossSells.filter(n => n !== cs.name));
+                              setSelectedCrossSells(selectedCrossSells.filter(n => n !== itemName));
                             }
                           }}
                         />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-ink group-hover:text-purple-700 transition-colors">{cs.name}</p>
-                          <p className="text-xs text-muted-foreground">{formatPrice(cs.price)}</p>
+                          <p className="text-sm font-medium text-ink group-hover:text-purple-700 transition-colors">{itemName}</p>
+                          {itemPrice && <p className="text-xs text-muted-foreground">{formatPrice(itemPrice)}</p>}
                         </div>
                       </label>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

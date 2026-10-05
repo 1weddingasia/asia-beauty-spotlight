@@ -107,7 +107,7 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="flex gap-2">
+        <Button variant="outline" className="flex gap-2" onClick={() => toast.info("Tính năng lọc nâng cao đang được cập nhật.")}>
           <Filter className="size-4" /> Lọc Nâng Cao
         </Button>
       </div>
