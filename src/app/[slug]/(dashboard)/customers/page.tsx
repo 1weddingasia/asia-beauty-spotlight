@@ -74,7 +74,7 @@ export default function LeadsPage() {
         }
 
         setBusiness(bData);
-        fetchLeads(bData.id);
+        fetchCustomers(bData.id);
       } catch (err) {
         console.error(err);
         setLoading(false);
