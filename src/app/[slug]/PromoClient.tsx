@@ -809,14 +809,21 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
               <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
               <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã đặt lịch hẹn! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
-              <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
-
-              {/* Mã ưu đãi = Số điện thoại */}
-              <div className="rounded-2xl border-2 border-gold bg-gradient-to-b from-yellow-50 to-amber-50 px-5 py-4 mb-3 text-left shadow-inner">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Mã lịch hẹn của bạn" : "Mã ưu đãi của bạn"}</p>
-                <p className="text-3xl font-black tracking-widest text-gold">{phone}</p>
-                <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để {isBooking ? "xác nhận lịch hẹn" : "nhận ngay mức giá ưu đãi"}</p>
-              </div>
+              {/* Success message based on type */}
+              {!isBooking ? (
+                <>
+                  <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
+                  
+                  {/* Mã ưu đãi = Số điện thoại */}
+                  <div className="rounded-2xl border-2 border-gold bg-gradient-to-b from-yellow-50 to-amber-50 px-5 py-4 mb-3 text-left shadow-inner">
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Mã ưu đãi của bạn</p>
+                    <p className="text-3xl font-black tracking-widest text-gold">{phone}</p>
+                    <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để nhận ngay mức giá ưu đãi</p>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground mb-5">Cảm ơn bạn đã đặt lịch. Tiệm sẽ sớm liên hệ qua số điện thoại <strong>{phone}</strong> để xác nhận thời gian với bạn nhé!</p>
+              )}
 
               {/* Gói đã chọn */}
               <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
