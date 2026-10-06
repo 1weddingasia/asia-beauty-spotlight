@@ -308,14 +308,24 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-8">
-            <a href="#" onClick={(e) => handleInterceptClick(e, 'hotline')} className="flex items-center justify-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-md px-6 py-3.5 md:py-3 rounded-full border border-white/20 text-white font-medium shadow-xl transition-all hover:scale-105 w-64 sm:w-auto">
-              <Phone className="size-4 text-gold" /> Gọi Hotline
-            </a>
-            {zaloLink !== '#' && (
-              <a href="#" onClick={(e) => handleInterceptClick(e, 'zalo')} className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110">
-                <MessageCircle className="size-5" /> BOOKING / TƯ VẤN
-              </a>
-            )}
+            <button 
+              onClick={() => {
+                document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="flex items-center justify-center gap-2 bg-champagne text-gold font-bold px-8 py-3.5 md:py-3 rounded-full shadow-lg border border-gold/30 hover:bg-gold hover:text-white transition-all hover:scale-105 w-64 sm:w-auto"
+            >
+              🎁 NHẬN ƯU ĐÃI
+            </button>
+            <button 
+              onClick={() => {
+                setBookingService("");
+                setSelectedDeal({ id: 'booking', title: 'Đặt Hẹn Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
+                setIsDialogOpen(true);
+              }}
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110"
+            >
+              📅 BOOKING ĐẶT HẸN
+            </button>
           </div>
         </div>
       </div>
@@ -618,12 +628,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </div>
                 )}
 
-                {zaloLink !== '#' && (
-                  <div className="flex items-center gap-3">
-                    <MessageCircle className="size-4 md:size-5 text-gold shrink-0" />
-                    <a href={zaloLink} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline">Chat Zalo</a>
-                  </div>
-                )}
+
 
                 {b.email && (
                   <div className="flex items-center gap-3">
@@ -673,9 +678,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   href={zaloLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full block bg-gradient-to-r from-gold to-gold-soft rounded-full px-6 py-4 text-center text-xs md:text-sm font-semibold tracking-[0.1em] text-ink uppercase hover:opacity-90 transition-opacity"
+                  className="w-full flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 rounded-2xl px-6 py-5 text-center text-sm md:text-base font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02]"
                 >
-                  Liên Hệ Zalo
+                  <MessageCircle className="size-5 md:size-6" /> Chat qua Zalo
                 </a>
               )}
             </div>
@@ -875,14 +880,17 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     {formatPrice(selectedService.price || selectedService.price_min) || "Liên hệ"}
                   </span>
                 </div>
-                <a
-                  href={zaloLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-center w-full bg-gradient-to-r from-gold to-gold-soft rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity"
+                <button
+                  onClick={() => {
+                    setBookingService(selectedService.name);
+                    setSelectedDeal({ id: 'booking', title: 'Đặt Hẹn Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
+                    setSelectedService(null);
+                    setIsDialogOpen(true);
+                  }}
+                  className="block text-center w-full bg-gradient-to-r from-gold to-gold-soft rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity shadow-lg"
                 >
-                  Liên Hệ Zalo Tư Vấn
-                </a>
+                  ĐẶT HẸN DỊCH VỤ NÀY
+                </button>
               </div>
             </motion.div>
           </motion.div>
