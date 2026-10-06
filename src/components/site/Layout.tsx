@@ -60,10 +60,17 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
   useEffect(() => {
     getSettings().then(setSettings);
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data?.user ?? null);
-      setAuthLoading(false);
-    });
+    supabase.auth.getUser()
+      .then(({ data }) => {
+        setUser(data?.user ?? null);
+      })
+      .catch((err) => {
+        console.error("Auth error:", err);
+        setUser(null);
+      })
+      .finally(() => {
+        setAuthLoading(false);
+      });
   }, []);
 
   return (
