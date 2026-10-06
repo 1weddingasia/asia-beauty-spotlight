@@ -842,6 +842,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           )}
         </DialogContent>
       </Dialog>
+        );
       })()}
 
       <ChatWidget key={business.id} businessId={business.id} businessName={business.name} slug={business.slug} />
