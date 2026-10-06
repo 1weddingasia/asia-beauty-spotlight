@@ -690,6 +690,17 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       </div>
 
       {/* Modal / Dialog Form Nhận Mã */}
+      {(() => {
+        const isBooking = selectedDeal?.id === 'booking';
+        
+        let dialogTitle = "";
+        if (voucher) {
+          dialogTitle = isBooking ? "🎉 Đặt lịch thành công!" : "🎉 Đăng ký thành công!";
+        } else {
+          dialogTitle = isBooking ? "Thông tin đặt lịch hẹn" : "Điền thông tin nhận ưu đãi";
+        }
+
+        return (
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
         setIsDialogOpen(open);
         if (!open) {
@@ -703,7 +714,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-center text-ink leading-tight">
-              {voucher ? (selectedDeal?.id === 'booking' ? "🎉 Đặt lịch thành công!" : "🎉 Đăng ký thành công!") : (selectedDeal?.id === 'booking' ? "Thông tin đặt lịch hẹn" : "Điền thông tin nhận ưu đãi")}
+              {dialogTitle}
             </DialogTitle>
             <DialogDescription className="text-center">
               {!voucher && <span className="font-semibold text-gold mt-2 block">{selectedDeal?.title}</span>}
@@ -731,7 +742,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 />
               </div>
 
-              {selectedDeal?.id === 'booking' && (
+              {isBooking && (
                 <>
                   <div className="mb-3">
                     <input
@@ -757,7 +768,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 </>
               )}
 
-              {selectedDeal?.id !== 'booking' && crossSells.length > 0 && (
+              {!isBooking && crossSells.length > 0 && (
                 <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4 mt-2">
                   <p className="text-xs font-semibold uppercase tracking-wider text-purple-700 mb-3">Đăng ký dùng thêm khi đến tiệm</p>
                   <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
@@ -791,26 +802,26 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               )}
 
               <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
-                {loading ? "Đang xử lý..." : (selectedDeal?.id === 'booking' ? "XÁC NHẬN BOOKING" : "NHẬN ƯU ĐÃI")}
+                {loading ? "Đang xử lý..." : (isBooking ? "XÁC NHẬN BOOKING" : "NHẬN ƯU ĐÃI")}
               </Button>
             </form>
           ) : (
             <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
               <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-ink mb-1">{selectedDeal?.id === 'booking' ? "Đã đặt lịch hẹn! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
+              <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã đặt lịch hẹn! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
               <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
 
               {/* Mã ưu đãi = Số điện thoại */}
               <div className="rounded-2xl border-2 border-gold bg-gradient-to-b from-yellow-50 to-amber-50 px-5 py-4 mb-3 text-left shadow-inner">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{selectedDeal?.id === 'booking' ? "Mã lịch hẹn của bạn" : "Mã ưu đãi của bạn"}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Mã lịch hẹn của bạn" : "Mã ưu đãi của bạn"}</p>
                 <p className="text-3xl font-black tracking-widest text-gold">{phone}</p>
-                <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để {selectedDeal?.id === 'booking' ? "xác nhận lịch hẹn" : "nhận ngay mức giá ưu đãi"}</p>
+                <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để {isBooking ? "xác nhận lịch hẹn" : "nhận ngay mức giá ưu đãi"}</p>
               </div>
 
               {/* Gói đã chọn */}
               <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{selectedDeal?.id === 'booking' ? "Dịch vụ đã chọn" : "Gói ưu đãi"}</p>
-                <p className="text-sm font-bold text-ink leading-snug">{selectedDeal?.id === 'booking' ? (bookingService || selectedDeal?.title) : selectedDeal?.title}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Dịch vụ đã chọn" : "Gói ưu đãi"}</p>
+                <p className="text-sm font-bold text-ink leading-snug">{isBooking ? (bookingService || selectedDeal?.title) : selectedDeal?.title}</p>
               </div>
 
               <div className="flex flex-col gap-3">
@@ -824,6 +835,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           )}
         </DialogContent>
       </Dialog>
+      })()}
 
       <ChatWidget key={business.id} businessId={business.id} businessName={business.name} slug={business.slug} />
 
