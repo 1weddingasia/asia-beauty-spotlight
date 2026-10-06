@@ -703,7 +703,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-center text-ink leading-tight">
-              {voucher ? "🎉 Đăng ký thành công!" : "Điền thông tin nhận ưu đãi"}
+              {voucher ? (selectedDeal?.id === 'booking' ? "🎉 Đặt lịch thành công!" : "🎉 Đăng ký thành công!") : (selectedDeal?.id === 'booking' ? "Thông tin đặt lịch hẹn" : "Điền thông tin nhận ưu đãi")}
             </DialogTitle>
             <DialogDescription className="text-center">
               {!voucher && <span className="font-semibold text-gold mt-2 block">{selectedDeal?.title}</span>}
@@ -797,20 +797,20 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           ) : (
             <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
               <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-ink mb-1">Đã nhận ưu đãi! 🎉</h3>
+              <h3 className="text-lg font-bold text-ink mb-1">{selectedDeal?.id === 'booking' ? "Đã đặt lịch hẹn! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
               <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
 
               {/* Mã ưu đãi = Số điện thoại */}
               <div className="rounded-2xl border-2 border-gold bg-gradient-to-b from-yellow-50 to-amber-50 px-5 py-4 mb-3 text-left shadow-inner">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Mã ưu đãi của bạn</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{selectedDeal?.id === 'booking' ? "Mã lịch hẹn của bạn" : "Mã ưu đãi của bạn"}</p>
                 <p className="text-3xl font-black tracking-widest text-gold">{phone}</p>
-                <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để nhận ngay mức giá ưu đãi</p>
+                <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để {selectedDeal?.id === 'booking' ? "xác nhận lịch hẹn" : "nhận ngay mức giá ưu đãi"}</p>
               </div>
 
               {/* Gói đã chọn */}
               <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Gói ưu đãi</p>
-                <p className="text-sm font-bold text-ink leading-snug">{selectedDeal?.title}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{selectedDeal?.id === 'booking' ? "Dịch vụ đã chọn" : "Gói ưu đãi"}</p>
+                <p className="text-sm font-bold text-ink leading-snug">{selectedDeal?.id === 'booking' ? (bookingService || selectedDeal?.title) : selectedDeal?.title}</p>
               </div>
 
               <div className="flex flex-col gap-3">
