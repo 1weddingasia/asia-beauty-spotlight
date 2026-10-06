@@ -152,7 +152,9 @@ export default function BusinessProfilePage() {
   const handleSave = async () => {
     // Check for base64 images which cause massive slowdowns
     const contentStr = JSON.stringify(pageContent);
-    if (contentStr.includes('data:image/') && contentStr.length > 100000) {
+    // Find if there's any data:image string longer than 50,000 characters
+    const base64Matches = contentStr.match(/data:image\/[^;]+;base64,[^"]+/g);
+    if (base64Matches && base64Matches.some(m => m.length > 50000)) {
       toast.error("Lỗi: Không được dán trực tiếp ảnh (Base64) vào ô hình ảnh. Vui lòng sử dụng đường link (URL) ảnh để không làm chậm hệ thống!", { duration: 8000 });
       return;
     }
@@ -224,7 +226,7 @@ export default function BusinessProfilePage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div className="sticky top-[64px] md:top-[64px] z-40 -mx-4 px-4 py-4 md:-mx-6 md:px-6 bg-background/95 backdrop-blur-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b shadow-sm mb-6">
+      <div className="sticky top-0 z-40 -mx-6 px-6 py-4 md:-mx-10 md:px-10 bg-background/95 backdrop-blur-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b shadow-sm mb-6">
         <div>
           <h1 className="text-2xl font-bold font-display text-gold">Chỉnh sửa Gian hàng</h1>
           <p className="text-muted-foreground text-sm mt-1">Cập nhật thông tin chi tiết để thu hút khách hàng tốt hơn.</p>
