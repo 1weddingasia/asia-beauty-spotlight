@@ -150,6 +150,13 @@ export default function BusinessProfilePage() {
   };
 
   const handleSave = async () => {
+    // Check for base64 images which cause massive slowdowns
+    const contentStr = JSON.stringify(pageContent);
+    if (contentStr.includes('data:image/') && contentStr.length > 100000) {
+      toast.error("Lỗi: Không được dán trực tiếp ảnh (Base64) vào ô hình ảnh. Vui lòng sử dụng đường link (URL) ảnh để không làm chậm hệ thống!", { duration: 8000 });
+      return;
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase.from("businesses").update({
@@ -217,16 +224,16 @@ export default function BusinessProfilePage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="sticky top-[64px] md:top-[64px] z-40 -mx-4 px-4 py-4 md:-mx-6 md:px-6 bg-background/95 backdrop-blur-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b shadow-sm mb-6">
         <div>
           <h1 className="text-2xl font-bold font-display text-gold">Chỉnh sửa Gian hàng</h1>
           <p className="text-muted-foreground text-sm mt-1">Cập nhật thông tin chi tiết để thu hút khách hàng tốt hơn.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full md:w-auto">
           <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
             <Link href={`/${business.slug}`} target="_blank">Xem Trang Khách</Link>
           </Button>
-          <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
+          <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto shadow-md">
             <Save className="mr-2 size-4" />
             {saving ? "Đang lưu..." : "Lưu thay đổi"}
           </Button>
@@ -592,6 +599,13 @@ export default function BusinessProfilePage() {
           </div>
         </TabsContent>
       </Tabs>
+      {/* Floating Save Button */}
+      <div className="fixed bottom-24 right-6 md:bottom-10 md:right-10 z-50 md:hidden">
+        <Button onClick={handleSave} disabled={saving} size="lg" className="bg-gold text-ink hover:bg-gold/90 shadow-2xl border-2 border-white/20 hover:scale-105 transition-transform rounded-full px-6 h-14">
+          <Save className="mr-2 size-5" />
+          {saving ? "Đang lưu..." : "Lưu ngay"}
+        </Button>
+      </div>
     </div>
   );
 }
