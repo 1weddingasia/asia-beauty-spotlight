@@ -204,7 +204,6 @@ export default async function HomePage() {
               <span className="text-6xl font-black text-ink">500K</span>
               <span className="text-xl text-muted-foreground mb-2">/năm</span>
             </div>
-            <p className="text-muted-foreground mt-2">Năm 2 trở đi chỉ 200.000đ - 300.000đ/năm duy trì hạ tầng</p>
 
             <ul className="mt-8 space-y-3 text-left max-w-xs mx-auto">
               {[
