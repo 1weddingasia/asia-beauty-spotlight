@@ -84,19 +84,16 @@ export default function LeadsPage() {
     loadData();
   }, []);
 
-  const fetchLeads = async (businessId: string) => {
-    // 1. Fetch Bookings (Leads)
-    const { data: leadsData, error: leadsErr } = await supabase
-      .from("business_leads")
+  const fetchCustomers = async (businessId: string) => {
+    // Fetch Unique Customers
+    const { data: custData, error: custErr } = await supabase
+      .from("business_customers")
       .select("*")
       .eq("business_id", businessId)
-      .order("created_at", { ascending: false });
-      
-    if (leadsErr) {
-      console.error(leadsErr);
-      toast.error("Lỗi khi tải danh sách khách hàng");
-    } else {
-      setLeads(leadsData || []);
+      .order("last_visit_at", { ascending: false });
+
+    if (!custErr && custData) {
+      setCustomers(custData);
     }
 
     setLoading(false);
@@ -236,38 +233,24 @@ export default function LeadsPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchPhone]);
+  }, [searchPhone, viewMode]);
 
-  const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
-  const paginatedLeads = filteredLeads.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const filteredCustomers = searchTerm
+    ? customers.filter(c => (c.phone || '').replace(/\D/g, '').includes(searchTerm.replace(/\D/g, '')))
+    : customers;
 
-  // Group leads for timeline view
-  const groupedLeads = paginatedLeads.reduce((acc, lead) => {
-    const dateStr = format(new Date(lead.created_at), 'yyyy-MM-dd');
-    if (!acc[dateStr]) acc[dateStr] = [];
-    acc[dateStr].push(lead);
-    return acc;
-  }, {} as Record<string, Lead[]>);
-
-  const sortedDates = Object.keys(groupedLeads).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-
-  const getDayLabel = (dateStr: string) => {
-    const today = format(new Date(), 'yyyy-MM-dd');
-    const yesterday = format(new Date(Date.now() - 86400000), 'yyyy-MM-dd');
-    const d = format(new Date(dateStr), 'dd/MM/yyyy');
-    if (dateStr === today) return `Hôm nay, ${d}`;
-    if (dateStr === yesterday) return `Hôm qua, ${d}`;
-    return d;
-  };
+  const filteredCustomers = searchTerm
+    ? customers.filter(c => (c.phone || '').replace(/\D/g, '').includes(searchTerm.replace(/\D/g, '')))
+    : customers;
 
   return (
     <>
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-gold">Booking & Ưu đãi</h1>
+          <h1 className="text-2xl font-bold font-display text-gold">Danh bạ Khách hàng</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Quản lý lịch đặt chỗ và các yêu cầu nhận ưu đãi từ khách hàng.
+            Ghi nhận khách hàng chuẩn CSKH: Mỗi SĐT là 1 khách hàng duy nhất.
           </p>
         </div>
         <Button onClick={exportExcel} variant="outline" className="border-green-600 text-green-700 hover:bg-green-50">
@@ -292,151 +275,51 @@ export default function LeadsPage() {
         )}
       </div>
 
+      {/* Removed Tabs */}
+
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        {filteredLeads.length === 0 ? (
-          <div className="p-10 text-center text-muted-foreground flex flex-col items-center">
-              <Phone className="size-10 mb-4 opacity-20" />
-              <p>{searchPhone ? `Không tìm thấy khách nào với số "${searchPhone}"` : 'Chưa có khách hàng nào đăng ký ưu đãi.'}</p>
-              {!searchPhone && <p className="text-sm mt-1">Hãy chia sẻ trang ưu đãi của bạn để thu hút khách nhé!</p>}
+          {filteredCustomers.length === 0 ? (
+            <div className="p-10 text-center text-muted-foreground flex flex-col items-center">
+              <Users className="size-10 mb-4 opacity-20" />
+              <p>{searchPhone ? `Không tìm thấy khách hàng với số "${searchPhone}"` : 'Chưa có dữ liệu khách hàng.'}</p>
             </div>
           ) : (
-          <div className="p-4 md:p-8">
-            <div className="relative border-l-2 border-muted-foreground/20 ml-16 md:ml-24 space-y-10">
-              {sortedDates.map(dateStr => (
-                <div key={dateStr} className="relative">
-                  {/* Date Badge */}
-                  <div className="absolute -left-3 md:-left-3.5 -top-3 bg-white">
-                    <div className="bg-muted px-4 py-1 rounded-full text-xs font-bold text-muted-foreground border shadow-sm flex items-center gap-2">
-                      <CalendarDays className="size-3" /> {getDayLabel(dateStr)}
-                    </div>
-                  </div>
-
-                  <div className="pt-6 space-y-6">
-                    {groupedLeads[dateStr].map(lead => (
-                      <div key={lead.id} className="relative flex items-start group">
-                        {/* Timeline Dot */}
-                        <div className="absolute -left-[30px] md:-left-[32px] mt-2 w-4 h-4 rounded-full border-2 border-white bg-gold shadow-sm group-hover:scale-125 transition-transform" />
-                        
-                        {/* Timeline Time */}
-                        <div className="absolute -left-[76px] md:-left-[88px] mt-1.5 w-10 md:w-12 text-right">
-                          <span className="text-xs font-bold text-muted-foreground block">{format(new Date(lead.created_at), 'HH:mm')}</span>
-                        </div>
-
-                        {/* Card Content */}
-                        <div className="ml-4 md:ml-8 flex-1 bg-white border rounded-2xl shadow-sm hover:shadow-md transition-shadow p-4 md:p-5 flex flex-col md:flex-row gap-4 md:gap-6 relative overflow-hidden">
-                          {/* Left: Customer Info */}
-                          <div className="flex-1 space-y-2">
-                            <div className="flex items-start justify-between">
-                              <button 
-                                onClick={() => openHistory(lead)} 
-                                className="text-left cursor-pointer group/name"
-                              >
-                                <h3 className="font-bold text-lg text-ink group-hover/name:text-gold transition-colors">{lead.customer_name}</h3>
-                                <p className="text-gold font-semibold flex items-center gap-1.5"><Phone className="size-3" /> {lead.customer_phone}</p>
-                              </button>
-                              
-                              <div className="md:hidden">
-                                {(() => { const b = visitBadge(lead.visit_count); return (
-                                  <span className={`inline-flex items-center gap-1 py-1 px-2.5 rounded-full text-[10px] ${b.cls}`}>
-                                    <History className="size-3" />{b.label}
-                                  </span>
-                                );})()}
-                              </div>
-                            </div>
-
-                            <div className="pt-2">
-                              <p className="font-medium text-ink text-sm flex items-start gap-2">
-                                <Ticket className="size-4 shrink-0 text-gold mt-0.5" /> 
-                                <span>{lead.deal_name}</span>
-                              </p>
-                              
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                <div className="font-mono text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-md shadow-sm">
-                                  Mã: {lead.voucher_code || 'N/A'}
-                                </div>
-                                {lead.cross_sell_items && (
-                                  <div className="text-xs text-purple-700 bg-purple-50 border border-purple-100 font-medium px-2.5 py-1 rounded-md flex items-center gap-1">
-                                    🛒 {lead.cross_sell_items}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Divider */}
-                          <div className="hidden md:block w-px bg-muted/60 self-stretch" />
-
-                          {/* Right: Actions */}
-                          <div className="w-full md:w-64 space-y-3 flex flex-col justify-between">
-                            <div className="flex justify-between md:justify-end items-center gap-3">
-                              <div className="hidden md:block">
-                                {(() => { const b = visitBadge(lead.visit_count); return (
-                                  <button onClick={() => openHistory(lead)} className={`inline-flex items-center gap-1 py-1 px-2.5 rounded-full text-[10px] hover:opacity-80 transition-opacity ${b.cls}`}>
-                                    <History className="size-3" />{b.label}
-                                  </button>
-                                );})()}
-                              </div>
-                              <select
-                                value={['served', 'closed'].includes(lead.status) ? 'served' : ['contacted', 'called', 'confirmed'].includes(lead.status) ? 'confirmed' : lead.status === 'cancelled' ? 'cancelled' : 'new'}
-                                onChange={(e) => updateStatus(lead.id, e.target.value)}
-                                className={`text-xs font-bold rounded-xl px-3 py-2 outline-none cursor-pointer appearance-none flex-1 md:flex-none ${
-                                  ['served', 'closed'].includes(lead.status) ? 'bg-green-100 text-green-800 border-green-200 shadow-inner' :
-                                  ['contacted', 'called', 'confirmed'].includes(lead.status) ? 'bg-blue-100 text-blue-800 border-blue-200 shadow-inner' :
-                                  lead.status === 'cancelled' ? 'bg-gray-100 text-gray-600 border-gray-200' :
-                                  'bg-red-100 text-red-700 border-red-200 shadow-inner'
-                                } border transition-colors focus:ring-2 focus:ring-gold/20`}
-                              >
-                                <option value="new">Chưa liên hệ</option>
-                                <option value="confirmed">Đã xác nhận</option>
-                                <option value="served">✅ Đã Check-in</option>
-                                <option value="cancelled">❌ Hủy / KNM</option>
-                              </select>
-                            </div>
-
-                            <textarea
-                              placeholder="Thêm ghi chú nội bộ..."
-                              value={lead.notes || ''}
-                              onChange={(e) => handleNotesChange(lead.id, e.target.value)}
-                              onBlur={(e) => updateNotes(lead.id, e.target.value)}
-                              className="w-full text-xs bg-muted/20 border border-muted-foreground/20 rounded-lg p-2.5 outline-none focus:border-gold focus:bg-white transition-colors resize-none h-14"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
+                  <tr>
+                    <th className="px-6 py-4 font-semibold">Tên Khách Hàng</th>
+                    <th className="px-6 py-4 font-semibold">Số Điện Thoại</th>
+                    <th className="px-6 py-4 font-semibold text-center">Tổng Số Lượt Ghé</th>
+                    <th className="px-6 py-4 font-semibold">Lần Ghé Cuối</th>
+                    <th className="px-6 py-4 font-semibold">Lịch sử</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {filteredCustomers.map((c) => (
+                    <tr key={c.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-6 py-4 font-bold text-ink">{c.name}</td>
+                      <td className="px-6 py-4 font-medium text-gold">{c.phone}</td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full">{c.total_visits}</span>
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground">
+                        {format(new Date(c.last_visit_at), 'dd/MM/yyyy HH:mm')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => openCustomerHistory(c)}
+                          className="text-gold font-medium text-xs border border-gold rounded px-3 py-1.5 hover:bg-gold hover:text-white transition-colors"
+                        >
+                          Xem chi tiết
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="mt-12 flex items-center justify-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  className="rounded-full"
-                >
-                  Trang trước
-                </Button>
-                <div className="text-sm font-medium text-muted-foreground px-4">
-                  Trang {currentPage} / {totalPages}
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  className="rounded-full"
-                >
-                  Trang sau
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
+          )}
       </div>
     </div>
 

@@ -11,7 +11,8 @@ export default function SidebarNav({ slug }: { slug: string }) {
     { href: `/${slug}/dashboard`, label: "Tổng quan", icon: LayoutDashboard },
     { href: `/${slug}/profile`, label: "Chỉnh sửa Gian hàng", icon: Store },
     { href: `/${slug}/deals`, label: "Quản lý Ưu đãi (Deals)", icon: Ticket },
-    { href: `/${slug}/leads`, label: "Danh sách Khách (Leads)", icon: Users },
+    { href: `/${slug}/customers`, label: "Danh bạ Khách hàng", icon: Users },
+    { href: `/${slug}/leads`, label: "Booking & Nhận ưu đãi", icon: CalendarDays },
     { href: `/${slug}/settings`, label: "Cài đặt Tài khoản", icon: Settings },
   ];
 
