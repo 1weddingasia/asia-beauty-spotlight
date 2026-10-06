@@ -93,6 +93,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
   if (!business || !business.slug) return null;
 
   return (
+    <>
     <div className="mt-8 rounded-xl border bg-card shadow-sm p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
       <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
         <QrCode className="size-40 text-gold" />
@@ -246,61 +247,62 @@ export default function DashboardPrintQR({ business }: { business: any }) {
           </div>
         </DialogContent>
       </Dialog>
+    </div>
 
-      {/* OFF-SCREEN HIDDEN ELEMENT FOR HTML2CANVAS */}
-      <div style={{ position: "absolute", left: "-9999px", top: "-9999px", pointerEvents: "none" }}>
-        <div 
-          ref={standeeRef}
-          style={{
-            width: "148mm", 
-            height: "210mm",
-            display: "flex", 
-            flexDirection: "column",
-            alignItems: "center", 
-            justifyContent: "space-between",
-            padding: "16mm 14mm",
-            background: "linear-gradient(160deg, #fffbf0 0%, #fff8e1 50%, #fef3c7 100%)",
-            border: "4px solid #c8960c",
-            borderRadius: "8mm",
-            textAlign: "center",
-            fontFamily: "'Be Vietnam Pro', sans-serif"
-          }}
-        >
-          <div style={{width: "100%"}}>
-            <div style={{background: "#c8960c", color: "#fff", fontSize: "16px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", padding: "8px 20px", borderRadius: "99px", marginBottom: "20px", display: "inline-block"}}>
-              Chương trình ưu đãi
-            </div>
-            <div style={{fontSize: "36px", fontWeight: 900, color: "#1a0a00", lineHeight: 1.2, marginBottom: "16px", textTransform: "uppercase"}}>
-              {business.name}
-            </div>
-            <div style={{fontSize: "24px", fontWeight: 800, color: "#c8960c", lineHeight: 1.4, marginBottom: "12px", textTransform: "uppercase"}}>
-              QUÉT MÃ NHẬN ƯU ĐÃI & ĐẶT LỊCH
-            </div>
-            {tagline.trim() && (
-              <div style={{fontSize: "22px", fontWeight: 700, color: "#d9381e", lineHeight: 1.3, marginBottom: "24px"}}>
-                {tagline}
-              </div>
-            )}
+    {/* OFF-SCREEN HIDDEN ELEMENT FOR HTML2CANVAS */}
+    <div style={{ position: "absolute", left: "-9999px", top: "-9999px", pointerEvents: "none" }}>
+      <div 
+        ref={standeeRef}
+        style={{
+          width: "148mm", 
+          height: "210mm",
+          display: "flex", 
+          flexDirection: "column",
+          alignItems: "center", 
+          justifyContent: "space-between",
+          padding: "16mm 14mm",
+          background: "linear-gradient(160deg, #fffbf0 0%, #fff8e1 50%, #fef3c7 100%)",
+          border: "4px solid #c8960c",
+          borderRadius: "8mm",
+          textAlign: "center",
+          fontFamily: "'Be Vietnam Pro', sans-serif"
+        }}
+      >
+        <div style={{width: "100%"}}>
+          <div style={{background: "#c8960c", color: "#fff", fontSize: "16px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", padding: "8px 20px", borderRadius: "99px", marginBottom: "20px", display: "inline-block"}}>
+            Chương trình ưu đãi
           </div>
-          <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
-            <div style={{background: "#fff", border: "4px solid #c8960c", borderRadius: "16px", padding: "20px", boxShadow: "0 6px 32px rgba(200,150,12,0.25)"}}>
-              <QRCodeCanvas 
-                value={promoUrl}
-                size={280}
-                fgColor="#3d2c00"
-                level="Q"
-                marginSize={1}
-              />
-            </div>
-            <div style={{fontSize: "18px", color: "#7c5800", marginTop: "24px", lineHeight: 1.5, fontWeight: 500}}>
-              Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi ngay! ✌️
-            </div>
+          <div style={{fontSize: "36px", fontWeight: 900, color: "#1a0a00", lineHeight: 1.2, marginBottom: "16px", textTransform: "uppercase"}}>
+            {business.name}
           </div>
-          <div style={{fontSize: "12px", color: "#b39000", borderTop: "1px solid #e5c96a", paddingTop: "12px", width: "100%", marginTop: "32px", fontWeight: 500}}>
-            Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia
+          <div style={{fontSize: "24px", fontWeight: 800, color: "#c8960c", lineHeight: 1.4, marginBottom: "12px", textTransform: "uppercase"}}>
+            QUÉT MÃ NHẬN ƯU ĐÃI & ĐẶT LỊCH
           </div>
+          {tagline.trim() && (
+            <div style={{fontSize: "22px", fontWeight: 700, color: "#d9381e", lineHeight: 1.3, marginBottom: "24px"}}>
+              {tagline}
+            </div>
+          )}
+        </div>
+        <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
+          <div style={{background: "#fff", border: "4px solid #c8960c", borderRadius: "16px", padding: "20px", boxShadow: "0 6px 32px rgba(200,150,12,0.25)"}}>
+            <QRCodeCanvas 
+              value={promoUrl}
+              size={280}
+              fgColor="#3d2c00"
+              level="Q"
+              marginSize={1}
+            />
+          </div>
+          <div style={{fontSize: "18px", color: "#7c5800", marginTop: "24px", lineHeight: 1.5, fontWeight: 500}}>
+            Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi ngay! ✌️
+          </div>
+        </div>
+        <div style={{fontSize: "12px", color: "#b39000", borderTop: "1px solid #e5c96a", paddingTop: "12px", width: "100%", marginTop: "32px", fontWeight: 500}}>
+          Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia
         </div>
       </div>
     </div>
+    </>
   );
 }
