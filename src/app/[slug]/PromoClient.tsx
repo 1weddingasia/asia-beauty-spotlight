@@ -299,6 +299,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               <BadgeCheck className="size-8 md:size-10 text-blue-500 fill-white drop-shadow-md" />
             )}
           </h1>
+          {business.short_description && (
+            <p className="text-white/90 font-medium text-base md:text-xl max-w-2xl text-center mb-4 italic drop-shadow-md">
+              "{business.short_description}"
+            </p>
+          )}
           <p className="text-champagne/90 text-sm md:text-lg flex items-center gap-2 mb-2 max-w-2xl text-center">
             <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}
           </p>
@@ -572,12 +577,6 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold">Câu Chuyện Thương Hiệu</p>
                 <div className="h-px bg-gold flex-1" />
               </div>
-
-              {b.short_description && (
-                <p className="text-base md:text-lg leading-relaxed text-ink font-medium">
-                  {b.short_description}
-                </p>
-              )}
 
               {(b.page_content?.description || b.description) && (
                 <div className="text-sm md:text-base text-muted-foreground leading-relaxed space-y-4 whitespace-pre-wrap">
