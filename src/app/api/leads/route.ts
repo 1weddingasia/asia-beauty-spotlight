@@ -311,27 +311,39 @@ export async function POST(req: Request) {
     const notifications = [];
 
     if (telegramChatId) {
-      const header = isVIP
-        ? `🏆 ĐƠN MỚI TỪ KHÁCH VIP (Đến tiệm lần thứ ${visitNumber})`
-        : isReturning
-        ? `⭐ ĐƠN MỚI TỪ KHÁCH QUAY LẠI (Lần thứ ${visitNumber})`
-        : `🔔 ĐƠN MỚI TỪ KHÁCH MỚI`;
+      let header = '';
+      const isBookingDeal = !!booking_time;
+
+      if (isBookingDeal) {
+        header = isVIP
+          ? `🏆 LỊCH HẸN TỪ KHÁCH VIP (Đến tiệm lần ${visitNumber})`
+          : isReturning
+          ? `⭐ LỊCH HẸN TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
+          : `📅 LỊCH HẸN MỚI`;
+      } else {
+        header = isVIP
+          ? `🏆 ƯU ĐÃI TỪ KHÁCH VIP (Đến tiệm lần ${visitNumber})`
+          : isReturning
+          ? `⭐ ƯU ĐÃI TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
+          : `🎁 NHẬN ƯU ĐÃI MỚI`;
+      }
 
       // 🔔 KÊNH 1: Bắn về tiệm
       const crossSellStr = cross_sell_items ? `\n🛒 Bán chéo: ${escapeHtml(cross_sell_items)}` : '';
       const bookingTimeStr = booking_time ? `\n🕒 Lịch hẹn: ${escapeHtml(booking_time)}` : '';
-      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
+      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n${isBookingDeal ? '📅 Dịch vụ' : '🎁 Gói'}: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
       notifications.push(sendTelegramAsync(telegramChatId, msgForShop));
 
       // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Beauty để giám sát toàn mạng
       const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
       if (adminChatId && adminChatId !== telegramChatId) {
         const safeBusinessName = escapeHtml(business.name || 'Không rõ tiệm');
-        const msgForAdmin = `<b>📊 [TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | 🎁 ${safeDeal}\nMã: ${voucher_code}`;
+        const msgForAdmin = `<b>📊 [TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | ${isBookingDeal ? '📅 Lịch hẹn' : '🎁 Ưu đãi'}: ${safeDeal}\nMã: ${voucher_code}`;
         notifications.push(sendTelegramAsync(adminChatId, msgForAdmin));
       }
     }
 
+    const isBookingDeal = !!booking_time;
     // 💬 KÊNH 3: ZALO GATEWAY
     // Tính năng này tắt/bật thông qua ZALO_ENABLED (được kiểm tra bên trong sendZaloAsync)
     // Tin nhắn gọn cho chủ tiệm qua Zalo (plain text, không HTML)
@@ -339,7 +351,7 @@ export async function POST(req: Request) {
       `${zaloTag} — ${business.name}`,
       `👤 ${customer_name || 'Khach vang lai'}`,
       `📞 SdT: ${cleanPhone}`,
-      `🎁 Goi: ${normalizedDealName}`,
+      `${isBookingDeal ? '📅 Dich vu' : '🎁 Goi'}: ${normalizedDealName}`,
       cross_sell_items ? `🛒 Mua them: ${cross_sell_items}` : '',
       `🏷 Ma: ${voucher_code}`,
       previousVisits && previousVisits.length > 0 ? `📊 Da den: ${previousVisits.length} lan truoc` : '',
