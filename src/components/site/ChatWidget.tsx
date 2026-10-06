@@ -114,7 +114,7 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] w-full h-[100dvh] md:inset-auto md:bottom-6 md:right-6 md:w-[350px] md:h-[500px] md:max-h-[calc(100vh-120px)] bg-white md:rounded-2xl shadow-2xl flex flex-col border border-border/50 overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] w-full md:inset-auto md:bottom-6 md:right-6 md:w-[350px] md:h-[500px] md:max-h-[calc(100vh-120px)] bg-white md:rounded-2xl shadow-2xl flex flex-col border border-border/50 overflow-hidden animate-in zoom-in-95 duration-200">
           {/* Header */}
           <div className="bg-ink text-white p-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
