@@ -91,11 +91,11 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
           <div className="bg-ink text-white p-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <div className="bg-gold p-2 rounded-full">
-                <Bot className="size-5 text-ink" />
+                <MessageCircle className="size-5 text-ink" />
               </div>
               <div>
-                <h3 className="font-bold text-sm leading-tight">Trợ lý AI 1Beauty</h3>
-                <p className="text-xs text-champagne">Sẵn sàng chốt sale 24/7</p>
+                <h3 className="font-bold text-sm leading-tight">1Beauty Xin chào!</h3>
+                <p className="text-xs text-champagne">Hỗ trợ đối tác 24/7</p>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">

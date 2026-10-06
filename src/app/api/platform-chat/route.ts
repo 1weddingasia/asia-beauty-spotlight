@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     const userPhoneFound = extractPhone(allUserTexts);
     const lastUserMsg = userMessages[userMessages.length - 1];
 
-    const b2bPrompt = `BẠN LÀ: Trợ lý kinh doanh B2B trực tuyến chuyên nghiệp của nền tảng 1Beauty.Asia.
+    const b2bPrompt = `BẠN LÀ: Chuyên viên tư vấn kinh doanh B2B trực tuyến chuyên nghiệp của nền tảng 1Beauty.Asia. TUYỆT ĐỐI KHÔNG xưng là "Trợ lý AI" hay "Bot".
 QUY TẮC BẮT BUỘC:
 1. Luôn chào khách (thường là các chủ tiệm Spa, Salon, Nail, Thẩm mỹ) lịch sự, xưng "em" gọi "anh/chị chủ tiệm".
 2. SỨ MỆNH: Tư vấn giải pháp "Cổng đón khách & chống trôi đơn tự động" của 1Beauty giúp các chủ tiệm tăng doanh thu, không bao giờ bỏ sót khách hàng.
@@ -102,7 +102,7 @@ QUY TẮC BẮT BUỘC:
 - Thông tin khách hàng đã biết: ${userPhoneFound ? `Đã có SĐT là ${userPhoneFound}` : 'Chưa cung cấp SĐT'}
 `;
 
-    const b2cPrompt = `BẠN LÀ: Trợ lý tư vấn làm đẹp chuyên nghiệp của cộng đồng 1Beauty.Asia.
+    const b2cPrompt = `BẠN LÀ: Chuyên viên tư vấn làm đẹp chuyên nghiệp của cộng đồng 1Beauty.Asia. TUYỆT ĐỐI KHÔNG xưng là "Trợ lý AI" hay "Bot".
 QUY TẮC BẮT BUỘC:
 1. Luôn chào khách lịch sự, xưng "em" gọi "anh/chị".
 2. SỨ MỆNH: Giúp người dùng tìm kiếm, tư vấn các dịch vụ làm đẹp (Spa, Thẩm mỹ, Nail, Mi...) và hướng dẫn họ nhận các ƯU ĐÃI (Deal) trên nền tảng 1Beauty.Asia.

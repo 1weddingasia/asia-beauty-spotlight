@@ -128,11 +128,11 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
           <div className="bg-ink text-white p-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <div className="bg-gold p-2 rounded-full">
-                <Bot className="size-5 text-ink" />
+                <MessageCircle className="size-5 text-ink" />
               </div>
               <div>
-                <h3 className="font-bold text-sm leading-tight">Trợ lý AI {adminToken ? '(Admin)' : ''}</h3>
-                <p className="text-xs text-champagne">{businessName}</p>
+                <h3 className="font-bold text-sm leading-tight">{businessName} Xin chào! {adminToken ? '(Admin)' : ''}</h3>
+                <p className="text-xs text-champagne">Sẵn sàng hỗ trợ bạn</p>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">
