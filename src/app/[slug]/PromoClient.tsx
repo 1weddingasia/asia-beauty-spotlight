@@ -46,8 +46,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const [selectedCrossSells, setSelectedCrossSells] = useState<string[]>([]);
   
   // Booking fields
-  const [bookingDate, setBookingDate] = useState("Hôm nay");
-  const [bookingTime, setBookingTime] = useState("Chiều");
+  const [bookingTime, setBookingTime] = useState("");
   const [bookingService, setBookingService] = useState("");
   
   // Intercept modal state
@@ -131,7 +130,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     setLoading(true);
     try {
       const actualDealName = selectedDeal.id === 'booking' ? (bookingService || selectedDeal.title) : selectedDeal.title;
-      const bTime = selectedDeal.id === 'booking' ? `${bookingTime} ${bookingDate}` : null;
+      const bTime = selectedDeal.id === 'booking' ? bookingTime : null;
       
       const res = await fetch('/api/leads', {
         method: 'POST',
@@ -730,25 +729,14 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
               {selectedDeal?.id === 'booking' && (
                 <>
-                  <div className="grid grid-cols-2 gap-3">
-                    <select
+                  <div className="mb-3">
+                    <input
+                      type="text"
                       className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
-                      value={bookingDate}
-                      onChange={e => setBookingDate(e.target.value)}
-                    >
-                      <option value="Hôm nay">Hôm nay</option>
-                      <option value="Ngày mai">Ngày mai</option>
-                      <option value="Ngày khác">Ngày khác</option>
-                    </select>
-                    <select
-                      className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
+                      placeholder="VD: 15:30 chiều mai, hoặc sáng Thứ Bảy"
                       value={bookingTime}
                       onChange={e => setBookingTime(e.target.value)}
-                    >
-                      <option value="Sáng">Sáng</option>
-                      <option value="Chiều">Chiều</option>
-                      <option value="Tối">Tối</option>
-                    </select>
+                    />
                   </div>
                   <div>
                     <select
@@ -799,7 +787,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               )}
 
               <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
-                {loading ? "Đang xử lý..." : "XÁC NHẬN GIỮ CHỖ"}
+                {loading ? "Đang xử lý..." : (selectedDeal?.id === 'booking' ? "XÁC NHẬN BOOKING" : "NHẬN ƯU ĐÃI")}
               </Button>
             </form>
           ) : (

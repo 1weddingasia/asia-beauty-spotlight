@@ -67,11 +67,6 @@ const LeadSchema = z.object({
   booking_time: z.string().max(200).optional().nullable()
 });
 
-function generateVoucherCode(businessName: string) {
-  const prefix = businessName.substring(0, 3).toUpperCase().replace(/[^A-Z0-9]/g, '');
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `1B-${prefix}-${rand}`;
-}
 
 
 function escapeHtml(str: string): string {
@@ -230,7 +225,7 @@ export async function POST(req: Request) {
       .update({ total_visits: visitNumber })
       .eq('id', customerId);
 
-    const voucher_code = generateVoucherCode(business.name);
+    const voucher_code = cleanPhone;
 
     // Insert lead
     const { error: insertError } = await supabase
