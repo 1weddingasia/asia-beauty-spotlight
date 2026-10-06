@@ -820,9 +820,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </Link>
                 </Button>
                 
-                {hotline && hotline.replace(/\D/g, '').length >= 9 && (
+                {zaloLink !== '#' && (
                   <Button asChild variant="outline" className="w-full h-12 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl">
-                    <Link href={`https://zalo.me/${hotline.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                    <Link href={zaloLink} target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="mr-2 size-5" /> Xác nhận qua Zalo
                     </Link>
                   </Button>

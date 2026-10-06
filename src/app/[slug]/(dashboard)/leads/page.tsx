@@ -39,6 +39,7 @@ export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [business, setBusiness] = useState<any>(null);
   const [searchPhone, setSearchPhone] = useState("");
+  const [filterType, setFilterType] = useState<'all' | 'booking' | 'offer'>('all');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   
   // New State for CRM
@@ -272,10 +273,16 @@ export default function LeadsPage() {
       })
     : leads;
 
+  const typeFilteredLeads = filteredLeads.filter(l => {
+    if (filterType === 'all') return true;
+    const isBooking = l.notes?.includes('Lịch hẹn:');
+    if (filterType === 'booking') return isBooking;
+    if (filterType === 'offer') return !isBooking;
+    return true;
+  });
 
-
-  const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
-  const paginatedLeads = filteredLeads.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(typeFilteredLeads.length / ITEMS_PER_PAGE);
+  const paginatedLeads = typeFilteredLeads.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   // Group leads for timeline view
   const groupedLeads = paginatedLeads.reduce((acc, lead) => {
@@ -311,29 +318,52 @@ export default function LeadsPage() {
         </Button>
       </div>
 
-      {/* Ô tìm kiếm SĐT nhanh */}
-      <div className="flex items-center gap-3 rounded-xl border-2 border-gold/40 bg-gold/5 px-4 py-3 shadow-sm">
-        <Phone className="size-5 text-gold shrink-0" />
-        <input
-          type="text"
-          placeholder="TÌM SĐT HOẶC MÃ ĐỂ CHECK-IN (gõ 3-4 số cuối)..."
-          value={searchPhone}
-          onChange={e => setSearchPhone(e.target.value)}
-          className="flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-muted-foreground/70 text-ink"
-        />
-        {searchPhone && (
-          <button onClick={() => setSearchPhone('')} className="text-xs text-muted-foreground hover:text-ink">
-            Xóa
+      {/* Filter and Search */}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white border border-border p-3 rounded-xl shadow-sm">
+        <div className="flex items-center gap-2 bg-secondary/50 p-1 rounded-lg w-full md:w-auto">
+          <button 
+            onClick={() => setFilterType('all')} 
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${filterType === 'all' ? 'bg-white shadow-sm text-ink' : 'text-muted-foreground hover:text-ink'}`}
+          >
+            Tất cả
           </button>
-        )}
+          <button 
+            onClick={() => setFilterType('booking')} 
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${filterType === 'booking' ? 'bg-white shadow-sm text-ink' : 'text-muted-foreground hover:text-ink'}`}
+          >
+            📅 Đặt lịch
+          </button>
+          <button 
+            onClick={() => setFilterType('offer')} 
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${filterType === 'offer' ? 'bg-white shadow-sm text-ink' : 'text-muted-foreground hover:text-ink'}`}
+          >
+            🎁 Ưu đãi
+          </button>
+        </div>
+
+        {/* Ô tìm kiếm SĐT nhanh */}
+        <div className="flex items-center gap-2 rounded-lg border-2 border-gold/40 bg-gold/5 px-4 py-2 shadow-sm w-full md:w-80">
+          <Phone className="size-4 text-gold shrink-0" />
+          <input
+            type="text"
+            placeholder="Tìm theo SĐT hoặc mã..."
+            value={searchPhone}
+            onChange={e => setSearchPhone(e.target.value)}
+            className="flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-muted-foreground/70 text-ink min-w-0"
+          />
+          {searchPhone && (
+            <button onClick={() => setSearchPhone('')} className="text-xs text-muted-foreground hover:text-ink shrink-0">
+              Xóa
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        {filteredLeads.length === 0 ? (
+        {typeFilteredLeads.length === 0 ? (
           <div className="p-10 text-center text-muted-foreground flex flex-col items-center">
               <Phone className="size-10 mb-4 opacity-20" />
-              <p>{searchPhone ? `Không tìm thấy khách nào với số "${searchPhone}"` : 'Chưa có khách hàng nào đăng ký ưu đãi.'}</p>
-              {!searchPhone && <p className="text-sm mt-1">Hãy chia sẻ trang ưu đãi của bạn để thu hút khách nhé!</p>}
+              <p>{searchPhone ? `Không tìm thấy khách nào với số "${searchPhone}"` : 'Chưa có dữ liệu phù hợp.'}</p>
             </div>
           ) : (
           <div className="p-4 md:p-8">
@@ -351,7 +381,7 @@ export default function LeadsPage() {
                     {groupedLeads[dateStr].map(lead => (
                       <div key={lead.id} className="relative flex items-start group">
                         {/* Timeline Dot */}
-                        <div className="absolute -left-[30px] md:-left-[32px] mt-2 w-4 h-4 rounded-full border-2 border-white bg-gold shadow-sm group-hover:scale-125 transition-transform" />
+                        <div className={`absolute -left-[30px] md:-left-[32px] mt-2 w-4 h-4 rounded-full border-2 border-white shadow-sm group-hover:scale-125 transition-transform ${lead.notes?.includes('Lịch hẹn:') ? 'bg-blue-500' : 'bg-gold'}`} />
                         
                         {/* Timeline Time */}
                         <div className="absolute -left-[76px] md:-left-[88px] mt-1.5 w-10 md:w-12 text-right">
@@ -359,7 +389,7 @@ export default function LeadsPage() {
                         </div>
 
                         {/* Card Content */}
-                        <div className="ml-4 md:ml-8 flex-1 bg-white border rounded-2xl shadow-sm hover:shadow-md transition-shadow p-4 md:p-5 flex flex-col md:flex-row gap-4 md:gap-6 relative overflow-hidden">
+                        <div className={`ml-4 md:ml-8 flex-1 border-l-4 border-y border-r rounded-r-2xl rounded-l-md shadow-sm hover:shadow-md transition-shadow p-4 md:p-5 flex flex-col md:flex-row gap-4 md:gap-6 relative overflow-hidden ${lead.notes?.includes('Lịch hẹn:') ? 'border-l-blue-500 bg-blue-50/20 border-y-border border-r-border' : 'border-l-gold bg-gold/5 border-y-border border-r-border'}`}>
                           {/* Left: Customer Info */}
                           <div className="flex-1 space-y-2">
                             <div className="flex items-start justify-between">
@@ -367,7 +397,14 @@ export default function LeadsPage() {
                                 onClick={() => openHistory(lead)} 
                                 className="text-left cursor-pointer group/name"
                               >
-                                <h3 className="font-bold text-lg text-ink group-hover/name:text-gold transition-colors">{lead.customer_name}</h3>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-bold text-lg text-ink group-hover/name:text-gold transition-colors">{lead.customer_name}</h3>
+                                  {lead.notes?.includes('Lịch hẹn:') ? (
+                                    <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Booking</span>
+                                  ) : (
+                                    <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Ưu đãi</span>
+                                  )}
+                                </div>
                                 <p className="text-gold font-semibold flex items-center gap-1.5"><Phone className="size-3" /> {lead.customer_phone}</p>
                               </button>
                               
