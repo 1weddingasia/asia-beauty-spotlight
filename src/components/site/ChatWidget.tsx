@@ -10,7 +10,7 @@ import { toast } from "sonner";
 export function ChatWidget({ businessId, businessName, slug }: { businessId: string, businessName: string, slug?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user'|'system'|'error', content: string}[]>([
-    { role: 'system', content: `Chào bạn, mình là trợ lý AI của ${businessName}. Mình có thể tư vấn bảng giá, dịch vụ hoặc giúp bạn đặt lịch hẹn. Bạn cần hỗ trợ gì ạ?` }
+    { role: 'system', content: `${businessName} Xin chào! Em có thể hỗ trợ gì cho anh chị?` }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,6 +26,16 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
     if (typeof window !== "undefined") {
       const stored = sessionStorage.getItem(getAdminTokenKey(slug, businessId));
       if (stored) setAdminToken(stored);
+      
+      // Auto open after 1 minute, only once per session
+      const autoOpenKey = `hasAutoOpenedChat:${slug || businessId}`;
+      if (!sessionStorage.getItem(autoOpenKey)) {
+        const timer = setTimeout(() => {
+          setIsOpen(true);
+          sessionStorage.setItem(autoOpenKey, "true");
+        }, 60000); // 1 minute
+        return () => clearTimeout(timer);
+      }
     }
   }, [slug, businessId]);
 
