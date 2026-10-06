@@ -10,6 +10,7 @@ import { format } from "date-fns";
 type Lead = {
   id: string;
   business_id: string;
+  customer_id?: string;
   customer_name: string;
   customer_phone: string;
   deal_name: string;
