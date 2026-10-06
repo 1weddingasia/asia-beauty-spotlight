@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Save, Plus, Trash2 } from "lucide-react";
+import { Save, Plus, Trash2, Copy } from "lucide-react";
+import { ImageUpload } from "@/components/ui/image-upload";
 import { toast } from "sonner";
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -32,6 +33,14 @@ type CrossSell = {
   status: "active" | "paused";
 };
 
+type Service = {
+  name: string;
+  description: string;
+  price: string;
+  image: string;
+  status: "active" | "paused";
+};
+
 export default function DealsManagementPage() {
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
@@ -39,6 +48,7 @@ export default function DealsManagementPage() {
   const [business, setBusiness] = useState<any>(null);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [crossSells, setCrossSells] = useState<CrossSell[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
 
   useEffect(() => {
     async function loadData() {
@@ -101,6 +111,9 @@ export default function DealsManagementPage() {
         let existingCrossSells = Array.isArray(content.cross_sells) ? content.cross_sells : [];
         setCrossSells(existingCrossSells);
 
+        let existingServices = Array.isArray(content.services) ? content.services : [];
+        setServices(existingServices);
+
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -125,7 +138,8 @@ export default function DealsManagementPage() {
       const updatedContent = {
         ...(business.page_content || {}),
         deals: cleanDeals,
-        cross_sells: crossSells
+        cross_sells: crossSells,
+        services: services
       };
 
       const { error } = await supabase
@@ -135,11 +149,11 @@ export default function DealsManagementPage() {
 
       if (error) throw error;
       
-      // Update local state
       setBusiness({ ...business, page_content: updatedContent });
       setDeals(cleanDeals);
       setCrossSells(crossSells);
-      toast.success("Đã lưu cấu hình Ưu đãi & Mua kèm!");
+      setServices(services);
+      toast.success("Đã lưu cấu hình Dịch vụ & Ưu đãi!");
     } catch (err: any) {
       console.error("Lỗi khi lưu cấu hình ưu đãi:", err);
       toast.error("Không thể lưu cấu hình. Vui lòng thử lại sau.");
@@ -202,6 +216,18 @@ export default function DealsManagementPage() {
     setCrossSells(crossSells.filter((_, i) => i !== index));
   };
 
+  const addService = () => setServices([...services, { name: "", description: "", price: "", image: "", status: "active" }]);
+  const removeService = (index: number) => setServices(services.filter((_, i) => i !== index));
+  const updateService = (index: number, field: keyof Service, value: Service[keyof Service]) => {
+    const newServices = [...services];
+    newServices[index] = { ...newServices[index], [field]: value as any };
+    setServices(newServices);
+  };
+  const duplicateService = (index: number) => {
+    const svc = services[index];
+    setServices([...services, { ...svc }]);
+  };
+
 
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải cấu hình...</div>;
   if (!business) return <div className="p-10 text-center text-red-500">Lỗi: Không tìm thấy thông tin doanh nghiệp.</div>;
@@ -211,14 +237,80 @@ export default function DealsManagementPage() {
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold font-display text-gold">Quản lý Ưu đãi (Deals)</h1>
-          <p className="text-muted-foreground text-sm mt-1">Cài đặt các gói ưu đãi và cấu hình mua kèm.</p>
+          <h1 className="text-2xl font-bold font-display text-gold">Dịch vụ & Ưu đãi</h1>
+          <p className="text-muted-foreground text-sm mt-1">Cài đặt bảng giá dịch vụ, các gói ưu đãi và cấu hình mua kèm.</p>
         </div>
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
             <Save className="mr-2 size-4" />
             {saving ? "Đang lưu..." : "Lưu thay đổi"}
           </Button>
+        </div>
+      </div>
+
+      {/* Services Management Section */}
+      <div className="rounded-2xl border bg-card p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-bold text-ink">Bảng giá Dịch vụ</h2>
+            <p className="text-sm text-muted-foreground">Các dịch vụ chính của tiệm.</p>
+          </div>
+          <Button onClick={addService} variant="outline" className="text-gold border-gold hover:bg-gold/10">
+            <Plus className="size-4 mr-2" /> Thêm Dịch vụ
+          </Button>
+        </div>
+
+        <div className="space-y-4">
+          {services.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed">
+              Chưa có dịch vụ nào. Bấm "Thêm Dịch vụ" để tạo.
+            </div>
+          ) : (
+            services.map((svc, i) => (
+              <div key={i} className="flex flex-col md:flex-row gap-4 p-4 border rounded-xl bg-background relative group">
+                <div className="w-full md:w-32 shrink-0">
+                  <ImageUpload 
+                    value={svc.image} 
+                    onChange={(url) => updateService(i, "image", url)} 
+                    className="w-full h-auto aspect-square"
+                  />
+                </div>
+                <div className="flex-grow space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Tên dịch vụ</Label>
+                      <Input value={svc.name || ""} onChange={e => updateService(i, "name", e.target.value)} placeholder="Gội đầu dưỡng sinh..." />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Giá tiền</Label>
+                      <Input value={svc.price || ""} onChange={e => updateService(i, "price", e.target.value)} placeholder="Từ 150.000đ" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Mô tả chi tiết</Label>
+                    <Input value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)} placeholder="Quy trình 60 phút bao gồm..." />
+                  </div>
+                  <div className="flex items-center gap-2 pt-1">
+                    <Switch 
+                      checked={svc.status !== 'paused'} 
+                      onCheckedChange={(checked) => updateService(i, "status", checked ? "active" : "paused")} 
+                    />
+                    <Label className={`text-xs ${svc.status !== 'paused' ? 'text-green-600' : 'text-gray-400'}`}>
+                      {svc.status !== 'paused' ? 'Đang bật' : 'Tạm dừng'}
+                    </Label>
+                  </div>
+                </div>
+                <div className="flex flex-row md:flex-col gap-2 justify-start md:justify-center mt-2 md:mt-0">
+                  <Button variant="outline" size="icon" onClick={() => duplicateService(i)} title="Nhân bản">
+                    <Copy className="size-4 text-blue-500" />
+                  </Button>
+                  <Button variant="outline" size="icon" onClick={() => removeService(i)} title="Xóa">
+                    <Trash2 className="size-4 text-red-500" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

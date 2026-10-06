@@ -10,7 +10,7 @@ export default function MobileBottomNav({ slug }: { slug: string }) {
   const links = [
     { href: `/${slug}/dashboard`, label: "Tổng quan", icon: LayoutDashboard },
     { href: `/${slug}/leads`, label: "Booking", icon: CalendarDays },
-    { href: `/${slug}/deals`, label: "Ưu đãi", icon: Ticket },
+    { href: `/${slug}/deals`, label: "Ư.đãi & D.vụ", icon: Ticket },
     { href: `/${slug}/customers`, label: "Khách", icon: Users },
     { href: `/${slug}/profile`, label: "Gian hàng", icon: Store },
   ];
