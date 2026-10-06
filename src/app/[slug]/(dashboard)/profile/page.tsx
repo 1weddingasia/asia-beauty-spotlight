@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, Plus, Trash2, Copy, Link as LinkIcon, Lock, MapPin, CheckSquare, Square } from "lucide-react";
+import { Save, Plus, Trash2, Link as LinkIcon, Lock, MapPin, CheckSquare, Square } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Switch } from "@/components/ui/switch";
@@ -228,7 +228,7 @@ export default function BusinessProfilePage() {
       </div>
 
       <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto md:h-12 gap-2 bg-muted p-2 rounded-xl mb-6">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto md:h-12 gap-2 bg-muted p-2 rounded-xl mb-6">
           <TabsTrigger value="overview">Tổng quan</TabsTrigger>
           <TabsTrigger value="contact">Liên hệ & Bản đồ</TabsTrigger>
           <TabsTrigger value="media">Hình ảnh</TabsTrigger>

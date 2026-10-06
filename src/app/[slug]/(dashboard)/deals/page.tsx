@@ -34,6 +34,7 @@ type CrossSell = {
 };
 
 type Service = {
+  id: string;
   name: string;
   description: string;
   price: string;
@@ -111,7 +112,10 @@ export default function DealsManagementPage() {
         let existingCrossSells = Array.isArray(content.cross_sells) ? content.cross_sells : [];
         setCrossSells(existingCrossSells);
 
-        let existingServices = Array.isArray(content.services) ? content.services : [];
+        let existingServices = Array.isArray(content.services) ? content.services.map((s: any) => ({
+          ...s,
+          id: s.id || generateId()
+        })) : [];
         setServices(existingServices);
 
         setLoading(false);
@@ -216,16 +220,16 @@ export default function DealsManagementPage() {
     setCrossSells(crossSells.filter((_, i) => i !== index));
   };
 
-  const addService = () => setServices([...services, { name: "", description: "", price: "", image: "", status: "active" }]);
+  const addService = () => setServices([...services, { id: generateId(), name: "", description: "", price: "", image: "", status: "active" }]);
   const removeService = (index: number) => setServices(services.filter((_, i) => i !== index));
   const updateService = (index: number, field: keyof Service, value: Service[keyof Service]) => {
     const newServices = [...services];
-    newServices[index] = { ...newServices[index], [field]: value as any };
+    newServices[index] = { ...newServices[index], [field]: value };
     setServices(newServices);
   };
   const duplicateService = (index: number) => {
     const svc = services[index];
-    setServices([...services, { ...svc }]);
+    setServices([...services, { ...svc, id: generateId() }]);
   };
 
 
@@ -267,7 +271,7 @@ export default function DealsManagementPage() {
             </div>
           ) : (
             services.map((svc, i) => (
-              <div key={i} className="flex flex-col md:flex-row gap-4 p-4 border rounded-xl bg-background relative group">
+              <div key={svc.id || i} className="flex flex-col md:flex-row gap-4 p-4 border rounded-xl bg-background relative group">
                 <div className="w-full md:w-32 shrink-0">
                   <ImageUpload 
                     value={svc.image} 
