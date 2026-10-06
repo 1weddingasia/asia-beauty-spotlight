@@ -24,16 +24,23 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const stored = sessionStorage.getItem(getAdminTokenKey(slug, businessId));
-      if (stored) setAdminToken(stored);
-      
-      // Auto open after 1 minute, only once per session
-      const autoOpenKey = `hasAutoOpenedChat:${slug || businessId}`;
-      if (!sessionStorage.getItem(autoOpenKey)) {
-        const timer = setTimeout(() => {
-          setIsOpen(true);
-          sessionStorage.setItem(autoOpenKey, "true");
-        }, 60000); // 1 minute
+      try {
+        const stored = sessionStorage.getItem(getAdminTokenKey(slug, businessId));
+        if (stored) setAdminToken(stored);
+        
+        // Auto open after 1 minute, only once per session
+        const autoOpenKey = `hasAutoOpenedChat:${slug || businessId}`;
+        if (!sessionStorage.getItem(autoOpenKey)) {
+          const timer = setTimeout(() => {
+            setIsOpen(true);
+            try { sessionStorage.setItem(autoOpenKey, "true"); } catch (e) {}
+          }, 60000); // 1 minute
+          return () => clearTimeout(timer);
+        }
+      } catch (err) {
+        console.warn("SessionStorage not available (possibly in-app browser)");
+        // Fallback for auto open if sessionStorage is blocked
+        const timer = setTimeout(() => setIsOpen(true), 60000);
         return () => clearTimeout(timer);
       }
     }
@@ -76,7 +83,9 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
       if (data.adminToken && data.adminToken !== adminToken) {
         setAdminToken(data.adminToken);
         if (typeof window !== 'undefined') {
-          sessionStorage.setItem(getAdminTokenKey(slug, businessId), data.adminToken);
+          try {
+            sessionStorage.setItem(getAdminTokenKey(slug, businessId), data.adminToken);
+          } catch (e) {}
         }
       }
 
