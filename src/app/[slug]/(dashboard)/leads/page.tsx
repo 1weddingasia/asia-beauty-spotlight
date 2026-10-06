@@ -154,6 +154,7 @@ export default function LeadsPage() {
 
   const updateStatus = async (leadId: string, newStatus: string) => {
     const prevLeads = [...leads];
+    const previousLead = leads.find(l => l.id === leadId);
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
     
     const { error } = await supabase
@@ -166,6 +167,24 @@ export default function LeadsPage() {
       setLeads(prevLeads);
     } else {
       toast.success("Đã cập nhật trạng thái");
+      
+      // Recalculate customer total visits
+      if (previousLead && previousLead.customer_id && previousLead.status !== newStatus) {
+        const { data: customerLeads } = await supabase
+          .from("business_leads")
+          .select("updated_at")
+          .eq("customer_id", previousLead.customer_id)
+          .in("status", ["served", "closed"])
+          .order("updated_at", { ascending: false });
+          
+        const visits = customerLeads?.length || 0;
+        const lastVisit = visits > 0 ? customerLeads![0].updated_at : null;
+        
+        await supabase.from("business_customers").update({
+          total_visits: visits,
+          last_visit_at: lastVisit
+        }).eq("id", previousLead.customer_id);
+      }
     }
   };
 

@@ -178,26 +178,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Doanh nghiệp không tồn tại' }, { status: 404 });
     }
 
-    // Upsert into business_customers
-    const { data: customerData, error: customerError } = await supabase
+    // Fetch customer or create if not exists
+    let customerId;
+    const { data: existingCustomer } = await supabase
       .from('business_customers')
-      .upsert({
-        business_id,
-        phone: cleanPhone,
-        name: customer_name || 'Khách vãng lai',
-        last_visit_at: new Date().toISOString()
-      }, { onConflict: 'business_id,phone' })
-      .select('id, total_visits')
+      .select('id')
+      .eq('business_id', business_id)
+      .eq('phone', cleanPhone)
       .single();
 
-    if (customerError || !customerData) {
-      console.error("DB Customer Upsert Error:", customerError);
-      return NextResponse.json({ error: 'Lỗi hệ thống khi tạo khách hàng' }, { status: 500 });
+    if (existingCustomer) {
+      customerId = existingCustomer.id;
+    } else {
+      const { data: newCustomer, error: customerError } = await supabase
+        .from('business_customers')
+        .insert({
+          business_id,
+          phone: cleanPhone,
+          name: customer_name || 'Khách vãng lai',
+          total_visits: 0,
+          last_visit_at: null
+        })
+        .select('id')
+        .single();
+
+      if (customerError || !newCustomer) {
+        console.error("DB Customer Insert Error:", customerError);
+        return NextResponse.json({ error: 'Lỗi hệ thống khi tạo khách hàng' }, { status: 500 });
+      }
+      customerId = newCustomer.id;
     }
 
-    const customerId = customerData.id;
-
-    // --- MINI-CRM: Count previous visits ---
+    // --- MINI-CRM: Prevent double bookings ---
     const { data: previousVisits } = await supabase
       .from('business_leads')
       .select('id, created_at, deal_name')
@@ -205,10 +217,7 @@ export async function POST(req: Request) {
       .eq('customer_id', customerId)
       .order('created_at', { ascending: false });
 
-    const prevCount = previousVisits?.length ?? 0;
-    
     // Check if they booked the exact same deal within the last 2 minutes to prevent accidental double-clicks.
-    // We allow multiple bookings from the same phone number (e.g. booking for friends/family) after a short delay.
     const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
     if (previousVisits && previousVisits.some(v => 
       (v.deal_name || 'Nhận Ưu Đãi Chung') === normalizedDealName && 
@@ -217,14 +226,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Bạn vừa đăng ký ưu đãi này. Vui lòng đợi 2 phút nếu muốn đăng ký thêm cho người thân.' }, { status: 400 });
     }
 
-    const visitNumber = prevCount + 1; // This will be the Nth visit after insert
-
-    // Update customer total_visits
-    await supabase
-      .from('business_customers')
-      .update({ total_visits: visitNumber })
-      .eq('id', customerId);
-
+    // The visit_count for the lead itself will just track how many leads they've created so far
+    const visitNumber = (previousVisits?.length || 0) + 1;
     const voucher_code = cleanPhone;
 
     // Insert lead
