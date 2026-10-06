@@ -481,7 +481,7 @@ export default function LeadsPage() {
                               >
                                 <option value="new">Chưa liên hệ</option>
                                 <option value="confirmed">Đã xác nhận</option>
-                                <option value="served">✅ Đã Check-in</option>
+                                <option value="served">✅ Đã đến</option>
                                 <option value="cancelled">❌ Hủy / KNM</option>
                               </select>
                             </div>
