@@ -44,21 +44,128 @@ export default function DashboardPrintQR({ business }: { business: any }) {
   const demoQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(promoUrl)}&margin=4&color=3d2c00`;
 
   const downloadStandee = async () => {
-    if (!standeeRef.current) return;
     setIsDownloading(true);
     try {
-      const canvas = await html2canvas(standeeRef.current, {
-        scale: 2, // High resolution
-        useCORS: true,
-        backgroundColor: "#ffffff",
-      });
-      const image = canvas.toDataURL("image/png");
+      const qrCanvas = document.getElementById("qr-code-canvas-hd") as HTMLCanvasElement;
+      if (!qrCanvas) throw new Error("QR Canvas không tồn tại");
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas 2D không hỗ trợ");
+
+      // Set dimensions (A5 aspect ratio, high resolution)
+      canvas.width = 1480;
+      canvas.height = 2100;
+
+      // Background
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, "#fffbf0");
+      gradient.addColorStop(0.5, "#fff8e1");
+      gradient.addColorStop(1, "#fef3c7");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Border
+      ctx.strokeStyle = "#c8960c";
+      ctx.lineWidth = 40;
+      ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+      // Helper function for rounded rectangles to ensure broad compatibility
+      const drawRoundRect = (x: number, y: number, w: number, h: number, r: number) => {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      };
+
+      // Top badge
+      ctx.fillStyle = "#c8960c";
+      drawRoundRect(canvas.width / 2 - 250, 150, 500, 70, 35);
+      ctx.fill();
+      
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 32px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("CHƯƠNG TRÌNH ƯU ĐÃI", canvas.width / 2, 185);
+
+      // Business Name
+      ctx.fillStyle = "#1a0a00";
+      ctx.font = "900 70px sans-serif";
+      // Handle long names
+      const maxNameWidth = canvas.width - 200;
+      let nameText = (business.name || "").toUpperCase();
+      if (ctx.measureText(nameText).width > maxNameWidth) {
+        ctx.font = "900 55px sans-serif";
+      }
+      ctx.fillText(nameText, canvas.width / 2, 320);
+
+      // Subtitle
+      ctx.fillStyle = "#c8960c";
+      ctx.font = "800 45px sans-serif";
+      ctx.fillText("QUÉT MÃ NHẬN ƯU ĐÃI & ĐẶT LỊCH", canvas.width / 2, 420);
+
+      // Tagline
+      if (tagline && tagline.trim()) {
+        ctx.fillStyle = "#d9381e";
+        ctx.font = "bold 40px sans-serif";
+        ctx.fillText(tagline.trim(), canvas.width / 2, 510);
+      }
+
+      // Draw QR Code Background Box
+      const qrSize = 760;
+      const qrX = (canvas.width - qrSize) / 2;
+      const qrY = 660;
+      
+      ctx.shadowColor = "rgba(200,150,12,0.25)";
+      ctx.shadowBlur = 40;
+      ctx.shadowOffsetY = 10;
+      ctx.fillStyle = "#ffffff";
+      drawRoundRect(qrX - 40, qrY - 40, qrSize + 80, qrSize + 80, 30);
+      ctx.fill();
+      
+      ctx.shadowColor = "transparent";
+      ctx.strokeStyle = "#c8960c";
+      ctx.lineWidth = 10;
+      ctx.stroke();
+
+      // Draw actual QR Code from hidden canvas
+      ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
+
+      // Bottom Text
+      ctx.fillStyle = "#7c5800";
+      ctx.font = "500 38px sans-serif";
+      ctx.fillText("Mở Camera điện thoại hoặc Zalo", canvas.width / 2, qrY + qrSize + 110);
+      ctx.fillText("quét mã nhận ưu đãi ngay! ✌️", canvas.width / 2, qrY + qrSize + 170);
+
+      // Footer line
+      ctx.strokeStyle = "#e5c96a";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2 - 300, canvas.height - 150);
+      ctx.lineTo(canvas.width / 2 + 300, canvas.height - 150);
+      ctx.stroke();
+
+      // Footer text
+      ctx.fillStyle = "#b39000";
+      ctx.font = "500 24px sans-serif";
+      ctx.fillText("Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia", canvas.width / 2, canvas.height - 100);
+
+      const image = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement("a");
       link.href = image;
-      link.download = `Standee_QR_${business.slug}.png`;
+      link.download = `Standee_${business.slug}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
     } catch (error) {
       console.error("Lỗi khi tạo ảnh Standee:", error);
       alert("Không thể tải ảnh lúc này.");
@@ -246,60 +353,6 @@ export default function DashboardPrintQR({ business }: { business: any }) {
       </Dialog>
     </div>
 
-    {/* OFF-SCREEN HIDDEN ELEMENT FOR HTML2CANVAS */}
-    <div style={{ position: "absolute", left: "-9999px", top: "-9999px", pointerEvents: "none" }}>
-      <div 
-        ref={standeeRef}
-        style={{
-          width: "148mm", 
-          height: "210mm",
-          display: "flex", 
-          flexDirection: "column",
-          alignItems: "center", 
-          justifyContent: "space-between",
-          padding: "16mm 14mm",
-          background: "linear-gradient(160deg, #fffbf0 0%, #fff8e1 50%, #fef3c7 100%)",
-          border: "4px solid #c8960c",
-          borderRadius: "8mm",
-          textAlign: "center",
-          fontFamily: "'Be Vietnam Pro', sans-serif"
-        }}
-      >
-        <div style={{width: "100%"}}>
-          <div style={{background: "#c8960c", color: "#fff", fontSize: "16px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", padding: "8px 20px", borderRadius: "99px", marginBottom: "20px", display: "inline-block"}}>
-            Chương trình ưu đãi
-          </div>
-          <div style={{fontSize: "36px", fontWeight: 900, color: "#1a0a00", lineHeight: 1.2, marginBottom: "16px", textTransform: "uppercase"}}>
-            {business.name}
-          </div>
-          <div style={{fontSize: "24px", fontWeight: 800, color: "#c8960c", lineHeight: 1.4, marginBottom: "12px", textTransform: "uppercase"}}>
-            QUÉT MÃ NHẬN ƯU ĐÃI & ĐẶT LỊCH
-          </div>
-          {tagline.trim() && (
-            <div style={{fontSize: "22px", fontWeight: 700, color: "#d9381e", lineHeight: 1.3, marginBottom: "24px"}}>
-              {tagline}
-            </div>
-          )}
-        </div>
-        <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
-          <div style={{background: "#fff", border: "4px solid #c8960c", borderRadius: "16px", padding: "20px", boxShadow: "0 6px 32px rgba(200,150,12,0.25)"}}>
-            <QRCodeCanvas 
-              value={promoUrl}
-              size={280}
-              fgColor="#3d2c00"
-              level="Q"
-              marginSize={1}
-            />
-          </div>
-          <div style={{fontSize: "18px", color: "#7c5800", marginTop: "24px", lineHeight: 1.5, fontWeight: 500}}>
-            Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi ngay! ✌️
-          </div>
-        </div>
-        <div style={{fontSize: "12px", color: "#b39000", borderTop: "1px solid #e5c96a", paddingTop: "12px", width: "100%", marginTop: "32px", fontWeight: 500}}>
-          Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia
-        </div>
-      </div>
-    </div>
     <div style={{ display: "none" }}>
       <QRCodeCanvas 
         id="qr-code-canvas-hd"
