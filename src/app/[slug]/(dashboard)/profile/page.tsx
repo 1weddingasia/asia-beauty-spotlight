@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Save, Plus, Trash2, Copy, Link as LinkIcon, Lock, MapPin, CheckSquare, Square } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/ui/image-upload";
 
 const AMENITY_OPTIONS = [
@@ -194,7 +195,7 @@ export default function BusinessProfilePage() {
   };
 
   const addService = () => {
-    handlePageContentChange("services", [...(pageContent.services || []), { name: "", description: "", price: "", image: "" }]);
+    handlePageContentChange("services", [...(pageContent.services || []), { name: "", description: "", price: "", image: "", status: "active" }]);
   };
   const removeService = (index: number) => {
     handlePageContentChange("services", pageContent.services.filter((_: any, i: number) => i !== index));
@@ -522,6 +523,15 @@ export default function BusinessProfilePage() {
                       <Label className="text-xs">Mô tả chi tiết</Label>
                       <Input value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)} placeholder="Quy trình 60 phút bao gồm..." />
                     </div>
+                    <div className="flex items-center gap-2 pt-1">
+                      <Switch 
+                        checked={svc.status !== 'paused'} 
+                        onCheckedChange={(checked) => updateService(i, "status", checked ? "active" : "paused")} 
+                      />
+                      <Label className={`text-xs ${svc.status !== 'paused' ? 'text-green-600' : 'text-gray-400'}`}>
+                        {svc.status !== 'paused' ? 'Đang bật' : 'Tạm dừng'}
+                      </Label>
+                    </div>
                   </div>
                   <div className="flex flex-row md:flex-col gap-2 justify-start md:justify-center mt-2 md:mt-0">
                     <Button variant="outline" size="icon" onClick={() => duplicateService(i)} title="Nhân bản">
@@ -590,6 +600,17 @@ export default function BusinessProfilePage() {
                   <div className="space-y-1 mb-2">
                     <Label className="text-xs">Ghi chú (Lưu ý)</Label>
                     <Textarea value={deal.note || ""} onChange={e => updateDeal(i, "note", e.target.value)} placeholder="Dành cho khách hàng mới..." rows={2} />
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Switch 
+                        checked={deal.status !== 'paused'} 
+                        onCheckedChange={(checked) => updateDeal(i, "status", checked ? "active" : "paused")} 
+                      />
+                      <Label className={`text-xs ${deal.status !== 'paused' ? 'text-green-600' : 'text-gray-400'}`}>
+                        {deal.status !== 'paused' ? 'Đang bật' : 'Tạm dừng'}
+                      </Label>
+                    </div>
                   </div>
                   
                   <Button variant="destructive" size="sm" onClick={() => removeDeal(i)} className="absolute top-4 right-4 h-8 px-2">

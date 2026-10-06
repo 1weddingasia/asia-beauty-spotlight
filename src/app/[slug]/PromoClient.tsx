@@ -235,9 +235,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   };
 
   const services = Array.isArray(business.page_content?.services) && business.page_content.services.length > 0
-    ? business.page_content.services
+    ? business.page_content.services.filter((s: any) => s.status !== 'paused')
     : Array.isArray(business.services) && business.services.length > 0
-      ? business.services
+      ? business.services.filter((s: any) => s.status !== 'paused')
       : [];
 
   // Fallback gallery for service images

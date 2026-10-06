@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { createStaticClient } from "@/utils/supabase/server";
 import PromoClient from "./PromoClient";
 
-export const revalidate = 60; // Cache 60 seconds (ISR)
+export const revalidate = 0; // Disabled cache to show updates instantly
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
