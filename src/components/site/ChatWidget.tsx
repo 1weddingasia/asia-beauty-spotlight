@@ -76,7 +76,8 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
       });
       
       if (!res.ok) {
-        throw new Error(`Chat API error: ${res.status}`);
+        const errText = await res.text().catch(() => "Unknown error");
+        throw new Error(`Chat API error: ${res.status} - ${errText}`);
       }
       const data = await res.json();
       

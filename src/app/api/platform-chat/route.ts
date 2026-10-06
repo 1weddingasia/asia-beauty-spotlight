@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
+export const maxDuration = 60; // Allow longer execution time for Vercel
+
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 
 function extractPhone(text: string): string | null {

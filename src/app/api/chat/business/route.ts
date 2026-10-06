@@ -4,6 +4,8 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import jwt from 'jsonwebtoken';
 
+export const maxDuration = 60; // Allow longer execution time for Vercel
+
 const openai = new OpenAI({
   baseURL: 'https://api.deepseek.com',
   apiKey: process.env.DEEPSEEK_API_KEY || 'dummy_key',

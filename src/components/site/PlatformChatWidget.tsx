@@ -54,7 +54,8 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
       });
       
       if (!res.ok) {
-        throw new Error(`Chat API error: ${res.status}`);
+        const errText = await res.text().catch(() => "Unknown error");
+        throw new Error(`Chat API error: ${res.status} - ${errText}`);
       }
       const data = await res.json();
       
