@@ -129,7 +129,7 @@ export default async function BusinessDashboardPage() {
           </h3>
           <div className="space-y-3">
             <Button asChild variant="outline" className="w-full justify-start">
-              <Link href={`/${business.slug}/leads`}>→ Xem danh sách khách ({totalLeads} khách)</Link>
+              <Link href={`/${business.slug}/customers`}>→ Xem Danh bạ Khách hàng</Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start">
               <Link href={`/${business.slug}/deals`}>→ Tạo / Sửa Ưu đãi</Link>
