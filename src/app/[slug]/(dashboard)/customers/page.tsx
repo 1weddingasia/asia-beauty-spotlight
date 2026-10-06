@@ -173,48 +173,73 @@ export default function LeadsPage() {
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, notes: value } : l));
   };
 
-  const exportExcel = () => {
-    if (leads.length === 0) {
-      toast.error("Chưa có dữ liệu để xuất");
-      return;
-    }
-
-    const getStatusText = (status: string) => {
-      if (status === 'served' || status === 'closed') return "Đã phục vụ";
-      if (status === 'confirmed') return "Đã xác nhận";
-      if (status === 'cancelled') return "Hủy";
-      if (status === 'contacted' || status === 'called') return "Đã liên hệ";
-      return "Chưa gọi";
-    };
-
-    const escapeExcel = (str: string) => {
-      if (!str) return '';
-      const clean = str.toString();
-      if (/^[=+\-@]/.test(clean)) {
-        return `'${clean}`;
+  const exportExcel = async () => {
+    if (!business) return;
+    
+    const toastId = toast.loading("Đang chuẩn bị dữ liệu xuất Excel...");
+    
+    try {
+      let allCustomers: Customer[] = [];
+      let page = 0;
+      const pageSize = 1000;
+      let hasMore = true;
+      
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from("business_customers")
+          .select("*")
+          .eq("business_id", business.id)
+          .order("last_visit_at", { ascending: false })
+          .range(page * pageSize, (page + 1) * pageSize - 1);
+          
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          allCustomers = [...allCustomers, ...data];
+          if (data.length < pageSize) {
+            hasMore = false;
+          } else {
+            page++;
+          }
+        } else {
+          hasMore = false;
+        }
       }
-      return clean;
-    };
 
-    const data = leads.map(l => ({
-      "Ngày đặt": format(new Date(l.created_at), 'dd/MM/yyyy HH:mm'),
-      "Tên khách": escapeExcel(l.customer_name),
-      "Số điện thoại": escapeExcel(l.customer_phone),
-      "Gói Ưu đãi": escapeExcel(l.deal_name),
-      "Sản phẩm mua kèm": escapeExcel(l.cross_sell_items || ''),
-      "Trạng thái": getStatusText(l.status),
-      "Ghi chú": escapeExcel(l.notes || '')
-    }));
+      if (allCustomers.length === 0) {
+        toast.error("Chưa có dữ liệu để xuất", { id: toastId });
+        return;
+      }
 
-    import("xlsx").then((XLSX) => {
-      const worksheet = XLSX.utils.json_to_sheet(data);
+      const escapeExcel = (str: string) => {
+        if (!str) return '';
+        const clean = str.toString();
+        if (/^[=+\-@]/.test(clean)) {
+          return `'${clean}`;
+        }
+        return clean;
+      };
+
+      const dataToExport = allCustomers.map(c => ({
+        "Tên khách hàng": escapeExcel(c.name),
+        "Số điện thoại": escapeExcel(c.phone),
+        "Số lần ghé thăm": c.total_visits || 1,
+        "Lần cuối ghé": c.last_visit_at ? format(new Date(c.last_visit_at), 'dd/MM/yyyy HH:mm') : "",
+        "Ngày tạo": c.created_at ? format(new Date(c.created_at), 'dd/MM/yyyy HH:mm') : "",
+        "Ghi chú": escapeExcel(c.notes || '')
+      }));
+
+      const XLSX = await import("xlsx");
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "KhachHang");
-      XLSX.writeFile(workbook, `Danh_Sach_Khach_${business?.slug || '1beauty'}_${format(new Date(), 'ddMMyyyy')}.xlsx`);
-    }).catch((err) => {
+      XLSX.utils.book_append_sheet(workbook, worksheet, "DanhBaKhachHang");
+      XLSX.writeFile(workbook, `Danh_Ba_Khach_${business.slug || '1beauty'}_${format(new Date(), 'ddMMyyyy')}.xlsx`);
+      
+      toast.success(`Đã xuất ${allCustomers.length} khách hàng`, { id: toastId });
+    } catch (err) {
       console.error(err);
-      toast.error("Lỗi khi tạo file Excel");
-    });
+      toast.error("Lỗi khi tạo file Excel", { id: toastId });
+    }
   };
 
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải danh sách...</div>;
