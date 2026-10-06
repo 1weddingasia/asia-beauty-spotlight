@@ -3,8 +3,6 @@ import axios from 'axios';
 
 export const maxDuration = 60; // Allow longer execution time for Vercel
 
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-
 function extractPhone(text: string): string | null {
   // Matches typical Vietnamese 10 digit numbers starting with 03, 05, 07, 08, 09
   // Allow spaces, dots, dashes between digits
@@ -28,6 +26,8 @@ function sendTelegramAsync(chatId: string, message: string) {
 
 export async function POST(req: Request) {
   try {
+    const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+    
     if (!DEEPSEEK_API_KEY) {
       return NextResponse.json({ error: "Chưa cấu hình API Key" }, { status: 500 });
     }
