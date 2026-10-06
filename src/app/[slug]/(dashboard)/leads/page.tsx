@@ -242,12 +242,22 @@ export default function LeadsPage() {
       })
     : leads;
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchPhone, viewMode]);
+
   const filteredCustomers = searchTerm
     ? customers.filter(c => (c.phone || '').replace(/\D/g, '').includes(searchTerm.replace(/\D/g, '')))
     : customers;
 
+  const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
+  const paginatedLeads = filteredLeads.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   // Group leads for timeline view
-  const groupedLeads = filteredLeads.reduce((acc, lead) => {
+  const groupedLeads = paginatedLeads.reduce((acc, lead) => {
     const dateStr = format(new Date(lead.created_at), 'yyyy-MM-dd');
     if (!acc[dateStr]) acc[dateStr] = [];
     acc[dateStr].push(lead);
@@ -369,7 +379,7 @@ export default function LeadsPage() {
             </div>
           ) : (
           <div className="p-4 md:p-8">
-            <div className="relative border-l-2 border-muted-foreground/20 ml-3 md:ml-6 space-y-10">
+            <div className="relative border-l-2 border-muted-foreground/20 ml-16 md:ml-24 space-y-10">
               {sortedDates.map(dateStr => (
                 <div key={dateStr} className="relative">
                   {/* Date Badge */}
@@ -386,7 +396,7 @@ export default function LeadsPage() {
                         <div className="absolute -left-[30px] md:-left-[32px] mt-2 w-4 h-4 rounded-full border-2 border-white bg-gold shadow-sm group-hover:scale-125 transition-transform" />
                         
                         {/* Timeline Time */}
-                        <div className="absolute -left-[80px] md:-left-[90px] mt-1.5 w-10 md:w-12 text-right">
+                        <div className="absolute -left-[76px] md:-left-[88px] mt-1.5 w-10 md:w-12 text-right">
                           <span className="text-xs font-bold text-muted-foreground block">{format(new Date(lead.created_at), 'HH:mm')}</span>
                         </div>
 
@@ -476,6 +486,33 @@ export default function LeadsPage() {
                 </div>
               ))}
             </div>
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-12 flex items-center justify-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  className="rounded-full"
+                >
+                  Trang trước
+                </Button>
+                <div className="text-sm font-medium text-muted-foreground px-4">
+                  Trang {currentPage} / {totalPages}
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  className="rounded-full"
+                >
+                  Trang sau
+                </Button>
+              </div>
+            )}
           </div>
           )
         )}
