@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server';
-import { after } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/server';
 import { z } from 'zod';
 
@@ -370,7 +369,9 @@ export async function POST(req: Request) {
 
     // Execute notifications in the background after returning response
     if (notifications.length > 0) {
-      after(() => Promise.allSettled(notifications));
+      after(async () => {
+        await Promise.allSettled(notifications);
+      });
     }
 
     return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
