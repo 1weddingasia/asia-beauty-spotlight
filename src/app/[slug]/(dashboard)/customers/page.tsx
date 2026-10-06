@@ -239,9 +239,6 @@ export default function LeadsPage() {
     ? customers.filter(c => (c.phone || '').replace(/\D/g, '').includes(searchTerm.replace(/\D/g, '')))
     : customers;
 
-  const filteredCustomers = searchTerm
-    ? customers.filter(c => (c.phone || '').replace(/\D/g, '').includes(searchTerm.replace(/\D/g, '')))
-    : customers;
 
   return (
     <>
