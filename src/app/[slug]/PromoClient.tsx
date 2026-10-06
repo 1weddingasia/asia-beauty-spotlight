@@ -28,6 +28,7 @@ type Deal = {
   status?: string;
   valid_from?: string;
   valid_until?: string;
+  terms?: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -451,12 +452,19 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </h3>
                   
                   {deal.note && (
-                    <p className="text-sm text-muted-foreground mb-4 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm grow">
+                    <p className={`text-sm text-muted-foreground mb-4 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm ${!deal.terms ? 'grow' : ''}`}>
                       <span className="font-semibold text-ink">Lưu ý:</span> {deal.note}
                     </p>
                   )}
 
-                  {!deal.note && <div className="grow" />}
+                  {deal.terms && (
+                    <div className="text-xs text-muted-foreground mb-4 p-3 rounded-xl border border-dashed border-gray-200 bg-white/50 grow">
+                      <span className="font-semibold text-ink block mb-1">Điều kiện áp dụng:</span>
+                      <p className="whitespace-pre-wrap">{deal.terms}</p>
+                    </div>
+                  )}
+
+                  {(!deal.note && !deal.terms) && <div className="grow" />}
 
                   {(deal.valid_from || deal.valid_until) && (
                     <div className={`flex flex-col gap-1 text-xs md:text-sm font-semibold py-1.5 px-3 rounded-lg w-fit mb-4 ${

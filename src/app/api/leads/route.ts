@@ -308,7 +308,7 @@ export async function POST(req: Request) {
       historyNote = `\n📋 Lịch sử ghé tiệm:\n${lines.join('\n')}`;
     }
 
-    const notifications = [];
+    const notifications: Promise<any>[] = [];
     const isBookingDeal = !!booking_time;
 
     if (telegramChatId) {

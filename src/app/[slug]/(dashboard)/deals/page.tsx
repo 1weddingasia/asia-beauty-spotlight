@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Save, Plus, Trash2 } from "lucide-react";
@@ -21,6 +22,7 @@ type Deal = {
   status: "active" | "paused";
   valid_from?: string;
   valid_until?: string;
+  terms?: string;
 };
 
 type CrossSell = {
@@ -76,7 +78,8 @@ export default function DealsManagementPage() {
               badge: o.badge || "Hot",
               note: o.description || o.note || "",
               status: "active",
-              valid_until: o.validUntil || o.valid_until || ""
+              valid_until: o.validUntil || o.valid_until || "",
+              terms: o.terms || ""
             }));
           } else if (content.featured_deal) {
             existingDeals = [{
@@ -88,7 +91,8 @@ export default function DealsManagementPage() {
               note: "",
               status: "active",
               valid_from: "",
-              valid_until: ""
+              valid_until: "",
+              terms: ""
             }];
           }
         }
@@ -160,7 +164,8 @@ export default function DealsManagementPage() {
         note: "",
         status: "active",
         valid_from: "",
-        valid_until: ""
+        valid_until: "",
+        terms: ""
       }
     ]);
   };
@@ -322,6 +327,15 @@ export default function DealsManagementPage() {
                       value={deal.note || ''}
                       onChange={e => updateDeal(idx, 'note', e.target.value)}
                       className={deal.status === 'paused' ? 'opacity-70' : ''}
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label>Điều kiện áp dụng</Label>
+                    <Textarea 
+                      placeholder="VD: Chỉ áp dụng cho khách hàng mới, Không áp dụng chung với các chương trình khác..." 
+                      value={deal.terms || ''}
+                      onChange={e => updateDeal(idx, 'terms', e.target.value)}
+                      className={`resize-none min-h-[80px] ${deal.status === 'paused' ? 'opacity-70' : ''}`}
                     />
                   </div>
                 </div>
