@@ -68,14 +68,14 @@ function upgradeImageUrl(src) {
 async function fetchPexelsFallback(category) {
   if (!PEXELS_KEY) return [];
   const queries = {
-    'spa-massage': 'luxury spa interior vietnam',
-    'nail-lash': 'nail salon interior modern',
-    'hair-salon': 'hair salon interior elegant',
-    'tham-my-vien': 'beauty clinic aesthetic',
-    'makeup-bridal': 'makeup artist bridal salon',
-    'barber-mens': 'barber shop modern',
+    'spa-massage': 'luxury spa massage interior',
+    'nail-lash': 'nail salon manicure interior',
+    'hair-salon': 'hair salon hairdresser',
+    'tham-my-vien': 'beauty clinic aesthetic facial',
+    'makeup-bridal': 'makeup artist cosmetic',
+    'barber-mens': 'barber shop hair cut',
   };
-  const q = queries[category] || 'beauty salon interior';
+  const q = queries[category] || 'beauty salon spa interior';
   try {
     const res = await axios.get(
       `https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&per_page=5&orientation=landscape`,
