@@ -251,7 +251,7 @@ export default async function HomePage() {
             <span className="text-gold">một ngày mất khách</span>
           </h2>
           <p className="mt-4 text-white/70">
-            Liên hệ Anh Lợi ngay hôm nay. Tiệm bạn sẽ có hệ thống hoàn chỉnh trong vòng 15 phút.
+            Bắt đầu ngay hôm nay. Tiệm bạn sẽ có hệ thống hoàn chỉnh trong vòng 15 phút.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
