@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { Store, Eye, TrendingUp, Sparkles, Users, Ticket, ArrowUpRight } from "lucide-react";
+import { Store, Eye, TrendingUp, Sparkles, Users, Ticket, ArrowUpRight, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import DashboardPrintQR from "./DashboardPrintQR";
