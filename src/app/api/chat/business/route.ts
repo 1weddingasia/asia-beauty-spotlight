@@ -383,6 +383,21 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         ] as any
       });
 
+      let usage = response.usage;
+      if (finalResponse && finalResponse.usage) {
+        usage = finalResponse.usage;
+      }
+      
+      if (usage) {
+        await supabase.from('api_usage_logs').insert({
+          business_id: business.id,
+          model: "deepseek-chat",
+          prompt_tokens: usage.prompt_tokens,
+          completion_tokens: usage.completion_tokens,
+          total_tokens: usage.total_tokens
+        }).catch(err => console.error("Failed to log API usage:", err));
+      }
+
       if (isDataUpdated) {
         revalidatePath('/[slug]', 'page');
       }
@@ -394,6 +409,16 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
       });
 
     } else {
+      if (response.usage) {
+        await supabase.from('api_usage_logs').insert({
+          business_id: business.id,
+          model: "deepseek-chat",
+          prompt_tokens: response.usage.prompt_tokens,
+          completion_tokens: response.usage.completion_tokens,
+          total_tokens: response.usage.total_tokens
+        }).catch(err => console.error("Failed to log API usage:", err));
+      }
+
       return NextResponse.json({
         reply: responseMessage.content,
         adminToken: newToken,

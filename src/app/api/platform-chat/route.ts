@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { createAdminClient } from '@/utils/supabase/server';
 
 export const maxDuration = 60; // Allow longer execution time for Vercel
 
@@ -153,6 +154,19 @@ QUY TẮC BẮT BUỘC:
     );
 
     let reply = aiRes.data?.choices?.[0]?.message?.content;
+    const usage = aiRes.data?.usage;
+    
+    if (usage) {
+      const supabase = await createAdminClient();
+      await supabase.from('api_usage_logs').insert({
+        business_id: null,
+        model: "deepseek-chat",
+        prompt_tokens: usage.prompt_tokens,
+        completion_tokens: usage.completion_tokens,
+        total_tokens: usage.total_tokens
+      }).catch(err => console.error("Failed to log API usage:", err));
+    }
+
     if (!reply) {
       return NextResponse.json({ error: "Không nhận được phản hồi từ AI" }, { status: 502 });
     }

@@ -1,4 +1,4 @@
-import { Store, Bell, Users, TrendingUp, AlertTriangle, ExternalLink } from "lucide-react";
+import { Store, Bell, Users, TrendingUp, AlertTriangle, ExternalLink, Bot } from "lucide-react";
 import { createAdminClient } from "@/utils/supabase/server";
 import Link from "next/link";
 
@@ -50,6 +50,23 @@ export default async function AdminDashboardPage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
+  // Thống kê API Usage
+  const { data: apiLogs } = await supabase
+    .from('api_usage_logs')
+    .select('prompt_tokens, completion_tokens, model, business_id');
+
+  let totalDeepseekCost = 0;
+  let totalTokens = 0;
+  
+  (apiLogs || []).forEach(log => {
+    totalTokens += (log.prompt_tokens + log.completion_tokens);
+    let cost = 0;
+    if (log.model === 'deepseek-chat') {
+       cost = (log.prompt_tokens / 1000000) * 0.14 + (log.completion_tokens / 1000000) * 0.28;
+       totalDeepseekCost += cost;
+    }
+  });
+
   return (
     <div className="space-y-8">
       <div>
@@ -97,6 +114,19 @@ export default async function AdminDashboardPage() {
           <p className="text-xs text-muted-foreground mt-1">
             {suspendedBiz > 0 ? '⚠️ Cần liên hệ gia hạn!' : 'Không có tiệm nào bị ngưng'}
           </p>
+        </div>
+
+        {/* API Usage Card */}
+        <div className="rounded-xl border bg-slate-900 shadow p-6 border-slate-800 text-white md:col-span-4 lg:col-span-1">
+          <div className="flex items-center justify-between pb-2">
+            <h3 className="text-sm font-medium text-slate-300">Chi phí AI Chatbot</h3>
+            <Bot className="size-4 text-emerald-400" />
+          </div>
+          <div className="text-3xl font-black text-emerald-400">${totalDeepseekCost.toFixed(4)}</div>
+          <p className="text-xs text-slate-400 mt-1">Tổng: {totalTokens.toLocaleString()} tokens</p>
+          <div className="mt-3 inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded text-xs font-medium border border-emerald-500/20">
+             <span>Model: DeepSeek-V3</span>
+          </div>
         </div>
       </div>
 
