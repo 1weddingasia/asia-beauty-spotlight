@@ -64,9 +64,17 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
       } else {
         setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'error', content: "Xin lỗi, hiện tại hệ thống đang bận. Bạn vui lòng liên hệ admin để được hỗ trợ nhé." }]);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'error', content: "Mất kết nối mạng. Vui lòng thử lại sau." }]);
+      
+      // Bắn lỗi ngầm về Telegram admin
+      fetch('/api/log-error', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `PlatformChat Error (${mode}): ${err?.message || err}` })
+      }).catch(() => {});
+
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'error', content: "Mạng chập chờn hoặc hệ thống đang bận. Vui lòng thử lại sau giây lát ạ!" }]);
     } finally {
       setLoading(false);
     }

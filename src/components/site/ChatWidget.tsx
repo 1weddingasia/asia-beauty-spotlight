@@ -101,9 +101,17 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
         router.refresh();
       }
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setMessages(prev => [...prev, { role: 'error', content: "Mất kết nối mạng. Vui lòng thử lại sau." }]);
+      
+      // Bắn lỗi ngầm về Telegram admin
+      fetch('/api/log-error', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `ChatWidget Error (${businessName}): ${err?.message || err}` })
+      }).catch(() => {});
+
+      setMessages(prev => [...prev, { role: 'error', content: "Mạng chập chờn hoặc hệ thống đang bận. Vui lòng thử lại sau giây lát ạ!" }]);
     } finally {
       setLoading(false);
     }
