@@ -55,11 +55,15 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     getSettings().then(setSettings);
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data?.user ?? null);
+      setAuthLoading(false);
+    });
   }, []);
 
   return (
@@ -85,7 +89,9 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
         </Link>
 
         <div className="flex items-center gap-4 md:hidden">
-          {user ? (
+          {authLoading ? (
+            <div className="size-8 rounded-full border border-gold/30 border-t-gold animate-spin"></div>
+          ) : user ? (
             <Link 
               href="/dashboard" 
               aria-label="Bảng điều khiển"
@@ -128,7 +134,9 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
             ))}
           </nav>
           
-          {user ? (
+          {authLoading ? (
+            <div className="w-32 h-8 rounded-full bg-muted/20 animate-pulse"></div>
+          ) : user ? (
             <Link 
               href="/dashboard" 
               className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}

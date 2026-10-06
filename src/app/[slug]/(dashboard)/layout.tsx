@@ -46,15 +46,17 @@ export default async function BusinessDashboardLayout({
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-gold">
           1Beauty<span className="text-ink">.Asia</span>
         </Link>
-        <div className="ml-auto flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
+        <div className="ml-auto flex items-center gap-2 md:gap-4">
+          <Button variant="ghost" size="sm" asChild className="px-2 md:px-3">
             <Link href={business ? `/${business.slug}` : "/"}>
-              Xem Trang Ưu Đãi
+              <Store className="size-4 md:mr-2" />
+              <span className="hidden md:inline">Xem Trang Ưu Đãi</span>
             </Link>
           </Button>
           <form action="/auth/signout" method="post">
-            <Button variant="outline" size="sm" type="submit">
-              <LogOut className="mr-2 size-4" /> Đăng xuất
+            <Button variant="outline" size="sm" type="submit" className="px-2 md:px-3 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+              <LogOut className="size-4 md:mr-2" />
+              <span className="hidden md:inline">Đăng xuất</span>
             </Button>
           </form>
         </div>
