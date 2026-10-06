@@ -5,6 +5,7 @@ import { QrCode, Printer, Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import html2canvas from "html2canvas";
+import { QRCodeCanvas } from "qrcode.react";
 
 export default function DashboardPrintQR({ business }: { business: any }) {
   let content = business.page_content || {};
@@ -148,10 +149,12 @@ export default function DashboardPrintQR({ business }: { business: any }) {
             QUÉT MÃ NHẬN ƯU ĐÃI
           </div>
           <div style={{background: "#fff", border: "1.5px solid #c8960c", borderRadius: "6px", padding: "4px"}}>
-            <img 
-              src={demoQrUrl} 
-              alt="QR" 
-              style={{width: "60px", height: "60px", display: "block"}}
+            <QRCodeCanvas 
+              value={promoUrl}
+              size={60}
+              fgColor="#3d2c00"
+              level="M"
+              marginSize={0}
             />
           </div>
           <div style={{fontSize: "5px", color: "#7c5800", lineHeight: 1.5}}>
@@ -215,10 +218,12 @@ export default function DashboardPrintQR({ business }: { business: any }) {
               </div>
               <div className="w-full flex flex-col items-center">
                 <div className="bg-white border-2 border-gold rounded-xl p-3 shadow-lg">
-                  <img 
-                    src={demoQrUrl} 
-                    alt="QR Code Preview" 
-                    className="w-[150px] h-[150px] object-contain block"
+                  <QRCodeCanvas 
+                    value={promoUrl}
+                    size={150}
+                    fgColor="#3d2c00"
+                    level="Q"
+                    marginSize={1}
                   />
                 </div>
                 <div className="text-[11px] text-[#7c5800] mt-3 leading-snug font-medium">
@@ -279,11 +284,12 @@ export default function DashboardPrintQR({ business }: { business: any }) {
           </div>
           <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
             <div style={{background: "#fff", border: "4px solid #c8960c", borderRadius: "16px", padding: "20px", boxShadow: "0 6px 32px rgba(200,150,12,0.25)"}}>
-              <img 
-                src={qrUrl} 
-                alt="QR Code" 
-                style={{width: "280px", height: "280px", display: "block"}}
-                crossOrigin="anonymous"
+              <QRCodeCanvas 
+                value={promoUrl}
+                size={280}
+                fgColor="#3d2c00"
+                level="Q"
+                marginSize={1}
               />
             </div>
             <div style={{fontSize: "18px", color: "#7c5800", marginTop: "24px", lineHeight: 1.5, fontWeight: 500}}>
