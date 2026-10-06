@@ -217,13 +217,25 @@ export async function POST(req: Request) {
       .eq('customer_id', customerId)
       .order('created_at', { ascending: false });
 
-    // Check if they booked the exact same deal within the last 2 minutes to prevent accidental double-clicks.
-    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
-    if (previousVisits && previousVisits.some(v => 
-      (v.deal_name || 'Nhận Ưu Đãi Chung') === normalizedDealName && 
-      new Date(v.created_at) > twoMinutesAgo
-    )) {
-      return NextResponse.json({ error: 'Bạn vừa đăng ký ưu đãi này. Vui lòng đợi 2 phút nếu muốn đăng ký thêm cho người thân.' }, { status: 400 });
+    if (previousVisits) {
+      const isBooking = !!booking_time;
+      // Find if they recently claimed the EXACT SAME deal/booking
+      const recentVisit = previousVisits.find(v => (v.deal_name || 'Nhận Ưu Đãi Chung') === normalizedDealName);
+      
+      if (recentVisit) {
+        const lastTime = new Date(recentVisit.created_at);
+        if (isBooking) {
+          // For bookings, block double-clicks (2 mins)
+          if (lastTime > new Date(Date.now() - 2 * 60 * 1000)) {
+            return NextResponse.json({ error: 'Bạn vừa đặt lịch này. Vui lòng đợi 2 phút nếu muốn đặt thêm cho người thân.' }, { status: 400 });
+          }
+        } else {
+          // For offers, prevent spamming the same offer within 24 hours. Clear message.
+          if (lastTime > new Date(Date.now() - 24 * 60 * 60 * 1000)) {
+            return NextResponse.json({ error: 'Số điện thoại này đã nhận ưu đãi này rồi. Vui lòng kiểm tra lại tin nhắn hoặc dùng số khác!' }, { status: 400 });
+          }
+        }
+      }
     }
 
     // The visit_count for the lead itself will just track how many leads they've created so far
