@@ -60,9 +60,20 @@ export async function POST(req: Request) {
       }
     }
 
+    // Retrieve services and format them for the prompt
+    let servicesInfo = 'Tiệm chưa cập nhật danh sách dịch vụ chi tiết.';
+    if (business.page_content && Array.isArray(business.page_content.services) && business.page_content.services.length > 0) {
+      servicesInfo = business.page_content.services.map((s: any) => 
+        `- ${s.title}: Giá gốc ${s.original_price} - Giá ưu đãi ${s.promo_price || 'Không có'} (Ghi chú: ${s.note || 'Không'})`
+      ).join('\n');
+    }
+
     // Build the system prompt
     let systemPrompt = `Bạn là nhân viên chăm sóc khách hàng của cơ sở ${business.name} trên nền tảng 1Beauty. Bạn đang tư vấn trực tiếp cho khách. TUYỆT ĐỐI KHÔNG xưng là "Trợ lý AI" hay "Bot". Hãy xưng hô thân thiện, tự nhiên như một người thật (ví dụ: xưng em/mình và gọi khách là anh/chị/bạn).
 Thông tin tiệm: SĐT ${business.phone || 'không có'}, Địa chỉ ${business.address || 'không có'}.
+Danh sách dịch vụ & Ưu đãi của tiệm:
+${servicesInfo}
+Hãy dựa vào danh sách trên để tư vấn giá cả và dịch vụ cho khách hàng nếu họ hỏi. Nếu khách muốn đặt lịch hoặc nhận ưu đãi, hãy khuyến khích họ để lại SĐT hoặc bấm chọn Ưu đãi trên màn hình.
 `;
 
     if (isAdmin) {

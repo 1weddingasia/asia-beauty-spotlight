@@ -78,21 +78,28 @@ export const metadata: Metadata = {
 
 import { GlobalPromoFAB } from '@/components/admin/GlobalPromoFAB';
 
+import { Be_Vietnam_Pro, Playfair_Display } from 'next/font/google';
+
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ['vietnamese', 'latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-sans-next',
+  display: 'swap',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['vietnamese', 'latin'],
+  variable: '--font-display-next',
+  display: 'swap',
+});
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="vi" suppressHydrationWarning className={`${beVietnamPro.variable} ${playfairDisplay.variable}`}>
       <body suppressHydrationWarning>
         {children}
         <Toaster />
