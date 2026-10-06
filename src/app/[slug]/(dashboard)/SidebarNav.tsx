@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Store, Ticket, Users, Settings } from "lucide-react";
+import { LayoutDashboard, Store, Ticket, Users, Settings, CalendarDays } from "lucide-react";
 
 export default function SidebarNav({ slug }: { slug: string }) {
   const pathname = usePathname();
