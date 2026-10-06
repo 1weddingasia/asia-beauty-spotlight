@@ -703,7 +703,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-center text-ink leading-tight">
-              {voucher ? "🎉 Giữ chỗ thành công!" : "Điền thông tin giữ chỗ"}
+              {voucher ? "🎉 Đăng ký thành công!" : "Điền thông tin nhận ưu đãi"}
             </DialogTitle>
             <DialogDescription className="text-center">
               {!voucher && <span className="font-semibold text-gold mt-2 block">{selectedDeal?.title}</span>}
@@ -797,7 +797,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           ) : (
             <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
               <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-ink mb-1">Lưu ưu đãi thành công! 🎉</h3>
+              <h3 className="text-lg font-bold text-ink mb-1">Đã nhận ưu đãi! 🎉</h3>
               <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
 
               {/* Mã ưu đãi = Số điện thoại */}
@@ -819,14 +819,6 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     <Phone className="mr-2 size-5" /> Đặt lịch qua Hotline
                   </Link>
                 </Button>
-                
-                {zaloLink !== '#' && (
-                  <Button asChild variant="outline" className="w-full h-12 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl">
-                    <Link href={zaloLink} target="_blank" rel="noopener noreferrer">
-                      <MessageCircle className="mr-2 size-5" /> Xác nhận qua Zalo
-                    </Link>
-                  </Button>
-                )}
               </div>
             </div>
           )}
