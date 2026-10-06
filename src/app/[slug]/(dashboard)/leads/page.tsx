@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Download, Phone, CheckCircle, X, History, Users, CalendarDays } from "lucide-react";
+import { Download, Phone, CheckCircle, X, History, Users, CalendarDays, Ticket } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
