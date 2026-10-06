@@ -143,7 +143,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
       ctx.fillStyle = "#7c5800";
       ctx.font = "500 38px sans-serif";
       ctx.fillText("Mở Camera điện thoại hoặc Zalo", canvas.width / 2, qrY + qrSize + 110);
-      ctx.fillText("quét mã nhận ưu đãi ngay! ✌️", canvas.width / 2, qrY + qrSize + 170);
+      ctx.fillText("quét mã nhận ưu đãi ngay!", canvas.width / 2, qrY + qrSize + 170);
 
       // Footer line
       ctx.strokeStyle = "#e5c96a";
@@ -332,7 +332,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
                   />
                 </div>
                 <div className="text-[11px] text-[#7c5800] mt-3 leading-snug font-medium">
-                  Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi ngay! ✌️
+                  Mở Camera điện thoại hoặc Zalo<br/>quét mã nhận ưu đãi ngay!
                 </div>
               </div>
               <div className="text-[8px] text-[#b39000] border-t border-[#e5c96a] pt-2 w-full mt-4 font-medium">

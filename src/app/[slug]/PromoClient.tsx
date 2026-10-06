@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles, ChevronLeft, ChevronRight, X, BadgeCheck } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles, ChevronLeft, ChevronRight, X, BadgeCheck, Gift, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
@@ -314,7 +314,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               }}
               className="flex items-center justify-center gap-2 bg-champagne text-gold font-bold px-8 py-3.5 md:py-3 rounded-full shadow-lg border border-gold/30 hover:bg-gold hover:text-white transition-all hover:scale-105 w-64 sm:w-auto"
             >
-              🎁 NHẬN ƯU ĐÃI
+              <Gift className="size-5" /> NHẬN ƯU ĐÃI
             </button>
             <button 
               onClick={() => {
@@ -324,7 +324,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               }}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110"
             >
-              📅 BOOKING ĐẶT HẸN
+              <Calendar className="size-5" /> BOOKING ĐẶT HẸN
             </button>
           </div>
         </div>
@@ -912,7 +912,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           }}
           className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 hover:bg-gold hover:text-white transition-colors"
         >
-          🎁 Nhận Ưu Đãi
+          <span className="flex items-center justify-center gap-2"><Gift className="size-4" /> Nhận Ưu Đãi</span>
         </button>
         <button 
           onClick={() => {
@@ -922,7 +922,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           }}
           className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl hover:bg-gold transition-colors shadow-lg"
         >
-          📅 Đặt Hẹn Ngay
+          <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> Đặt Hẹn Ngay</span>
         </button>
       </div>
       
