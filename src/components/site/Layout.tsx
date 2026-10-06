@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Menu, X, UserCircle2 } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
 
@@ -84,11 +84,11 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
         <div className="flex items-center gap-4 md:hidden">
           <Link 
             href="/login" 
-            aria-label="Đối Tác"
+            aria-label="Đăng nhập"
             className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
           >
-            <UserCircle2 className="size-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Đối Tác</span>
+            <LogIn className="size-4" aria-hidden="true" />
+            <span className="hidden sm:inline">Đăng nhập</span>
           </Link>
           <button
             onClick={() => setOpen(!open)}
@@ -118,8 +118,8 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
             href="/login" 
             className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
           >
-            <UserCircle2 className="size-4" />
-            Đăng Nhập / Quản Lý
+            <LogIn className="size-4" />
+            Đăng Nhập
           </Link>
         </div>
       </div>

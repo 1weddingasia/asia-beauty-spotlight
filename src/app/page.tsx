@@ -71,7 +71,7 @@ export default async function HomePage() {
               <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href="/lien-he"
+              href="https://zalo.me/0918731411" target="_blank"
               className="inline-flex items-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
             >
               📞 Liên hệ kích hoạt
@@ -224,7 +224,7 @@ export default async function HomePage() {
 
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/lien-he"
+                href="https://zalo.me/0918731411" target="_blank"
                 className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-lg hover:bg-gold/90 hover:scale-105 transition-all"
               >
                 ⚡ Kích Hoạt Cổng Ngay
@@ -254,7 +254,7 @@ export default async function HomePage() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/lien-he"
+              href="https://zalo.me/0918731411" target="_blank"
               className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg hover:bg-gold/90 transition-all hover:scale-105"
             >
               📞 Nhắn Zalo Ngay
