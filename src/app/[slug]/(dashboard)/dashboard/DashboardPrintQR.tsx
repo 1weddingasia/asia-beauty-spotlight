@@ -69,19 +69,16 @@ export default function DashboardPrintQR({ business }: { business: any }) {
 
   const downloadQR = async () => {
     try {
-      const url = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(promoUrl)}`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`QR API error: ${response.status}`);
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
+      const canvas = document.getElementById("qr-code-canvas-hd") as HTMLCanvasElement;
+      if (!canvas) throw new Error("Canvas không tồn tại");
+      const image = canvas.toDataURL("image/png");
       
       const link = document.createElement("a");
-      link.href = objectUrl;
+      link.href = image;
       link.download = `QR_Code_${business.slug}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(objectUrl);
     } catch (error) {
       console.error(error);
       alert("Không thể tải mã QR lúc này.");
@@ -302,6 +299,16 @@ export default function DashboardPrintQR({ business }: { business: any }) {
           Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia
         </div>
       </div>
+    </div>
+    <div style={{ display: "none" }}>
+      <QRCodeCanvas 
+        id="qr-code-canvas-hd"
+        value={promoUrl}
+        size={1000}
+        fgColor="#3d2c00"
+        level="H"
+        marginSize={2}
+      />
     </div>
     </>
   );
