@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Menu, X, LogIn } from "lucide-react";
+import { Menu, X, LogIn, LayoutDashboard } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
 
@@ -54,9 +54,12 @@ async function getFooterCategories() {
 export function SiteHeader({ solid = false }: { solid?: boolean }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     getSettings().then(setSettings);
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
   }, []);
 
   return (
@@ -82,14 +85,25 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
         </Link>
 
         <div className="flex items-center gap-4 md:hidden">
-          <Link 
-            href="/login" 
-            aria-label="Đăng nhập"
-            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
-          >
-            <LogIn className="size-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Đăng nhập</span>
-          </Link>
+          {user ? (
+            <Link 
+              href="/dashboard" 
+              aria-label="Bảng điều khiển"
+              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
+            >
+              <LayoutDashboard className="size-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Quản lý</span>
+            </Link>
+          ) : (
+            <Link 
+              href="/login" 
+              aria-label="Đăng nhập"
+              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
+            >
+              <LogIn className="size-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Đăng nhập</span>
+            </Link>
+          )}
           <button
             onClick={() => setOpen(!open)}
             aria-label="Menu"
@@ -114,13 +128,23 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
             ))}
           </nav>
           
-          <Link 
-            href="/login" 
-            className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
-          >
-            <LogIn className="size-4" />
-            Đăng Nhập
-          </Link>
+          {user ? (
+            <Link 
+              href="/dashboard" 
+              className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
+            >
+              <LayoutDashboard className="size-4" />
+              Quản lý Gian hàng
+            </Link>
+          ) : (
+            <Link 
+              href="/login" 
+              className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
+            >
+              <LogIn className="size-4" />
+              Đăng nhập / Đăng ký
+            </Link>
+          )}
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LogOut, Sparkles, LayoutDashboard, Store, Ticket, Users, Settings } from "lucide-react";
 import SidebarNav from "./SidebarNav";
+import MobileBottomNav from "./MobileBottomNav";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
@@ -123,10 +124,13 @@ export default async function BusinessDashboardLayout({
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-10">
+        <main className="flex-1 overflow-y-auto p-6 pb-20 md:p-10 md:pb-10">
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav slug={slug} />
     </div>
   );
 }
