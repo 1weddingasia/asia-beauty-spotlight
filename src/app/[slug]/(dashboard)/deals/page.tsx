@@ -417,7 +417,7 @@ export default function DealsManagementPage() {
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <Label>Ghi chú phụ (Note)</Label>
+                    <Label>Mô tả (Description)</Label>
                     <Input 
                       placeholder="VD: Liệu trình 10 buổi - Bảo hành 5 năm" 
                       value={deal.note || ''}

@@ -453,7 +453,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   
                   {deal.note && (
                     <p className={`text-sm text-muted-foreground mb-4 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm ${!deal.terms ? 'grow' : ''}`}>
-                      <span className="font-semibold text-ink">Lưu ý:</span> {deal.note}
+                      <span className="font-semibold text-ink">Mô tả:</span> {deal.note}
                     </p>
                   )}
 
