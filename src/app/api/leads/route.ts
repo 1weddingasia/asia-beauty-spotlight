@@ -76,13 +76,13 @@ function escapeHtml(str: string): string {
     .replace(/>/g, '&gt;');
 }
 
-// Fire and forget telegram alert
+// Fire and forget telegram alert (now returning promise to allow awaiting)
 function sendTelegramAsync(chatId: string, message: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (!token || !chatId) return;
+  if (!token || !chatId) return Promise.resolve();
 
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  fetch(url, {
+  return fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'HTML' })
@@ -106,24 +106,24 @@ function getRandomZaloSenderId(): string | null {
 
 // Fire and forget Zalo alert via abs-zalo-bot sidecar HTTP API
 function sendZaloAsync(toUserId: string, message: string) {
-  if (process.env.ZALO_ENABLED !== 'true') return; // Feature flag — disabled by default
+  if (process.env.ZALO_ENABLED !== 'true') return Promise.resolve(); // Feature flag — disabled by default
 
   const sidecarUrl = process.env.ZALO_SIDECAR_URL;
   const token = process.env.ZALO_SIDECAR_TOKEN;
   if (!sidecarUrl || !token) {
     console.warn('[Zalo] ZALO_SIDECAR_URL or ZALO_SIDECAR_TOKEN not set');
-    return;
+    return Promise.resolve();
   }
 
   const senderId = getRandomZaloSenderId();
   if (!senderId) {
     console.warn('[Zalo] No ZALO_SENDER_IDS configured');
-    return;
+    return Promise.resolve();
   }
 
   // abs-zalo-bot REST API
   // See: https://github.com/teddiesloco/abs-zalo-bot
-  fetch(`${sidecarUrl}${ZALO_SEND_MESSAGE_PATH}`, {
+  return fetch(`${sidecarUrl}${ZALO_SEND_MESSAGE_PATH}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -308,6 +308,8 @@ export async function POST(req: Request) {
       historyNote = `\n📋 Lịch sử ghé tiệm:\n${lines.join('\n')}`;
     }
 
+    const notifications = [];
+
     if (telegramChatId) {
       const header = isVIP
         ? `🏆 ĐƠN MỚI TỪ KHÁCH VIP (Đến tiệm lần thứ ${visitNumber})`
@@ -319,14 +321,14 @@ export async function POST(req: Request) {
       const crossSellStr = cross_sell_items ? `\n🛒 Bán chéo: ${escapeHtml(cross_sell_items)}` : '';
       const bookingTimeStr = booking_time ? `\n🕒 Lịch hẹn: ${escapeHtml(booking_time)}` : '';
       const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n🎁 Gói: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
-      sendTelegramAsync(telegramChatId, msgForShop);
+      notifications.push(sendTelegramAsync(telegramChatId, msgForShop));
 
       // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Beauty để giám sát toàn mạng
       const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
       if (adminChatId && adminChatId !== telegramChatId) {
         const safeBusinessName = escapeHtml(business.name || 'Không rõ tiệm');
         const msgForAdmin = `<b>📊 [TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | 🎁 ${safeDeal}\nMã: ${voucher_code}`;
-        sendTelegramAsync(adminChatId, msgForAdmin);
+        notifications.push(sendTelegramAsync(adminChatId, msgForAdmin));
       }
     }
 
@@ -345,14 +347,17 @@ export async function POST(req: Request) {
     ].filter(Boolean).join('\n');
 
     const zaloShopId = (business.page_content as Record<string, string> | null)?.zalo_owner_id;
-    if (zaloShopId) sendZaloAsync(zaloShopId, zaloShopMsg);
+    if (zaloShopId) notifications.push(sendZaloAsync(zaloShopId, zaloShopMsg));
 
     // Bản sao giám sát cho Admin 1Beauty qua Zalo
     const zaloAdminId = process.env.ZALO_ADMIN_ID;
     if (zaloAdminId && zaloAdminId !== zaloShopId) {
       const zaloAdminMsg = `[1BEAUTY MONITOR] ${business.name} | ${adminZaloTag} | ${cleanPhone}`;
-      sendZaloAsync(zaloAdminId, zaloAdminMsg);
+      notifications.push(sendZaloAsync(zaloAdminId, zaloAdminMsg));
     }
+
+    // Wait for all notifications to finish so Next.js runtime doesn't kill the requests
+    await Promise.allSettled(notifications);
 
     return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
   } catch (error) {
