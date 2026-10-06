@@ -34,7 +34,7 @@ export function createStaticClient() {
     {
       global: {
         fetch: (url, options) => {
-          return fetch(url, { ...options, next: { revalidate: 60 } })
+          return fetch(url, { ...options, cache: 'no-store' })
         }
       }
     }

@@ -244,11 +244,11 @@ export default function DealsManagementPage() {
                   </h3>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <Label className={`text-xs ${deal.status === 'active' ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
-                        {deal.status === 'active' ? 'Đang bật' : 'Tạm dừng'}
+                      <Label className={`text-xs ${deal.status !== 'paused' ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
+                        {deal.status !== 'paused' ? 'Đang bật' : 'Tạm dừng'}
                       </Label>
                       <Switch 
-                        checked={deal.status === 'active'}
+                        checked={deal.status !== 'paused'}
                         onCheckedChange={(checked) => updateDeal(idx, 'status', checked ? 'active' : 'paused')}
                       />
                     </div>
@@ -375,10 +375,10 @@ export default function DealsManagementPage() {
                 <div className="flex items-center gap-4 mt-6 md:mt-0 pt-2">
                   <div className="flex items-center gap-2">
                     <Label className="text-xs text-gray-500 whitespace-nowrap">
-                      {cs.status === 'active' ? 'Hiện' : 'Ẩn'}
+                      {cs.status !== 'paused' ? 'Hiện' : 'Ẩn'}
                     </Label>
                     <Switch 
-                      checked={cs.status === 'active'}
+                      checked={cs.status !== 'paused'}
                       onCheckedChange={(checked) => updateCrossSell(idx, 'status', checked ? 'active' : 'paused')}
                     />
                   </div>

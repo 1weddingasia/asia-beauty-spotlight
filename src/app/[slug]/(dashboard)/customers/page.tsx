@@ -321,7 +321,7 @@ export default function LeadsPage() {
                         <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full">{c.total_visits}</span>
                       </td>
                       <td className="px-6 py-4 text-muted-foreground">
-                        {format(new Date(c.last_visit_at), 'dd/MM/yyyy HH:mm')}
+                        {c.last_visit_at ? format(new Date(c.last_visit_at), 'dd/MM/yyyy HH:mm') : '-'}
                       </td>
                       <td className="px-6 py-4">
                         <button
