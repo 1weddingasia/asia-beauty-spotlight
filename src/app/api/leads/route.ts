@@ -309,10 +309,10 @@ export async function POST(req: Request) {
     }
 
     const notifications = [];
+    const isBookingDeal = !!booking_time;
 
     if (telegramChatId) {
       let header = '';
-      const isBookingDeal = !!booking_time;
 
       if (isBookingDeal) {
         header = isVIP
@@ -343,7 +343,6 @@ export async function POST(req: Request) {
       }
     }
 
-    const isBookingDeal = !!booking_time;
     // 💬 KÊNH 3: ZALO GATEWAY
     // Tính năng này tắt/bật thông qua ZALO_ENABLED (được kiểm tra bên trong sendZaloAsync)
     // Tin nhắn gọn cho chủ tiệm qua Zalo (plain text, không HTML)
