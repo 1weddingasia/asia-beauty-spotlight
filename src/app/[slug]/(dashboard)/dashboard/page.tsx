@@ -39,7 +39,7 @@ export default async function BusinessDashboardPage() {
   // Exclusive end: ngày clampedDay+1 của tháng trước → bao gồm hết ngày clampedDay
   const endOfSameDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, clampedDay + 1).toISOString();
 
-  const [leadsAllResult, leadsMonthResult, dealsResult, prevMonthResult] = await Promise.all([
+  const [leadsAllResult, leadsMonthResult, dealsResult, prevMonthResult, bookingsResult] = await Promise.all([
     // Tổng leads từ trước đến nay
     supabase
       .from("business_leads")
@@ -61,11 +61,19 @@ export default async function BusinessDashboardPage() {
       .eq("business_id", business.id)
       .gte("created_at", firstDayPrevMonth)
       .lt("created_at", endOfSameDayPrevMonth),
+    // Tổng số Bookings
+    supabase
+      .from("business_leads")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", business.id)
+      .ilike("notes", "%Lịch hẹn:%"),
   ]);
 
   const totalLeads = leadsAllResult.error ? 0 : (leadsAllResult.count ?? 0);
   const monthLeads = leadsMonthResult.error ? 0 : (leadsMonthResult.count ?? 0);
   const prevMonthLeads = prevMonthResult.error ? null : (prevMonthResult.count ?? null);
+  const totalBookings = bookingsResult.error ? 0 : (bookingsResult.count ?? 0);
+  const totalPromos = Math.max(0, totalLeads - totalBookings);
 
   // Top 3 deals phổ biến nhất – tổng hợp chính xác từ DB via RPC
   const topDeals: [string, number][] = dealsResult.error
@@ -147,18 +155,42 @@ export default async function BusinessDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {/* Tổng lượt đăng ký */}
-        <div className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between">
+        <Link href={`/${business.slug}/customers`} className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between hover:border-gold/50 hover:bg-gold/5 transition group cursor-pointer">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Tổng Khách Đăng Ký</h3>
-            <Users className="size-4 text-muted-foreground" />
+            <h3 className="tracking-tight text-sm font-medium group-hover:text-gold transition">Tổng Khách Hàng</h3>
+            <Users className="size-4 text-muted-foreground group-hover:text-gold transition" />
           </div>
           <div>
-            <div className="text-3xl font-bold">{totalLeads}</div>
-            <p className="text-xs text-muted-foreground mt-1">Lượt khách nhận mã ưu đãi từ trước đến nay</p>
+            <div className="text-3xl font-bold group-hover:text-gold transition">{totalLeads}</div>
+            <p className="text-xs text-muted-foreground mt-1">Tổng lượt khách trong hệ thống</p>
           </div>
-        </div>
+        </Link>
+
+        {/* Số Booking */}
+        <Link href={`/${business.slug}/leads`} className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between hover:border-blue-500/50 hover:bg-blue-50 transition group cursor-pointer">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="tracking-tight text-sm font-medium group-hover:text-blue-600 transition">Số Booking Lịch</h3>
+            <CalendarDays className="size-4 text-muted-foreground group-hover:text-blue-600 transition" />
+          </div>
+          <div>
+            <div className="text-3xl font-bold group-hover:text-blue-600 transition">{totalBookings}</div>
+            <p className="text-xs text-muted-foreground mt-1">Lượt đặt lịch giữ chỗ</p>
+          </div>
+        </Link>
+
+        {/* Số Lượt Nhận Ưu Đãi */}
+        <Link href={`/${business.slug}/leads`} className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between hover:border-orange-500/50 hover:bg-orange-50 transition group cursor-pointer">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="tracking-tight text-sm font-medium group-hover:text-orange-600 transition">Lượt Nhận Ưu Đãi</h3>
+            <Ticket className="size-4 text-muted-foreground group-hover:text-orange-600 transition" />
+          </div>
+          <div>
+            <div className="text-3xl font-bold group-hover:text-orange-600 transition">{totalPromos}</div>
+            <p className="text-xs text-muted-foreground mt-1">Lượt khách nhận mã KM</p>
+          </div>
+        </Link>
 
         {/* Lượt đăng ký tháng này */}
         <div className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between">
