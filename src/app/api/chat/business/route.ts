@@ -119,7 +119,8 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
               name: { type: "string" },
               phone: { type: "string" },
               address: { type: "string" },
-              description: { type: "string" }
+              description: { type: "string" },
+              short_description: { type: "string", description: "Mô tả ngắn/slogan của tiệm (thường là 1 câu)" }
             }
           }
         }
@@ -233,10 +234,22 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
             result = "Lỗi: Bạn chưa xác thực quyền admin!";
           } else {
             const updates: any = {};
+            let pageContent = typeof business.page_content === 'string' ? JSON.parse(business.page_content || '{}') : (business.page_content || {});
+            let hasPageContentChanges = false;
+
             if (functionArgs.name) updates.name = functionArgs.name;
             if (functionArgs.phone) updates.phone = functionArgs.phone;
             if (functionArgs.address) updates.address = functionArgs.address;
-            if (functionArgs.description) updates.description = functionArgs.description;
+            if (functionArgs.short_description) updates.short_description = functionArgs.short_description;
+            if (functionArgs.description) {
+              updates.description = functionArgs.description;
+              pageContent.description = functionArgs.description;
+              hasPageContentChanges = true;
+            }
+
+            if (hasPageContentChanges) {
+              updates.page_content = pageContent;
+            }
             
             if (Object.keys(updates).length > 0) {
               await supabase.from('businesses').update(updates).eq('id', business.id);
