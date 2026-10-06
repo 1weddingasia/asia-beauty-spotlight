@@ -52,6 +52,13 @@ export default function LeadsPage() {
   // Persist across renders so stale-response guard works correctly
   const historyReqRef = useRef(0);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchPhone]);
+
   function visitBadge(count?: number) {
     if (!count || count === 1) return { label: 'Khách mới', cls: 'bg-green-100 text-green-800' };
     if (count === 2) return { label: `Quay lại - Lần ${count}`, cls: 'bg-orange-100 text-orange-800' };
@@ -231,12 +238,7 @@ export default function LeadsPage() {
       })
     : leads;
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 20;
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchPhone]);
 
   const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
   const paginatedLeads = filteredLeads.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);

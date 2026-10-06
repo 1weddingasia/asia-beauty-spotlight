@@ -228,12 +228,7 @@ export default function LeadsPage() {
       })
     : leads;
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 20;
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchPhone, viewMode]);
 
   const filteredCustomers = searchTerm
     ? customers.filter(c => (c.phone || '').replace(/\D/g, '').includes(searchTerm.replace(/\D/g, '')))
