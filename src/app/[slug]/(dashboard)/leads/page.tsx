@@ -172,13 +172,13 @@ export default function LeadsPage() {
       if (previousLead && previousLead.customer_id && previousLead.status !== newStatus) {
         const { data: customerLeads } = await supabase
           .from("business_leads")
-          .select("updated_at")
+          .select("created_at")
           .eq("customer_id", previousLead.customer_id)
           .in("status", ["served", "closed"])
-          .order("updated_at", { ascending: false });
+          .order("created_at", { ascending: false });
           
         const visits = customerLeads?.length || 0;
-        const lastVisit = visits > 0 ? customerLeads![0].updated_at : null;
+        const lastVisit = visits > 0 ? customerLeads![0].created_at : null;
         
         await supabase.from("business_customers").update({
           total_visits: visits,
