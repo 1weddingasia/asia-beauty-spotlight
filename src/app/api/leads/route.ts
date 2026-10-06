@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/server';
 import { z } from 'zod';
 
@@ -170,7 +171,7 @@ export async function POST(req: Request) {
     // Fetch business to get name and telegram_chat_id
     const { data: business } = await supabase
       .from('businesses')
-      .select('name, page_content')
+      .select('name, telegram_chat_id:page_content->>telegram_chat_id, zalo_owner_id:page_content->>zalo_owner_id')
       .eq('id', business_id)
       .single();
 
@@ -263,7 +264,7 @@ export async function POST(req: Request) {
     }
 
     // --- SMART TELEGRAM NOTIFICATION ---
-    const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
+    const telegramChatId = business.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
     
     const isVIP = visitNumber >= 3;
     const isReturning = visitNumber >= 2;
@@ -357,7 +358,7 @@ export async function POST(req: Request) {
       tip.replace(/<[^>]*>/g, ''), // strip HTML for plain Zalo text
     ].filter(Boolean).join('\n');
 
-    const zaloShopId = (business.page_content as Record<string, string> | null)?.zalo_owner_id;
+    const zaloShopId = business.zalo_owner_id;
     if (zaloShopId) notifications.push(sendZaloAsync(zaloShopId, zaloShopMsg));
 
     // Bản sao giám sát cho Admin 1Beauty qua Zalo
@@ -367,8 +368,10 @@ export async function POST(req: Request) {
       notifications.push(sendZaloAsync(zaloAdminId, zaloAdminMsg));
     }
 
-    // Wait for all notifications to finish so Next.js runtime doesn't kill the requests
-    await Promise.allSettled(notifications);
+    // Execute notifications in the background after returning response
+    if (notifications.length > 0) {
+      after(() => Promise.allSettled(notifications));
+    }
 
     return NextResponse.json({ success: true, voucher_code, visit_number: visitNumber });
   } catch (error) {

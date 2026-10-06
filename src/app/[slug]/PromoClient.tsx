@@ -802,7 +802,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               )}
 
               <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
-                {loading ? "Đang xử lý..." : (isBooking ? "XÁC NHẬN BOOKING" : "NHẬN ƯU ĐÃI")}
+                {loading ? "Đang gửi..." : (isBooking ? "XÁC NHẬN BOOKING" : "NHẬN ƯU ĐÃI")}
               </Button>
             </form>
           ) : (
