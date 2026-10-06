@@ -393,13 +393,14 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
       }
       
       if (usage) {
-        await supabase.from('api_usage_logs').insert({
+        const { error: usageErr } = await supabase.from('api_usage_logs').insert({
           business_id: business.id,
           model: "deepseek-chat",
           prompt_tokens: usage.prompt_tokens,
           completion_tokens: usage.completion_tokens,
           total_tokens: usage.total_tokens
-        }).catch(err => console.error("Failed to log API usage:", err));
+        });
+        if (usageErr) console.error("Failed to log API usage:", usageErr);
       }
 
       if (isDataUpdated) {
@@ -414,13 +415,14 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
 
     } else {
       if (response.usage) {
-        await supabase.from('api_usage_logs').insert({
+        const { error: usageErr } = await supabase.from('api_usage_logs').insert({
           business_id: business.id,
           model: "deepseek-chat",
           prompt_tokens: response.usage.prompt_tokens,
           completion_tokens: response.usage.completion_tokens,
           total_tokens: response.usage.total_tokens
-        }).catch(err => console.error("Failed to log API usage:", err));
+        });
+        if (usageErr) console.error("Failed to log API usage:", usageErr);
       }
 
       return NextResponse.json({

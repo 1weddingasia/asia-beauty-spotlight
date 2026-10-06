@@ -158,13 +158,14 @@ QUY TẮC BẮT BUỘC:
     
     if (usage) {
       const supabase = await createAdminClient();
-      await supabase.from('api_usage_logs').insert({
+      const { error: usageErr } = await supabase.from('api_usage_logs').insert({
         business_id: null,
         model: "deepseek-chat",
         prompt_tokens: usage.prompt_tokens,
         completion_tokens: usage.completion_tokens,
         total_tokens: usage.total_tokens
-      }).catch(err => console.error("Failed to log API usage:", err));
+      });
+      if (usageErr) console.error("Failed to log API usage:", usageErr);
     }
 
     if (!reply) {
