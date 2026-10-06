@@ -6,11 +6,6 @@ import jwt from 'jsonwebtoken';
 
 export const maxDuration = 60; // Allow longer execution time for Vercel
 
-const openai = new OpenAI({
-  baseURL: 'https://api.deepseek.com',
-  apiKey: process.env.DEEPSEEK_API_KEY || 'dummy_key',
-});
-
 const isValidUrl = (url?: string) => {
   if (!url) return true;
   try {
@@ -23,6 +18,15 @@ const isValidUrl = (url?: string) => {
 
 export async function POST(req: Request) {
   try {
+    const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+    if (!DEEPSEEK_API_KEY) {
+      return NextResponse.json({ error: "Chưa cấu hình API Key" }, { status: 500 });
+    }
+
+    const openai = new OpenAI({
+      baseURL: 'https://api.deepseek.com',
+      apiKey: DEEPSEEK_API_KEY,
+    });
     const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) {
       throw new Error("JWT_SECRET is not configured");

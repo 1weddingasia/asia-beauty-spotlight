@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { createAdminClient } from '@/utils/supabase/server';
 
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-
 function extractPhone(text: string): string | null {
   // Matches typical Vietnamese 10 digit numbers starting with 03, 05, 07, 08, 09
   // Allow spaces, dots, dashes between digits
@@ -27,6 +25,7 @@ function sendTelegramAsync(chatId: string, message: string) {
 
 export async function POST(req: Request) {
   try {
+    const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
     const { shop_id, messages } = await req.json();
 
     if (!shop_id || !messages || messages.length === 0) {

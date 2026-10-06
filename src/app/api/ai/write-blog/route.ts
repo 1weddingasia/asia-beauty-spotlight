@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
-
 export async function POST(req: Request) {
   try {
+    const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+    const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
+    
     const { prompt } = await req.json();
 
     if (!prompt) {

@@ -5,21 +5,29 @@ import { z } from 'zod';
 import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 
-// Initialize Upstash Redis and Ratelimit (if keys are provided)
-const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redisToken }) : null;
 
-const ratelimit = redis ? new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(3, "5 m"), // 3 requests per 5 minutes
-  analytics: true,
-}) : null;
 
 // Fallback in-memory map for dev/testing when Upstash is not configured
 const memoryRateLimits = new Map<string, { count: number, resetAt: number }>();
 
+let ratelimit: Ratelimit | null = null;
+let isRatelimitInitialized = false;
+
 async function isRateLimited(ip: string): Promise<boolean> {
+  if (!isRatelimitInitialized) {
+    const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redisToken }) : null;
+    if (redis) {
+      ratelimit = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(3, "5 m"),
+        analytics: true,
+      });
+    }
+    isRatelimitInitialized = true;
+  }
+
   if (ratelimit) {
     try {
       const { success } = await ratelimit.limit(ip);
