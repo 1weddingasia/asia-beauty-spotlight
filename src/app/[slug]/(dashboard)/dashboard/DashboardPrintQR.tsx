@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import html2canvas from "html2canvas";
 import { QRCodeCanvas } from "qrcode.react";
+import { useSiteConfig } from "@/components/site/Layout";
 
 export default function DashboardPrintQR({ business }: { business: any }) {
+  const siteConfig = useSiteConfig();
   let content = business.page_content || {};
   if (typeof content === 'string') {
     try { content = JSON.parse(content); } catch (e) {}
@@ -37,7 +39,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
     }
   };
 
-  const promoUrl = `https://1beauty.asia/${business.slug}`;
+  const promoUrl = typeof window !== 'undefined' ? `${window.location.origin}/${business.slug}` : `https://${siteConfig.domain}/${business.slug}`;
   // High-res QR for actual download
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=800x800&data=${encodeURIComponent(promoUrl)}&margin=10&color=3d2c00&bgcolor=fefdf8`;
   // Low-res QR for on-screen preview
@@ -156,7 +158,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
       // Footer text
       ctx.fillStyle = "#b39000";
       ctx.font = "500 24px sans-serif";
-      ctx.fillText("Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia", canvas.width / 2, canvas.height - 100);
+      ctx.fillText(`Hệ thống đặt hẹn bảo trợ bởi ${siteConfig.brand}`, canvas.width / 2, canvas.height - 100);
 
       const image = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement("a");
@@ -336,7 +338,7 @@ export default function DashboardPrintQR({ business }: { business: any }) {
                 </div>
               </div>
               <div className="text-[8px] text-[#b39000] border-t border-[#e5c96a] pt-2 w-full mt-4 font-medium">
-                Hệ thống đặt hẹn bảo trợ bởi 1Beauty.asia
+                Hệ thống đặt hẹn bảo trợ bởi {siteConfig.brand}
               </div>
             </div>
           </div>

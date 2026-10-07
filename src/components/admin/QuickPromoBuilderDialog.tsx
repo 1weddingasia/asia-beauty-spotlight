@@ -63,7 +63,7 @@ export function QuickPromoBuilderDialog({ open, onOpenChange }: { open: boolean,
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Có lỗi xảy ra");
 
-      setSuccessData({ email, password, promoLink: 'https://1beauty.asia' + data.promoLink });
+      setSuccessData({ email, password, promoLink: window.location.origin + data.promoLink });
       toast.success("Tạo trang ưu đãi thành công!");
     } catch (err: any) {
       toast.error(err.message);

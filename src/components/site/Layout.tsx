@@ -44,7 +44,7 @@ async function getFooterCategories() {
 // Tránh hydration mismatch: server render null (không biết hostname),
 // client cập nhật đúng brand sau khi mount qua useEffect.
 // Fallback getSiteConfig("") = BOOKING_CONFIG khi chưa mount.
-function useSiteConfig(): SiteConfig {
+export function useSiteConfig(): SiteConfig {
   const [config, setConfig] = useState<SiteConfig | null>(null);
   useEffect(() => {
     setConfig(getSiteConfig(window.location.hostname));

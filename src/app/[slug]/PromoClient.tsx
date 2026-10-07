@@ -12,7 +12,7 @@ import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SiteHeader, SiteFooter } from "@/components/site/Layout";
+import { SiteHeader, SiteFooter, useSiteConfig } from "@/components/site/Layout";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -33,6 +33,7 @@ type Deal = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string, avatar: string }) {
+  const siteConfig = useSiteConfig();
   const b = business;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -73,7 +74,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
   // Tải danh sách deal đã lưu từ localStorage
   if (typeof window !== 'undefined' && savedDeals.length === 0) {
-    const local = localStorage.getItem('saved_deals_1beauty');
+    const local = localStorage.getItem(`saved_deals_${siteConfig.domain}`);
     if (local) {
       try {
         setSavedDeals(JSON.parse(local));
@@ -160,7 +161,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         if (selectedDeal.id !== 'booking') {
           const updatedSavedDeals = [...savedDeals, dealKey];
           setSavedDeals(updatedSavedDeals);
-          localStorage.setItem('saved_deals_1beauty', JSON.stringify(updatedSavedDeals));
+          localStorage.setItem(`saved_deals_${siteConfig.domain}`, JSON.stringify(updatedSavedDeals));
         }
       }
     } catch (err) {
@@ -920,7 +921,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
       <div className="mt-16 pb-8 text-center px-4">
         <p className="text-xs text-muted-foreground">
-          Được thực hiện bởi <Link href="/lien-he" className="font-semibold text-ink hover:text-gold transition-colors">1Beauty.asia</Link>
+          Được thực hiện bởi <Link href="/lien-he" className="font-semibold text-ink hover:text-gold transition-colors">{siteConfig.brand}</Link>
         </p>
       </div>
       

@@ -1,29 +1,34 @@
 import { notFound } from "next/navigation";
 import { createStaticClient } from "@/utils/supabase/server";
+import { headers } from "next/headers";
+import { getSiteConfig } from "@/config/site-config";
 import PromoClient from "./PromoClient";
 
 export const revalidate = 0; // Disabled cache to show updates instantly
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const h = await headers();
+  const host = h.get('host') || '';
+  const siteConfig = getSiteConfig(host);
   const supabase = createStaticClient();
   try {
     const { data: business } = await supabase.from('businesses').select('name, page_content').eq('slug', slug).single();
-    if (!business) return { title: "Không tìm thấy - 1Beauty.Asia" };
+    if (!business) return { title: `Không tìm thấy - ${siteConfig.brand}` };
 
     const firstGalleryItem = business.page_content?.gallery?.[0];
     const galleryUrl = typeof firstGalleryItem === 'string' ? firstGalleryItem : firstGalleryItem?.url;
-    const ogImage = business.page_content?.banners?.[0] || galleryUrl || "https://1beauty.asia/og-image.jpg";
+    const ogImage = business.page_content?.banners?.[0] || galleryUrl || `https://${siteConfig.domain}/og-image.jpg`;
 
     return {
-      title: `Nhận Ưu Đãi Độc Quyền - ${business.name} | 1Beauty.Asia`,
+      title: `Nhận Ưu Đãi Độc Quyền - ${business.name} | ${siteConfig.brand}`,
       description: `Đăng ký nhận ngay mã giảm giá độc quyền tại ${business.name}. Số lượng có hạn!`,
       openGraph: {
         images: [ogImage],
       },
     };
   } catch (error) {
-    return { title: "Không tìm thấy - 1Beauty.Asia" };
+    return { title: `Không tìm thấy - ${siteConfig.brand}` };
   }
 }
 
@@ -49,6 +54,8 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
 
   // Hiển thị trang bảo trì khi tiệm bị tạm ngưng (hết hạn dùng thử / chưa gia hạn)
   if (business.status === 'suspended') {
+    const h = await headers();
+    const siteConfig = getSiteConfig(h.get('host') || '');
     const hotline = business.page_content?.phone || '';
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
@@ -67,7 +74,7 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
               📞 {hotline}
             </a>
           )}
-          <p className="mt-8 text-xs text-slate-400">Powered by 1Beauty.Asia</p>
+          <p className="mt-8 text-xs text-slate-400">Powered by {siteConfig.brand}</p>
         </div>
       </div>
     );

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Store, Users, Settings, LogOut, Package, FileText, MapPin, List, CreditCard, MessageCircle, Zap, TrendingUp } from "lucide-react";
+import { useSiteConfig } from "@/components/site/Layout";
 import {
   Sidebar,
   SidebarContent,
@@ -34,13 +35,14 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const siteConfig = useSiteConfig();
   const { setOpenMobile } = useSidebar();
 
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        <div className="flex font-display items-center gap-2 text-xl font-bold tracking-widest text-ink">
-          1BEAUTY.ASIA
+        <div className="flex font-display items-center gap-2 text-xl font-bold tracking-widest text-ink uppercase">
+          {siteConfig.brand}
         </div>
         <p className="text-xs uppercase tracking-widest text-muted-foreground">Admin Portal</p>
       </SidebarHeader>

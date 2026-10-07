@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSiteConfig } from "@/components/site/Layout";
 
 type ChatMsg = { id: string, role: 'user' | 'assistant' | 'error', content: string };
 
@@ -14,11 +15,12 @@ const getBubbleClass = (role: ChatMsg['role']) => {
 };
 
 export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
+  const siteConfig = useSiteConfig();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([
     { id: '1', role: 'assistant', content: mode === 'b2b' 
-      ? `Chào chủ tiệm, 1Beauty có thể giúp gì để tăng doanh thu cho quán bạn hôm nay?`
-      : `Chào bạn, bạn đang tìm kiếm ưu đãi làm đẹp hoặc dịch vụ gì hôm nay? 1Beauty sẽ hỗ trợ bạn ngay!`
+      ? `Chào chủ tiệm, ${siteConfig.brand} có thể giúp gì để tăng doanh thu cho quán bạn hôm nay?`
+      : `Chào bạn, bạn đang tìm kiếm ưu đãi làm đẹp hoặc dịch vụ gì hôm nay? ${siteConfig.brand} sẽ hỗ trợ bạn ngay!`
     }
   ]);
   const [input, setInput] = useState("");
@@ -89,7 +91,7 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
           className="fixed bottom-[90px] md:bottom-6 right-4 md:right-6 z-[45] bg-gold text-ink p-4 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2 animate-bounce"
         >
           <MessageCircle className="size-6" />
-          <span className="font-bold hidden md:inline">Trợ lý 1Beauty</span>
+          <span className="font-bold hidden md:inline">Trợ lý {siteConfig.logoText}</span>
         </button>
       )}
 
@@ -103,7 +105,7 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
                 <MessageCircle className="size-5 text-ink" />
               </div>
               <div>
-                <h3 className="font-bold text-sm leading-tight">1Beauty Xin chào!</h3>
+                <h3 className="font-bold text-sm leading-tight">{siteConfig.logoText} Xin chào!</h3>
                 <p className="text-xs text-champagne">Hỗ trợ đối tác 24/7</p>
               </div>
             </div>
@@ -149,7 +151,7 @@ export function PlatformChatWidget({ mode = 'b2b' }: { mode?: 'b2b' | 'b2c' }) {
             <Input 
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder={mode === 'b2b' ? "Nhập câu hỏi... (VD: 1Beauty là gì?)" : "Nhập nhu cầu... (VD: Mình muốn tìm spa trị mụn)"}
+              placeholder={mode === 'b2b' ? `Nhập câu hỏi... (VD: ${siteConfig.brand} là gì?)` : "Nhập nhu cầu... (VD: Mình muốn tìm spa trị mụn)"}
               className="flex-1 rounded-full border-muted-foreground/20"
               disabled={loading}
             />

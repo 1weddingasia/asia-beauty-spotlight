@@ -9,8 +9,10 @@ import { Shield, Sparkles, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useEffect, Suspense } from "react";
+import { useSiteConfig } from "@/components/site/Layout";
 
 function LoginContent() {
+  const siteConfig = useSiteConfig();
   const searchParams = useSearchParams();
   const [view, setView] = useState<"login" | "register" | "forgot">("login");
   
@@ -102,7 +104,7 @@ function LoginContent() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `https://1beauty.asia/dashboard`,
+        redirectTo: `${window.location.origin}/dashboard`,
       });
 
       if (error) {
@@ -127,8 +129,8 @@ function LoginContent() {
         
         <div className="relative z-10 text-center max-w-lg">
           <Link href="/" className="inline-block mb-12">
-            <span className="font-display text-4xl text-white">1Beauty</span>
-            <span className="text-gradient-gold font-display text-4xl">.Asia</span>
+            <span className="font-display text-4xl text-white">{siteConfig.logoText}</span>
+            <span className="text-gradient-gold font-display text-4xl">{siteConfig.logoDomain}</span>
           </Link>
           
           <h1 className="text-4xl font-display text-white mb-6 leading-tight">
@@ -155,8 +157,8 @@ function LoginContent() {
           
           <div className="lg:hidden flex justify-center mb-8">
             <Link href="/" className="inline-block">
-              <span className="font-display text-3xl text-ink">1Beauty</span>
-              <span className="text-gradient-gold font-display text-3xl">.Asia</span>
+              <span className="font-display text-3xl text-ink">{siteConfig.logoText}</span>
+              <span className="text-gradient-gold font-display text-3xl">{siteConfig.logoDomain}</span>
             </Link>
           </div>
 

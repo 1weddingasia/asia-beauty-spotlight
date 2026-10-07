@@ -35,9 +35,9 @@ export default async function OffersPage({
   const ITEMS_PER_PAGE = 9;
 
   // Lấy tất cả các doanh nghiệp đang hoạt động
-  const { data: businesses, error } = await supabase
+  const { data: rawBusinesses, error } = await supabase
     .from("businesses")
-    .select("slug, name, page_content, status")
+    .select("slug, name, page_content, status, category, category_slug")
     .in("status", ["published", "active"])
     .limit(500);
 
@@ -45,8 +45,14 @@ export default async function OffersPage({
     console.error("Lỗi lấy ưu đãi:", error);
   }
 
+  const businesses = (rawBusinesses || []).filter((b: any) => {
+    if (!siteConfig.industryFilter) return true;
+    const cat = (b.category_slug || b.category || "").toLowerCase();
+    return siteConfig.industryFilter.some((f) => cat.includes(f));
+  });
+
   // Extract offers, filter expired ones, and sort by newest
-  let allOffers = (businesses || [])
+  let allOffers = businesses
     .flatMap((b: any) => {
       const pc = b.page_content || {};
       const items = pc.deals || pc.offers || pc.promotions || [];

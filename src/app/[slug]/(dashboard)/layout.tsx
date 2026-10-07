@@ -7,10 +7,17 @@ import MobileBottomNav from "./MobileBottomNav";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Bảng điều khiển Gian hàng",
-  description: "Quản lý gian hàng, ưu đãi, đơn đặt bàn và danh sách khách hàng của bạn trên hệ thống 1Beauty.Asia",
-};
+import { getSiteConfig, PRICING_AMOUNT } from "@/config/site-config";
+import { headers } from "next/headers";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const siteConfig = getSiteConfig(h.get('host') || '');
+  return {
+    title: "Bảng điều khiển Gian hàng",
+    description: `Quản lý gian hàng, ưu đãi, đơn đặt bàn và danh sách khách hàng của bạn trên hệ thống ${siteConfig.brand}`,
+  };
+}
 
 export default async function BusinessDashboardLayout({ 
   children,
@@ -22,6 +29,8 @@ export default async function BusinessDashboardLayout({
   const { slug } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const h = await headers();
+  const siteConfig = getSiteConfig(h.get('host') || '');
 
   if (!user) {
     redirect("/login");
@@ -44,7 +53,7 @@ export default async function BusinessDashboardLayout({
     <div className="flex min-h-screen flex-col bg-muted/20">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 shadow-sm">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-gold">
-          1Beauty<span className="text-ink">.Asia</span>
+          {siteConfig.logoText}<span className="text-ink">{siteConfig.logoDomain}</span>
         </Link>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
           <Button variant="ghost" size="sm" asChild className="px-2 md:px-3">
@@ -94,7 +103,7 @@ export default async function BusinessDashboardLayout({
                       🚨 Trang đang bị tạm ngưng
                     </h4>
                     <p className="text-xs text-red-700/80 mb-3">
-                      Vui lòng liên hệ 1Beauty.Asia để gia hạn và kích hoạt lại.
+                      Vui lòng liên hệ {siteConfig.brand} để gia hạn và kích hoạt lại.
                     </p>
                     <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
                       <Link href="/lien-he">Liên hệ gia hạn</Link>
@@ -115,7 +124,7 @@ export default async function BusinessDashboardLayout({
                   <h4 className="font-bold text-sm mb-1 flex items-center gap-1">
                     <Sparkles className="size-4 text-gold" /> Dùng thử — còn {daysLeft} ngày
                   </h4>
-                  <p className="text-xs text-muted-foreground mb-3">Liên hệ 1Beauty để kích hoạt chính thức (500.000đ/năm).</p>
+                  <p className="text-xs text-muted-foreground mb-3">Liên hệ {siteConfig.logoText} để kích hoạt chính thức ({PRICING_AMOUNT}/năm).</p>
                   <Button asChild size="sm" className="w-full bg-gold text-ink hover:bg-gold/90">
                     <Link href={`/${slug}/upgrade`}>Kích hoạt ngay</Link>
                   </Button>

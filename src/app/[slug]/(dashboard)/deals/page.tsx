@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Save, Plus, Trash2, Copy } from "lucide-react";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { toast } from "sonner";
+import { useSiteConfig } from "@/components/site/Layout";
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
@@ -43,6 +44,7 @@ type Service = {
 };
 
 export default function DealsManagementPage() {
+  const siteConfig = useSiteConfig();
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -98,7 +100,7 @@ export default function DealsManagementPage() {
               title: content.featured_deal,
               original_price: "Liên hệ",
               promo_price: "Ưu đãi",
-              badge: "Độc Quyền 1Beauty",
+              badge: `Độc Quyền ${siteConfig.brand}`,
               note: "",
               status: "active",
               valid_from: "",

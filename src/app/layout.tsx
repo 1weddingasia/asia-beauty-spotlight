@@ -4,77 +4,70 @@ import { Analytics } from '@vercel/analytics/next';
 import { BackToTop } from '@/components/site/BackToTop';
 import { Toaster } from '@/components/ui/sonner';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://1beauty.asia';
-let metadataBaseURL: URL;
-try {
-  metadataBaseURL = new URL(SITE_URL);
-} catch (e) {
-  console.warn(`Invalid NEXT_PUBLIC_SITE_URL: ${SITE_URL}. Falling back to default.`);
-  metadataBaseURL = new URL('https://1beauty.asia');
-}
+import { headers } from 'next/headers';
+import { getSiteConfig } from '@/config/site-config';
 
-const SITE_NAME = '1Beauty.Asia';
-const SITE_DESCRIPTION =
-  'Danh bạ chuyên ngành làm đẹp hàng đầu Việt Nam — khám phá spa, thẩm mỹ viện, salon và học viện uy tín được tuyển chọn kỹ lưỡng.';
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const host = h.get('host') || '';
+  const siteConfig = getSiteConfig(host);
+  
+  const SITE_URL = `https://${siteConfig.domain}`;
+  const SITE_NAME = siteConfig.brand;
+  const SITE_DESCRIPTION = siteConfig.domain === '1booking.asia' 
+    ? 'Hệ thống đặt lịch đa ngành hàng đầu Việt Nam — dễ dàng tìm kiếm và đặt chỗ tại các dịch vụ uy tín.'
+    : 'Danh bạ chuyên ngành làm đẹp hàng đầu Việt Nam — khám phá spa, thẩm mỹ viện, salon và học viện uy tín được tuyển chọn kỹ lưỡng.';
 
-export const metadata: Metadata = {
-  metadataBase: metadataBaseURL,
-  title: {
-    default: `${SITE_NAME} — Danh bạ làm đẹp Việt Nam`,
-    template: `%s | ${SITE_NAME}`,
-  },
-  description: SITE_DESCRIPTION,
-  keywords: [
-    'danh bạ làm đẹp',
-    'spa Việt Nam',
-    'thẩm mỹ viện',
-    'salon tóc',
-    'nail',
-    'học viện làm đẹp',
-    'beauty directory asia',
-    '1beauty',
-    'làm đẹp việt nam',
-  ],
-  authors: [{ name: SITE_NAME, url: SITE_URL }],
-  creator: SITE_NAME,
-  publisher: SITE_NAME,
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: `${SITE_NAME} — ${siteConfig.domain === '1booking.asia' ? 'Hệ thống đặt lịch' : 'Danh bạ làm đẹp Việt Nam'}`,
+      template: `%s | ${SITE_NAME}`,
+    },
+    description: SITE_DESCRIPTION,
+    keywords: siteConfig.domain === '1booking.asia' 
+      ? ['đặt lịch', 'booking online', 'dịch vụ', 'spa', 'nhà hàng', 'phòng khám', 'booking việt nam']
+      : ['danh bạ làm đẹp', 'spa Việt Nam', 'thẩm mỹ viện', 'salon tóc', 'nail', 'học viện làm đẹp', 'beauty directory asia', '1beauty', 'làm đẹp việt nam'],
+    authors: [{ name: SITE_NAME, url: SITE_URL }],
+    creator: SITE_NAME,
+    publisher: SITE_NAME,
+    robots: {
       index: true,
       follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  alternates: {
-    canonical: SITE_URL,
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'vi_VN',
-    url: SITE_URL,
-    siteName: SITE_NAME,
-    title: `${SITE_NAME} — Danh bạ làm đẹp Việt Nam`,
-    description: SITE_DESCRIPTION,
-    images: [
-      {
-        url: `${SITE_URL}/og-image.jpg`,
-        width: 1200,
-        height: 630,
-        alt: `${SITE_NAME} — Danh bạ làm đẹp Việt Nam`,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${SITE_NAME} — Danh bạ làm đẹp Việt Nam`,
-    description: SITE_DESCRIPTION,
-    images: [`${SITE_URL}/og-image.jpg`],
-    creator: '@1beautyasia',
-  },
-};
+    },
+    alternates: {
+      canonical: SITE_URL,
+    },
+    openGraph: {
+      type: 'website',
+      locale: 'vi_VN',
+      url: SITE_URL,
+      siteName: SITE_NAME,
+      title: `${SITE_NAME} — ${siteConfig.domain === '1booking.asia' ? 'Hệ thống đặt lịch' : 'Danh bạ làm đẹp Việt Nam'}`,
+      description: SITE_DESCRIPTION,
+      images: [
+        {
+          url: `${SITE_URL}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `${SITE_NAME}`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${SITE_NAME} — ${siteConfig.domain === '1booking.asia' ? 'Hệ thống đặt lịch' : 'Danh bạ làm đẹp Việt Nam'}`,
+      description: SITE_DESCRIPTION,
+      images: [`${SITE_URL}/og-image.jpg`],
+    },
+  };
+}
 
 import { GlobalPromoFAB } from '@/components/admin/GlobalPromoFAB';
 

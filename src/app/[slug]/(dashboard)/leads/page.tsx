@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Phone, CheckCircle, X, History, Users, CalendarDays, Ticket } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useSiteConfig } from "@/components/site/Layout";
 
 type Lead = {
   id: string;
@@ -35,6 +36,7 @@ type Customer = {
 const HISTORY_LIMIT = 20;
 
 export default function LeadsPage() {
+  const siteConfig = useSiteConfig();
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -273,7 +275,7 @@ export default function LeadsPage() {
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Booking_UuDai");
-      XLSX.writeFile(workbook, `Booking_UuDai_${business.slug || '1beauty'}_${format(new Date(), 'ddMMyyyy')}.xlsx`);
+      XLSX.writeFile(workbook, `Booking_UuDai_${business.slug || siteConfig.brand}_${format(new Date(), 'ddMMyyyy')}.xlsx`);
       
       toast.success(`Đã xuất ${allLeads.length} lượt Booking/Ưu đãi`, { id: toastId });
     } catch (err) {

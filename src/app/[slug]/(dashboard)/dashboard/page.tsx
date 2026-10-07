@@ -3,10 +3,14 @@ import { Store, Eye, TrendingUp, Sparkles, Users, Ticket, ArrowUpRight, Calendar
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import DashboardPrintQR from "./DashboardPrintQR";
+import { headers } from "next/headers";
+import { getSiteConfig } from "@/config/site-config";
 
 export default async function BusinessDashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const h = await headers();
+  const siteConfig = getSiteConfig(h.get('host') || '');
 
   const { data: business } = await supabase
     .from("businesses")
@@ -20,7 +24,7 @@ export default async function BusinessDashboardPage() {
         <Store className="size-16 text-muted-foreground" />
         <h2 className="text-2xl font-bold">Chưa có gian hàng nào được liên kết</h2>
         <p className="text-muted-foreground">
-          Vui lòng liên hệ với Ban quản trị 1Beauty.Asia để được cấp quyền sở hữu doanh nghiệp của bạn.
+          Vui lòng liên hệ với Ban quản trị {siteConfig.brand} để được cấp quyền sở hữu doanh nghiệp của bạn.
         </p>
       </div>
     );
