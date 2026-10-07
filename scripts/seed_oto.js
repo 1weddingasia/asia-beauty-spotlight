@@ -36,8 +36,8 @@ async function seed() {
       working_hours: '07:30 - 18:30 (Thứ 2 - Thứ 7)',
       logo_url: '/images/demo/oto_logo.svg',
       banners: [
-        'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=2000&auto=format&fit=crop'
+        '/images/demo/oto_banner1.jpg',
+        '/images/demo/oto_banner2.jpg'
       ],
       services: [
         {
@@ -46,7 +46,7 @@ async function seed() {
           price: 250000,
           original_price: 350000,
           duration: '60 phút',
-          image_url: 'https://images.unsplash.com/photo-1552930294-6b595f4c2974?q=80&w=1000&auto=format&fit=crop'
+          image_url: '/images/demo/oto_service1.jpg'
         },
         {
           name: 'Đánh bóng hiệu chỉnh bề mặt sơn & Phủ Ceramic',
@@ -54,7 +54,7 @@ async function seed() {
           price: 2500000,
           original_price: 3500000,
           duration: '1-2 Ngày',
-          image_url: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0be2?q=80&w=1000&auto=format&fit=crop'
+          image_url: '/images/demo/oto_service2.jpg'
         },
         {
           name: 'Dán phim cách nhiệt 3M chính hãng (Gói xe 5 chỗ)',
@@ -62,7 +62,7 @@ async function seed() {
           price: 4800000,
           original_price: 6000000,
           duration: '3 Giờ',
-          image_url: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=1000&auto=format&fit=crop'
+          image_url: '/images/demo/oto_service3.jpg'
         }
       ],
       deals: [
@@ -76,10 +76,10 @@ async function seed() {
         }
       ],
       gallery: [
-        'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=2000&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1552930294-6b595f4c2974?q=80&w=1000&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0be2?q=80&w=1000&auto=format&fit=crop',
+        '/images/demo/oto_banner1.jpg',
+        '/images/demo/oto_banner2.jpg',
+        '/images/demo/oto_service1.jpg',
+        '/images/demo/oto_service2.jpg',
       ],
       reviews: [
         {
