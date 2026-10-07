@@ -22,7 +22,7 @@ export const metadata = {
 // icon được render trực tiếp trong card — không có emoji field thừa
 const INDUSTRIES = [
   { slug: "nha-khoa-quoc-te", icon: <Stethoscope className="size-7 text-gold" />, title: "Nha Khoa & Phòng Khám", desc: "Đặt hẹn khám chữa răng, chọn bác sĩ chuyên khoa, nhắc lịch tái khám tự động." },
-  { slug: "luxury-spa-demo", icon: <UtensilsCrossed className="size-7 text-gold" />, title: "Nhà Hàng & Quán Ăn (F&B)", desc: "Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu, giữ chỗ không lo hủy bàn." },
+  { slug: "the-golden-plate", icon: <UtensilsCrossed className="size-7 text-gold" />, title: "Nhà Hàng & Quán Ăn (F&B)", desc: "Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu, giữ chỗ không lo hủy bàn." },
   { slug: "luxury-spa-demo", icon: <Car className="size-7 text-gold" />, title: "Chăm Sóc & Độ Xe Ô Tô", desc: "Đặt lịch rửa xe chi tiết, dán phim cách nhiệt, phủ ceramic với bảng giá minh bạch." },
   { slug: "luxury-spa-demo", icon: <Dumbbell className="size-7 text-gold" />, title: "Thể Hình, Yoga & PT", desc: "Đăng ký buổi tập thử, chọn khung giờ 1:1 cùng huấn luyện viên, kiểm soát số học viên." },
   { slug: "luxury-spa-demo", icon: <Sparkles className="size-7 text-gold" />, title: "Spa & Thẩm Mỹ Viện", desc: "Trưng bày liệu trình làm đẹp, săn voucher giảm giá giờ vàng, đặt lịch thư giãn cuối tuần." },
