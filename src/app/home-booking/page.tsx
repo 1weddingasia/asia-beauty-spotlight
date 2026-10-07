@@ -206,7 +206,7 @@ export default async function HomeBookingPage() {
                   {industry.icon}
                 </div>
                 <h3 className="font-bold text-sm text-ink mb-2 leading-snug">{industry.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{industry.desc}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{industry.desc}</p>
                 <span className="mt-4 inline-flex items-center gap-1 text-xs text-gold font-semibold group-hover:gap-2 transition-all">
                   Xem mẫu <ArrowRight className="size-3" />
                 </span>
