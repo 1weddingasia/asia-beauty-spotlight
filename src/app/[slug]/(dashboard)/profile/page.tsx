@@ -101,7 +101,7 @@ export default function BusinessProfilePage() {
             });
             if (data.page_content) {
               try {
-                const parsed = typeof data.page_content === 'string' ? JSON.parse(data.page_content) : data.page_content;
+                const parsed = (typeof data.page_content === 'string' ? JSON.parse(data.page_content) : data.page_content) || {};
                 setPageContent((prev: any) => ({ 
                   ...prev, 
                   ...parsed,
