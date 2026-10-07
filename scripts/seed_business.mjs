@@ -13,7 +13,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function seedApprovedBusinesses() {
-  const approvedDir = path.resolve(process.cwd(), 'data/onboarding/approved');
+  const approvedDir = path.resolve(process.cwd(), 'data/onboarding/queue');
   
   if (!fs.existsSync(approvedDir)) {
     console.log("No approved directory found.");
@@ -87,6 +87,9 @@ async function seedApprovedBusinesses() {
         ownerId = user.id;
         data.owner_id = ownerId;
       }
+
+      // Automatically set as draft for user review, unless explicitly marked otherwise
+      data.status = data.status || 'draft';
 
       const { error } = await supabase.from('businesses').upsert(data, { onConflict: 'slug' });
       

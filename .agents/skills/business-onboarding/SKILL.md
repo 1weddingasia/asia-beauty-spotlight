@@ -28,12 +28,11 @@ Khi người dùng nói: "Tạo gian hàng từ link...", "Nhập liệu gian h�
 
 ## BƯỚC 2: TỔNG HỢP & VIẾT LẠI (SYNTHESIS)
 - Viết lại đoạn Giới thiệu (description) sao cho hay, chuẩn SEO.
-- Định dạng thành file JSON chuẩn của bảng `businesses`. Mật khẩu mặc định bàn giao cho khách luôn là `123456` (sẽ được tạo tự động qua script).
+- Định dạng thành file JSON chuẩn của bảng `businesses` và lưu vào thư mục `data/onboarding/queue/`. (KHÔNG TỰ Ý ĐẶT TRẠNG THÁI PUBLISHED).
 
-## BƯỚC 3: LƯU BẢN NHÁP & CHỜ DUYỆT (DRAFT & REVIEW)
-- KHÔNG đẩy thẳng vào cơ sở dữ liệu (Supabase) ngay lập tức.
-- Tạo một file JSON nháp tại thư mục: `data/onboarding/drafts/<slug-cua-gian-hang>.json`.
-- Trình bày tóm tắt cho người dùng xem văn phong và hình ảnh đã chọn.
-- Chỉ khi người dùng đánh giá TỐT và ĐỒNG Ý, bạn mới được phép chuyển dữ liệu đó sang thư mục `data/onboarding/approved/` và dùng script (ví dụ: `scripts/seed_approved.mjs`) để insert vào Database.
-
-Hãy nhớ: CHẤT LƯỢNG HƠN SỐ LƯỢNG. Làm cẩn thận, chậm mà chắc.
+## BƯỚC 3: ĐẨY LÊN BẢN NHÁP (DRAFT PUSH)
+- Chạy lệnh `node scripts/seed_business.mjs` để đẩy file JSON vừa tạo lên cơ sở dữ liệu.
+- Kịch bản này sẽ tự động tạo Tài khoản đăng nhập (Auth) với mật khẩu mặc định là `123456`, đồng thời tự động set trạng thái gian hàng là `draft` (Bản nháp).
+- Lúc này gian hàng ĐÃ ĐƯỢC TẠO nhưng BỊ ẨN khỏi trang chủ.
+- Báo cáo lại cho người dùng: Cung cấp link trực tiếp (ví dụ: `http://localhost:3000/spa-xyz`) để người dùng có thể xem giao diện hiển thị TRỰC QUAN ngay lập tức.
+- Nhắc nhở người dùng: "Anh có thể xem trang trực quan, nếu ưng ý thì vào trang **Quản trị (Admin Panel)** để đổi trạng thái từ Draft sang Published nhé!".
