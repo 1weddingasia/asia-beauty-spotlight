@@ -54,7 +54,7 @@ async function seed() {
           price: 2500000,
           original_price: 3500000,
           duration: '1-2 Ngày',
-          image_url: 'https://images.unsplash.com/photo-1616782298642-f8b1ad69c3a9?q=80&w=1000&auto=format&fit=crop'
+          image_url: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0be2?q=80&w=1000&auto=format&fit=crop'
         },
         {
           name: 'Dán phim cách nhiệt 3M chính hãng (Gói xe 5 chỗ)',
@@ -79,7 +79,7 @@ async function seed() {
         'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=2070&auto=format&fit=crop',
         'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=2000&auto=format&fit=crop',
         'https://images.unsplash.com/photo-1552930294-6b595f4c2974?q=80&w=1000&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1616782298642-f8b1ad69c3a9?q=80&w=1000&auto=format&fit=crop'
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0be2?q=80&w=1000&auto=format&fit=crop',
       ],
       reviews: [
         {
