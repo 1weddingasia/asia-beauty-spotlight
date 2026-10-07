@@ -280,8 +280,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
             {banners.map((img: string, idx: number) => (
-              <CarouselItem key={idx} className="relative h-[100svh] w-full">
-                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-cover scale-105 md:animate-ken-burns" priority={idx === 0} />
+              <CarouselItem key={idx} className="relative h-[100svh] w-full bg-black/90">
+                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-contain md:object-cover md:animate-ken-burns" priority={idx === 0} />
               </CarouselItem>
             ))}
           </CarouselContent>
