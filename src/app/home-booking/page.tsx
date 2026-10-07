@@ -1,9 +1,9 @@
 import Link from "next/link";
 import {
-  ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle,
-  Zap, Star, Users, Bot, Calendar, Stethoscope, UtensilsCrossed,
-  Car, Dumbbell, Camera, PawPrint, Wrench, Home, BriefcaseBusiness,
-  MessageSquare, FileSpreadsheet, BadgeCheck,
+  ArrowRight, Bell, Smartphone, Sparkles, CheckCircle,
+  Zap, Star, Users, Bot, Calendar,
+  Stethoscope, UtensilsCrossed, Car, Dumbbell, Camera, PawPrint,
+  Wrench, Home, BriefcaseBusiness, MessageSquare, FileSpreadsheet, BadgeCheck,
 } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { HeroSlider } from "@/components/site/HeroSlider";
@@ -19,67 +19,18 @@ export const metadata = {
     "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 10 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
 };
 
+// icon được render trực tiếp trong card — không có emoji field thừa
 const INDUSTRIES = [
-  {
-    icon: <Stethoscope className="size-7 text-gold" />,
-    emoji: "🦷",
-    title: "Nha Khoa & Phòng Khám",
-    desc: "Đặt hẹn khám chữa răng, chọn bác sĩ chuyên khoa, nhắc lịch tái khám tự động.",
-  },
-  {
-    icon: <UtensilsCrossed className="size-7 text-gold" />,
-    emoji: "🍽️",
-    title: "Nhà Hàng & Quán Ăn (F&B)",
-    desc: "Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu, giữ chỗ không lo hủy bàn.",
-  },
-  {
-    icon: <Car className="size-7 text-gold" />,
-    emoji: "🚗",
-    title: "Chăm Sóc & Độ Xe Ô Tô",
-    desc: "Đặt lịch rửa xe chi tiết, dán phim cách nhiệt, phủ ceramic với bảng giá minh bạch.",
-  },
-  {
-    icon: <Dumbbell className="size-7 text-gold" />,
-    emoji: "🏋️",
-    title: "Thể Hình, Yoga & PT",
-    desc: "Đăng ký buổi tập thử, chọn khung giờ 1:1 cùng huấn luyện viên, kiểm soát số học viên.",
-  },
-  {
-    icon: <Sparkles className="size-7 text-gold" />,
-    emoji: "💆",
-    title: "Spa & Thẩm Mỹ Viện",
-    desc: "Trưng bày liệu trình làm đẹp, săn voucher giảm giá giờ vàng, đặt lịch thư giãn cuối tuần.",
-  },
-  {
-    icon: <Camera className="size-7 text-gold" />,
-    emoji: "📸",
-    title: "Studio Chụp Ảnh & Áo Cưới",
-    desc: "Xem lookbook concept, đặt lịch thử váy cưới, giữ lịch chụp ngoại cảnh.",
-  },
-  {
-    icon: <PawPrint className="size-7 text-gold" />,
-    emoji: "🐶",
-    title: "Spa & Khách Sạn Thú Cưng",
-    desc: "Đặt hẹn tắm tỉa lông, đưa đón thú cưng, đặt phòng gửi chó mèo an toàn.",
-  },
-  {
-    icon: <Wrench className="size-7 text-gold" />,
-    emoji: "🔧",
-    title: "Dịch Vụ Sửa Chữa Tại Nhà",
-    desc: "Đặt thợ vệ sinh máy lạnh, sửa điện nước, giặt sofa tận nơi đúng giờ hẹn.",
-  },
-  {
-    icon: <Home className="size-7 text-gold" />,
-    emoji: "🏡",
-    title: "Homestay & Du Lịch Trải Nghiệm",
-    desc: "Đặt phòng nghỉ dưỡng cuối tuần, thuê tour trải nghiệm trực tiếp không qua trung gian.",
-  },
-  {
-    icon: <BriefcaseBusiness className="size-7 text-gold" />,
-    emoji: "💼",
-    title: "Tư Vấn & Coaching 1:1",
-    desc: "Đặt lịch tham vấn trực tuyến hoặc trực tiếp, chọn gói thời lượng và chủ đề tư vấn.",
-  },
+  { icon: <Stethoscope className="size-7 text-gold" />, title: "Nha Khoa & Phòng Khám", desc: "Đặt hẹn khám chữa răng, chọn bác sĩ chuyên khoa, nhắc lịch tái khám tự động." },
+  { icon: <UtensilsCrossed className="size-7 text-gold" />, title: "Nhà Hàng & Quán Ăn (F&B)", desc: "Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu, giữ chỗ không lo hủy bàn." },
+  { icon: <Car className="size-7 text-gold" />, title: "Chăm Sóc & Độ Xe Ô Tô", desc: "Đặt lịch rửa xe chi tiết, dán phim cách nhiệt, phủ ceramic với bảng giá minh bạch." },
+  { icon: <Dumbbell className="size-7 text-gold" />, title: "Thể Hình, Yoga & PT", desc: "Đăng ký buổi tập thử, chọn khung giờ 1:1 cùng huấn luyện viên, kiểm soát số học viên." },
+  { icon: <Sparkles className="size-7 text-gold" />, title: "Spa & Thẩm Mỹ Viện", desc: "Trưng bày liệu trình làm đẹp, săn voucher giảm giá giờ vàng, đặt lịch thư giãn cuối tuần." },
+  { icon: <Camera className="size-7 text-gold" />, title: "Studio Chụp Ảnh & Áo Cưới", desc: "Xem lookbook concept, đặt lịch thử váy cưới, giữ lịch chụp ngoại cảnh." },
+  { icon: <PawPrint className="size-7 text-gold" />, title: "Spa & Khách Sạn Thú Cưng", desc: "Đặt hẹn tắm tỉa lông, đưa đón thú cưng, đặt phòng gửi chó mèo an toàn." },
+  { icon: <Wrench className="size-7 text-gold" />, title: "Dịch Vụ Sửa Chữa Tại Nhà", desc: "Đặt thợ vệ sinh máy lạnh, sửa điện nước, giặt sofa tận nơi đúng giờ hẹn." },
+  { icon: <Home className="size-7 text-gold" />, title: "Homestay & Du Lịch Trải Nghiệm", desc: "Đặt phòng nghỉ dưỡng cuối tuần, thuê tour trải nghiệm trực tiếp không qua trung gian." },
+  { icon: <BriefcaseBusiness className="size-7 text-gold" />, title: "Tư Vấn & Coaching 1:1", desc: "Đặt lịch tham vấn trực tuyến hoặc trực tiếp, chọn gói thời lượng và chủ đề tư vấn." },
 ];
 
 export default async function HomeBookingPage() {
@@ -88,21 +39,23 @@ export default async function HomeBookingPage() {
   let activeShops = 0;
   let totalLeads = 0;
 
-  try {
-    const { count: shops, error: shopsError } = await supabase
-      .from("businesses")
-      .select("*", { count: "exact", head: true })
-      .in("status", ["published", "active", "trial"]);
-    if (shopsError) console.error("Failed to fetch shops count:", shopsError);
-    activeShops = shops ?? 0;
+  // Promise.allSettled: 2 query độc lập, 1 query lỗi không ảnh hưởng query kia
+  const [shopsResult, leadsResult] = await Promise.allSettled([
+    supabase.from("businesses").select("*", { count: "exact", head: true }).in("status", ["published", "active", "trial"]),
+    supabase.from("business_leads").select("*", { count: "exact", head: true }),
+  ]);
 
-    const { count: leads, error: leadsError } = await supabase
-      .from("business_leads")
-      .select("*", { count: "exact", head: true });
-    if (leadsError) console.error("Failed to fetch leads count:", leadsError);
-    totalLeads = leads ?? 0;
-  } catch (error) {
-    console.error("Failed to fetch stats:", error);
+  if (shopsResult.status === "fulfilled") {
+    if (shopsResult.value.error) console.error("Failed to fetch shops count:", shopsResult.value.error);
+    activeShops = shopsResult.value.count ?? 0;
+  } else {
+    console.error("Failed to fetch shops count:", shopsResult.reason);
+  }
+  if (leadsResult.status === "fulfilled") {
+    if (leadsResult.value.error) console.error("Failed to fetch leads count:", leadsResult.value.error);
+    totalLeads = leadsResult.value.count ?? 0;
+  } else {
+    console.error("Failed to fetch leads count:", leadsResult.reason);
   }
 
   return (
@@ -115,7 +68,6 @@ export default async function HomeBookingPage() {
       <section className="relative overflow-hidden bg-ink pt-28 pb-24 md:pt-36 md:pb-32">
         <HeroSlider />
         <div className="relative mx-auto max-w-5xl px-6 text-center z-20">
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-gold uppercase mb-8">
             <Zap className="size-3" />
             🚀 Nền Tảng Đặt Lịch 1-Chạm &amp; Trợ Lý Lễ Tân AI Thế Hệ Mới
@@ -150,7 +102,6 @@ export default async function HomeBookingPage() {
             </Link>
           </div>
 
-          {/* Commitment badges */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-white/60 text-sm">
             <span className="flex items-center gap-1.5"><Zap className="size-4 text-gold" /> Triển khai chỉ trong 5 phút</span>
             <span className="text-white/20">·</span>
@@ -159,7 +110,6 @@ export default async function HomeBookingPage() {
             <span className="flex items-center gap-1.5"><Smartphone className="size-4 text-gold" /> Tương thích 100% điện thoại</span>
           </div>
 
-          {/* Social proof */}
           {(activeShops > 0 || totalLeads > 0) && (
             <div className="mt-10 flex flex-wrap items-center justify-center gap-8 text-white/60 text-sm">
               {activeShops > 0 && (
@@ -197,7 +147,6 @@ export default async function HomeBookingPage() {
               Một hệ thống duy nhất thay thế toàn bộ nhân viên trực page, sổ ghi tay và phần mềm đắt tiền.
             </p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
@@ -222,13 +171,8 @@ export default async function HomeBookingPage() {
                 highlight: "Quản lý tiệm ngay từ điện thoại",
               },
             ].map((f, i) => (
-              <div
-                key={i}
-                className="group rounded-3xl border border-gold-soft bg-champagne p-8 transition-all hover:-translate-y-1 hover:shadow-card hover:border-gold"
-              >
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-gold">
-                  {f.badge}
-                </div>
+              <div key={i} className="group rounded-3xl border border-gold-soft bg-champagne p-8 transition-all hover:-translate-y-1 hover:shadow-card hover:border-gold">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-gold">{f.badge}</div>
                 <div className="mb-5">{f.icon}</div>
                 <h3 className="font-display text-xl text-ink mb-3">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-5">{f.desc}</p>
@@ -246,14 +190,11 @@ export default async function HomeBookingPage() {
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-14">
             <p className="text-xs tracking-[0.3em] text-gold uppercase">Đa ngành · Đa lĩnh vực</p>
-            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">
-              10 Nhóm Ngành Được Hỗ Trợ
-            </h2>
+            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">10 Nhóm Ngành Được Hỗ Trợ</h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
               Từ nha khoa, nhà hàng đến spa, thú cưng và coaching — 1Booking.Asia vận hành trơn tru cho mọi loại hình dịch vụ.
             </p>
           </div>
-
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {INDUSTRIES.map((industry, i) => (
               <Link
@@ -261,7 +202,9 @@ export default async function HomeBookingPage() {
                 href="/luxury-spa-demo"
                 className="group relative flex flex-col items-start rounded-2xl border border-border bg-background p-5 transition-all hover:-translate-y-1 hover:border-gold hover:shadow-card"
               >
-                <span className="text-3xl mb-3">{industry.emoji}</span>
+                <div className="mb-3 p-2 rounded-xl bg-gold/10 group-hover:bg-gold/20 transition-colors">
+                  {industry.icon}
+                </div>
                 <h3 className="font-bold text-sm text-ink mb-2 leading-snug">{industry.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{industry.desc}</p>
                 <span className="mt-4 inline-flex items-center gap-1 text-xs text-gold font-semibold group-hover:gap-2 transition-all">
@@ -285,22 +228,13 @@ export default async function HomeBookingPage() {
                 Quản Lý Khách Hẹn Gọn Gàng — Nói Không Với Sổ Sách Rối Rắm
               </h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                Toàn bộ lịch hẹn của khách được gom tự động vào trang quản trị riêng của cơ sở bạn. Không cần nhớ, không cần ghi chép tay.
+                Toàn bộ lịch hẹn của khách được gom tự động vào trang quản trị riêng của cơ sở bạn.
               </p>
               <ul className="mt-8 space-y-4">
                 {[
-                  {
-                    icon: <Calendar className="size-5 text-gold shrink-0" />,
-                    text: "Toàn bộ danh sách khách đặt lịch được gom tự động vào trang quản trị riêng của cơ sở.",
-                  },
-                  {
-                    icon: <BadgeCheck className="size-5 text-gold shrink-0" />,
-                    text: "Phân loại rõ ràng theo trạng thái: Chờ xác nhận · Đã tiếp nhận · Đã hoàn thành.",
-                  },
-                  {
-                    icon: <FileSpreadsheet className="size-5 text-gold shrink-0" />,
-                    text: "Xuất toàn bộ dữ liệu ra file Excel chỉ bằng 1 cú nhấp chuột để chăm sóc lại khách quen hoặc chạy quảng cáo.",
-                  },
+                  { icon: <Calendar className="size-5 text-gold shrink-0" />, text: "Toàn bộ danh sách khách đặt lịch được gom tự động vào trang quản trị riêng của cơ sở." },
+                  { icon: <BadgeCheck className="size-5 text-gold shrink-0" />, text: "Phân loại rõ ràng theo trạng thái: Chờ xác nhận · Đã tiếp nhận · Đã hoàn thành." },
+                  { icon: <FileSpreadsheet className="size-5 text-gold shrink-0" />, text: "Xuất toàn bộ dữ liệu ra file Excel chỉ bằng 1 cú nhấp chuột để chăm sóc lại khách quen hoặc chạy quảng cáo." },
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
                     {item.icon}
@@ -331,16 +265,15 @@ export default async function HomeBookingPage() {
                     <p className="text-sm font-semibold text-ink">{row.name}</p>
                     <p className="text-xs text-muted-foreground">{row.service} · {row.time}</p>
                   </div>
-                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${row.color}`}>
-                    {row.status}
-                  </span>
+                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${row.color}`}>{row.status}</span>
                 </div>
               ))}
               <div className="pt-2 flex items-center justify-between text-xs text-muted-foreground border-t border-border">
                 <span>Tổng hôm nay: <strong className="text-ink">4 lịch</strong></span>
-                <button className="flex items-center gap-1 text-gold font-semibold hover:underline">
+                {/* span thay vì button vì đây là mockup visual, không có handler */}
+                <span className="flex items-center gap-1 text-gold font-semibold">
                   <FileSpreadsheet className="size-3" /> Xuất Excel
-                </button>
+                </span>
               </div>
             </div>
           </div>
@@ -357,7 +290,6 @@ export default async function HomeBookingPage() {
             <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">Bảng Giá Rõ Ràng — Chọn Gói Phù Hợp</h2>
             <p className="mt-4 text-muted-foreground">Không cần ký hợp đồng dài hạn. Không bị ép mua thêm gói.</p>
           </div>
-
           <div className="grid md:grid-cols-2 gap-6">
             {/* Gói Tự Vận Hành */}
             <div className="relative rounded-3xl border-2 border-gold-soft bg-background p-8">
@@ -377,20 +309,14 @@ export default async function HomeBookingPage() {
                   "Dùng thử miễn phí 7 ngày",
                 ].map((f) => (
                   <li key={f} className="flex items-start gap-3 text-sm text-ink">
-                    <CheckCircle className="size-4 text-gold mt-0.5 shrink-0" />
-                    {f}
+                    <CheckCircle className="size-4 text-gold mt-0.5 shrink-0" />{f}
                   </li>
                 ))}
               </ul>
-              <Link
-                href={CONTACT_ZALO}
-                target="_blank"
-                className="block text-center border-2 border-gold text-gold font-bold px-6 py-3 rounded-xl hover:bg-gold hover:text-ink transition-all"
-              >
+              <Link href={CONTACT_ZALO} target="_blank" className="block text-center border-2 border-gold text-gold font-bold px-6 py-3 rounded-xl hover:bg-gold hover:text-ink transition-all">
                 Đăng Ký Gói Này
               </Link>
             </div>
-
             {/* Gói VIP */}
             <div className="relative rounded-3xl border-2 border-gold bg-champagne p-8 shadow-card">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold text-ink text-xs font-black px-5 py-1.5 rounded-full uppercase tracking-widest whitespace-nowrap">
@@ -411,16 +337,11 @@ export default async function HomeBookingPage() {
                   "Hỗ trợ ưu tiên qua Zalo trong 12 tháng",
                 ].map((f) => (
                   <li key={f} className="flex items-start gap-3 text-sm text-ink">
-                    <CheckCircle className="size-4 text-gold mt-0.5 shrink-0" />
-                    {f}
+                    <CheckCircle className="size-4 text-gold mt-0.5 shrink-0" />{f}
                   </li>
                 ))}
               </ul>
-              <Link
-                href={CONTACT_ZALO}
-                target="_blank"
-                className="block text-center bg-gold text-ink font-bold px-6 py-3 rounded-xl hover:bg-gold/90 hover:scale-105 transition-all shadow-lg"
-              >
+              <Link href={CONTACT_ZALO} target="_blank" className="block text-center bg-gold text-ink font-bold px-6 py-3 rounded-xl hover:bg-gold/90 hover:scale-105 transition-all shadow-lg">
                 ⚡ Kích Hoạt Gói VIP Ngay
               </Link>
             </div>
