@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+  <!-- Background transparent -->
+  
+  <!-- Icon group -->
+  <g transform="translate(15, 15)">
+    <!-- Cloud (Mây) -->
+    <path d="M45,35 C35,35 25,45 25,55 C15,55 5,65 15,75 L85,75 C95,65 85,55 75,55 C75,40 60,30 45,35 Z" fill="#E8F5E9" />
+    <path d="M45,35 C35,35 25,45 25,55 C15,55 5,65 15,75 L85,75 C95,65 85,55 75,55 C75,40 60,30 45,35 Z" fill="none" stroke="#33691E" stroke-width="2" />
+    
+    <!-- Wooden House -->
+    <path d="M50,45 L20,70 L25,75 L30,70 L30,95 L70,95 L70,70 L75,75 L80,70 Z" fill="#5D4037" />
+    
+    <!-- Roof -->
+    <path d="M50,35 L15,65 L20,72 L50,45 L80,72 L85,65 Z" fill="#33691E" />
+    
+    <!-- Door -->
+    <rect x="42" y="70" width="16" height="25" fill="#E8F5E9" />
+    
+    <!-- Window -->
+    <circle cx="50" cy="58" r="4" fill="#E8F5E9" />
+  </g>
+
+  <!-- Text -->
+  <text x="120" y="65" font-family="'Nunito', 'Segoe UI', sans-serif" font-weight="900" font-size="38" fill="#33691E" letter-spacing="-1">Mây Homestay</text>
+  <text x="123" y="90" font-family="'Nunito', 'Segoe UI', sans-serif" font-weight="700" font-size="14" fill="#5D4037" letter-spacing="2">ĐÀ LẠT RETREAT</text>
+</svg>

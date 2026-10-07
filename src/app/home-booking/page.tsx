@@ -29,7 +29,7 @@ const INDUSTRIES = [
   { slug: "paris-wedding", icon: <Camera className="size-7 text-gold" />, title: "Studio Chụp Ảnh & Áo Cưới", desc: "Xem lookbook concept, đặt lịch thử váy cưới, giữ lịch chụp ngoại cảnh." },
   { slug: "happy-pet", icon: <PawPrint className="size-7 text-gold" />, title: "Spa & Khách Sạn Thú Cưng", desc: "Đặt hẹn tắm tỉa lông, đưa đón thú cưng, đặt phòng gửi chó mèo an toàn." },
   { slug: "dien-lanh-nhanh", icon: <Wrench className="size-7 text-gold" />, title: "Dịch Vụ Sửa Chữa Tại Nhà", desc: "Đặt thợ vệ sinh máy lạnh, sửa điện nước, giặt sofa tận nơi đúng giờ hẹn." },
-  { slug: "luxury-spa-demo", icon: <Home className="size-7 text-gold" />, title: "Homestay & Du Lịch Trải Nghiệm", desc: "Đặt phòng nghỉ dưỡng cuối tuần, thuê tour trải nghiệm trực tiếp không qua trung gian." },
+  { slug: "may-homestay-dalat", icon: <Home className="size-7 text-gold" />, title: "Homestay & Du Lịch Trải Nghiệm", desc: "Đặt phòng nghỉ dưỡng cuối tuần, thuê tour trải nghiệm trực tiếp không qua trung gian." },
   { slug: "luxury-spa-demo", icon: <BriefcaseBusiness className="size-7 text-gold" />, title: "Tư Vấn & Coaching 1:1", desc: "Đặt lịch tham vấn trực tuyến hoặc trực tiếp, chọn gói thời lượng và chủ đề tư vấn." },
 ];
 
