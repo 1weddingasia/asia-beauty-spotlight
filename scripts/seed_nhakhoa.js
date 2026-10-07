@@ -23,6 +23,7 @@ async function seed() {
     category_slug: 'nha-khoa', // industry tag
     owner_id: null,
     is_featured: true,
+    short_description: 'Đặt Lịch Khám Ưu Tiên, Không Chờ Đợi, Không Xếp Hàng',
     address: '99 Đại Lộ Răng Sứ, Quận Trung Tâm, TP.HCM',
     phone: '0901234567',
     description: 'Nha Khoa Quốc Tế tự hào là trung tâm chăm sóc răng miệng hàng đầu với trang thiết bị y tế hiện đại nhập khẩu 100% từ Đức và Mỹ. Không gian khám chữa bệnh được vô trùng tuyệt đối, tuân thủ nghiêm ngặt tiêu chuẩn của Bộ Y Tế. Đội ngũ y bác sĩ chuyên khoa Răng Hàm Mặt trên 10 năm kinh nghiệm luôn tận tâm, mang đến nụ cười rạng rỡ và sự an tâm tuyệt đối cho khách hàng.',
@@ -35,7 +36,10 @@ async function seed() {
       tagline: 'Đặt Lịch Khám Ưu Tiên, Không Chờ Đợi, Không Xếp Hàng',
       working_hours: '08:00 - 20:00 (Thứ 2 - Chủ Nhật)',
       logo_url: '/images/demo/nha-khoa/logo.png',
-      banners: ['/images/demo/nha-khoa/banner.jpg'],
+      banners: [
+        '/images/demo/nha-khoa/banner.jpg',
+        '/images/demo/nha-khoa/banner-2.jpg'
+      ],
       services: [
         {
           name: 'Cạo vôi răng sóng siêu âm & Đánh bóng',
