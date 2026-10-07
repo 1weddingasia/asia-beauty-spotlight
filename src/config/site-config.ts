@@ -51,7 +51,7 @@ const BOOKING_CONFIG: SiteConfig = {
   domain: "1booking.asia",
   logoText: "1Booking",
   logoDomain: ".Asia",
-  logoImageUrl: "/images/logo-1booking.png",
+  logoImageUrl: "", // dùng text fallback
   description:
     "Nền tảng đặt hẹn đa ngành, kết nối khách hàng với các cơ sở dịch vụ uy tín trên khắp Việt Nam.",
   exploreTitle: "Khám Phá Dịch Vụ Đặt Lịch",
