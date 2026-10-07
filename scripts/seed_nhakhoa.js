@@ -1,16 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
-import fs from 'fs';
 
 // Tải biến môi trường từ .env.local
-const envPath = path.resolve(process.cwd(), '.env.local');
-if (fs.existsSync(envPath)) {
-  const envConfig = dotenv.parse(fs.readFileSync(envPath));
-  for (const k in envConfig) {
-    process.env[k] = envConfig[k];
-  }
-}
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -30,14 +23,19 @@ async function seed() {
     category_slug: 'nha-khoa', // industry tag
     owner_id: null,
     is_featured: true,
+    address: '99 Đại Lộ Răng Sứ, Quận Trung Tâm, TP.HCM',
+    phone: '0901234567',
+    description: 'Nha Khoa Quốc Tế tự hào là trung tâm chăm sóc răng miệng hàng đầu với trang thiết bị y tế hiện đại nhập khẩu 100% từ Đức và Mỹ. Không gian khám chữa bệnh được vô trùng tuyệt đối, tuân thủ nghiêm ngặt tiêu chuẩn của Bộ Y Tế. Đội ngũ y bác sĩ chuyên khoa Răng Hàm Mặt trên 10 năm kinh nghiệm luôn tận tâm, mang đến nụ cười rạng rỡ và sự an tâm tuyệt đối cho khách hàng.',
+    socials: {
+      facebook: 'https://facebook.com/nhakhoaquoc',
+      tiktok: 'https://tiktok.com/@nhakhoaquoc',
+      zalo: 'https://zalo.me/0901234567'
+    },
     page_content: {
-      slogan: 'Đặt Lịch Khám Ưu Tiên, Không Chờ Đợi, Không Xếp Hàng',
-      about_us: 'Nha Khoa Quốc Tế tự hào là trung tâm chăm sóc răng miệng hàng đầu với trang thiết bị y tế hiện đại nhập khẩu 100% từ Đức và Mỹ. Không gian khám chữa bệnh được vô trùng tuyệt đối, tuân thủ nghiêm ngặt tiêu chuẩn của Bộ Y Tế. Đội ngũ y bác sĩ chuyên khoa Răng Hàm Mặt trên 10 năm kinh nghiệm luôn tận tâm, mang đến nụ cười rạng rỡ và sự an tâm tuyệt đối cho khách hàng.',
-      address: '99 Đại Lộ Răng Sứ, Quận Trung Tâm, TP.HCM',
-      phone: '0901234567',
-      open_hours: '08:00 - 20:00 (Thứ 2 - Chủ Nhật)',
+      tagline: 'Đặt Lịch Khám Ưu Tiên, Không Chờ Đợi, Không Xếp Hàng',
+      working_hours: '08:00 - 20:00 (Thứ 2 - Chủ Nhật)',
       logo_url: '/images/demo/nha-khoa/logo.png',
-      banner_url: '/images/demo/nha-khoa/banner.jpg',
+      banners: ['/images/demo/nha-khoa/banner.jpg'],
       services: [
         {
           name: 'Cạo vôi răng sóng siêu âm & Đánh bóng',
@@ -89,12 +87,7 @@ async function seed() {
           rating: 5,
           comment: 'Mình mới tẩy trắng ở đây xong. Răng bật tông rõ rệt mà không bị nhạy cảm. Hệ thống đặt lịch nhanh, đến đúng giờ là được vào làm ngay không phải đợi.'
         }
-      ],
-      social: {
-        facebook: 'https://facebook.com/nhakhoaquoc',
-        tiktok: 'https://tiktok.com/@nhakhoaquoc',
-        zalo: 'https://zalo.me/0901234567'
-      }
+      ]
     }
   };
 
@@ -111,4 +104,7 @@ async function seed() {
   }
 }
 
-seed();
+seed().catch((err) => {
+  console.error("Seed thất bại:", err);
+  process.exit(1);
+});
