@@ -73,14 +73,16 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   }, [api]);
 
   // Tải danh sách deal đã lưu từ localStorage
-  if (typeof window !== 'undefined' && savedDeals.length === 0) {
-    const local = localStorage.getItem(`saved_deals_${siteConfig.domain}`);
-    if (local) {
-      try {
-        setSavedDeals(JSON.parse(local));
-      } catch (e) {}
+  useEffect(() => {
+    if (savedDeals.length === 0) {
+      const local = localStorage.getItem(`saved_deals_${siteConfig.domain}`);
+      if (local) {
+        try {
+          setSavedDeals(JSON.parse(local));
+        } catch (e) {}
+      }
     }
-  }
+  }, [siteConfig.domain, savedDeals.length]);
 
   // Lấy danh sách deals từ JSON
   let rawDeals: Deal[] = Array.isArray(business.page_content?.deals) ? business.page_content.deals : [];
