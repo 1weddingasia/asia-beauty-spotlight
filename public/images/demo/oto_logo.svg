@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100" width="300" height="100">
+  <defs>
+    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EAB308" />
+      <stop offset="100%" stop-color="#FACC15" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield/Car Abstract Icon -->
+  <path d="M 20 50 L 40 20 L 70 20 L 90 50 L 70 80 L 40 80 Z" fill="none" stroke="url(#neonGradient)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 30 50 L 45 28 L 65 28 L 80 50 L 65 72 L 45 72 Z" fill="#1C1917" stroke="#EAB308" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="55" cy="50" r="12" fill="url(#neonGradient)" />
+  
+  <!-- Text -->
+  <text x="110" y="55" font-family="Arial, sans-serif" font-size="32" font-weight="900" fill="#1C1917" letter-spacing="2">PRO DETAILING</text>
+  <text x="112" y="75" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#78716C" letter-spacing="4">AUTO CARE CENTER</text>
+</svg>

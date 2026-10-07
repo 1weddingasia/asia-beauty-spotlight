@@ -34,7 +34,7 @@ async function seed() {
     page_content: {
       tagline: 'Chăm Sóc Xế Cưng Đạt Chuẩn, Đặt Lịch Tránh Chờ Cầu Nâng',
       working_hours: '07:30 - 18:30 (Thứ 2 - Thứ 7)',
-      logo_url: '', // Dùng text fallback
+      logo_url: '/images/demo/oto_logo.svg',
       banners: [
         'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=2070&auto=format&fit=crop',
         'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=2000&auto=format&fit=crop'
@@ -42,7 +42,7 @@ async function seed() {
       services: [
         {
           name: 'Rửa xe chi tiết gầm & Dưỡng khoang máy',
-          desc: 'Làm sạch toàn bộ khung gầm bằng dung dịch chuyên dụng. Rửa khoang máy và xịt dưỡng nhựa, cao su chống lão hóa, phục hồi màu đen nhám nguyên bản.',
+          description: 'Làm sạch toàn bộ khung gầm bằng dung dịch chuyên dụng. Rửa khoang máy và xịt dưỡng nhựa, cao su chống lão hóa, phục hồi màu đen nhám nguyên bản.',
           price: 250000,
           original_price: 350000,
           duration: '60 phút',
@@ -50,7 +50,7 @@ async function seed() {
         },
         {
           name: 'Đánh bóng hiệu chỉnh bề mặt sơn & Phủ Ceramic',
-          desc: 'Hiệu chỉnh vết xước dăm, đánh bóng 3 bước tiêu chuẩn. Phủ Ceramic 9H siêu cứng bảo vệ lớp sơn khỏi ố nước, tia UV và tạo hiệu ứng lá sen kháng nước tuyệt đối.',
+          description: 'Hiệu chỉnh vết xước dăm, đánh bóng 3 bước tiêu chuẩn. Phủ Ceramic 9H siêu cứng bảo vệ lớp sơn khỏi ố nước, tia UV và tạo hiệu ứng lá sen kháng nước tuyệt đối.',
           price: 2500000,
           original_price: 3500000,
           duration: '1-2 Ngày',
@@ -58,7 +58,7 @@ async function seed() {
         },
         {
           name: 'Dán phim cách nhiệt 3M chính hãng (Gói xe 5 chỗ)',
-          desc: 'Gói dán full xe 5 chỗ bằng phim cách nhiệt 3M Crystalline cao cấp nhất. Chống tia UV 99%, giảm nhiệt độ cabin lên tới 60%, bảo hành điện tử 10 năm.',
+          description: 'Gói dán full xe 5 chỗ bằng phim cách nhiệt 3M Crystalline cao cấp nhất. Chống tia UV 99%, giảm nhiệt độ cabin lên tới 60%, bảo hành điện tử 10 năm.',
           price: 4800000,
           original_price: 6000000,
           duration: '3 Giờ',
@@ -72,7 +72,7 @@ async function seed() {
           promo_price: '0đ',
           original_price: '250K',
           valid_until: 'Cuối tháng này',
-          desc: 'Đặt lịch phủ Ceramic trước qua website sẽ được tặng kèm 1 lượt Rửa xe chi tiết gầm & khoang máy.'
+          note: 'Đặt lịch phủ Ceramic trước qua website sẽ được tặng kèm 1 lượt Rửa xe chi tiết gầm & khoang máy.'
         }
       ],
       gallery: [
