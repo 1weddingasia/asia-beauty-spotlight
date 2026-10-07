@@ -10,17 +10,18 @@ export const CONTACT_ZALO = "https://zalo.me/0918731411";
 
 // ── Type định nghĩa ──────────────────────────────────────────────────────────
 export type SiteConfig = {
-  brand: string;           // Tên thương hiệu đầy đủ, VD: "1Beauty.Asia"
-  domain: string;          // Domain chính, VD: "1beauty.asia"
-  logoText: string;        // Phần đầu text logo, VD: "1Beauty"
-  logoDomain: string;      // Phần sau text logo, VD: ".Asia"
-  description: string;     // Mô tả ngắn cho footer
-  exploreTitle: string;    // Tiêu đề trang khám phá ưu đãi (h1)
-  exploreSubtitle: string; // Mô tả trang khám phá
-  exploreHeroTag: string;  // Tag nhỏ phía trên hero
-  industryFilter: string[] | null; // null = hiển thị tất cả; mảng = lọc theo ngành
-  poweredBy: string;       // Text "Vận hành bởi X" ở footer tiệm
-  metaTitleSuffix: string; // Suffix cho thẻ <title>
+  brand: string;
+  domain: string;
+  logoText: string;
+  logoDomain: string;
+  logoImageUrl: string;    // Đường dẫn ảnh logo (/images/...); trống = dùng text fallback
+  description: string;
+  exploreTitle: string;
+  exploreSubtitle: string;
+  exploreHeroTag: string;
+  industryFilter: string[] | null;
+  poweredBy: string;
+  metaTitleSuffix: string;
 };
 
 // ── Cấu hình từng domain ──────────────────────────────────────────────────────
@@ -30,6 +31,7 @@ const BEAUTY_CONFIG: SiteConfig = {
   domain: "1beauty.asia",
   logoText: "1Beauty",
   logoDomain: ".Asia",
+  logoImageUrl: "", // dùng text fallback; thêm path khi có file logo
   description:
     "Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm mỹ viện, salon và học viện uy tín trên khắp Việt Nam.",
   exploreTitle: "Khám Phá Ưu Đãi Làm Đẹp",
@@ -46,6 +48,7 @@ const BOOKING_CONFIG: SiteConfig = {
   domain: "1booking.asia",
   logoText: "1Booking",
   logoDomain: ".Asia",
+  logoImageUrl: "/images/logo-1booking.png",
   description:
     "Nền tảng đặt hẹn đa ngành, kết nối khách hàng với các cơ sở dịch vụ uy tín trên khắp Việt Nam.",
   exploreTitle: "Khám Phá Dịch Vụ Đặt Lịch",

@@ -74,8 +74,14 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
       .finally(() => setAuthLoading(false));
   }, []);
 
-  // Logo: ưu tiên ảnh từ DB site_settings; fallback theo siteConfig brand text
-  const logoNode = settings?.logo_url ? (
+  // Logo: ưu tiên (1) ảnh config theo domain, (2) ảnh từ DB, (3) text fallback
+  const logoNode = siteConfig.logoImageUrl ? (
+    <img
+      src={siteConfig.logoImageUrl}
+      alt={siteConfig.brand}
+      className="h-8 w-auto object-contain"
+    />
+  ) : settings?.logo_url ? (
     <img
       src={settings.logo_url}
       alt={siteConfig.brand}
@@ -207,7 +213,13 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-ink text-background/70">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div className="md:col-span-2">
-          {settings?.logo_url ? (
+          {siteConfig.logoImageUrl ? (
+            <img
+              src={siteConfig.logoImageUrl}
+              alt={siteConfig.brand}
+              className="h-10 w-auto object-contain"
+            />
+          ) : settings?.logo_url ? (
             <img
               src={settings.logo_url}
               alt={siteConfig.brand}
