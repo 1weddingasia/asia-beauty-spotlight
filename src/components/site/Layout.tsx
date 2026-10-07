@@ -201,13 +201,22 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
 
 export function SiteFooter() {
   const [settings, setSettings] = useState<any>(null);
-  const [categories, setCategories] = useState<any[]>([]);
   const siteConfig = useSiteConfig();
-
   useEffect(() => {
     getSettings().then(setSettings);
-    getFooterCategories().then(setCategories);
   }, []);
+
+  const demoLinks = [
+    { name: "Nha Khoa & Phòng Khám", slug: "nha-khoa" },
+    { name: "Nhà Hàng & Quán Ăn", slug: "nha-hang" },
+    { name: "Trung Tâm Detailing", slug: "pro-detailing" },
+    { name: "Phòng Gym & Yoga", slug: "elite-fitness" },
+    { name: "Studio Chụp Ảnh Cưới", slug: "paris-wedding" },
+    { name: "Spa & Khách Sạn Thú Cưng", slug: "happy-pet" },
+    { name: "Sửa Chữa Tại Nhà", slug: "dien-lanh-nhanh" },
+    { name: "Homestay & Du Lịch", slug: "may-homestay-dalat" },
+    { name: "Tư Vấn & Coaching 1:1", slug: "chuyen-gia-tu-van" },
+  ];
 
   return (
     <footer className="border-t border-border bg-ink text-background/70">
@@ -236,13 +245,18 @@ export function SiteFooter() {
         <div>
           <p className="text-xs tracking-[0.25em] text-gold uppercase">Danh mục</p>
           <ul className="mt-4 space-y-2 text-sm">
-            {categories.map((c) => (
+            {demoLinks.slice(0, 5).map((c) => (
               <li key={c.slug}>
-                <Link href={`/tim-kiem?category=${c.slug}`} className="transition-colors hover:text-gold">
+                <Link href={`/${c.slug}`} className="transition-colors hover:text-gold">
                   {c.name}
                 </Link>
               </li>
             ))}
+            <li>
+              <Link href="/home-booking" className="transition-colors hover:text-gold italic">
+                Xem tất cả 9+ ngành...
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
