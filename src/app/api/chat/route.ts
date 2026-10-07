@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { getSiteConfig } from '@/config/site-config';
 import { createAdminClient } from '@/utils/supabase/server';
 
 function extractPhone(text: string): string | null {
@@ -142,8 +143,8 @@ QUY TẮC BẮT BUỘC:
     if (reply.includes('[CHOT_DON]')) {
       reply = reply.replace(/\[CHOT_DON\]/g, '').trim();
       const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
-      const origin = req.headers.get('origin') || req.headers.get('referer') || '';
-      const platformStr = origin.toLowerCase().includes('1beauty') ? '1BEAUTY.ASIA' : '1BOOKING.ASIA';
+      const host = req.headers.get('host') || '';
+      const platformStr = getSiteConfig(host).brand.toUpperCase();
 
       if (telegramChatId && userPhoneFound) {
         const msg = `🔥 [${platformStr} AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${lastUserMsg?.content || ''}"\nAI đã phản hồi: "${reply}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;

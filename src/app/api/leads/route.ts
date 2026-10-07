@@ -1,5 +1,6 @@
 import { NextResponse, after } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/server';
+import { getSiteConfig } from '@/config/site-config';
 import { z } from 'zod';
 
 import { Redis } from '@upstash/redis';
@@ -314,8 +315,8 @@ export async function POST(req: Request) {
     if (telegramChatId) {
       let header = '';
 
-      const origin = req.headers.get('origin') || req.headers.get('referer') || '';
-      const platformStr = origin.toLowerCase().includes('1beauty') ? '1BEAUTY.ASIA' : '1BOOKING.ASIA';
+      const host = req.headers.get('host') || '';
+      const platformStr = getSiteConfig(host).brand.toUpperCase();
 
       if (isBookingDeal) {
         header = isVIP

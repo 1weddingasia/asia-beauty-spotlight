@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { createAdminClient } from '@/utils/supabase/server';
+import { getSiteConfig } from '@/config/site-config';
 
 export const maxDuration = 60; // Allow longer execution time for Vercel
 
@@ -128,8 +129,10 @@ QUY TẮC BẮT BUỘC:
     if (lastMsgPhone) {
         const telegramChatId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
         if (telegramChatId) {
+          const host = req.headers.get('host') || '';
+          const siteConfig = getSiteConfig(host);
+          const platformName = siteConfig.brand.toUpperCase();
           const msgRole = mode === 'b2c' ? 'NGƯỜI DÙNG' : 'CHỦ TIỆM';
-          const platformName = mode === 'b2c' ? '1BEAUTY' : '1BOOKING';
           const msg = `🚀 [${platformName} LEAD] CÓ ${msgRole} ĐỂ LẠI SĐT TRÊN WEB!\n\nSĐT: ${lastMsgPhone}\nNội dung: "${lastUserMsg.content}"\n👉 CSKH gọi ngay nhé!`;
           sendTelegramAsync(telegramChatId, msg);
         }
