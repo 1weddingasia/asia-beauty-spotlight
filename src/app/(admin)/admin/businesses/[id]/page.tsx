@@ -5,10 +5,9 @@ import { createAdminClient } from "@/utils/supabase/server";
 export default async function EditBusinessPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }) {
-  const resolvedParams = await params;
-  const id = resolvedParams.id;
+  const id = params.id;
   const supabase = await createAdminClient();
   
   // Fetch available categories and locations

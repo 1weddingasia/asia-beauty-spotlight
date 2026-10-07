@@ -6,9 +6,9 @@ import PromoClient from "./PromoClient";
 
 export const revalidate = 0; // Disabled cache to show updates instantly
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const h = await headers();
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  const h = headers();
   const host = h.get('host') || '';
   const siteConfig = getSiteConfig(host);
   const supabase = createStaticClient();
@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function PromoPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function PromoPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
   const supabase = createStaticClient();
   
   let business;

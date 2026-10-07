@@ -8,8 +8,8 @@ import { ArrowLeft } from "lucide-react";
 
 export const revalidate = 3600;
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const { slug } = params;
   const supabase = createStaticClient();
   const { data: blog, error } = await supabase.from("blogs").select("title, excerpt").eq("slug", slug).single();
   
@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function BlogDetailPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
   const supabase = createStaticClient();
   const { data: blog, error } = await supabase
     .from("blogs")

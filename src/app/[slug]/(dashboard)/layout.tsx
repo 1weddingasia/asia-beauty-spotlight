@@ -11,7 +11,7 @@ import { getSiteConfig, PRICING_AMOUNT } from "@/config/site-config";
 import { headers } from "next/headers";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
+  const h = headers();
   const siteConfig = getSiteConfig(h.get('host') || '');
   return {
     title: "Bảng điều khiển Gian hàng",
@@ -24,12 +24,12 @@ export default async function BusinessDashboardLayout({
   params
 }: { 
   children: React.ReactNode,
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }) {
-  const { slug } = await params;
+  const { slug } = params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const h = await headers();
+  const h = headers();
   const siteConfig = getSiteConfig(h.get('host') || '');
 
   if (!user) {
