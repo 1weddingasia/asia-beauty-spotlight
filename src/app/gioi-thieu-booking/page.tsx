@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { 
-  ArrowRight, Bot, PieChart, Users, TrendingUp, BellRing, 
+  ArrowRight, Bot, PieChart, BellRing, 
   MessageSquareLock, ShieldCheck, Database, Smartphone, CheckCircle2 
 } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
+import { CONTACT_ZALO } from "@/config/site-config";
 
 export const metadata = {
   title: "Giới Thiệu 1Booking.Asia — Nền tảng Đặt lịch 1-chạm & Lễ tân AI",
@@ -166,7 +167,7 @@ export default function GioiThieuBookingPage() {
               Hệ Sinh Thái <span className="text-gold">Đa Ngành</span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              1Booking.Asia được thiết kế mở và tối ưu giao diện cũng như nghiệp vụ chuyên biệt cho hơn 10 nhóm ngành:
+              1Booking.Asia được thiết kế mở và tối ưu giao diện cũng như nghiệp vụ chuyên biệt cho 7 nhóm ngành trọng điểm:
             </p>
           </div>
           
@@ -252,7 +253,7 @@ export default function GioiThieuBookingPage() {
               Bắt Đầu Tạo Trang Ngay <ArrowRight className="size-5" />
             </Link>
             <Link
-              href="https://zalo.me/your-zalo-number"
+              href={CONTACT_ZALO}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-8 py-4 font-bold text-white transition-all hover:bg-white/10"
