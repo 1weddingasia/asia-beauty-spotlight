@@ -17,8 +17,7 @@ let _settingsCache: any = null;
 let _settingsCacheTime = 0;
 const SETTINGS_TTL = 5 * 60 * 1000;
 
-let _categoriesCache: any[] | null = null;
-let _categoriesCacheTime = 0;
+
 
 async function getSettings() {
   const now = Date.now();
@@ -30,15 +29,7 @@ async function getSettings() {
   return _settingsCache;
 }
 
-async function getFooterCategories() {
-  const now = Date.now();
-  if (_categoriesCache && now - _categoriesCacheTime < SETTINGS_TTL) return _categoriesCache;
-  const supabase = createClient();
-  const { data } = await supabase.from("directory_categories").select("*").limit(5);
-  _categoriesCache = data || [];
-  _categoriesCacheTime = now;
-  return _categoriesCache;
-}
+
 
 // ── Shared hook: tránh duplicate state+effect ────────────────────────────────
 // Tránh hydration mismatch: server render null (không biết hostname),
@@ -199,24 +190,24 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
 
 // ── SiteFooter ────────────────────────────────────────────────────────────────
 
+const demoLinks = [
+  { name: "Nha Khoa & Phòng Khám", slug: "nha-khoa-quoc-te" },
+  { name: "Nhà Hàng & Quán Ăn", slug: "the-golden-plate" },
+  { name: "Trung Tâm Detailing", slug: "pro-detailing" },
+  { name: "Phòng Gym & Yoga", slug: "elite-fitness" },
+  { name: "Studio Chụp Ảnh Cưới", slug: "paris-wedding" },
+  { name: "Spa & Khách Sạn Thú Cưng", slug: "happy-pet" },
+  { name: "Sửa Chữa Tại Nhà", slug: "dien-lanh-nhanh" },
+  { name: "Homestay & Du Lịch", slug: "may-homestay-dalat" },
+  { name: "Tư Vấn & Coaching 1:1", slug: "chuyen-gia-tu-van" },
+];
+
 export function SiteFooter() {
   const [settings, setSettings] = useState<any>(null);
   const siteConfig = useSiteConfig();
   useEffect(() => {
     getSettings().then(setSettings);
   }, []);
-
-  const demoLinks = [
-    { name: "Nha Khoa & Phòng Khám", slug: "nha-khoa" },
-    { name: "Nhà Hàng & Quán Ăn", slug: "nha-hang" },
-    { name: "Trung Tâm Detailing", slug: "pro-detailing" },
-    { name: "Phòng Gym & Yoga", slug: "elite-fitness" },
-    { name: "Studio Chụp Ảnh Cưới", slug: "paris-wedding" },
-    { name: "Spa & Khách Sạn Thú Cưng", slug: "happy-pet" },
-    { name: "Sửa Chữa Tại Nhà", slug: "dien-lanh-nhanh" },
-    { name: "Homestay & Du Lịch", slug: "may-homestay-dalat" },
-    { name: "Tư Vấn & Coaching 1:1", slug: "chuyen-gia-tu-van" },
-  ];
 
   return (
     <footer className="border-t border-border bg-ink text-background/70">
