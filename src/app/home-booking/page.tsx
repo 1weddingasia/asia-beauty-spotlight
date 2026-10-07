@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle, Zap, Star, Users, Bot } from "lucide-react";
+import {
+  ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle,
+  Zap, Star, Users, Bot, Calendar, Stethoscope, UtensilsCrossed,
+  Car, Dumbbell, Camera, PawPrint, Wrench, Home, BriefcaseBusiness,
+  MessageSquare, FileSpreadsheet, BadgeCheck,
+} from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
@@ -9,28 +14,93 @@ import { CONTACT_ZALO } from "@/config/site-config";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "1Booking.Asia — Cổng Đặt Hẹn 1-Chạm Cho Mọi Ngành Dịch Vụ",
-  description: "Giải pháp số hóa hoàn chỉnh cho mọi ngành dịch vụ: Landing page đặt hẹn riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
+  title: "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới",
+  description:
+    "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 10 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
 };
+
+const INDUSTRIES = [
+  {
+    icon: <Stethoscope className="size-7 text-gold" />,
+    emoji: "🦷",
+    title: "Nha Khoa & Phòng Khám",
+    desc: "Đặt hẹn khám chữa răng, chọn bác sĩ chuyên khoa, nhắc lịch tái khám tự động.",
+  },
+  {
+    icon: <UtensilsCrossed className="size-7 text-gold" />,
+    emoji: "🍽️",
+    title: "Nhà Hàng & Quán Ăn (F&B)",
+    desc: "Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu, giữ chỗ không lo hủy bàn.",
+  },
+  {
+    icon: <Car className="size-7 text-gold" />,
+    emoji: "🚗",
+    title: "Chăm Sóc & Độ Xe Ô Tô",
+    desc: "Đặt lịch rửa xe chi tiết, dán phim cách nhiệt, phủ ceramic với bảng giá minh bạch.",
+  },
+  {
+    icon: <Dumbbell className="size-7 text-gold" />,
+    emoji: "🏋️",
+    title: "Thể Hình, Yoga & PT",
+    desc: "Đăng ký buổi tập thử, chọn khung giờ 1:1 cùng huấn luyện viên, kiểm soát số học viên.",
+  },
+  {
+    icon: <Sparkles className="size-7 text-gold" />,
+    emoji: "💆",
+    title: "Spa & Thẩm Mỹ Viện",
+    desc: "Trưng bày liệu trình làm đẹp, săn voucher giảm giá giờ vàng, đặt lịch thư giãn cuối tuần.",
+  },
+  {
+    icon: <Camera className="size-7 text-gold" />,
+    emoji: "📸",
+    title: "Studio Chụp Ảnh & Áo Cưới",
+    desc: "Xem lookbook concept, đặt lịch thử váy cưới, giữ lịch chụp ngoại cảnh.",
+  },
+  {
+    icon: <PawPrint className="size-7 text-gold" />,
+    emoji: "🐶",
+    title: "Spa & Khách Sạn Thú Cưng",
+    desc: "Đặt hẹn tắm tỉa lông, đưa đón thú cưng, đặt phòng gửi chó mèo an toàn.",
+  },
+  {
+    icon: <Wrench className="size-7 text-gold" />,
+    emoji: "🔧",
+    title: "Dịch Vụ Sửa Chữa Tại Nhà",
+    desc: "Đặt thợ vệ sinh máy lạnh, sửa điện nước, giặt sofa tận nơi đúng giờ hẹn.",
+  },
+  {
+    icon: <Home className="size-7 text-gold" />,
+    emoji: "🏡",
+    title: "Homestay & Du Lịch Trải Nghiệm",
+    desc: "Đặt phòng nghỉ dưỡng cuối tuần, thuê tour trải nghiệm trực tiếp không qua trung gian.",
+  },
+  {
+    icon: <BriefcaseBusiness className="size-7 text-gold" />,
+    emoji: "💼",
+    title: "Tư Vấn & Coaching 1:1",
+    desc: "Đặt lịch tham vấn trực tuyến hoặc trực tiếp, chọn gói thời lượng và chủ đề tư vấn.",
+  },
+];
 
 export default async function HomeBookingPage() {
   const supabase = createStaticClient();
 
-  // Lấy số lượng tiệm đang hoạt động để social proof
   let activeShops = 0;
   let totalLeads = 0;
 
   try {
-    const { count: shops } = await supabase
-      .from('businesses')
-      .select('*', { count: 'exact', head: true })
-      .in('status', ['published', 'active', 'trial']);
-    activeShops = shops || 0;
+    const { count: shops, error: shopsError } = await supabase
+      .from("businesses")
+      .select("*", { count: "exact", head: true })
+      .in("status", ["published", "active", "trial"]);
+    if (shopsError) console.error("Failed to fetch shops count:", shopsError);
+    activeShops = shops ?? 0;
 
-    const { count: leads } = await supabase
-      .from('business_leads')
-      .select('*', { count: 'exact', head: true });
-    totalLeads = leads || 0;
+    const { count: leads, error: leadsError } = await supabase
+      .from("business_leads")
+      .select("*", { count: "exact", head: true });
+    if (leadsError) console.error("Failed to fetch leads count:", leadsError);
+    totalLeads = leads ?? 0;
   } catch (error) {
     console.error("Failed to fetch stats:", error);
   }
@@ -40,26 +110,27 @@ export default async function HomeBookingPage() {
       <SiteHeader solid />
 
       {/* ═══════════════════════════════════════════════════ */}
-      {/* HERO — Headline B2B                                */}
+      {/* HERO                                               */}
       {/* ═══════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden bg-ink pt-28 pb-24 md:pt-36 md:pb-32">
         <HeroSlider />
         <div className="relative mx-auto max-w-5xl px-6 text-center z-20">
+          {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-gold uppercase mb-8">
             <Zap className="size-3" />
-            Giải pháp chìa khóa trao tay — 500.000đ/năm
+            🚀 Nền Tảng Đặt Lịch 1-Chạm &amp; Trợ Lý Lễ Tân AI Thế Hệ Mới
           </div>
 
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight">
-            Cổng Đặt Hẹn{" "}
-            <span className="text-gradient-gold">1-Chạm</span>
-            <br />cho Mọi Ngành Dịch Vụ
+            Biến Người Lướt Mạng Thành{" "}
+            <span className="text-gradient-gold">Khách Quen</span>
+            <br />Ghé Tiệm Của Bạn
           </h1>
 
-          <p className="mt-6 text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-            Khách quét QR → Chọn dịch vụ → Để số điện thoại →{" "}
-            <span className="text-gold font-semibold">Cơ sở nghe chuông Telegram ngay lập tức.</span>{" "}
-            Không cần app. Không cần kỹ thuật.
+          <p className="mt-6 text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+            Hệ thống trang đặt lịch tự động chốt khách 24/7,{" "}
+            <span className="text-gold font-semibold">nổ chuông báo Telegram tức thì trong 1 giây</span>,
+            quản trị giá và menu siêu tốc qua chat. Không cắt phế hoa hồng, giữ trọn 100% lợi nhuận và tệp data khách hàng.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -68,94 +139,99 @@ export default async function HomeBookingPage() {
               className="group inline-flex items-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-xl hover:bg-gold-soft hover:scale-105 transition-all"
             >
               <Sparkles className="size-5" />
-              Xem Demo Trang Dịch Vụ
+              Trải Nghiệm Thử Demo Ngay
               <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href={CONTACT_ZALO} target="_blank"
+              href="#bang-gia"
               className="inline-flex items-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
             >
-              📞 Liên hệ kích hoạt
+              📋 Xem Bảng Giá &amp; Ưu Đãi
             </Link>
           </div>
 
-          {/* Social proof numbers */}
-          {(activeShops || totalLeads) ? (
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-white/60 text-sm">
-              {activeShops ? (
+          {/* Commitment badges */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-white/60 text-sm">
+            <span className="flex items-center gap-1.5"><Zap className="size-4 text-gold" /> Triển khai chỉ trong 5 phút</span>
+            <span className="text-white/20">·</span>
+            <span className="flex items-center gap-1.5"><BadgeCheck className="size-4 text-gold" /> Không cần cài app phức tạp</span>
+            <span className="text-white/20">·</span>
+            <span className="flex items-center gap-1.5"><Smartphone className="size-4 text-gold" /> Tương thích 100% điện thoại</span>
+          </div>
+
+          {/* Social proof */}
+          {(activeShops > 0 || totalLeads > 0) && (
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-8 text-white/60 text-sm">
+              {activeShops > 0 && (
                 <div className="flex items-center gap-2">
                   <Users className="size-4 text-gold" />
                   <span><strong className="text-white">{activeShops}</strong> cơ sở đang dùng</span>
                 </div>
-              ) : null}
-              {totalLeads ? (
+              )}
+              {totalLeads > 0 && (
                 <div className="flex items-center gap-2">
                   <Bell className="size-4 text-gold" />
-                  <span><strong className="text-white">{totalLeads.toLocaleString()}</strong> khách hàng đã đặt hẹn</span>
+                  <span><strong className="text-white">{totalLeads.toLocaleString()}</strong> khách đã đặt hẹn</span>
                 </div>
-              ) : null}
+              )}
               <div className="flex items-center gap-2">
                 <Star className="size-4 text-gold" />
                 <span><strong className="text-white">500.000đ</strong>/năm trọn gói</span>
               </div>
             </div>
-          ) : null}
+          )}
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════ */}
-      {/* 4 TÍNH NĂNG CỐT LÕI                               */}
+      {/* 3 VŨ KHÍ ĐỘT PHÁ                                  */}
       {/* ═══════════════════════════════════════════════════ */}
       <section className="py-20 md:py-28 bg-background">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-14">
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Hệ thống 4-trong-1</p>
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Công nghệ độc quyền</p>
             <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">
-              Tất cả những gì cơ sở bạn cần
+              3 Vũ Khí Đột Phá Giúp Bạn Bỏ Xa Đối Thủ
             </h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-              Một hệ thống duy nhất thay thế toàn bộ: trang web giới thiệu, form đặt hẹn, phần mềm quản lý khách hàng và nhân viên trực page 24/7.
+              Một hệ thống duy nhất thay thế toàn bộ nhân viên trực page, sổ ghi tay và phần mềm đắt tiền.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                icon: <QrCode className="size-8 text-gold" />,
-                title: "Landing Page Riêng",
-                badge: "Mặt tiền số",
-                desc: "Cơ sở bạn có ngay 1 trang web chuyên nghiệp tại địa chỉ 1booking.asia/[ten-co-so]. Đăng link lên bio TikTok, Facebook, Google Maps — khách bấm vào là đặt hẹn ngay.",
-                highlight: "Không chia traffic với đối thủ"
+                icon: <Bot className="size-10 text-gold" />,
+                badge: "AI 24/7",
+                title: "Lễ Tân AI Trực Trang 24/7",
+                desc: "Tư vấn thông minh, giải đáp thắc mắc dịch vụ và xin thông tin hẹn lịch ngay cả lúc nửa đêm khi tiệm đã đóng cửa.",
+                highlight: "Không bỏ lỡ khách hàng ban đêm",
               },
               {
-                icon: <Bell className="size-8 text-gold" />,
-                title: "Chuông Telegram < 1s",
-                badge: "Không sót đơn",
-                desc: "Mỗi khi có khách đặt hẹn, điện thoại của bạn/quản lý nổ chuông Telegram ngay lập tức. Tin nhắn ghi rõ: Tên, SĐT, Dịch vụ chọn và Khách mới/VIP.",
-                highlight: "Gọi ngay khi khách đang nóng"
+                icon: <Bell className="size-10 text-gold" />,
+                badge: "Chuông < 1 giây",
+                title: "Chuông Báo Telegram Tức Thì",
+                desc: "Khách vừa bấm đặt lịch là điện thoại chủ tiệm đổ chuông kèm tên, số điện thoại, giờ hẹn và dịch vụ đã chọn. Không bao giờ lo trôi tin nhắn hay sót đơn.",
+                highlight: "Gọi lại ngay khi khách đang nóng",
               },
               {
-                icon: <Smartphone className="size-8 text-gold" />,
-                title: "Sổ Khách Mini-CRM",
-                badge: "Giữ chân khách VIP",
-                desc: "Mọi khách hàng đều được lưu lại với tag tự động: Khách mới, Quay lại, VIP. Xuất Excel cuối tháng để chăm sóc qua Zalo, SMS vào dịp lễ Tết.",
-                highlight: "Biết khách cũ để phục vụ tốt hơn"
+                icon: <MessageSquare className="size-10 text-gold" />,
+                badge: "Độc quyền",
+                title: "Quản Trị Trang Siêu Tốc Qua Chat",
+                desc: "Nhập passcode bảo mật vào khung chat để bot tự đổi giá, cập nhật giờ mở cửa hay bật/tắt khuyến mãi trong 3 giây mà không cần vào trang quản trị rườm rà.",
+                highlight: "Quản lý tiệm ngay từ điện thoại",
               },
-              {
-                icon: <Bot className="size-8 text-gold" />,
-                title: "Bot AI Trực 24/7",
-                badge: "Chăm sóc tự động",
-                desc: "Chatbot thông minh học thuộc mọi bảng giá, dịch vụ của cơ sở. Tự động trả lời khách hàng 24/7, xin thông tin và chốt booking ngay cả khi bạn đang ngủ.",
-                highlight: "Không bỏ lỡ khách hàng ban đêm"
-              }
             ].map((f, i) => (
-              <div key={i} className="group rounded-3xl border border-gold-soft bg-champagne p-6 transition-all hover:-translate-y-1 hover:shadow-card hover:border-gold">
+              <div
+                key={i}
+                className="group rounded-3xl border border-gold-soft bg-champagne p-8 transition-all hover:-translate-y-1 hover:shadow-card hover:border-gold"
+              >
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-gold">
                   {f.badge}
                 </div>
-                <div className="mb-4">{f.icon}</div>
-                <h3 className="font-display text-lg text-ink mb-3">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{f.desc}</p>
+                <div className="mb-5">{f.icon}</div>
+                <h3 className="font-display text-xl text-ink mb-3">{f.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-5">{f.desc}</p>
                 <p className="text-xs font-bold text-gold">✓ {f.highlight}</p>
               </div>
             ))}
@@ -164,26 +240,109 @@ export default async function HomeBookingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════ */}
-      {/* LUỒNG 3 BƯỚC                                       */}
+      {/* 10 NGÀNH TRỌNG ĐIỂM                               */}
       {/* ═══════════════════════════════════════════════════ */}
       <section className="py-20 bg-muted/40 border-y border-border">
-        <div className="mx-auto max-w-4xl px-6">
-          <div className="text-center mb-12">
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">Cực kỳ đơn giản</p>
-            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">Khách hàng chỉ cần 3 bước</h2>
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="text-center mb-14">
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Đa ngành · Đa lĩnh vực</p>
+            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">
+              10 Nhóm Ngành Được Hỗ Trợ
+            </h2>
+            <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+              Từ nha khoa, nhà hàng đến spa, thú cưng và coaching — 1Booking.Asia vận hành trơn tru cho mọi loại hình dịch vụ.
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { step: "01", title: "Quét QR hoặc bấm link", desc: "Khách thấy danh sách dịch vụ và giá rõ ràng ngay lập tức." },
-              { step: "02", title: "Để lại số điện thoại", desc: "Popup đơn giản, chỉ cần nhập SĐT và giờ muốn hẹn. Không cần đăng ký tài khoản." },
-              { step: "03", title: "Đến nơi đúng giờ", desc: "Cơ sở đã chuẩn bị sẵn — khách đến là phục vụ ngay, không cần chờ đợi." },
-            ].map((s) => (
-              <div key={s.step} className="flex flex-col items-start p-6 bg-background rounded-2xl border border-border">
-                <span className="text-5xl font-black text-gold/20 leading-none">{s.step}</span>
-                <h3 className="mt-3 font-bold text-ink text-lg">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-              </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {INDUSTRIES.map((industry, i) => (
+              <Link
+                key={i}
+                href="/luxury-spa-demo"
+                className="group relative flex flex-col items-start rounded-2xl border border-border bg-background p-5 transition-all hover:-translate-y-1 hover:border-gold hover:shadow-card"
+              >
+                <span className="text-3xl mb-3">{industry.emoji}</span>
+                <h3 className="font-bold text-sm text-ink mb-2 leading-snug">{industry.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{industry.desc}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-xs text-gold font-semibold group-hover:gap-2 transition-all">
+                  Xem mẫu <ArrowRight className="size-3" />
+                </span>
+              </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* MINI-CRM                                           */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 bg-background">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <p className="text-xs tracking-[0.3em] text-gold uppercase">Quản lý thông minh</p>
+              <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">
+                Quản Lý Khách Hẹn Gọn Gàng — Nói Không Với Sổ Sách Rối Rắm
+              </h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed">
+                Toàn bộ lịch hẹn của khách được gom tự động vào trang quản trị riêng của cơ sở bạn. Không cần nhớ, không cần ghi chép tay.
+              </p>
+              <ul className="mt-8 space-y-4">
+                {[
+                  {
+                    icon: <Calendar className="size-5 text-gold shrink-0" />,
+                    text: "Toàn bộ danh sách khách đặt lịch được gom tự động vào trang quản trị riêng của cơ sở.",
+                  },
+                  {
+                    icon: <BadgeCheck className="size-5 text-gold shrink-0" />,
+                    text: "Phân loại rõ ràng theo trạng thái: Chờ xác nhận · Đã tiếp nhận · Đã hoàn thành.",
+                  },
+                  {
+                    icon: <FileSpreadsheet className="size-5 text-gold shrink-0" />,
+                    text: "Xuất toàn bộ dữ liệu ra file Excel chỉ bằng 1 cú nhấp chuột để chăm sóc lại khách quen hoặc chạy quảng cáo.",
+                  },
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    {item.icon}
+                    <p className="text-sm text-ink leading-relaxed">{item.text}</p>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={CONTACT_ZALO}
+                target="_blank"
+                className="mt-8 inline-flex items-center gap-2 bg-gold text-ink font-bold px-6 py-3 rounded-xl hover:bg-gold/90 hover:scale-105 transition-all"
+              >
+                <Zap className="size-4" /> Dùng Thử Miễn Phí 7 Ngày
+              </Link>
+            </div>
+
+            {/* Visual mockup */}
+            <div className="rounded-3xl border border-gold-soft bg-champagne p-6 space-y-3">
+              <p className="text-xs font-bold text-gold uppercase tracking-widest mb-4">📋 Sổ Lịch Hẹn Hôm Nay</p>
+              {[
+                { name: "Nguyễn Thị Lan", service: "Cắt tóc + Nhuộm", time: "09:00", status: "Đã tiếp nhận", color: "text-green-600 bg-green-50" },
+                { name: "Trần Minh Khoa", service: "Massage thư giãn 60ph", time: "10:30", status: "Chờ xác nhận", color: "text-yellow-600 bg-yellow-50" },
+                { name: "Lê Thu Hà", service: "Chăm sóc da mặt", time: "14:00", status: "Đã tiếp nhận", color: "text-green-600 bg-green-50" },
+                { name: "Phạm Văn Đức", service: "Cắt tóc nam", time: "15:30", status: "Hoàn thành", color: "text-blue-600 bg-blue-50" },
+              ].map((row, i) => (
+                <div key={i} className="flex items-center justify-between rounded-xl bg-background p-3 border border-border">
+                  <div>
+                    <p className="text-sm font-semibold text-ink">{row.name}</p>
+                    <p className="text-xs text-muted-foreground">{row.service} · {row.time}</p>
+                  </div>
+                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${row.color}`}>
+                    {row.status}
+                  </span>
+                </div>
+              ))}
+              <div className="pt-2 flex items-center justify-between text-xs text-muted-foreground border-t border-border">
+                <span>Tổng hôm nay: <strong className="text-ink">4 lịch</strong></span>
+                <button className="flex items-center gap-1 text-gold font-semibold hover:underline">
+                  <FileSpreadsheet className="size-3" /> Xuất Excel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -191,50 +350,78 @@ export default async function HomeBookingPage() {
       {/* ═══════════════════════════════════════════════════ */}
       {/* BẢNG GIÁ                                           */}
       {/* ═══════════════════════════════════════════════════ */}
-      <section className="py-20 md:py-28 bg-background">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">Minh bạch, không ẩn phí</p>
-          <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">Một mức giá. Đầy đủ tính năng.</h2>
-          <p className="mt-4 text-muted-foreground">Không cần ký hợp đồng dài hạn. Không bị ép mua thêm gói.</p>
+      <section id="bang-gia" className="py-20 md:py-28 bg-muted/40 border-y border-border">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="text-center mb-14">
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">Minh bạch · Không ẩn phí</p>
+            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">Bảng Giá Rõ Ràng — Chọn Gói Phù Hợp</h2>
+            <p className="mt-4 text-muted-foreground">Không cần ký hợp đồng dài hạn. Không bị ép mua thêm gói.</p>
+          </div>
 
-          <div className="mt-10 relative rounded-3xl border-2 border-gold bg-champagne p-10 shadow-card">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold text-ink text-xs font-black px-5 py-1.5 rounded-full uppercase tracking-widest">
-              Trọn gói
-            </div>
-            <div className="flex items-end justify-center gap-2 mt-2">
-              <span className="text-6xl font-black text-ink">500K</span>
-              <span className="text-xl text-muted-foreground mb-2">/năm</span>
-            </div>
-
-            <ul className="mt-8 space-y-3 text-left max-w-xs mx-auto">
-              {[
-                "Landing Page đặt hẹn riêng của cơ sở",
-                "Chuông Telegram bắn tức thì < 1 giây",
-                "Sổ quản lý khách Mini-CRM",
-                "Bảng QR Standee A5 (in ngay trên web)",
-                "Xuất danh sách khách ra Excel",
-                "Hỗ trợ cài đặt & bàn giao tận tay",
-                "Dùng thử miễn phí 7 ngày",
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-3 text-sm text-ink">
-                  <CheckCircle className="size-4 text-gold mt-0.5 shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Gói Tự Vận Hành */}
+            <div className="relative rounded-3xl border-2 border-gold-soft bg-background p-8">
+              <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4">Gói Tự Vận Hành</p>
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-5xl font-black text-ink">500K</span>
+                <span className="text-lg text-muted-foreground mb-1.5">/năm</span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-6">Tự cài đặt theo hướng dẫn chi tiết</p>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Trang đặt lịch riêng tại 1booking.asia/ten-co-so",
+                  "Tích hợp chuông báo Telegram tức thì",
+                  "Mini-CRM quản lý danh sách khách",
+                  "Chatbot AI tiếp đón và giải đáp cơ bản",
+                  "Xuất danh sách khách ra Excel",
+                  "Dùng thử miễn phí 7 ngày",
+                ].map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-sm text-ink">
+                    <CheckCircle className="size-4 text-gold mt-0.5 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
               <Link
-                href={CONTACT_ZALO} target="_blank"
-                className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-lg hover:bg-gold/90 hover:scale-105 transition-all"
+                href={CONTACT_ZALO}
+                target="_blank"
+                className="block text-center border-2 border-gold text-gold font-bold px-6 py-3 rounded-xl hover:bg-gold hover:text-ink transition-all"
               >
-                ⚡ Kích Hoạt Cổng Ngay
+                Đăng Ký Gói Này
               </Link>
+            </div>
+
+            {/* Gói VIP */}
+            <div className="relative rounded-3xl border-2 border-gold bg-champagne p-8 shadow-card">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold text-ink text-xs font-black px-5 py-1.5 rounded-full uppercase tracking-widest whitespace-nowrap">
+                ⭐ Được chọn nhiều nhất
+              </div>
+              <p className="text-xs font-bold tracking-widest text-gold uppercase mb-4">Gói VIP Setup Trọn Gói</p>
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-5xl font-black text-ink">2.000K</span>
+                <span className="text-lg text-muted-foreground mb-1.5">một lần</span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-6">Đội kỹ thuật làm hết, bàn giao tận tay</p>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Toàn bộ tính năng của Gói Tự Vận Hành",
+                  "Setup hình ảnh, dịch vụ, menu từ A-Z",
+                  "Tinh chỉnh Lễ tân AI nhận diện thương hiệu riêng",
+                  "Tặng Standee in mã QR cao cấp đặt quầy thu ngân",
+                  "Hỗ trợ ưu tiên qua Zalo trong 12 tháng",
+                ].map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-sm text-ink">
+                    <CheckCircle className="size-4 text-gold mt-0.5 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
               <Link
-                href="/luxury-spa-demo"
-                className="inline-flex items-center justify-center gap-2 border border-gold/40 text-gold px-8 py-4 rounded-2xl text-lg hover:bg-gold/10 transition-colors"
+                href={CONTACT_ZALO}
+                target="_blank"
+                className="block text-center bg-gold text-ink font-bold px-6 py-3 rounded-xl hover:bg-gold/90 hover:scale-105 transition-all shadow-lg"
               >
-                Xem trang Demo trước
+                ⚡ Kích Hoạt Gói VIP Ngay
               </Link>
             </div>
           </div>
@@ -244,29 +431,28 @@ export default async function HomeBookingPage() {
       {/* ═══════════════════════════════════════════════════ */}
       {/* CTA CUỐI TRANG                                     */}
       {/* ═══════════════════════════════════════════════════ */}
-      <section className="py-20 bg-ink text-center">
+      <section className="py-24 bg-ink text-center">
         <div className="mx-auto max-w-2xl px-6">
+          <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4">Hành động ngay hôm nay</p>
           <h2 className="font-display text-3xl md:text-4xl text-white">
-            Mỗi ngày không có hệ thống là{" "}
-            <span className="text-gold">một ngày mất khách</span>
+            Đừng Để Mất Thêm Khách Hàng Nào Vào Tay Đối Thủ{" "}
+            <span className="text-gold">Vì Trễ Tin Nhắn!</span>
           </h2>
           <p className="mt-4 text-white/70">
-            Bắt đầu ngay hôm nay. Cơ sở bạn sẽ có hệ thống hoàn chỉnh trong vòng 15 phút.
+            Cơ sở bạn sẽ có hệ thống đặt lịch hoàn chỉnh và chuyên nghiệp chỉ trong 5 phút.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href={CONTACT_ZALO} target="_blank"
-              className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg hover:bg-gold/90 transition-all hover:scale-105"
+              href={CONTACT_ZALO}
+              target="_blank"
+              className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg hover:bg-gold/90 transition-all hover:scale-105 shadow-xl"
             >
-              📞 Nhắn Zalo Ngay
-            </Link>
-            <Link
-              href="/uu-dai"
-              className="inline-flex items-center justify-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
-            >
-              Khám phá Dịch vụ
+              📲 Nhận Trang Đặt Lịch Chuẩn Tên Tiệm Chỉ Trong 5 Phút
             </Link>
           </div>
+          <p className="mt-6 text-white/40 text-sm">
+            ⚡ Triển khai trong 5 phút · 🛡️ Không cần cài app · 📱 Tương thích 100% điện thoại
+          </p>
         </div>
       </section>
 
