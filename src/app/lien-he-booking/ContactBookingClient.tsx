@@ -42,22 +42,22 @@ export default function ContactBookingClient() {
         <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-32 lg:py-36">
           <p className="text-xs font-bold tracking-[0.3em] text-gold uppercase mb-4">Kết nối cùng chuyên gia</p>
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
-            Sẵn Sàng Chuyển Đổi Số <br className="hidden md:block" /> Cho Tiệm Của Bạn?
+            Liên Hệ Tư Vấn
           </h1>
           <p className="mt-6 text-gray-300 md:text-lg max-w-2xl mx-auto">
-            Hỗ trợ cài đặt trọn gói hệ thống đặt lịch tự động và chatbot AI chỉ trong 5 phút. Hãy để lại thông tin hoặc nhắn tin trực tiếp cho chúng tôi qua Zalo.
+            Vui lòng để lại thông tin, đội ngũ của chúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-[1.5fr_1fr]">
+      <section className="mx-auto max-w-3xl px-6 py-20">
         {/* Form đăng ký */}
         <div className="rounded-3xl border border-border bg-card p-8 md:p-10 shadow-sm">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-ink mb-2">
-            Đăng Ký Setup Siêu Tốc
+            Đăng Ký Tư Vấn
           </h2>
           <p className="text-muted-foreground mb-8">
-            Vui lòng điền thông tin, kỹ thuật viên của 1Booking sẽ liên hệ và cài đặt ngay cho bạn.
+            Vui lòng điền thông tin bên dưới, chúng tôi sẽ liên hệ với bạn.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -65,7 +65,7 @@ export default function ContactBookingClient() {
               <div className="py-12 text-center bg-green-50 rounded-2xl border border-green-100">
                 <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
                 <h3 className="text-2xl text-green-700 font-bold mb-2">Đã Nhận Yêu Cầu!</h3>
-                <p className="text-green-600/80">Kỹ thuật viên sẽ gọi cho bạn trong ít phút tới để tiến hành cài đặt.</p>
+                <p className="text-green-600/80">Chúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất.</p>
               </div>
             ) : (
               <>
@@ -100,7 +100,7 @@ export default function ContactBookingClient() {
                   {loading ? (
                     <div className="size-5 rounded-full border-2 border-ink/30 border-t-ink animate-spin"></div>
                   ) : (
-                    <><Zap className="size-5" /> Gửi Yêu Cầu Triển Khai Ngay</>
+                    <><Zap className="size-5" /> Gửi Yêu Cầu Ngay</>
                   )}
                 </button>
               </>
@@ -108,58 +108,7 @@ export default function ContactBookingClient() {
           </form>
         </div>
 
-        {/* Thông tin liên hệ trực tiếp */}
-        <aside className="space-y-6">
-          <div className="rounded-3xl border-2 border-gold-soft bg-champagne p-8">
-            <h3 className="font-display text-2xl font-bold text-ink mb-2">Cần Hỗ Trợ Gấp?</h3>
-            <p className="text-sm text-muted-foreground mb-8">
-              Nhắn tin trực tiếp qua Zalo để kỹ thuật viên phản hồi bạn ngay trong 1 phút.
-            </p>
-            
-            <div className="space-y-4">
-              <Link
-                href={CONTACT_ZALO}
-                target="_blank"
-                className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm hover:border-gold hover:shadow-md transition-all group border border-border"
-              >
-                <div className="bg-blue-100 p-3 rounded-xl text-blue-600 group-hover:scale-110 transition-transform">
-                  <MessageCircle className="size-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Chat Zalo Kỹ Thuật</p>
-                  <p className="text-ink font-bold">1Booking.Asia Support</p>
-                </div>
-              </Link>
 
-              <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-border">
-                <div className="bg-green-100 p-3 rounded-xl text-green-600">
-                  <PhoneCall className="size-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Hotline Đăng Ký</p>
-                  <p className="text-ink font-bold">{CONTACT_PHONE}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-border">
-                <div className="bg-gold/20 p-3 rounded-xl text-gold">
-                  <Mail className="size-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Email Đối Tác</p>
-                  <p className="text-ink font-bold">{CONTACT_EMAIL}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-ink p-8 rounded-3xl text-center text-white">
-            <p className="text-gold font-bold text-xl mb-2">Cam Kết Của Chúng Tôi</p>
-            <p className="text-white/70 text-sm leading-relaxed">
-              Khởi tạo tài khoản dùng ngay để sở hữu trang đặt lịch riêng trên nền tảng 1Booking.Asia (không can thiệp vào website của bạn). Không thu phí khởi tạo. Hoàn tiền 100% nếu không tăng tỷ lệ khách quay lại sau 3 tháng sử dụng.
-            </p>
-          </div>
-        </aside>
       </section>
       
       <PlatformChatWidget />
