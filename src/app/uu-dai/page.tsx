@@ -1,26 +1,33 @@
-import { PageShell } from "@/components/site/Layout";
+﻿import { PageShell } from "@/components/site/Layout";
 import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { createStaticClient } from "@/utils/supabase/server";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
-
 import { isOfferActive } from "@/lib/date-utils";
+import { headers } from "next/headers";
+import { getSiteConfig } from "@/config/site-config";
 
-export const metadata = {
-  title: "Khám phá Ưu đãi | 1Beauty.Asia",
-  description: "Tổng hợp các chương trình ưu đãi độc quyền từ các spa và thẩm mỹ viện.",
-};
+export const revalidate = 3600;
 
-export const revalidate = 3600; // Revalidate mỗi 1 tiếng
+export async function generateMetadata() {
+  const host = (await headers()).get('host') || '';
+  const config = getSiteConfig(host);
+  return {
+    title: `${config.exploreTitle} | ${config.metaTitleSuffix}`,
+    description: config.exploreSubtitle,
+  };
+}
 
 export default async function OffersPage({ searchParams }: { searchParams: Promise<{ q?: string, page?: string }> }) {
+  const host = (await headers()).get('host') || '';
+  const siteConfig = getSiteConfig(host);
   const supabase = createStaticClient();
   const params = await searchParams;
   const q = params.q?.toLowerCase() || "";
   const currentPage = parseInt(params.page || "1") || 1;
   const ITEMS_PER_PAGE = 9;
 
-  // Lấy tất cả các doanh nghiệp đang hoạt động (loại trừ suspended/trial)
+  // Láº¥y táº¥t cáº£ cÃ¡c doanh nghiá»‡p Ä‘ang hoáº¡t Ä‘á»™ng (loáº¡i trá»« suspended/trial)
   const { data: businesses, error } = await supabase
     .from("businesses")
     .select("slug, name, page_content, status")
@@ -28,7 +35,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
     .limit(500);
 
   if (error) {
-    console.error("Lỗi lấy ưu đãi:", error);
+    console.error("Lá»—i láº¥y Æ°u Ä‘Ã£i:", error);
   }
 
   // Extract offers, filter expired ones, and sort by newest
@@ -74,10 +81,10 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[35vh]">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">Săn Deal Làm Đẹp</p>
-          <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display">Khám Phá Ưu Đãi</h1>
+          <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">SÄƒn Deal LÃ m Äáº¹p</p>
+          <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display">KhÃ¡m PhÃ¡ Æ¯u ÄÃ£i</h1>
           <p className="mt-6 text-lg text-gray-200 drop-shadow-md max-w-2xl mx-auto">
-            Hàng trăm chương trình ưu đãi, giảm giá sốc từ các Spa & Thẩm mỹ viện uy tín trên 1Beauty.Asia.
+            HÃ ng trÄƒm chÆ°Æ¡ng trÃ¬nh Æ°u Ä‘Ã£i, giáº£m giÃ¡ sá»‘c tá»« cÃ¡c Spa & Tháº©m má»¹ viá»‡n uy tÃ­n trÃªn 1Beauty.Asia.
           </p>
 
           <form action="/uu-dai" method="GET" className="mt-10 mx-auto w-full max-w-xl relative">
@@ -85,7 +92,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
               type="text" 
               name="q"
               defaultValue={q}
-              placeholder="Tìm ưu đãi, tên dịch vụ, tên Spa..." 
+              placeholder="TÃ¬m Æ°u Ä‘Ã£i, tÃªn dá»‹ch vá»¥, tÃªn Spa..." 
               className="w-full h-14 pl-6 pr-14 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-white placeholder:text-white/60 focus:outline-none focus:border-gold focus:bg-white/20 transition-all text-lg shadow-xl"
             />
             <button type="submit" className="absolute right-2 top-2 bottom-2 aspect-square bg-gold text-ink rounded-full flex items-center justify-center hover:scale-105 transition-transform">
@@ -110,7 +117,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
                   </div>
                   <div className="relative flex-1">
                     <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase shadow-sm">
-                      {o.badge || o.discount || "Ưu đãi HOT"}
+                      {o.badge || o.discount || "Æ¯u Ä‘Ã£i HOT"}
                     </span>
                     <h3 className="mt-5 max-w-[280px] font-display text-2xl line-clamp-2">
                       {o.title}
@@ -167,16 +174,16 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
         ) : (
           <div className="rounded-2xl border border-dashed border-border p-16 text-center">
             <Ticket className="mx-auto size-12 text-gold/40" />
-            <h3 className="mt-4 text-xl font-bold">Không tìm thấy ưu đãi</h3>
+            <h3 className="mt-4 text-xl font-bold">KhÃ´ng tÃ¬m tháº¥y Æ°u Ä‘Ã£i</h3>
             <p className="mt-2 text-muted-foreground">
-              {q ? `Không có kết quả nào phù hợp với từ khóa "${q}"` : "Hiện chưa có ưu đãi nào đang mở."}
+              {q ? `KhÃ´ng cÃ³ káº¿t quáº£ nÃ o phÃ¹ há»£p vá»›i tá»« khÃ³a "${q}"` : "Hiá»‡n chÆ°a cÃ³ Æ°u Ä‘Ã£i nÃ o Ä‘ang má»Ÿ."}
             </p>
             {q && (
               <Link
                 href="/uu-dai"
                 className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold/40 px-6 py-2.5 text-sm text-gold transition-colors hover:bg-gold hover:text-ink"
               >
-                Xem tất cả ưu đãi
+                Xem táº¥t cáº£ Æ°u Ä‘Ã£i
               </Link>
             )}
           </div>
@@ -186,3 +193,4 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
     </PageShell>
   );
 }
+

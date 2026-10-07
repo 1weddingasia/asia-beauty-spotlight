@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Menu, X, LogIn, LayoutDashboard } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { getSiteConfig, type SiteConfig } from "@/config/site-config";
 
 const navLinks = [
   { to: "/", label: "Trang chủ" },
@@ -11,8 +12,7 @@ const navLinks = [
   { to: "/lien-he", label: "Liên hệ" },
 ] as const;
 
-// FIX #7: Module-level cache để tránh re-fetch mỗi lần render
-// Cache tồn tại trong phiên trình duyệt hiện tại
+// Module-level cache để tránh re-fetch mỗi lần render
 let _settingsCache: any = null;
 let _settingsCacheTime = 0;
 const SETTINGS_TTL = 5 * 60 * 1000; // 5 phút
@@ -51,16 +51,21 @@ async function getFooterCategories() {
   return _categoriesCache;
 }
 
+// ── SiteHeader ────────────────────────────────────────────────────────────────
+
 export function SiteHeader({ solid = false }: { solid?: boolean }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
 
   useEffect(() => {
     getSettings().then(setSettings);
+    setSiteConfig(getSiteConfig(window.location.hostname));
     const supabase = createClient();
-    supabase.auth.getUser()
+    supabase.auth
+      .getUser()
       .then(({ data }) => {
         setUser(data?.user ?? null);
       })
@@ -73,6 +78,24 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
       });
   }, []);
 
+  // Logo: ưu tiên logo từ site_settings DB; fallback theo siteConfig brand
+  const logoNode = settings?.logo_url ? (
+    <img
+      src={settings.logo_url}
+      alt={siteConfig?.brand || "1Beauty.Asia"}
+      className="h-8 w-auto object-contain"
+    />
+  ) : (
+    <>
+      <span className={`font-display text-2xl ${solid ? "text-foreground" : "text-background"}`}>
+        {siteConfig?.logoText || "1Beauty"}
+      </span>
+      <span className="text-gradient-gold font-display text-2xl">
+        {siteConfig?.logoDomain || ".Asia"}
+      </span>
+    </>
+  );
+
   return (
     <header
       className={
@@ -83,24 +106,15 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="flex items-center gap-2">
-          {settings?.logo_url ? (
-            <img src={settings.logo_url} alt={settings?.site_name || "1Beauty.Asia"} className="h-8 w-auto object-contain" />
-          ) : (
-            <>
-              <span className={`font-display text-2xl ${solid ? "text-foreground" : "text-background"}`}>
-                1Beauty
-              </span>
-              <span className="text-gradient-gold font-display text-2xl">.Asia</span>
-            </>
-          )}
+          {logoNode}
         </Link>
 
         <div className="flex items-center gap-4 md:hidden">
           {authLoading ? (
             <div className="size-8 rounded-full border border-gold/30 border-t-gold animate-spin"></div>
           ) : user ? (
-            <Link 
-              href="/dashboard" 
+            <Link
+              href="/dashboard"
               aria-label="Bảng điều khiển"
               className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
             >
@@ -108,8 +122,8 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               <span className="hidden sm:inline">Quản lý</span>
             </Link>
           ) : (
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               aria-label="Đăng nhập"
               className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
             >
@@ -140,20 +154,20 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               </Link>
             ))}
           </nav>
-          
+
           {authLoading ? (
             <div className="w-32 h-8 rounded-full bg-muted/20 animate-pulse"></div>
           ) : user ? (
-            <Link 
-              href="/dashboard" 
+            <Link
+              href="/dashboard"
               className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
             >
               <LayoutDashboard className="size-4" />
               Quản lý Gian hàng
             </Link>
           ) : (
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
             >
               <LogIn className="size-4" />
@@ -181,29 +195,39 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
   );
 }
 
+// ── SiteFooter ────────────────────────────────────────────────────────────────
+
 export function SiteFooter() {
   const [settings, setSettings] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
 
   useEffect(() => {
     getSettings().then(setSettings);
     getFooterCategories().then(setCategories);
+    setSiteConfig(getSiteConfig(window.location.hostname));
   }, []);
+
+  const brand = siteConfig?.brand || settings?.site_name || "1Beauty.Asia";
+  const description = siteConfig?.description || "Kết nối khách hàng với các dịch vụ uy tín trên khắp Việt Nam.";
 
   return (
     <footer className="border-t border-border bg-ink text-background/70">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div className="md:col-span-2">
           {settings?.logo_url ? (
-            <img src={settings.logo_url} alt={settings?.site_name || "1Beauty.Asia"} className="h-10 w-auto object-contain brightness-0 invert" />
+            <img
+              src={settings.logo_url}
+              alt={brand}
+              className="h-10 w-auto object-contain brightness-0 invert"
+            />
           ) : (
             <p className="font-display text-2xl text-background">
-              {settings?.site_name?.split(".")[0] || "1Beauty"}<span className="text-gradient-gold">.{settings?.site_name?.split(".")[1] || "Asia"}</span>
+              {siteConfig?.logoText || "1Beauty"}
+              <span className="text-gradient-gold">{siteConfig?.logoDomain || ".Asia"}</span>
             </p>
           )}
-          <p className="mt-4 max-w-sm text-sm">
-            Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm mỹ viện, salon và học viện uy tín trên khắp Việt Nam.
-          </p>
+          <p className="mt-4 max-w-sm text-sm">{description}</p>
         </div>
         <div>
           <p className="text-xs tracking-[0.25em] text-gold uppercase">Danh mục</p>
@@ -233,13 +257,23 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-background/10 py-6 text-center text-xs">
-        © {new Date().getFullYear()} {settings?.site_name || "1Beauty.Asia"}. Mọi quyền được bảo lưu.
+        © {new Date().getFullYear()} {brand}. Mọi quyền được bảo lưu.
       </div>
     </footer>
   );
 }
 
-export function PageShell({ children, solidHeader = true, className }: { children: ReactNode; solidHeader?: boolean; className?: string }) {
+// ── PageShell ─────────────────────────────────────────────────────────────────
+
+export function PageShell({
+  children,
+  solidHeader = true,
+  className,
+}: {
+  children: ReactNode;
+  solidHeader?: boolean;
+  className?: string;
+}) {
   return (
     <div className={`flex min-h-screen flex-col ${className || ""}`}>
       <SiteHeader solid={solidHeader} />
