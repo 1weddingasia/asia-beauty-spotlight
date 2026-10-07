@@ -50,20 +50,25 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── Route trang phụ riêng cho từng domain ────────────────────────────────
-  if (pathname === '/gioi-thieu' || pathname === '/lien-he') {
-    let isBookingDomain = true;
+  const BOOKING_ROUTE_MAP: Record<string, string> = {
+    '/gioi-thieu': '/gioi-thieu-booking',
+    '/lien-he': '/lien-he-booking',
+  };
+
+  const bookingTarget = BOOKING_ROUTE_MAP[pathname];
+  if (bookingTarget) {
+    let isBeautyDomain = false;
     for (const [domain] of Object.entries(DOMAIN_HOME_MAP)) {
       if (hostname === domain || hostname.endsWith(`.${domain}`)) {
-        isBookingDomain = false;
+        isBeautyDomain = true;
         break;
       }
     }
     
-    // Nếu là domain của 1Booking (hoặc localhost fallback) -> trỏ vào trang -booking
-    if (isBookingDomain) {
-      const targetPath = pathname === '/gioi-thieu' ? '/gioi-thieu-booking' : '/lien-he-booking';
+    // Nếu không phải domain Beauty (tức là 1Booking hoặc localhost) -> rewrite
+    if (!isBeautyDomain) {
       const sessionResponse = await updateSession(request);
-      const rewriteResponse = NextResponse.rewrite(new URL(targetPath, request.url));
+      const rewriteResponse = NextResponse.rewrite(new URL(bookingTarget, request.url));
       sessionResponse.cookies.getAll().forEach((cookie) => {
         rewriteResponse.cookies.set(cookie);
       });

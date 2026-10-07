@@ -7,6 +7,9 @@
 
 // ── Hằng số dùng chung ───────────────────────────────────────────────────────
 export const CONTACT_ZALO = "https://zalo.me/0918731411";
+export const CONTACT_PHONE = "0918.731.411";
+export const CONTACT_EMAIL = "partner@1booking.asia";
+export const PRICING_AMOUNT = "500K";
 
 // ── Type định nghĩa ──────────────────────────────────────────────────────────
 export type SiteConfig = {

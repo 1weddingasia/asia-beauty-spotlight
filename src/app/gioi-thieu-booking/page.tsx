@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Bot, Zap, ShieldCheck, PieChart, Users, TrendingUp } from "lucide-react";
+import { ArrowRight, Bot, PieChart, Users, TrendingUp } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
+import { PRICING_AMOUNT } from "@/config/site-config";
+import Image from "next/image";
 
 export const metadata = {
   title: "Về 1Booking.Asia — Nền tảng Đặt lịch 1-chạm & Lễ tân AI",
@@ -66,11 +68,14 @@ export default function GioiThieuBookingPage() {
             </div>
             <div className="relative">
               <div className="absolute inset-0 bg-gold/10 rounded-[3rem] transform rotate-3" />
-              <img 
-                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80" 
-                alt="Tiệm dịch vụ" 
-                className="relative rounded-[3rem] shadow-2xl object-cover aspect-[4/5] w-full border-4 border-white"
-              />
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white aspect-[4/5] w-full">
+                <Image
+                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80"
+                  alt="Tiệm dịch vụ"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -92,7 +97,7 @@ export default function GioiThieuBookingPage() {
               {
                 icon: <PieChart className="size-10 text-gold" />,
                 title: "Giữ Trọn 100% Lợi Nhuận",
-                desc: "Chúng tôi thu phí thuê bao cố định cực rẻ (chỉ từ 500K/năm). Dù bạn có 10 khách hay 1000 khách mỗi tháng, bạn không phải chia sẻ thêm bất kỳ đồng nào."
+                desc: `Chúng tôi thu phí thuê bao cố định cực rẻ (chỉ từ ${PRICING_AMOUNT}/năm). Dù bạn có 10 khách hay 1000 khách mỗi tháng, bạn không phải chia sẻ thêm bất kỳ đồng nào.`
               },
               {
                 icon: <Users className="size-10 text-gold" />,

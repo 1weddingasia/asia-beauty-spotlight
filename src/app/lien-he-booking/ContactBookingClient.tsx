@@ -5,7 +5,7 @@ import Link from "next/link";
 import { MessageCircle, PhoneCall, Mail, Zap, CheckCircle2 } from "lucide-react";
 import { PageShell } from "@/components/site/Layout";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
-import { CONTACT_ZALO } from "@/config/site-config";
+import { CONTACT_ZALO, CONTACT_PHONE, CONTACT_EMAIL } from "@/config/site-config";
 
 export default function ContactBookingClient() {
   const [sent, setSent] = useState(false);
@@ -27,6 +27,7 @@ export default function ContactBookingClient() {
         setErrorMsg(res.error || "Có lỗi xảy ra, vui lòng thử lại.");
       }
     } catch (err) {
+      console.error("Contact form error:", err);
       setErrorMsg("Có lỗi xảy ra, vui lòng thử lại.");
     } finally {
       setLoading(false);
@@ -136,7 +137,7 @@ export default function ContactBookingClient() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Hotline Đăng Ký</p>
-                  <p className="text-ink font-bold">0918.731.411</p>
+                  <p className="text-ink font-bold">{CONTACT_PHONE}</p>
                 </div>
               </div>
               
@@ -146,7 +147,7 @@ export default function ContactBookingClient() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Email Đối Tác</p>
-                  <p className="text-ink font-bold">partner@1booking.asia</p>
+                  <p className="text-ink font-bold">{CONTACT_EMAIL}</p>
                 </div>
               </div>
             </div>
