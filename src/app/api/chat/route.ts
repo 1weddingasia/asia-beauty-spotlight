@@ -142,8 +142,11 @@ QUY TẮC BẮT BUỘC:
     if (reply.includes('[CHOT_DON]')) {
       reply = reply.replace(/\[CHOT_DON\]/g, '').trim();
       const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
+      const origin = req.headers.get('origin') || req.headers.get('referer') || '';
+      const platformStr = origin.toLowerCase().includes('1beauty') ? '1BEAUTY.ASIA' : '1BOOKING.ASIA';
+
       if (telegramChatId && userPhoneFound) {
-        const msg = `🔥 [AI CHATBOT - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${lastUserMsg?.content || ''}"\nAI đã phản hồi: "${reply}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
+        const msg = `🔥 [${platformStr} AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${lastUserMsg?.content || ''}"\nAI đã phản hồi: "${reply}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
         sendTelegramAsync(telegramChatId, msg);
       }
     }

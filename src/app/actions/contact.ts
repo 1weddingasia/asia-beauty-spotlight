@@ -48,7 +48,7 @@ export async function submitContactForm(formData: FormData) {
       // Escape HTML entities to prevent Telegram API parsing errors
       const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       
-      const text = `🔔 <b>YÊU CẦU ĐĂNG KÝ MỚI</b>\n\n🏢 <b>Doanh nghiệp:</b> ${escapeHtml(businessName)}\n👤 <b>Người liên hệ:</b> ${escapeHtml(contactName)}\n📞 <b>SĐT:</b> ${escapeHtml(phone)}\n💬 <b>Lời nhắn:</b> ${escapeHtml(message)}`;
+      const text = `🔔 <b>[1BOOKING.ASIA] YÊU CẦU ĐĂNG KÝ MỚI</b>\n\n🏢 <b>Doanh nghiệp:</b> ${escapeHtml(businessName)}\n👤 <b>Người liên hệ:</b> ${escapeHtml(contactName)}\n📞 <b>SĐT:</b> ${escapeHtml(phone)}\n💬 <b>Lời nhắn:</b> ${escapeHtml(message)}`;
       
       try {
         const response = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {

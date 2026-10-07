@@ -129,7 +129,8 @@ QUY TẮC BẮT BUỘC:
         const telegramChatId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
         if (telegramChatId) {
           const msgRole = mode === 'b2c' ? 'NGƯỜI DÙNG' : 'CHỦ TIỆM';
-          const msg = `🚀 [1BEAUTY LEAD] CÓ ${msgRole} ĐỂ LẠI SĐT TRÊN WEB!\n\nSĐT: ${lastMsgPhone}\nNội dung: "${lastUserMsg.content}"\n👉 CSKH gọi ngay nhé!`;
+          const platformName = mode === 'b2c' ? '1BEAUTY' : '1BOOKING';
+          const msg = `🚀 [${platformName} LEAD] CÓ ${msgRole} ĐỂ LẠI SĐT TRÊN WEB!\n\nSĐT: ${lastMsgPhone}\nNội dung: "${lastUserMsg.content}"\n👉 CSKH gọi ngay nhé!`;
           sendTelegramAsync(telegramChatId, msg);
         }
     }

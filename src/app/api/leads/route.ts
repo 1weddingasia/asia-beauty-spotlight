@@ -314,18 +314,21 @@ export async function POST(req: Request) {
     if (telegramChatId) {
       let header = '';
 
+      const origin = req.headers.get('origin') || req.headers.get('referer') || '';
+      const platformStr = origin.toLowerCase().includes('1beauty') ? '1BEAUTY.ASIA' : '1BOOKING.ASIA';
+
       if (isBookingDeal) {
         header = isVIP
-          ? `🏆 LỊCH HẸN TỪ KHÁCH VIP (Đến tiệm lần ${visitNumber})`
+          ? `🏆 [${platformStr}] LỊCH HẸN TỪ KHÁCH VIP (Lần ${visitNumber})`
           : isReturning
-          ? `⭐ LỊCH HẸN TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
-          : `📅 LỊCH HẸN MỚI`;
+          ? `⭐ [${platformStr}] LỊCH HẸN TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
+          : `📅 [${platformStr}] LỊCH HẸN MỚI`;
       } else {
         header = isVIP
-          ? `🏆 ƯU ĐÃI TỪ KHÁCH VIP (Đến tiệm lần ${visitNumber})`
+          ? `🏆 [${platformStr}] ƯU ĐÃI TỪ KHÁCH VIP (Lần ${visitNumber})`
           : isReturning
-          ? `⭐ ƯU ĐÃI TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
-          : `🎁 NHẬN ƯU ĐÃI MỚI`;
+          ? `⭐ [${platformStr}] ƯU ĐÃI TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
+          : `🎁 [${platformStr}] NHẬN ƯU ĐÃI MỚI`;
       }
 
       // 🔔 KÊNH 1: Bắn về tiệm
@@ -338,7 +341,7 @@ export async function POST(req: Request) {
       const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
       if (adminChatId && adminChatId !== telegramChatId) {
         const safeBusinessName = escapeHtml(business.name || 'Không rõ tiệm');
-        const msgForAdmin = `<b>📊 [TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | ${isBookingDeal ? '📅 Lịch hẹn' : '🎁 Ưu đãi'}: ${safeDeal}\nMã: ${voucher_code}`;
+        const msgForAdmin = `<b>📊 [${platformStr} - TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | ${isBookingDeal ? '📅 Lịch hẹn' : '🎁 Ưu đãi'}: ${safeDeal}\nMã: ${voucher_code}`;
         notifications.push(sendTelegramAsync(adminChatId, msgForAdmin));
       }
     }
