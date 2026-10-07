@@ -37,7 +37,7 @@ export default function GioiThieuBookingPage() {
           </p>
           <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/home-booking"
+              href="/#demos"
               className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-gold px-8 py-4 font-bold text-ink transition-transform hover:scale-105"
             >
               Trải Nghiệm Demo Ngay <ArrowRight className="size-5" />
@@ -247,7 +247,7 @@ export default function GioiThieuBookingPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
             <Link
-              href="/home-booking"
+              href="/#demos"
               className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-gold text-ink px-8 py-4 font-bold transition-transform hover:scale-105 shadow-xl"
             >
               Bắt Đầu Tạo Trang Ngay <ArrowRight className="size-5" />

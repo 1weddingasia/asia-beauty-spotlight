@@ -186,7 +186,7 @@ export default async function HomeBookingPage() {
       {/* ═══════════════════════════════════════════════════ */}
       {/* 10 NGÀNH TRỌNG ĐIỂM                               */}
       {/* ═══════════════════════════════════════════════════ */}
-      <section className="py-20 bg-muted/40 border-y border-border">
+      <section id="demos" className="py-20 bg-muted/40 border-y border-border">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-14">
             <p className="text-xs tracking-[0.3em] text-gold uppercase">Đa ngành · Đa lĩnh vực</p>
