@@ -82,7 +82,7 @@ export default async function HomeBookingPage() {
           <p className="mt-6 text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
             Hệ thống trang đặt lịch tự động chốt khách 24/7,{" "}
             <span className="text-gold font-semibold">nổ chuông báo Telegram tức thì trong 1 giây</span>,
-            quản trị giá và menu siêu tốc qua chat. Không cắt phế hoa hồng, giữ trọn 100% lợi nhuận và tệp data khách hàng.
+            quản trị giá và menu siêu tốc qua chat. Chi phí cố định với 0% hoa hồng, giữ trọn 100% lợi nhuận và tệp data khách hàng.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
