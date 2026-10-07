@@ -126,7 +126,7 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
           className="fixed bottom-[90px] md:bottom-6 right-4 md:right-6 z-[45] bg-gold text-ink p-4 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2 animate-bounce"
         >
           <MessageCircle className="size-6" />
-          <span className="font-bold hidden md:inline">Chat với Tiệm</span>
+          <span className="font-bold hidden md:inline">Lễ tân 24/7</span>
         </button>
       )}
 
@@ -140,7 +140,7 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
                 <MessageCircle className="size-5 text-ink" />
               </div>
               <div>
-                <h3 className="font-bold text-sm leading-tight">{businessName} Xin chào! {adminToken ? '(Admin)' : ''}</h3>
+                <h3 className="font-bold text-sm leading-tight">Lễ tân 24/7 {adminToken ? '(Admin)' : ''}</h3>
                 <p className="text-xs text-champagne">Sẵn sàng hỗ trợ bạn</p>
               </div>
             </div>

@@ -113,6 +113,12 @@ export default function BusinessProfilePage() {
                   instagram: data.socials?.instagram || parsed.instagram || "",
                   tiktok: data.socials?.tiktok || parsed.tiktok || "",
                   youtube: data.socials?.youtube || parsed.youtube || "",
+                  working_hours: Array.isArray(parsed.working_hours) ? parsed.working_hours : prev.working_hours,
+                  gallery: Array.isArray(parsed.gallery) ? parsed.gallery : prev.gallery,
+                  services: Array.isArray(parsed.services) ? parsed.services : prev.services,
+                  deals: Array.isArray(parsed.deals) ? parsed.deals : prev.deals,
+                  amenities: Array.isArray(parsed.amenities) ? parsed.amenities : prev.amenities,
+                  banners: Array.isArray(parsed.banners) ? parsed.banners : prev.banners,
                 }));
               } catch (e) { console.error(e); }
             } else {
