@@ -79,13 +79,13 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
     <img
       src={siteConfig.logoImageUrl}
       alt={siteConfig.brand}
-      className="h-8 w-auto object-contain"
+      className="h-10 md:h-12 w-auto object-contain"
     />
   ) : settings?.logo_url ? (
     <img
       src={settings.logo_url}
       alt={siteConfig.brand}
-      className="h-8 w-auto object-contain"
+      className="h-10 md:h-12 w-auto object-contain"
     />
   ) : (
     <>
