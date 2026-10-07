@@ -156,7 +156,7 @@ export default function ContactBookingClient() {
           <div className="bg-ink p-8 rounded-3xl text-center text-white">
             <p className="text-gold font-bold text-xl mb-2">Cam Kết Của Chúng Tôi</p>
             <p className="text-white/70 text-sm leading-relaxed">
-              Triển khai trong 5 phút. Không thu phí khởi tạo nền tảng. Hoàn tiền 100% nếu không tăng tỷ lệ khách quay lại sau 3 tháng sử dụng.
+              Khởi tạo tài khoản dùng ngay để sở hữu trang đặt lịch riêng trên nền tảng 1Booking.Asia (không can thiệp vào website của bạn). Không thu phí khởi tạo. Hoàn tiền 100% nếu không tăng tỷ lệ khách quay lại sau 3 tháng sử dụng.
             </p>
           </div>
         </aside>
