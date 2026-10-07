@@ -276,12 +276,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       <SiteHeader solid={false} />
       
       {/* Premium Hero Section */}
-      <div className="relative h-[100svh] w-full overflow-hidden group">
+      <div className="relative h-[65vh] md:h-[75vh] w-full overflow-hidden group">
         <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
             {banners.map((img: string, idx: number) => (
-              <CarouselItem key={idx} className="relative h-[100svh] w-full bg-black">
-                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-contain" priority={idx === 0} />
+              <CarouselItem key={idx} className="relative h-[65vh] md:h-[75vh] w-full bg-black/90">
+                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-cover md:animate-ken-burns" priority={idx === 0} />
               </CarouselItem>
             ))}
           </CarouselContent>
