@@ -324,10 +324,12 @@ export default async function HomeBookingPage() {
               </div>
               <p className="text-xs font-bold tracking-widest text-gold uppercase mb-4">Gói VIP Setup Trọn Gói</p>
               <div className="flex items-end gap-2 mb-2">
-                <span className="text-5xl font-black text-ink">2.000K</span>
-                <span className="text-lg text-muted-foreground mb-1.5">một lần</span>
+                <span className="text-5xl font-black text-ink">1.500K</span>
+                <span className="text-lg text-muted-foreground line-through mb-1.5">2.000K</span>
               </div>
-              <p className="text-sm text-muted-foreground mb-6">Đội kỹ thuật làm hết, bàn giao tận tay</p>
+              <p className="text-sm text-muted-foreground mb-6">
+                Bao gồm: <strong>500K</strong> phí nền tảng/năm + <strong>1.000K</strong> phí setup làm hộ 1 lần (Giá gốc setup 1.500K). Từ năm thứ 2 chỉ cần đóng 500K.
+              </p>
               <ul className="space-y-3 mb-8">
                 {[
                   "Toàn bộ tính năng của Gói Tự Vận Hành",
