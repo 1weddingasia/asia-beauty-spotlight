@@ -1,0 +1,43 @@
+{
+  "name": "Pensilia Skin Centre",
+  "slug": "pensilia-skin-centre",
+  "address": "413-415 Nguyễn Đình Chiểu, P. Bàn Cờ, Q.3, TP.HCM",
+  "phone": "0938.777.885",
+  "email": "info@pensilia.com",
+  "website": "pensilia.com",
+  "short_description": "Pensilia Skin Centre – Hệ thống thẩm mỹ da hàng đầu từ 2011, với đội ngũ bác sĩ giàu kinh nghiệm và công nghệ quốc tế, mang đến giải pháp trị sẹo rỗ, trị nám, trẻ hóa da hiệu quả và an toàn.",
+  "description": "<b>Pensilia Skin Centre</b> – Tự hào là hệ thống thẩm mỹ da uy tín tại TP.HCM từ năm 2011, đã đồng hành cùng hàng nghìn khách hàng trên hành trình chăm sóc và tái tạo làn da.<br><br>Với phương châm <b>“Bác sĩ không chỉ giỏi – mà còn hiểu bạn”</b>, đội ngũ bác sĩ tại Pensilia được đào tạo bài bản trong và ngoài nước, luôn lắng nghe và điều trị bằng sự thấu cảm, tận tâm cho từng làn da.<br><br><b>Công nghệ quốc tế – Lựa chọn có chọn lọc:</b> Pensilia sử dụng các thiết bị y khoa đạt chuẩn FDA (Hoa Kỳ) và CE (Châu Âu) như MCT Unit® (Tây Ban Nha) và Jovena (Ý), giúp tối ưu hiệu quả điều trị và đảm bảo an toàn tuyệt đối.<br><br><b>Dịch vụ nổi bật:</b><br>- Trị sẹo rỗ laser: từ 5-20 triệu<br>- Trị nám công nghệ cao: từ 8-25 triệu<br>- Trẻ hóa da RF: từ 10-30 triệu<br><br>Đến với Pensilia, bạn không chỉ được điều trị mà còn được đồng hành như người thân, để mỗi liệu trình là một trải nghiệm thư giãn và hiệu quả.<br><br><b>Địa chỉ:</b> 413-415 Nguyễn Đình Chiểu, P. Bàn Cờ, Q.3, TP.HCM<br><b>Điện thoại:</b> 0938.777.885",
+  "seo_title": "Pensilia Skin Centre - Trị sẹo rỗ, nám, trẻ hóa da",
+  "seo_description": "Pensilia Skin Centre tại Q.3, TP.HCM: Trị sẹo rỗ laser, trị nám công nghệ cao, trẻ hóa da RF. Đội ngũ bác sĩ giàu kinh nghiệm, công nghệ FDA & CE. Đặt hẹn ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Trị sẹo rỗ laser",
+        "price": "từ 5-20 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Trị nám công nghệ cao",
+        "price": "từ 8-25 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Trẻ hóa da RF",
+        "price": "từ 10-30 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

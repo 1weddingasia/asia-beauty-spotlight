@@ -1,0 +1,43 @@
+{
+  "name": "Madiva Beauty & Spa",
+  "slug": "madiva-beauty-spa",
+  "address": "250 Đường 3/2, P.12, Q.10",
+  "phone": "0877.900.384",
+  "email": "madiva@1booking.asia",
+  "website": "facebook.com/Madiva.Beauty",
+  "short_description": "Trải nghiệm dịch vụ chăm sóc da, massage thư giãn và triệt lông chuyên nghiệp tại Madiva Beauty & Spa. Không gian sang trọng, nhân viên tận tâm, giá cả hợp lý.",
+  "description": "<b>Madiva Beauty & Spa</b> – Địa chỉ làm đẹp uy tín tại Quận 10, TP.HCM.<br><br>Tọa lạc tại <b>250 Đường 3/2, P.12, Q.10</b>, Madiva Beauty & Spa là điểm đến lý tưởng cho những ai muốn thư giãn và chăm sóc sắc đẹp. Với đội ngũ kỹ thuật viên giàu kinh nghiệm, chúng tôi cam kết mang đến cho bạn những trải nghiệm tuyệt vời nhất.<br><br>Các dịch vụ nổi bật:<br>- <b>Chăm sóc da</b>: giúp làn da sáng mịn, khỏe khoắn, giá chỉ từ 500k đến 2 triệu.<br>- <b>Massage thư giãn</b>: giảm căng thẳng, mệt mỏi, giá từ 400k đến 1.2 triệu.<br>- <b>Triệt lông</b>: an toàn, hiệu quả, giá từ 300k đến 1 triệu.<br><br>Đến với Madiva Beauty & Spa, bạn sẽ được phục vụ tận tình trong không gian ấm cúng, sang trọng. Hãy liên hệ ngay qua số điện thoại <b>0877.900.384</b> để đặt lịch và nhận ưu đãi!",
+  "seo_title": "Madiva Beauty & Spa - Chăm sóc da, Massage, Triệt lông Q.10",
+  "seo_description": "Madiva Beauty & Spa tại 250 Đường 3/2, P.12, Q.10. Dịch vụ chăm sóc da, massage thư giãn, triệt lông chuyên nghiệp. Giá hợp lý, không gian sang trọng. Đặt ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Chăm sóc da",
+        "price": "500k-2 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Massage thư giãn",
+        "price": "400k-1.2 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Triệt lông",
+        "price": "300k-1 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

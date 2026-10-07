@@ -1,0 +1,43 @@
+{
+  "name": "Spring Spa & Clinic",
+  "slug": "spring-spa-clinic",
+  "address": "D2-D6 Thất Sơn, P.15, Q.10",
+  "phone": "0919.383.344",
+  "email": "springspa@1booking.asia",
+  "website": "facebook.com/springspaclinic",
+  "short_description": "Spring Spa & Clinic mang đến không gian thư giãn đẳng cấp với các liệu trình massage body, chăm sóc da mặt và gội đầu dưỡng sinh chuyên sâu.",
+  "description": "<b>Spring Spa & Clinic</b> – điểm đến lý tưởng cho sức khỏe và sắc đẹp của bạn.<br><br>Tọa lạc tại <b>D2-D6 Thất Sơn, P.15, Q.10</b>, Spring Spa & Clinic tự hào là một trong những trung tâm chăm sóc sức khỏe và sắc đẹp hàng đầu tại TP.HCM. Với không gian sang trọng, yên tĩnh cùng đội ngũ chuyên viên giàu kinh nghiệm, chúng tôi cam kết mang đến cho bạn những phút giây thư giãn tuyệt đối và hiệu quả chăm sóc vượt trội.<br><br><b>Dịch vụ nổi bật:</b><br>- <b>Massage body</b>: Giúp giảm căng thẳng, đau mỏi cơ bắp, lưu thông khí huyết với giá chỉ từ 500k đến 1.5 triệu.<br>- <b>Chăm sóc da mặt</b>: Các liệu trình chuyên sâu giúp da sáng mịn, se khít lỗ chân lông, giá từ 400k đến 1.2 triệu.<br>- <b>Gội đầu dưỡng sinh</b>: Thư giãn tinh thần, giảm stress, tốt cho tóc và da đầu, giá từ 300k đến 800k.<br><br>Hãy đến với Spring Spa & Clinic để trải nghiệm dịch vụ chất lượng cao với mức giá hợp lý. Liên hệ ngay <b>0919.383.344</b> để đặt lịch hẹn!",
+  "seo_title": "Spring Spa & Clinic - Massage, Chăm sóc da, Gội đầu dưỡng sinh Q.10",
+  "seo_description": "Spring Spa & Clinic tại Q.10, TP.HCM cung cấp dịch vụ massage body, chăm sóc da mặt, gội đầu dưỡng sinh chất lượng cao. Đặt lịch: 0919.383.344.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Massage body",
+        "price": "500k-1.5 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Chăm sóc da mặt",
+        "price": "400k-1.2 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Gội đầu dưỡng sinh",
+        "price": "300k-800k",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

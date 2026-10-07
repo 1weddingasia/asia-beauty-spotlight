@@ -1,0 +1,44 @@
+{
+  "name": "HappySkin Beauty Clinic",
+  "slug": "happyskin-beauty-clinic",
+  "address": "24 Huỳnh Khương Ninh, P. Đa Kao, Q.1, TP.HCM",
+  "phone": "1900.2832 (phím 1)",
+  "email": "happyskin@1booking.asia",
+  "website": "happyskin.vn",
+  "short_description": "HappySkin Beauty Clinic cung cấp giải pháp chăm sóc da chuyên sâu với công nghệ cao, giúp bạn sở hữu làn da khỏe đẹp rạng rỡ.",
+  "description": "<b>HappySkin Beauty Clinic</b> là địa chỉ uy tín hàng đầu trong lĩnh vực chăm sóc da và làm đẹp tại TP.HCM. Với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm cùng trang thiết bị hiện đại, chúng tôi mang đến các liệu trình điều trị mụn, trẻ hóa da và chăm sóc da định kỳ hiệu quả, an toàn.<br><br>Không chỉ là clinic, HappySkin còn là thương hiệu mỹ phẩm chính hãng được nhiều khách hàng tin tưởng. Chúng tôi cam kết sử dụng các sản phẩm chất lượng cao, đã qua kiểm định, kết hợp công nghệ tiên tiến để đem lại kết quả tối ưu cho làn da của bạn.<br><br>Đến với HappySkin, bạn sẽ được trải nghiệm dịch vụ tận tâm, không gian sang trọng và phác đồ điều trị cá nhân hóa. Hãy để chúng tôi đồng hành cùng bạn trên hành trình gìn giữ nét thanh xuân rạng rỡ.",
+  "seo_title": "HappySkin Beauty Clinic - Chăm sóc da & Trị mụn chuyên sâu",
+  "seo_description": "HappySkin Beauty Clinic tại Q.1, TP.HCM - Dịch vụ trị mụn, trẻ hóa da, chăm sóc da định kỳ với công nghệ cao. Đặt hẹn ngay qua 1900.2832.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://cdn.happyskin.vn/media/42/7568-happyskinvn-chuong-trinh-ra-mat-thiet-bi-cham-soc-da-da-nang-tai-ha-sidebar.jpg",
+      "https://cdn.happyskin.vn/media/55/ve-dep-truong-thanh-theo-thoi-gian-bakuchiol-vang-do.jpg"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Trị mụn chuyên sâu",
+        "price": "từ 1-5 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Trẻ hóa da công nghệ cao",
+        "price": "từ 3-10 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Chăm sóc da định kỳ",
+        "price": "từ 500k-2 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "name": "Golden Lotus Healing Spa Land",
+  "slug": "golden-lotus-healing-spa-land",
+  "address": "139 Tôn Dật Tiên, P. Tân Phú, Q.7",
+  "phone": "028.5410.7171",
+  "email": "igoldenlotus6@gmail.com",
+  "website": "goldenlotus.world",
+  "short_description": "Golden Lotus Healing Spa Land là tổ hợp nghỉ dưỡng sức khỏe và thư giãn đẳng cấp tại Quận 7, TP.HCM, mang đến trải nghiệm phục hồi toàn diện từ spa, gym, nail, hair đến ẩm thực và giải trí.",
+  "description": "<b>Golden Lotus Healing Spa Land</b> – tọa lạc tại 139 Tôn Dật Tiên, P. Tân Phú, Q.7 – được ví như <b>\"trạm sạc năng lượng\"</b> giữa nhịp sống bận rộn, nơi cơ thể được nghỉ ngơi và tinh thần được phục hồi.<br><br>Với mô hình nghỉ dưỡng sức khỏe đa tầng độc đáo, Golden Lotus mang đến không gian thư giãn toàn diện:<br><br><b>Tầng hầm:</b> Bãi đỗ xe rộng rãi, thuận tiện cho hành trình nghỉ dưỡng.<br><b>Tầng trệt:</b> Quầy lễ tân check-in, tủ giày dép, massage cá, nhà hàng, nail và hair salon.<br><b>Tầng 1:</b> Khu bathhouse (thay/cất đồ, tắm tráng, ngâm hồ toàn thân), snack bar, coworking cafe.<br><b>Tầng 2:</b> Hang hồng ngoại, phòng nhiệt và hồ ngâm chân nóng-lạnh, sảnh chung thư giãn, sàn ấm.<br><b>Tầng 3:</b> Phòng ion màu sắc, lớp học dance/yoga, gym, cinema, music box, motion game.<br><br>Đến với Golden Lotus Healing Spa Land, bạn không chỉ được chăm sóc sắc đẹp mà còn tận hưởng trọn vẹn các liệu pháp trị liệu, giải trí và ẩm thực tinh tế. Đội ngũ chuyên viên giàu kinh nghiệm cùng không gian sang trọng, yên tĩnh sẽ mang lại cho bạn những phút giây thư giãn tuyệt đối.<br><br><b>Ưu đãi hấp dẫn:</b> Nhiều chương trình khuyến mãi như Hello Autumn – Deal xịn, Happy Hour, minigame TikTok nhận thưởng đến 9 triệu đồng.<br><br>Hãy để Golden Lotus Healing Spa Land trở thành điểm đến quen thuộc cho sức khỏe và sắc đẹp của bạn!",
+  "seo_title": "Golden Lotus Healing Spa Land - Nghỉ dưỡng & Spa Q.7",
+  "seo_description": "Golden Lotus Healing Spa Land tại Q.7, TP.HCM: tổ hợp spa, gym, nail, hair, bathhouse, ẩm thực và giải trí. Đặt lịch ngay để trải nghiệm thư giãn đẳng cấp!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://goldenlotusspa.vn/wp-content/uploads/2026/06/goldenlotusspa-vn-1-scaled.png",
+      "https://goldenlotus.world/wp-content/uploads/2026/10/goldenlotus-world-27.jpg"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Bathhouse & Xông hơi",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Massage & Trị liệu",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Nail & Hair Salon",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s4",
+        "name": "Gym & Yoga",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s5",
+        "name": "Nhà hàng & Cafe",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s6",
+        "name": "Cinema & Music Box",
+        "price": "Liên hệ",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

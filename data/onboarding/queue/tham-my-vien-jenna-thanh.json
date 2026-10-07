@@ -1,0 +1,43 @@
+{
+  "name": "Thẩm mỹ viện Jenna Thanh",
+  "slug": "tham-my-vien-jenna-thanh",
+  "address": "715-717 Đường 3/2, P.11, Q.10",
+  "phone": "0909.807.172",
+  "email": "info@jennathanh.com",
+  "website": "jennathanh.com",
+  "short_description": "Thẩm mỹ viện Jenna Thanh mang đến giải pháp làm đẹp an toàn, hiệu quả với đội ngũ chuyên gia hàng đầu. Tọa lạc tại Quận 10, chúng tôi tự hào là địa chỉ tin cậy cho phái đẹp.",
+  "description": "<b>Thẩm mỹ viện Jenna Thanh</b> – Nơi tôn vinh vẻ đẹp tự nhiên và an toàn.<br><br>Với hơn 10 năm kinh nghiệm trong lĩnh vực thẩm mỹ, Jenna Thanh tự hào là điểm đến lý tưởng cho hàng ngàn khách hàng. Chúng tôi cam kết mang đến các dịch vụ chất lượng cao với công nghệ tiên tiến, đội ngũ bác sĩ giàu kinh nghiệm và không gian sang trọng.<br><br><b>Dịch vụ nổi bật:</b><br>- Nâng mũi: 25-55 triệu<br>- Cắt mí: 10-25 triệu<br>- Chăm sóc da: 1-5 triệu<br><br>Hãy đến với Jenna Thanh để trải nghiệm sự khác biệt!",
+  "seo_title": "Thẩm mỹ viện Jenna Thanh - Nâng mũi, cắt mí, chăm sóc da",
+  "seo_description": "Thẩm mỹ viện Jenna Thanh tại Q.10, TP.HCM chuyên nâng mũi, cắt mí, chăm sóc da an toàn, hiệu quả. Đội ngũ chuyên gia hàng đầu, giá cả hợp lý. Liên hệ ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng mũi",
+        "price": "25-55 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Cắt mí",
+        "price": "10-25 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Chăm sóc da",
+        "price": "1-5 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

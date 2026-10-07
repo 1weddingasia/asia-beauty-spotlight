@@ -1,0 +1,44 @@
+{
+  "name": "Bệnh viện Thẩm mỹ Việt Mỹ",
+  "slug": "benh-vien-tham-my-viet-my",
+  "address": "331 Nguyễn Trãi, P. Cầu Ông Lãnh, Q.1, TP.HCM",
+  "phone": "028.3838.9595 - 0942.757.888",
+  "email": "contact@vmh.vn",
+  "website": "benhvienvietmy.com",
+  "short_description": "Bệnh viện Thẩm mỹ Việt Mỹ - Địa chỉ vàng cho phẫu thuật thẩm mỹ an toàn, hiệu quả với đội ngũ bác sĩ hàng đầu và công nghệ tiên tiến.",
+  "description": "<h2>Bệnh viện Thẩm mỹ Việt Mỹ - Nâng tầm vẻ đẹp Việt</h2><p>Bệnh viện Thẩm mỹ Việt Mỹ tự hào là một trong những đơn vị tiên phong trong lĩnh vực phẫu thuật thẩm mỹ tại Việt Nam. Với sứ mệnh mang đến cho khách hàng vẻ đẹp tự nhiên và an toàn, chúng tôi không ngừng cập nhật những công nghệ tiên tiến nhất từ các quốc gia có nền y học phát triển.</p><p><b>Đội ngũ bác sĩ chuyên môn cao:</b><br>Bệnh viện quy tụ đội ngũ bác sĩ giàu kinh nghiệm, trong đó có Bác sĩ Chiêm Quốc Thái - người tiên phong áp dụng phương pháp nâng ngực nội soi đầu tiên tại Việt Nam vào năm 2007. Các bác sĩ tại Việt Mỹ luôn tận tâm, tỉ mỉ trong từng ca phẫu thuật, đảm bảo mang lại kết quả hài lòng nhất cho khách hàng.</p><p><b>Công nghệ và trang thiết bị hiện đại:</b><br>Bệnh viện đầu tư hệ thống trang thiết bị y khoa nhập khẩu từ các nước tiên tiến, hỗ trợ tối đa cho quá trình điều trị và chăm sóc. Các công nghệ nổi bật như nâng ngực nội soi, hút mỡ siêu âm Liposonix, phẫu thuật tạo hình mũi S Line... đều được thực hiện theo tiêu chuẩn quốc tế.</p><p><b>Dịch vụ đa dạng, đáp ứng mọi nhu cầu:</b><br>Chúng tôi cung cấp đầy đủ các dịch vụ từ phẫu thuật thẩm mỹ đến thẩm mỹ không phẫu thuật, cấy tóc, chăm sóc da... Mỗi dịch vụ đều được thiết kế riêng biệt, phù hợp với từng khách hàng, giúp bạn tỏa sáng với vẻ đẹp hoàn hảo.</p><p><b>Cam kết chất lượng và an toàn:</b><br>Bệnh viện Thẩm mỹ Việt Mỹ luôn đặt sự an toàn của khách hàng lên hàng đầu. Chúng tôi áp dụng quy trình kiểm soát chất lượng nghiêm ngặt, từ khâu tư vấn, thăm khám đến phẫu thuật và hậu phẫu, đảm bảo mang lại trải nghiệm dịch vụ y tế chất lượng cao.</p><p>Hãy đến với Bệnh viện Thẩm mỹ Việt Mỹ để được tư vấn và trải nghiệm dịch vụ thẩm mỹ đẳng cấp, an toàn và hiệu quả!</p>",
+  "seo_title": "Bệnh viện Thẩm mỹ Việt Mỹ - Phẫu thuật thẩm mỹ an toàn",
+  "seo_description": "Bệnh viện Thẩm mỹ Việt Mỹ tại Q.1, TP.HCM cung cấp dịch vụ nâng ngực nội soi, hút mỡ, tạo hình mũi... an toàn, hiệu quả với bác sĩ Chiêm Quốc Thái.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://benhvienvietmy.com/static/uploads/banner_trang_chu_1902_744c887f83.jpg",
+      "https://benhvienvietmy.com/static/uploads/small_thumbs_nang_nguc_noi_soi_554f7899df.jpg"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng ngực nội soi",
+        "price": "từ 60-90 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Hút mỡ công nghệ cao",
+        "price": "từ 30-60 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Phẫu thuật tạo hình mũi",
+        "price": "từ 35-70 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

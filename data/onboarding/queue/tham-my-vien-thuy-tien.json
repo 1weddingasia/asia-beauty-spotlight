@@ -1,0 +1,44 @@
+{
+  "name": "Thẩm mỹ viện Thủy Tiên",
+  "slug": "tham-my-vien-thuy-tien",
+  "address": "71A Đường 3 Tháng 2, P.11, Q.10",
+  "phone": "1900.6878",
+  "email": "info@thammyvienthuytien.com",
+  "website": "thammyvienthuytien.com",
+  "short_description": "Thẩm mỹ viện Thủy Tiên - Hệ thống thẩm mỹ uy tín hàng đầu Việt Nam với công nghệ hiện đại và đội ngũ chuyên gia giàu kinh nghiệm, mang đến vẻ đẹp tự nhiên và an toàn cho khách hàng.",
+  "description": "<b>Thẩm mỹ viện Thủy Tiên</b> tự hào là một trong những hệ thống thẩm mỹ viện uy tín hàng đầu tại Việt Nam, với hơn 15 năm hoạt động trong lĩnh vực làm đẹp.<br><br>Chúng tôi sở hữu đội ngũ kỹ thuật viên giàu kinh nghiệm, được đào tạo chuyên sâu và hệ thống công nghệ làm đẹp hiện đại, tiên tiến nhất. Thẩm mỹ viện Thủy Tiên không ngừng nâng cao chất lượng dịch vụ, mang đến cho khách hàng những trải nghiệm tuyệt vời nhất.<br><br><b>Dịch vụ nổi bật:</b><br>- Phun xăm thẩm mỹ: Tạo hình chân mày, môi, mí mắt tự nhiên, bền đẹp.<br>- Chăm sóc da: Điều trị mụn, nám, tàn nhang, trẻ hóa da bằng công nghệ cao.<br>- Triệt lông: Loại bỏ lông vĩnh viễn an toàn, không đau rát.<br>- Thẩm mỹ mắt: Cắt mí, nâng cung chân mày, tạo mắt 2 mí.<br>- Thẩm mỹ mũi: Nâng mũi sụn tai, nâng mũi bán cấu trúc, nâng mũi không cấu trúc.<br>- Căng da thẩm mỹ: Căng da mặt, căng da toàn thân bằng công nghệ Hàn Quốc.<br>- Thẩm mỹ tạo hình: Hút mỡ, độn cằm, nâng ngực, tạo dáng.<br>- Thẩm mỹ nội khoa: Trẻ hóa da, trị liệu da chuyên sâu.<br><br><b>Vì sao chọn Thẩm mỹ viện Thủy Tiên?</b><br>- Thương hiệu uy tín: Được khách hàng đánh giá cao qua nhiều năm.<br>- Công nghệ hiện đại: Luôn đi đầu trong ứng dụng công nghệ mới.<br>- Phục vụ chuyên nghiệp: Sự hài lòng của khách hàng là thước đo thành công.<br>- Đội ngũ chuyên gia: Giàu kinh nghiệm, tay nghề cao, thường xuyên cập nhật phương pháp mới.<br>- Chứng nhận giải thưởng: Doanh nhân - Doanh nghiệp vàng 2010, Bàn tay vàng vì sắc đẹp cộng đồng 2017, Cúp vàng Doanh nhân Việt Nam 2010, Chuyên gia phun thêu hàng đầu, Bàn tay vàng dịch vụ chăm sóc da mặt, Thương hiệu vàng 2016, v.v.<br><br>Hãy đến với <b>Thẩm mỹ viện Thủy Tiên</b> để trải nghiệm dịch vụ làm đẹp đẳng cấp và an toàn. Địa chỉ: 71A Đường 3 Tháng 2, P.11, Q.10. Hotline: 1900.6878.",
+  "seo_title": "Thẩm mỹ viện Thủy Tiên - Uy tín hàng đầu Việt Nam",
+  "seo_description": "Thẩm mỹ viện Thủy Tiên tại 71A Đường 3 Tháng 2, P.11, Q.10. Dịch vụ phun xăm, chăm sóc da, triệt lông, thẩm mỹ mắt, mũi, căng da. Hotline 1900.6878.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://thammyvienthuytien.com/vnt_upload/service/thumbs/370_crop__tham-my-mat_1.jpg",
+      "https://thammyvienthuytien.com/vnt_upload/service/thumbs/370_crop__tham-my-nang-mui-3.jpg"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Phun xăm thẩm mỹ",
+        "price": "3-8 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Chăm sóc da",
+        "price": "1-5 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Triệt lông",
+        "price": "2-6 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

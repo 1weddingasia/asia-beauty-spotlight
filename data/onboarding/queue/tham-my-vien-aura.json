@@ -1,0 +1,44 @@
+{
+  "name": "Thẩm mỹ viện Aura",
+  "slug": "tham-my-vien-aura",
+  "address": "1 Đường 3 Tháng 2, P.11, Q.10",
+  "phone": "0833.082.222",
+  "email": "thammyaura@gmail.com",
+  "website": "thammyaura.vn",
+  "short_description": "Thẩm mỹ viện Aura - Nơi quy tụ đội ngũ bác sĩ da liễu giàu kinh nghiệm, ứng dụng công nghệ cao mang đến giải pháp trẻ hóa da, trị nám và phục hồi da hiệu quả.",
+  "description": "<b>Thẩm mỹ viện Aura</b> tự hào là điểm đến hàng đầu cho các dịch vụ chăm sóc da và thẩm mỹ tại TP.HCM. Với hơn 10 năm kinh nghiệm và 7 chi nhánh trên toàn quốc, Aura cam kết mang đến cho khách hàng những phác đồ điều trị cá nhân hóa, an toàn và hiệu quả.<br><br>Chúng tôi chuyên sâu về <b>điều trị nám, trẻ hóa da và phục hồi nền da</b> bằng các công nghệ tiên tiến nhất hiện nay. Mỗi liệu trình đều được thực hiện bởi đội ngũ bác sĩ da liễu giàu kinh nghiệm, đảm bảo mang lại kết quả tối ưu và bền vững.<br><br><b>Dịch vụ nổi bật tại Aura:</b><br>- <b>Nâng mũi cấu trúc</b>: Sử dụng kỹ thuật tiên tiến, tạo dáng mũi tự nhiên, hài hòa với khuôn mặt.<br>- <b>Cắt mí đôi</b>: Mang đến đôi mắt to tròn, cuốn hút, giữ được nét tự nhiên.<br>- <b>Phun xăm thẩm mỹ</b>: Giúp bạn sở hữu đôi môi, chân mày hoàn hảo, tiết kiệm thời gian trang điểm.<br><br>Ngoài ra, Aura còn cung cấp các giải pháp <b>trẻ hóa da</b> như cấy HA Collagen MD Dynamic Codes, cấy Meso căng bóng, điều trị nám chân sâu, nám sau sinh, tàn nhang, nếp nhăn... Tất cả đều được thiết kế riêng cho từng tình trạng da, đảm bảo hiệu quả cao và an toàn tuyệt đối.<br><br>Với không gian sang trọng, dịch vụ chuyên nghiệp và tận tâm, <b>Thẩm mỹ viện Aura</b> xứng đáng là lựa chọn tin cậy cho vẻ đẹp của bạn. Hãy đến và trải nghiệm sự khác biệt!",
+  "seo_title": "Thẩm mỹ viện Aura - Trẻ hóa da, trị nám, nâng mũi",
+  "seo_description": "Thẩm mỹ viện Aura với 10+ năm kinh nghiệm, 7 chi nhánh, chuyên trị nám, trẻ hóa da, nâng mũi, cắt mí. Đội ngũ bác sĩ da liễu giàu kinh nghiệm, công nghệ cao.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://thammyaura.vn/images/hero/hero-upscaled-video-3-poster.webp",
+      "https://thammyaura.vn/_next/image?url=%2Fimages%2Fconditions%2Fcond-nam-mang.png&w=3840&q=75"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng mũi cấu trúc",
+        "price": "35-70 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Cắt mí đôi",
+        "price": "15-35 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Phun xăm thẩm mỹ",
+        "price": "3-10 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "name": "Thảo Yuu Beauty & Spa",
+  "slug": "thao-yuu-beauty-spa",
+  "address": "15 Phú Thuận, P. Phú Thuận, Q.7",
+  "phone": "0901.054.003",
+  "email": "yuuspaq7@gmail.com",
+  "website": "yuuspa.com",
+  "short_description": "Thảo Yuu Beauty & Spa mang đến giải pháp chăm sóc da toàn diện với công nghệ hiện đại, đội ngũ chuyên viên tận tâm, giúp bạn tỏa sáng rạng ngời.",
+  "description": "<b>Thảo Yuu Beauty & Spa</b> – điểm hẹn làm đẹp lý tưởng tại Quận 7, TP.HCM.<br><br>Với không gian thoáng mát, rộng rãi cùng hệ thống máy móc hiện đại, Thảo Yuu tự hào mang đến cho khách hàng những trải nghiệm thư giãn tuyệt vời và hiệu quả điều trị vượt trội. Đội ngũ nhân viên giàu kinh nghiệm, nhiệt tình và tận tâm sẽ giúp bạn tìm lại vẻ đẹp thanh xuân.<br><br><b>Dịch vụ nổi bật:</b><br>- Điều trị nám, mụn, sẹo rỗ, tàn nhang trọn gói với cam kết hiệu quả.<br>- Công nghệ nâng cơ trẻ hóa Hàn Quốc HIFU.<br>- Cấy màu môi Nano, phun chân mày hiệu ứng Omber.<br>- Mesotherapy – kỹ thuật tiêm vi điểm.<br><br>Thảo Yuu Beauty & Spa cam kết mang đến sự hài lòng và vẻ đẹp toàn diện cho mọi khách hàng. Hãy đến và trải nghiệm!",
+  "seo_title": "Thảo Yuu Beauty & Spa - Chăm sóc da & Trẻ hóa",
+  "seo_description": "Thảo Yuu Beauty & Spa tại Quận 7: Điều trị nám, mụn, sẹo rỗ, HIFU, cấy môi Nano. Công nghệ hiện đại, cam kết hiệu quả. Đặt lịch ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://yuuspa.com/thumb/1366x590/1/upload/hinhanh/417379810207913vi.jpg",
+      "https://yuuspa.com/thumb/1366x590/1/upload/hinhanh/170358111314855vi.jpg"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "ĐIỀU TRỊ NÁM TRỌN GÓI (CÓ CAM KẾT)",
+        "price": "20.000.000VNĐ - 40.000.000VNĐ",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "CÔNG NGHỆ NÂNG CƠ TRẺ HÓA HÀN QUỐC HIFU",
+        "price": "5.500.000 đ",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "ĐIỀU TRỊ MỤN TRỌN GÓI (CÓ CAM KẾT)",
+        "price": "15.000.000VNĐ - 25.000.000VNĐ",
+        "status": "active"
+      },
+      {
+        "id": "s4",
+        "name": "CẤY MÀU MÔI NANO",
+        "price": "3.500.000 đ",
+        "status": "active"
+      },
+      {
+        "id": "s5",
+        "name": "ĐIỀU TRỊ SẸO RỖ TRỌN GÓI",
+        "price": "15.000.000VNĐ - 20.000.000VNĐ",
+        "status": "active"
+      },
+      {
+        "id": "s6",
+        "name": "ĐIỀU TRỊ TÀN NHANG TRỌN GÓI (CÓ CAM KẾT)",
+        "price": "5.000.000 - 10.000.000 VNĐ",
+        "status": "active"
+      },
+      {
+        "id": "s7",
+        "name": "PHUN CHÂN MÀY HIỆU ỨNG OMBER",
+        "price": "1.500.000 đ",
+        "status": "active"
+      },
+      {
+        "id": "s8",
+        "name": "MESOTHERAPY - KỸ THUẬT TIÊM VI ĐIỂM",
+        "price": "3.500.000 đ",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

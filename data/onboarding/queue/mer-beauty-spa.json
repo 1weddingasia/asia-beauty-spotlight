@@ -1,0 +1,25 @@
+{
+  "name": "MER Beauty Spa",
+  "slug": "mer-beauty-spa",
+  "address": "134A Nguyễn Thị Thập, P. Tân Hưng, Q.7",
+  "phone": "0909.283.288",
+  "email": "merbeauty@1booking.asia",
+  "website": null,
+  "short_description": "MER Beauty Spa chuyên điều trị mụn thâm dầu, mang đến làn da khỏe đẹp tại Quận 7, TP.HCM.",
+  "description": "<b>MER Beauty Spa</b> – Địa chỉ làm đẹp uy tín tại Quận 7, TP.HCM.<br><br>Với hơn 5.000 người theo dõi trên mạng xã hội, MER Beauty Spa tự hào là điểm đến lý tưởng cho những ai đang tìm kiếm giải pháp chăm sóc da chuyên sâu, đặc biệt là điều trị mụn thâm dầu. Tọa lạc tại <b>134A Nguyễn Thị Thập, P. Tân Hưng, Q.7</b>, spa sở hữu không gian sang trọng, thư giãn cùng đội ngũ chuyên viên giàu kinh nghiệm.<br><br>MER Beauty Spa cam kết mang đến cho khách hàng những liệu trình hiệu quả, an toàn và phù hợp với từng loại da. Hãy liên hệ ngay qua số điện thoại <b>0909.283.288</b> để được tư vấn và đặt lịch.",
+  "seo_title": "MER Beauty Spa - Chuyên Trị Mụn Thâm Dầu Q.7",
+  "seo_description": "MER Beauty Spa tại 134A Nguyễn Thị Thập, Q.7 chuyên điều trị mụn thâm dầu. Đặt lịch ngay 0909.283.288 để nhận tư vấn miễn phí.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://scontent.fsgn8-4.fna.fbcdn.net/v/t39.30808-6/673977870_1594599726006660_1808659929900502718_n.jpg?stp=dst-jpg_fb50_s320x320_tt6&_nc_cat=104&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=UD2A2NuqbhoQ7kNvwH9KN3j&_nc_oc=AdrDnybq7JZqzU1trVmQmNVc7XoSFGgSwgC7b4c4ebAJuI1YKRVXvyDKxwZR05V1E4I&_nc_zt=23&_nc_ht=scontent.fsgn8-4.fna&_nc_gid=autYX4WNO6BB7Jhk8iP5Kg&_nc_ss=7f289&oh=00_AQNnu63WbPNSmwu0V5BJp1aL0UpwoGFfsjod2kNacfHEWg&oe=6ACC32B6",
+      "https://scontent.fsgn8-4.fna.fbcdn.net/v/t39.30808-6/673977870_1594599726006660_1808659929900502718_n.jpg?stp=dst-jpg_tt6&cstp=mx2600x961&ctp=s960x960&_nc_cat=104&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=UD2A2NuqbhoQ7kNvwH9KN3j&_nc_oc=AdrDnybq7JZqzU1trVmQmNVc7XoSFGgSwgC7b4c4ebAJuI1YKRVXvyDKxwZR05V1E4I&_nc_zt=23&_nc_ht=scontent.fsgn8-4.fna&_nc_gid=autYX4WNO6BB7Jhk8iP5Kg&_nc_ss=7f289&oh=00_AQMaezJGFN-fac3kySsdjI65aKIJFmNb_kK5GDXCKRpVSQ&oe=6ACC32B6"
+    ],
+    "services": [],
+    "deals": [],
+    "gallery": []
+  }
+}

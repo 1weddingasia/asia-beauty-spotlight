@@ -1,0 +1,43 @@
+{
+  "name": "Gà Spa",
+  "slug": "ga-spa",
+  "address": "200 Đường 3/2, P.12, Q.10",
+  "phone": "1900.9424",
+  "email": "gaspavn@gmail.com",
+  "website": "gaspa.vn",
+  "short_description": "Gà Spa - Địa chỉ làm đẹp uy tín tại Quận 10 với dịch vụ trị mụn chuyên sâu, chăm sóc da và triệt lông an toàn, hiệu quả.",
+  "description": "<b>Gà Spa</b> là điểm đến lý tưởng cho những ai đang tìm kiếm giải pháp chăm sóc da và trị mụn hiệu quả tại khu vực Quận 10, TP.HCM.<br><br>Với đội ngũ chuyên viên giàu kinh nghiệm cùng trang thiết bị hiện đại, chúng tôi tự hào mang đến các dịch vụ <b>Trị mụn chuyên sâu</b>, <b>Chăm sóc da</b> và <b>Triệt lông</b> an toàn, giúp bạn sở hữu làn da khỏe mạnh và tự tin.<br><br>Tọa lạc tại địa chỉ <b>200 Đường 3/2, P.12, Q.10</b>, Gà Spa không ngừng nâng cao chất lượng dịch vụ và phong cách phục vụ tận tâm, mang lại trải nghiệm thư giãn tuyệt vời cho khách hàng.<br><br>Hãy để Gà Spa đồng hành cùng bạn trên hành trình làm đẹp!",
+  "seo_title": "Gà Spa - Trị mụn, chăm sóc da, triệt lông uy tín Q.10",
+  "seo_description": "Gà Spa tại 200 Đường 3/2, P.12, Q.10 cung cấp dịch vụ trị mụn chuyên sâu, chăm sóc da và triệt lông hiệu quả. Liên hệ 1900.9424 để được tư vấn.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Trị mụn chuyên sâu",
+        "price": "1-5 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Chăm sóc da",
+        "price": "500k-3 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Triệt lông",
+        "price": "1-4 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

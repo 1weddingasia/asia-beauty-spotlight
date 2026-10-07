@@ -1,0 +1,50 @@
+{
+  "name": "Ngọc Dung",
+  "slug": "tham-my-vien-ngoc-dung-quan-7",
+  "address": "134A Nguyễn Thị Thập, P. Tân Hưng, Q.7",
+  "phone": "1800.6377",
+  "email": "info@ngocdung.com",
+  "website": "thammyvienngocdung.com",
+  "short_description": "Thẩm mỹ viện Ngọc Dung – hệ thống thẩm mỹ công nghệ cao 28 năm với 16 chi nhánh toàn quốc, chuyên điều trị da, phun xăm, triệt lông và trẻ hóa không xâm lấn.",
+  "description": "<b>Thẩm mỹ viện Ngọc Dung</b> là hệ thống thẩm mỹ công nghệ cao đã hoạt động <b>28 năm</b> với <b>16 chi nhánh</b> trải dài Bắc – Trung – Nam, phục vụ hơn 20.000 khách hàng mỗi năm.<br><br>Chi nhánh tại <b>134A Nguyễn Thị Thập, P. Tân Hưng, Q.7</b> mang đến không gian làm đẹp chuẩn 5 sao cùng trang thiết bị nhập khẩu từ Châu Âu và Hoa Kỳ.<br><br>Ngọc Dung tập trung vào <b>4 nhóm giải pháp không xâm lấn</b>: điều trị da bằng laser và ánh sáng, phun xăm thẩm mỹ, triệt lông công nghệ cao, và chăm sóc – trẻ hóa chuyên sâu. Mỗi ca điều trị đều bắt đầu bằng việc soi da và xác định đúng nguyên nhân, sau đó bác sĩ mới chỉ định công nghệ phù hợp – <b>không có phác đồ dùng chung cho tất cả khách hàng</b>.<br><br>Đội ngũ bác sĩ và chuyên gia được đào tạo trong nước lẫn quốc tế, trực tiếp thăm khám và lập liệu trình riêng cho từng người. Đây là lý do Ngọc Dung giữ được nguyên tắc không có liệu trình nào áp dụng chung cho tất cả.<br><br>Đến với Ngọc Dung, bạn không chỉ làm đẹp mà còn được <b>\"Đẹp Vì Mình\"</b> – hành trình yêu lấy vẻ đẹp độc bản của chính bạn.",
+  "seo_title": "Thẩm Mỹ Viện Ngọc Dung Q.7 – 28 Năm, 16 Chi Nhánh",
+  "seo_description": "Thẩm mỹ viện Ngọc Dung tại 134A Nguyễn Thị Thập, Q.7. 28 năm kinh nghiệm, 16 chi nhánh, điều trị da, phun xăm, triệt lông, trẻ hóa không xâm lấn.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://thammyvienngocdung.com/wp-content/uploads/2026/09/2568x800-2-scaled.png",
+      "https://thammyvienngocdung.com/wp-content/uploads/2026/09/2560x800-3.png"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Dịch vụ triệt lông",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Dịch vụ điều trị da",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Dịch vụ phun xăm thẩm mỹ",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s4",
+        "name": "Dịch vụ trẻ hóa da",
+        "price": "Liên hệ",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

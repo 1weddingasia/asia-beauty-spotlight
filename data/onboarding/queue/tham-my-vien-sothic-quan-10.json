@@ -1,0 +1,44 @@
+{
+  "name": "Thẩm mỹ viện Sothic",
+  "slug": "tham-my-vien-sothic-quan-10",
+  "address": "283/29 Cách Mạng Tháng 8, P.12, Q.10",
+  "phone": "0903.177.798",
+  "email": "tuvan@sothic.vn",
+  "website": "sothic.vn",
+  "short_description": "Phòng khám chuyên khoa da liễu Sothic tại Q.10 – bác sĩ trực tiếp thăm khám, xây dựng phác đồ riêng cho mụn, nám, sẹo rỗ và trẻ hóa da.",
+  "description": "<b>Thẩm mỹ viện Sothic</b> – Phòng khám chuyên khoa da liễu tại 283/29 Cách Mạng Tháng 8, P.12, Q.10, hoạt động theo giấy phép số <b>04772/HCM-GPHĐ</b>.<br><br>Tại Sothic, mọi hành trình điều trị đều bắt đầu bằng <b>thăm khám trực tiếp cùng bác sĩ chuyên khoa da liễu</b>. Bác sĩ xác định nguyên nhân, đánh giá tình trạng da thật và xây dựng <b>phác đồ riêng</b> – không áp gói chung cho mọi người.<br><br>Không gian phòng khám sang trọng, ấm cúng với khu tiếp nhận, phòng khám và phòng thủ thuật tách biệt rõ chức năng, đảm bảo sự riêng tư và tiện nghi cho khách hàng.<br><br><b>Dịch vụ nổi bật:</b><br>– Trị mụn chuyên sâu: điều trị theo mức độ tổn thương, phối hợp thuốc và thủ thuật theo từng giai đoạn.<br>– Trị nám: xác định loại nám và độ sâu sắc tố, kiểm soát nguyên nhân khiến nám đậm trở lại.<br>– Trẻ hóa da RF: đo độ đàn hồi da trước khi chỉ định, cải thiện nếp nhăn và độ săn chắc.<br><br>Bác sĩ theo dõi phản ứng da xuyên suốt quá trình điều trị và điều chỉnh phác đồ khi cần, giúp khách hàng an tâm và đạt kết quả bền vững.",
+  "seo_title": "Thẩm mỹ viện Sothic – Trị mụn, nám, sẹo rỗ Q.10",
+  "seo_description": "Thẩm mỹ viện Sothic tại Q.10: bác sĩ chuyên khoa da liễu trực tiếp thăm khám, phác đồ riêng cho mụn, nám, sẹo rỗ và trẻ hóa da RF. Đặt lịch ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://sothic.vn/anh/2026/08/sothic-doctor-team-locked-medical-hero-v8-teal-2880x1234-bywmon-2400.webp",
+      "https://sothic.vn/anh/2026/08/sothic-clinic-interior-21x9-2880x1234-1yp1s5-2400.webp"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Trị mụn chuyên sâu",
+        "price": "3-10 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Trị nám",
+        "price": "8-25 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Trẻ hóa da RF",
+        "price": "10-30 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

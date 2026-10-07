@@ -1,0 +1,44 @@
+{
+  "name": "Thẩm mỹ viện Linh Anh",
+  "slug": "tham-my-vien-linh-anh",
+  "address": "398-400A Lê Hồng Phong, P.1, Q.10",
+  "phone": "0906.933.888",
+  "email": "cskh@thammylinhanh.vn",
+  "website": "thammylinhanh.vn",
+  "short_description": "Thẩm mỹ viện Linh Anh - Thương hiệu làm đẹp uy tín với đội ngũ bác sĩ giàu kinh nghiệm, công nghệ tiên tiến và hệ thống chi nhánh rộng khắp. Mang đến giải pháp nâng mũi S-line, căng da mặt, trị nám laser an toàn và hiệu quả.",
+  "description": "<b>Thẩm mỹ viện Linh Anh</b> tự hào là một trong những thương hiệu làm đẹp uy tín hàng đầu tại Việt Nam, với hệ thống chi nhánh rộng khắp các tỉnh thành như TP.HCM, Đồng Nai, Bình Dương, Đà Nẵng, Đà Lạt.<br><br>Với phương châm <b>“Công nghệ tiên tiến – Cơ sở vật chất hiện đại”</b>, Linh Anh không ngừng đầu tư vào trang thiết bị máy móc nhập khẩu từ các tập đoàn công nghệ hàng đầu thế giới, cùng không gian sang trọng, tiện nghi.<br><br><b>Đội ngũ bác sĩ – kỹ thuật viên</b> tại Linh Anh là các chuyên gia đầu ngành trong lĩnh vực Da liễu – Thẩm mỹ và Phẫu thuật Tạo hình Thẩm mỹ, với nhiều năm kinh nghiệm và chứng chỉ hành nghề đầy đủ. Điển hình như BSCKI. Nguyễn Quốc Huy (19 năm kinh nghiệm), Bác sĩ Phạm Anh Trí (30 năm kinh nghiệm), cùng nhiều bác sĩ tài năng khác.<br><br>Các dịch vụ nổi bật tại Linh Anh bao gồm: <b>Nâng mũi S-line</b> – tạo dáng mũi thanh tú, hài hòa với khuôn mặt; <b>Căng da mặt</b> – trẻ hóa làn da, xóa mờ nếp nhăn; <b>Trị nám laser</b> – loại bỏ nám, tàn nhang hiệu quả, an toàn. Ngoài ra, Linh Anh còn cung cấp các dịch vụ phun xăm thẩm mỹ như phun môi, phun mí, điêu khắc chân mày, cùng nhiều liệu trình chăm sóc da chuyên sâu.<br><br>Đến với <b>Thẩm mỹ viện Linh Anh</b>, bạn sẽ được trải nghiệm dịch vụ làm đẹp chất lượng cao, an toàn và đẳng cấp, giúp bạn tự tin tỏa sáng với vẻ đẹp hoàn hảo.",
+  "seo_title": "Thẩm mỹ viện Linh Anh - Nâng mũi, căng da, trị nám",
+  "seo_description": "Thẩm mỹ viện Linh Anh uy tín tại TP.HCM với đội ngũ bác sĩ giàu kinh nghiệm, công nghệ hiện đại. Dịch vụ nâng mũi S-line, căng da mặt, trị nám laser an toàn.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://thammylinhanh.vn/wp-content/uploads/2026/10/banner-sn-linhanh-fn-des.jpg",
+      "https://thammylinhanh.vn/wp-content/uploads/2026/07/dv-p4kcolor-thumb-768x551.webp"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng mũi S-line",
+        "price": "35-65 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Căng da mặt",
+        "price": "50-90 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Trị nám laser",
+        "price": "8-25 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

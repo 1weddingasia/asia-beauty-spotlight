@@ -1,0 +1,1142 @@
+[
+  {
+    "id": 1,
+    "name": "Viện Thẩm Mỹ LG Clinic",
+    "address": "200 Lê Lai, P. Bến Thành, Q.1, TP.HCM",
+    "phone": "1900.8888.33",
+    "email": "cskh@lgclinic.vn",
+    "website": "lgclinic.vn",
+    "services": [
+      {
+        "name": "Triệt lông công nghệ cao",
+        "price": "từ 349.000₫"
+      },
+      {
+        "name": "Trẻ hóa da",
+        "price": "từ 600.000₫"
+      },
+      {
+        "name": "Xóa nám/trị mụn",
+        "price": "từ 449.000₫"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 2,
+    "name": "Bệnh viện Thẩm mỹ JW Hàn Quốc",
+    "address": "50 Tôn Thất Tùng, P. Bến Thành, Q.1, TP.HCM",
+    "phone": "0968.68.1111 - 0964.845.399",
+    "email": "cskh.benhvienjw@gmail.com",
+    "website": "benhvienjw.vn",
+    "services": [
+      {
+        "name": "Nâng mũi cấu trúc",
+        "price": "từ 45-80 triệu"
+      },
+      {
+        "name": "Cắt mí/nhấn mí",
+        "price": "từ 15-30 triệu"
+      },
+      {
+        "name": "Căng da mặt nội soi",
+        "price": "từ 60-100 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 3,
+    "name": "Bệnh viện Thẩm mỹ Việt Mỹ",
+    "address": "331 Nguyễn Trãi, P. Cầu Ông Lãnh, Q.1, TP.HCM",
+    "phone": "028.3838.9595 - 0942.757.888",
+    "email": "contact@vmh.vn",
+    "website": "benhvienvietmy.com",
+    "services": [
+      {
+        "name": "Nâng ngực nội soi",
+        "price": "từ 60-90 triệu"
+      },
+      {
+        "name": "Hút mỡ công nghệ cao",
+        "price": "từ 30-60 triệu"
+      },
+      {
+        "name": "Phẫu thuật tạo hình mũi",
+        "price": "từ 35-70 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 4,
+    "name": "Thu Cúc Clinics",
+    "address": "185-187 Nguyễn Thái Học, P. Phạm Ngũ Lão, Q.1, TP.HCM",
+    "phone": "1900.5588.96",
+    "email": "contact@thucucclinics.vn",
+    "website": "thucucclinics.com",
+    "services": [
+      {
+        "name": "Trẻ hóa Thermage/Hifu",
+        "price": "từ 15-40 triệu"
+      },
+      {
+        "name": "Trị nám laser",
+        "price": "từ 5-15 triệu"
+      },
+      {
+        "name": "Chăm sóc da chuyên sâu",
+        "price": "từ 1-3 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 5,
+    "name": "Thẩm mỹ viện Galaxy",
+    "address": "877-879 Hồng Bàng, P.9, Q.6, TP.HCM",
+    "phone": "0942.421.205",
+    "email": "Bs.letranduy@gmail.com",
+    "website": "bsletranduy.com",
+    "services": [
+      {
+        "name": "Phẫu thuật mắt",
+        "price": "từ 20-45 triệu"
+      },
+      {
+        "name": "Nâng mũi S-line",
+        "price": "từ 35-70 triệu"
+      },
+      {
+        "name": "Tạo hình cằm V-line",
+        "price": "từ 50-90 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 6,
+    "name": "Bệnh viện Thẩm mỹ Worldwide",
+    "address": "244A Cống Quỳnh, P. Phạm Ngũ Lão, Q.1, TP.HCM",
+    "phone": "0928.387.989 - 1900.3136",
+    "email": "info@benhvienworldwide.vn",
+    "website": "benhvienworldwide.vn",
+    "services": [
+      {
+        "name": "Phẫu thuật mũi cấu trúc",
+        "price": "từ 40-80 triệu"
+      },
+      {
+        "name": "Cắt mí đôi tự nhiên",
+        "price": "từ 18-35 triệu"
+      },
+      {
+        "name": "Phẫu thuật hàm hô/móm",
+        "price": "từ 80-150 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 7,
+    "name": "Viện Thẩm Mỹ Khơ Thị",
+    "address": "222-224 Trần Hưng Đạo, P. Nguyễn Cư Trinh, Q.1, TP.HCM",
+    "phone": "1900.6717 - 0865.086.899",
+    "email": "tuvan02@khothi.vn",
+    "website": "vienthammykhothi.vn",
+    "services": [
+      {
+        "name": "Nâng mũi S-line",
+        "price": "từ 35-65 triệu"
+      },
+      {
+        "name": "Căng da mặt",
+        "price": "từ 50-90 triệu"
+      },
+      {
+        "name": "Triệt lông vĩnh viễn",
+        "price": "từ 2-8 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 8,
+    "name": "Viện Thẩm Mỹ La Ratio",
+    "address": "391E Trần Hưng Đạo, P. Cầu Ông Lãnh, Q.1, TP.HCM",
+    "phone": "1800.6653",
+    "email": "info@laratio.vn",
+    "website": "laratio.vn",
+    "services": [
+      {
+        "name": "Tiêm filler môi/cằm",
+        "price": "từ 5-15 triệu"
+      },
+      {
+        "name": "Trẻ hóa da Ultherapy",
+        "price": "từ 20-50 triệu"
+      },
+      {
+        "name": "Phẫu thuật mắt",
+        "price": "từ 18-40 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 9,
+    "name": "Thẩm mỹ viện Ngọc Dung",
+    "address": "33 Nguyễn Bỉnh Khiêm, P. Đa Kao, Q.1, TP.HCM",
+    "phone": "1800.6377 - 3232",
+    "email": "info@ngocdung.com",
+    "website": "thammyvienngocdung.com",
+    "services": [
+      {
+        "name": "Nâng ngực túi NanoChip",
+        "price": "từ 60-100 triệu"
+      },
+      {
+        "name": "Hút mỡ Lipo 360",
+        "price": "từ 40-80 triệu"
+      },
+      {
+        "name": "Trẻ hóa da công nghệ cao",
+        "price": "từ 10-30 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 10,
+    "name": "Yen Clinic",
+    "address": "126-128 Đinh Tiên Hoàng, P. Đakao, Q.1, TP.HCM",
+    "phone": "0932.517.146 - 0931.975.753",
+    "email": "yenclinic@1booking.asia",
+    "website": "yenclinic.com.vn",
+    "services": [
+      {
+        "name": "Trị mụn/nám chuyên sâu",
+        "price": "từ 3-10 triệu"
+      },
+      {
+        "name": "Trẻ hóa da không xâm lấn",
+        "price": "từ 5-20 triệu"
+      },
+      {
+        "name": "Phẫu thuật thẩm mỹ mắt/mũi",
+        "price": "từ 20-60 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 11,
+    "name": "Pensilia Skin Centre",
+    "address": "413-415 Nguyễn Đình Chiểu, P. Bàn Cờ, Q.3, TP.HCM",
+    "phone": "0938.777.885",
+    "email": "info@pensilia.com",
+    "website": "pensilia.com",
+    "services": [
+      {
+        "name": "Trị sẹo rỗ laser",
+        "price": "từ 5-20 triệu"
+      },
+      {
+        "name": "Trị nám công nghệ cao",
+        "price": "từ 8-25 triệu"
+      },
+      {
+        "name": "Trẻ hóa da RF",
+        "price": "từ 10-30 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 12,
+    "name": "Stamford Skin Centre",
+    "address": "99 Sương Nguyệt Ánh, P. Bến Thành, Q.1, TP.HCM",
+    "phone": "028.3925.1990",
+    "email": "info@stamfordclinic.com",
+    "website": "stamfordskin.com",
+    "services": [
+      {
+        "name": "Chăm sóc da y khoa",
+        "price": "từ 1-5 triệu"
+      },
+      {
+        "name": "Trị mụn/nám chuyên sâu",
+        "price": "từ 3-15 triệu"
+      },
+      {
+        "name": "Trẻ hóa da bằng laser",
+        "price": "từ 8-25 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 13,
+    "name": "Seoul Center",
+    "address": "180A1 Nguyễn Văn Thủ, P. Đa Kao, Q.1, TP.HCM",
+    "phone": "1800.088.878 - 0914.117.811",
+    "email": "seoulcenter@1booking.asia",
+    "website": "seoulcenter.vn",
+    "services": [
+      {
+        "name": "Nâng mũi cấu trúc",
+        "price": "từ 35-70 triệu"
+      },
+      {
+        "name": "Cắt mí/nhấn mí",
+        "price": "từ 12-30 triệu"
+      },
+      {
+        "name": "Căng da mặt chỉ sinh học",
+        "price": "từ 25-60 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 14,
+    "name": "Thẩm mỹ viện Tấm",
+    "address": "112 Đề Thám, P. Cầu Ông Lãnh, Q.1, TP.HCM",
+    "phone": "0966.605.600 - 0966.080.638",
+    "email": "marketing.tambeauty@gmail.com",
+    "website": "thammyvientam.com",
+    "services": [
+      {
+        "name": "Phẫu thuật mũi",
+        "price": "từ 30-65 triệu"
+      },
+      {
+        "name": "Tạo hình mắt 2 mí",
+        "price": "từ 15-35 triệu"
+      },
+      {
+        "name": "Phun xăm thẩm mỹ",
+        "price": "từ 3-10 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 15,
+    "name": "Lavender By Chang",
+    "address": "60A Võ Văn Tần, P.6, Q.3, TP.HCM",
+    "phone": "0902.308.888",
+    "email": "lavenderbychang@1booking.asia",
+    "website": "lavenderbychang.com",
+    "services": [
+      {
+        "name": "Trị nám công nghệ cao",
+        "price": "từ 10-30 triệu"
+      },
+      {
+        "name": "Giảm béo công nghệ",
+        "price": "từ 15-40 triệu"
+      },
+      {
+        "name": "Trẻ hóa da toàn diện",
+        "price": "từ 20-50 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 16,
+    "name": "Miss Tram Natural Beauty Center",
+    "address": "30 Đặng Thị Nhu, P. Nguyễn Thái Bình, Q.1, TP.HCM",
+    "phone": "1900.7018 - 0909.783.289",
+    "email": "info@misstram.com",
+    "website": "thammymisstram.vn",
+    "services": [
+      {
+        "name": "Phun xăm điêu khắc mày/môi",
+        "price": "từ 3-8 triệu"
+      },
+      {
+        "name": "Chăm sóc da trị mụn",
+        "price": "từ 1-4 triệu"
+      },
+      {
+        "name": "Triệt lông công nghệ cao",
+        "price": "từ 1-5 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 17,
+    "name": "Sen Spa",
+    "address": "10B1 Lê Thánh Tôn, P. Bến Nghé, Q.1, TP.HCM",
+    "phone": "0907.959.395",
+    "email": "rsv@senspa.com.vn",
+    "website": "senspa.com.vn",
+    "services": [
+      {
+        "name": "Massage body thư giãn",
+        "price": "từ 500k-1.5 triệu"
+      },
+      {
+        "name": "Chăm sóc da mặt",
+        "price": "từ 400k-1.2 triệu"
+      },
+      {
+        "name": "Xông hơi thảo dược",
+        "price": "từ 300k-800k"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 18,
+    "name": "Bông Spa",
+    "address": "8A1 Nguyễn Cảnh Chân, P. Nguyễn Cư Trinh, Q.1, TP.HCM",
+    "phone": "1900.633.563",
+    "email": "bongspa@1booking.asia",
+    "website": "bongspa.com",
+    "services": [
+      {
+        "name": "Chăm sóc da mặt hoa tươi",
+        "price": "từ 300k-900k"
+      },
+      {
+        "name": "Massage đá nóng",
+        "price": "từ 500k-1.2 triệu"
+      },
+      {
+        "name": "Tắm trắng thảo mộc",
+        "price": "từ 600k-1.5 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 19,
+    "name": "HappySkin Beauty Clinic",
+    "address": "24 Huỳnh Khương Ninh, P. Đa Kao, Q.1, TP.HCM",
+    "phone": "1900.2832 (phím 1)",
+    "email": "happyskin@1booking.asia",
+    "website": "happyskin.vn",
+    "services": [
+      {
+        "name": "Trị mụn chuyên sâu",
+        "price": "từ 1-5 triệu"
+      },
+      {
+        "name": "Trẻ hóa da công nghệ cao",
+        "price": "từ 3-10 triệu"
+      },
+      {
+        "name": "Chăm sóc da định kỳ",
+        "price": "từ 500k-2 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 20,
+    "name": "Anam QT Spa",
+    "address": "26/1-2 Lê Thánh Tôn, P. Bến Nghé, Q.1, TP.HCM",
+    "phone": "028.3520.8108 - 1900.636.099",
+    "email": "service@anamqtspa.com",
+    "website": "anamqtspa.com",
+    "services": [
+      {
+        "name": "Massage trị liệu",
+        "price": "từ 600k-1.7 triệu"
+      },
+      {
+        "name": "Xông hơi đá muối Himalaya",
+        "price": "từ 800k-2 triệu"
+      },
+      {
+        "name": "Chăm sóc da mặt cao cấp",
+        "price": "từ 500k-1.5 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 21,
+    "name": "Seoul Center",
+    "address": "375 Nguyễn Thượng Hiền, P.11, Q.10",
+    "phone": "1800.3333",
+    "email": "cskh@seoulcenter.vn",
+    "website": "seoulcenter.vn",
+    "services": [
+      {
+        "name": "Nâng mũi",
+        "price": "35-70 triệu"
+      },
+      {
+        "name": "Cắt mí",
+        "price": "12-30 triệu"
+      },
+      {
+        "name": "Căng da chỉ sinh học",
+        "price": "25-60 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 22,
+    "name": "Bệnh viện Thẩm mỹ EMCAS",
+    "address": "14/27 Hoàng Dư Khương, P. Hoà Hưng, Q.10",
+    "phone": "0903.082.836",
+    "email": "lienhe@emcas.com.vn",
+    "website": "emcas.vn",
+    "services": [
+      {
+        "name": "Nâng ngực",
+        "price": "60-90 triệu"
+      },
+      {
+        "name": "Hút mỡ",
+        "price": "40-80 triệu"
+      },
+      {
+        "name": "Phẫu thuật mũi",
+        "price": "35-70 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 23,
+    "name": "Thẩm mỹ viện Thủy Tiên",
+    "address": "71A Đường 3 Tháng 2, P.11, Q.10",
+    "phone": "1900.6878",
+    "email": "info@thammyvienthuytien.com",
+    "website": "thammyvienthuytien.com",
+    "services": [
+      {
+        "name": "Phun xăm thẩm mỹ",
+        "price": "3-8 triệu"
+      },
+      {
+        "name": "Chăm sóc da",
+        "price": "1-5 triệu"
+      },
+      {
+        "name": "Triệt lông",
+        "price": "2-6 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 24,
+    "name": "Thẩm mỹ viện Linh Anh",
+    "address": "398-400A Lê Hồng Phong, P.1, Q.10",
+    "phone": "0906.933.888",
+    "email": "cskh@thammylinhanh.vn",
+    "website": "thammylinhanh.vn",
+    "services": [
+      {
+        "name": "Nâng mũi S-line",
+        "price": "35-65 triệu"
+      },
+      {
+        "name": "Căng da mặt",
+        "price": "50-90 triệu"
+      },
+      {
+        "name": "Trị nám laser",
+        "price": "8-25 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 25,
+    "name": "Bệnh viện Thẩm mỹ Nam An",
+    "address": "45A Ba Tháng Hai, P.10, Q.10",
+    "phone": "0901.939.229",
+    "email": "contact@bvnaman.com",
+    "website": "benhvienthammynaman.com",
+    "services": [
+      {
+        "name": "Căng da mặt nội soi",
+        "price": "60-100 triệu"
+      },
+      {
+        "name": "Nâng ngực",
+        "price": "55-90 triệu"
+      },
+      {
+        "name": "Hút mỡ công nghệ cao",
+        "price": "35-70 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 26,
+    "name": "Thẩm mỹ viện Ngọc Dung",
+    "address": "32-34-36 Đường 3 Tháng 2, P.11, Q.10",
+    "phone": "1800.6377",
+    "email": "info@ngocdung.com",
+    "website": "thammyvienngocdung.com",
+    "services": [
+      {
+        "name": "Nâng ngực NanoChip",
+        "price": "60-100 triệu"
+      },
+      {
+        "name": "Hút mỡ Lipo 360",
+        "price": "40-80 triệu"
+      },
+      {
+        "name": "Trẻ hóa da",
+        "price": "10-30 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 27,
+    "name": "Thẩm mỹ viện Aura",
+    "address": "1 Đường 3 Tháng 2, P.11, Q.10",
+    "phone": "0833.082.222",
+    "email": "thammyaura@gmail.com",
+    "website": "thammyaura.vn",
+    "services": [
+      {
+        "name": "Nâng mũi cấu trúc",
+        "price": "35-70 triệu"
+      },
+      {
+        "name": "Cắt mí đôi",
+        "price": "15-35 triệu"
+      },
+      {
+        "name": "Phun xăm thẩm mỹ",
+        "price": "3-10 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 28,
+    "name": "Thẩm mỹ viện Sothic",
+    "address": "283/29 Cách Mạng Tháng 8, P.12, Q.10",
+    "phone": "0903.177.798",
+    "email": "tuvan@sothic.vn",
+    "website": "sothic.vn",
+    "services": [
+      {
+        "name": "Trị mụn chuyên sâu",
+        "price": "3-10 triệu"
+      },
+      {
+        "name": "Trị nám",
+        "price": "8-25 triệu"
+      },
+      {
+        "name": "Trẻ hóa da RF",
+        "price": "10-30 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 29,
+    "name": "Viện Thẩm Mỹ Quốc Tế D&D",
+    "address": "839/12 Lê Hồng Phong, P.12, Q.10",
+    "phone": "0853.300.333",
+    "email": "info@drdong.net",
+    "website": "drdong.net",
+    "services": [
+      {
+        "name": "Nâng mũi",
+        "price": "30-65 triệu"
+      },
+      {
+        "name": "Cắt mí",
+        "price": "12-30 triệu"
+      },
+      {
+        "name": "Tiêm filler",
+        "price": "5-15 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 30,
+    "name": "Thẩm mỹ viện Hoài Anh",
+    "address": "11 Lý Thái Tổ, P.1, Q.10",
+    "phone": "028.3955.8855",
+    "email": "thammyvienhoaianh@gmail.com",
+    "website": "thammyhoaianh.com.vn",
+    "services": [
+      {
+        "name": "Nâng mũi",
+        "price": "30-60 triệu"
+      },
+      {
+        "name": "Căng da mặt",
+        "price": "40-80 triệu"
+      },
+      {
+        "name": "Phun xăm",
+        "price": "3-8 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 31,
+    "name": "Thẩm mỹ viện Xuân Hương",
+    "address": "45A Đường 3 Tháng 2, P.11, Q.10",
+    "phone": "1800.6999",
+    "email": "contact@benhvienthammyxuanhuong.com",
+    "website": "thammyxuanhuong.com",
+    "services": [
+      {
+        "name": "Nâng ngực",
+        "price": "55-90 triệu"
+      },
+      {
+        "name": "Hút mỡ",
+        "price": "35-70 triệu"
+      },
+      {
+        "name": "Trẻ hóa da",
+        "price": "10-30 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 32,
+    "name": "Thẩm mỹ viện Jenna Thanh",
+    "address": "715-717 Đường 3/2, P.11, Q.10",
+    "phone": "0909.807.172",
+    "email": "info@jennathanh.com",
+    "website": "jennathanh.com",
+    "services": [
+      {
+        "name": "Nâng mũi",
+        "price": "25-55 triệu"
+      },
+      {
+        "name": "Cắt mí",
+        "price": "10-25 triệu"
+      },
+      {
+        "name": "Chăm sóc da",
+        "price": "1-5 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 33,
+    "name": "Taza Skin Clinic",
+    "address": "408 Cao Thắng, P.12, Q.10",
+    "phone": "1900.2664",
+    "email": "tuvan@tazaskinclinic.com",
+    "website": "tazaskin.com",
+    "services": [
+      {
+        "name": "Trị mụn",
+        "price": "2-8 triệu"
+      },
+      {
+        "name": "Lăn kim trị sẹo",
+        "price": "5-20 triệu"
+      },
+      {
+        "name": "Tắm trắng",
+        "price": "3-10 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 34,
+    "name": "Gà Spa",
+    "address": "200 Đường 3/2, P.12, Q.10",
+    "phone": "1900.9424",
+    "email": "gaspavn@gmail.com",
+    "website": "gaspa.vn",
+    "services": [
+      {
+        "name": "Trị mụn chuyên sâu",
+        "price": "1-5 triệu"
+      },
+      {
+        "name": "Chăm sóc da",
+        "price": "500k-3 triệu"
+      },
+      {
+        "name": "Triệt lông",
+        "price": "1-4 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 35,
+    "name": "Spring Spa & Clinic",
+    "address": "D2-D6 Thất Sơn, P.15, Q.10",
+    "phone": "0919.383.344",
+    "email": "springspa@1booking.asia",
+    "website": "facebook.com/springspaclinic",
+    "services": [
+      {
+        "name": "Massage body",
+        "price": "500k-1.5 triệu"
+      },
+      {
+        "name": "Chăm sóc da mặt",
+        "price": "400k-1.2 triệu"
+      },
+      {
+        "name": "Gội đầu dưỡng sinh",
+        "price": "300k-800k"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 36,
+    "name": "Bon Beauty Spa",
+    "address": "250 Đường 3/2, P.12, Q.10",
+    "phone": "0938.462.186",
+    "email": "bonbeauty@1booking.asia",
+    "website": "facebook.com/BonBeautySpa",
+    "services": [
+      {
+        "name": "Gội đầu dưỡng sinh",
+        "price": "200k-600k"
+      },
+      {
+        "name": "Triệt lông",
+        "price": "300k-1 triệu"
+      },
+      {
+        "name": "Nặn mụn",
+        "price": "200k-800k"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 37,
+    "name": "Madiva Beauty & Spa",
+    "address": "250 Đường 3/2, P.12, Q.10",
+    "phone": "0877.900.384",
+    "email": "madiva@1booking.asia",
+    "website": "facebook.com/Madiva.Beauty",
+    "services": [
+      {
+        "name": "Chăm sóc da",
+        "price": "500k-2 triệu"
+      },
+      {
+        "name": "Massage thư giãn",
+        "price": "400k-1.2 triệu"
+      },
+      {
+        "name": "Triệt lông",
+        "price": "300k-1 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 38,
+    "name": "LUNA Beauty Spa",
+    "address": "366 Đường 3/2, P.12, Q.10",
+    "phone": "0909.123.456",
+    "email": "luna@1booking.asia",
+    "website": "facebook.com/lunabeautyspa",
+    "services": [
+      {
+        "name": "Chăm sóc da mặt",
+        "price": "400k-1.5 triệu"
+      },
+      {
+        "name": "Massage body",
+        "price": "500k-1.5 triệu"
+      },
+      {
+        "name": "Triệt lông",
+        "price": "300k-1 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 39,
+    "name": "Mon Ami Spa",
+    "address": "163/1 Tô Hiến Thành, P.13, Q.10",
+    "phone": "0764.208.777",
+    "email": "monami@1booking.asia",
+    "website": "monamispa.vn",
+    "services": [
+      {
+        "name": "Gội đầu dưỡng sinh",
+        "price": "250k-700k"
+      },
+      {
+        "name": "Chăm sóc da",
+        "price": "400k-1.2 triệu"
+      },
+      {
+        "name": "Massage đá nóng",
+        "price": "500k-1.5 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 40,
+    "name": "YB Spa",
+    "address": "163/1 Tô Hiến Thành, P.13, Q.10",
+    "phone": "0764.208.777",
+    "email": "ybspa@1booking.asia",
+    "website": "ybspa.vn",
+    "services": [
+      {
+        "name": "Trị mụn",
+        "price": "1-5 triệu"
+      },
+      {
+        "name": "Chăm sóc da",
+        "price": "500k-2 triệu"
+      },
+      {
+        "name": "Trẻ hóa da",
+        "price": "3-10 triệu"
+      }
+    ],
+    "processed": true
+  },
+  {
+    "id": 41,
+    "name": "Viện Thẩm Mỹ Kang My",
+    "address": "117B Đường 79, P. Tân Quy, Q.7",
+    "phone": "0966.693.939",
+    "email": "kangmybeauty@gmail.com",
+    "website": "vienthammyquoctekangmy.com",
+    "facebook": "facebook.com/vienthammyquoctekangmy",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 42,
+    "name": "Viện Thẩm Mỹ Khang My",
+    "address": "829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7",
+    "phone": "0903.625.578",
+    "email": "marketing.khangmy@gmail.com",
+    "website": "vienthammykhangmy.com",
+    "facebook": "facebook.com/vienthammykhangmy",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 43,
+    "name": "Viện Thẩm Mỹ Minhon",
+    "address": "829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7",
+    "phone": "0903.625.578",
+    "email": "minhon@1booking.asia",
+    "website": "minhon.vn",
+    "facebook": "facebook.com/MinhonPlasticSurgery",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 44,
+    "name": "YB Spa",
+    "address": "116A Lý Phục Man, P. Bình Thuận, Q.7",
+    "phone": "0764.208.777",
+    "email": "mail.ybgroup@gmail.com",
+    "website": "ybspa.vn",
+    "facebook": "facebook.com/ybspa.vn",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 45,
+    "name": "Gà Spa",
+    "address": "447 Huỳnh Tấn Phát, P. Tân Thuận Đông, Q.7",
+    "phone": "0901.311.113",
+    "email": "gaspavn@gmail.com",
+    "website": "gaspa.vn",
+    "facebook": "facebook.com/GaSpaQ7",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 46,
+    "name": "Vy Spa",
+    "address": "G13 Đường 3A, P. Tân Hưng, Q.7",
+    "phone": "0938.838.299",
+    "email": "vyspaq7@gmail.com",
+    "website": "vyspa.vn",
+    "facebook": "facebook.com/vyspa.q7",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 47,
+    "name": "Golden Lotus Healing Spa Land",
+    "address": "139 Tôn Dật Tiên, P. Tân Phú, Q.7",
+    "phone": "028.5410.7171",
+    "email": "igoldenlotus6@gmail.com",
+    "website": "goldenlotus.world",
+    "facebook": "facebook.com/GoldenLotusSpaLand",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 48,
+    "name": "Anna Sanctuary Wellness Spa",
+    "address": "4 Phan Văn Chương, P. Tân Phú, Q.7",
+    "phone": "0345.543.741",
+    "email": "annaspa@halgroup.com.vn",
+    "website": "annasanctuarywellnessspa.com",
+    "facebook": "facebook.com/AnnaSanctuaryWellnessSpa",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 49,
+    "name": "Sunshine Spa & Beauty Clinic",
+    "address": "74 Trần Trọng Cung, P. Tân Thuận Đông, Q.7",
+    "phone": "0906.806.863",
+    "email": "cskh@sunshinespa.org",
+    "website": "sunshinespaclinic.com",
+    "facebook": "facebook.com/SunshineSpaClinic",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 50,
+    "name": "Thảo Yuu Beauty & Spa",
+    "address": "15 Phú Thuận, P. Phú Thuận, Q.7",
+    "phone": "0901.054.003",
+    "email": "yuuspaq7@gmail.com",
+    "website": "yuuspa.com",
+    "facebook": "facebook.com/YuuSpaQ7",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 51,
+    "name": "Nitipon Clinic Việt Nam",
+    "address": "1058 Nguyễn Văn Linh, P. Tân Phong, Q.7",
+    "phone": "1800.6194",
+    "email": "info@nitiponclinic.vn",
+    "website": "nitiponclinic.vn",
+    "facebook": "facebook.com/NitiponClinicVietnam",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 52,
+    "name": "Viện Thẩm Mỹ Linh Anh",
+    "address": "98 Hoàng Trọng Mậu, P. Tân Hưng, Q.7",
+    "phone": "0906.933.888",
+    "email": "cskh@thammylinhanh.vn",
+    "website": "thammylinhanh.vn",
+    "facebook": "facebook.com/thammylinhanh",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 53,
+    "name": "Seoul Center",
+    "address": "R1-96 Bùi Bằng Đoàn, P. Tân Phong, Q.7",
+    "phone": "1800.3333",
+    "email": "cskh@seoulcenter.vn",
+    "website": "seoulcenter.vn",
+    "facebook": "facebook.com/seoulcentervn",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 54,
+    "name": "Ngọc Dung",
+    "address": "134A Nguyễn Thị Thập, P. Tân Hưng, Q.7",
+    "phone": "1800.6377",
+    "email": "info@ngocdung.com",
+    "website": "thammyvienngocdung.com",
+    "facebook": "facebook.com/ngocdungbeauty",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 55,
+    "name": "ROHTO AOHAL",
+    "address": "139 Tôn Dật Tiên, P. Tân Phú, Q.7",
+    "phone": "028.5412.1577",
+    "email": "rohto.aoahal@gmail.com",
+    "website": "rohto-aoahal.com.vn",
+    "facebook": "facebook.com/rohtoaoahal",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 56,
+    "name": "Spa Phương Linh",
+    "address": "829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7",
+    "phone": "0903.625.578",
+    "email": "spaphuonglinh@1booking.asia",
+    "website": "",
+    "facebook": "facebook.com/spaphuonglinh.q7",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 57,
+    "name": "Hương Nguyễn Beauty",
+    "address": "KDC Him Lam, P. Tân Hưng, Q.7",
+    "phone": "0906.806.864",
+    "email": "huongnguyen@1booking.asia",
+    "website": "sunshinespa.org",
+    "facebook": "facebook.com/HuongNguyenBeauty",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 58,
+    "name": "Skin by Huyen Tran Spa",
+    "address": "15 Phú Thuận, P. Phú Thuận, Q.7",
+    "phone": "0901.054.003",
+    "email": "huyentranspa@1booking.asia",
+    "website": "",
+    "facebook": "facebook.com/SkinByHuyenTran",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 59,
+    "name": "Đức Hạnh Spa",
+    "address": "198 Hà Huy Tập, P. Phú Mỹ Hưng, Q.7",
+    "phone": "0937.913.799",
+    "email": "duchanhspa@1booking.asia",
+    "website": "",
+    "facebook": "facebook.com/DucHanhSpa",
+    "services": [],
+    "processed": true
+  },
+  {
+    "id": 60,
+    "name": "MER Beauty Spa",
+    "address": "134A Nguyễn Thị Thập, P. Tân Hưng, Q.7",
+    "phone": "0909.283.288",
+    "email": "merbeauty@1booking.asia",
+    "website": "",
+    "facebook": "facebook.com/MERBeautySpa",
+    "services": [],
+    "processed": true
+  }
+]

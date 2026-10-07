@@ -1,0 +1,24 @@
+{
+  "name": "Skin by Huyen Tran Spa",
+  "slug": "skin-by-huyen-tran-spa",
+  "address": "15 Phú Thuận, P. Phú Thuận, Q.7",
+  "phone": "0901.054.003",
+  "email": "huyentranspa@1booking.asia",
+  "website": null,
+  "short_description": "Premium skin care and wellness spa in Phú Thuận, District 7, Ho Chi Minh City. Experience expert treatments tailored to your skin's needs.",
+  "description": "<b>Skin by Huyen Tran Spa</b> is a premium beauty and wellness destination nestled in the heart of Phú Thuận, District 7. With a passion for enhancing natural beauty, our skilled therapists provide personalized skin care treatments using high-quality products and advanced techniques.<br><br>At Skin by Huyen Tran Spa, we believe that healthy skin is the foundation of confidence. Our serene and inviting atmosphere offers the perfect escape from the hustle and bustle of city life. Whether you're seeking a rejuvenating facial, a relaxing massage, or specialized skin therapy, our dedicated team is committed to delivering exceptional results.<br><br>Conveniently located at 15 Phú Thuận, P. Phú Thuận, Q.7, we invite you to indulge in a luxurious experience that will leave you feeling refreshed and radiant. Book your appointment today by calling <b>0901.054.003</b>.",
+  "seo_title": "Skin by Huyen Tran Spa | District 7 Beauty & Wellness",
+  "seo_description": "Discover premium skin care and spa treatments at Skin by Huyen Tran Spa in District 7, Ho Chi Minh City. Call 0901.054.003 to book your appointment.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [],
+    "deals": [],
+    "gallery": []
+  }
+}

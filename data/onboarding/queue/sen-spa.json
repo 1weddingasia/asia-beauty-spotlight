@@ -1,0 +1,44 @@
+{
+  "name": "Sen Spa",
+  "slug": "sen-spa",
+  "address": "10B1 Lê Thánh Tôn, P. Bến Nghé, Q.1, TP.HCM",
+  "phone": "0907.959.395",
+  "email": "rsv@senspa.com.vn",
+  "website": "senspa.com.vn",
+  "short_description": "Sen Spa – không gian chữa lành giữa lòng Sài Gòn, nơi bạn được nâng niu bằng liệu trình massage tinh tế và dịch vụ chăm sóc sức khỏe chuẩn quốc tế.",
+  "description": "<b>Sen Spa – Chạm đến bình yên giữa lòng phố thị</b><br><br>Giữa nhịp sống hối hả của Sài Gòn, có một nơi giúp bạn tạm dừng, thả lỏng và tìm lại sự cân bằng – đó chính là Sen Spa, tọa lạc tại 10B1 Lê Thánh Tôn, Quận 1. Không chỉ là một spa thông thường, Sen Spa là một không gian chữa lành, nơi bạn được nâng niu bằng những liệu trình massage tinh tế, kết hợp hài hòa giữa kỹ thuật truyền thống và phong cách chăm sóc hiện đại.<br><br>Từ mùi hương dịu nhẹ của tinh dầu, âm thanh êm đềm của thiên nhiên đến đôi bàn tay điêu luyện của các kỹ thuật viên – tất cả tạo nên một trải nghiệm thư giãn trọn vẹn, đưa bạn thoát khỏi áp lực thường ngày, trở về với chính mình.<br><br>Tại Sen Spa, mỗi kỹ thuật viên không những được đào tạo bài bản về chuyên môn mà còn luôn làm việc với trái tim đầy nhiệt huyết. Với đôi tay khéo léo và sự thấu hiểu sâu sắc về cơ thể con người, họ mang đến trải nghiệm thư giãn trọn vẹn, giúp bạn phục hồi năng lượng và cảm nhận sự chăm sóc tận tình trong từng phút giây.<br><br>Hãy để Sen Spa là điểm đến cho cơ thể bạn nghỉ ngơi, và tâm hồn bạn được chữa lành.<br><br><b>20 năm cống hiến cho khách hàng</b><br><br>Tại sao chọn Sen Spa?<br><br><b>Đơn vị tiên phong về dịch vụ Spa</b><br>Được ghi nhận là một trong những đơn vị tiên phong đưa loại hình dịch vụ Spa đúng nghĩa vào Việt Nam, Sen Spa với phong cách thiết kế tối giản tinh tế đưa khách hàng bước vào không gian tĩnh lặng để đạt sự thư giãn thật sâu, thật thoải mái.<br><br><b>Tạo nên trào lưu sống lành mạnh</b><br>Ra đời từ năm 2004, Sen Spa đã và đang tạo nên một trào lưu sống lành mạnh, chan hòa cùng thiên nhiên nhằm duy trì một cuộc sống tràn đầy năng lượng và tinh thần minh mẫn.<br><br><b>Chuyên viên tận tâm</b><br>Sen Spa tự hào là “spa sức khỏe” duy trì chất lượng suốt 17 năm nay với đội ngũ chuyên viên kỹ thuật được đào tạo tiêu chuẩn quốc tế gắn bó hơn 10 năm. Ưu điểm nổi bật của các chuyên viên kỹ thuật chính là khả năng cảm nhận được các điểm tắc nghẽn gây đau nhức trên cơ thể khách và làm tan các điểm đau nhức đó, làm mềm sự căng cơ và giải phóng năng lượng cơ thể. Sự tận tâm của đội ngũ chuyên viên đã gặt hái được những “quả ngọt” xứng đáng: giúp 100% khách hàng cảm nhận được cơ thể đầy sức sống chỉ sau một lần trị liệu.<br><br><b>Làm đẹp không phẫu thuật</b><br>Hướng đến các dịch vụ spa sức khỏe không chuyên về thẩm mỹ làm đẹp, Sen Spa không xây dựng hệ thống trang thiết bị y tế phức tạp mà tập trung vào các liệu pháp tự nhiên, an toàn và hiệu quả.",
+  "seo_title": "Sen Spa - Spa cao cấp Quận 1, TP.HCM",
+  "seo_description": "Sen Spa tại 10B1 Lê Thánh Tôn, Q.1, TP.HCM. Massage body thư giãn, chăm sóc da mặt, xông hơi thảo dược. Đặt lịch ngay: 0907.959.395.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://senspa.com.vn/wp-content/uploads/2021/01/banner-trang-chu.jpg",
+      "https://senspa.com.vn/wp-content/uploads/2021/01/Spa-1.jpg"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Massage body thư giãn",
+        "price": "từ 500k-1.5 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Chăm sóc da mặt",
+        "price": "từ 400k-1.2 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Xông hơi thảo dược",
+        "price": "từ 300k-800k",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

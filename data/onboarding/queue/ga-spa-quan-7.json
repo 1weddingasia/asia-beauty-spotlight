@@ -1,0 +1,24 @@
+{
+  "name": "Gà Spa",
+  "slug": "ga-spa-quan-7",
+  "address": "447 Huỳnh Tấn Phát, P. Tân Thuận Đông, Q.7",
+  "phone": "0901.311.113",
+  "email": "gaspavn@gmail.com",
+  "website": "gaspa.vn",
+  "short_description": "Gà Spa mang đến không gian thư giãn tuyệt đối với các liệu trình chăm sóc da và massage chuyên sâu tại Quận 7, TP.HCM.",
+  "description": "<b>Gà Spa</b> – Địa chỉ làm đẹp và thư giãn lý tưởng tại Quận 7.<br><br>Với không gian ấm cúng, sang trọng cùng đội ngũ kỹ thuật viên giàu kinh nghiệm, Gà Spa tự hào mang đến cho khách hàng những phút giây thư giãn trọn vẹn. Chúng tôi chuyên cung cấp các dịch vụ chăm sóc da mặt, massage body, xông hơi và các liệu trình trị liệu giúp bạn tái tạo năng lượng.<br><br>Đến với Gà Spa, bạn sẽ được trải nghiệm dịch vụ tận tâm, sản phẩm chất lượng cao và mức giá hợp lý. Hãy để chúng tôi chăm sóc vẻ đẹp và sức khỏe của bạn mỗi ngày!",
+  "seo_title": "Gà Spa - Chăm sóc da & massage Quận 7",
+  "seo_description": "Gà Spa tại 447 Huỳnh Tấn Phát, Q.7 cung cấp dịch vụ chăm sóc da, massage thư giãn chuyên nghiệp. Đặt lịch ngay: 0901.311.113.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [],
+    "deals": [],
+    "gallery": []
+  }
+}

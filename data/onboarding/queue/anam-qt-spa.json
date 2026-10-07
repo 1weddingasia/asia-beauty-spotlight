@@ -1,0 +1,44 @@
+{
+  "name": "Anam QT Spa",
+  "slug": "anam-qt-spa",
+  "address": "26/1-2 Lê Thánh Tôn, P. Bến Nghé, Q.1, TP.HCM",
+  "phone": "028.3520.8108 - 1900.636.099",
+  "email": "service@anamqtspa.com",
+  "website": "anamqtspa.com",
+  "short_description": "Anam QT Spa - Ốc đảo bình yên giữa lòng thành phố, nơi bạn tìm thấy sự thư giãn và chữa lành.",
+  "description": "<p><b>Anam QT Spa</b> – Cảm xúc thú vị từ bước chân đầu tiên. Tọa lạc tại trung tâm Quận 1, TP.HCM, Anam QT Spa là điểm đến lý tưởng cho những ai tìm kiếm một không gian yên bình, tĩnh lặng để thư giãn và tái tạo năng lượng.</p><br><p>Với không gian kiến trúc độc đáo, Anam QT Spa mang đến cảm giác như lạc vào một ốc đảo làm đẹp bình yên giữa lòng thành phố nhộn nhịp. Nơi đây, thời gian như ngừng lại, nhường chỗ cho những giây phút thư thái đích thực.</p><br><p>Anam QT Spa cung cấp đa dạng dịch vụ chăm sóc sức khỏe và sắc đẹp cao cấp, từ massage trị liệu, xông hơi đá muối Himalaya đến chăm sóc da mặt chuyên sâu. Đội ngũ chuyên viên tận tâm và giàu kinh nghiệm sẽ mang đến cho bạn những trải nghiệm tuyệt vời nhất.</p><br><p>Hãy đến với Anam QT Spa để tận hưởng những khoảnh khắc đáng nhớ, chăm sóc bản thân và tìm lại sự cân bằng trong cuộc sống.</p>",
+  "seo_title": "Anam QT Spa - Ốc đảo bình yên giữa lòng thành phố",
+  "seo_description": "Anam QT Spa tại 26/1-2 Lê Thánh Tôn, Q.1, TP.HCM. Dịch vụ massage trị liệu, xông hơi đá muối Himalaya, chăm sóc da mặt cao cấp. Đặt hẹn ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://theme.hstatic.net/200000715841/1001166346/14/bannerdesktopallimg11.png?v=1967",
+      "https://theme.hstatic.net/200000715841/1001166346/14/showbanertheimg1.png?v=1967"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Massage trị liệu",
+        "price": "từ 600k-1.7 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Xông hơi đá muối Himalaya",
+        "price": "từ 800k-2 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Chăm sóc da mặt cao cấp",
+        "price": "từ 500k-1.5 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

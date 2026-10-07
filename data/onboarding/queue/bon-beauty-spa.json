@@ -1,0 +1,43 @@
+{
+  "name": "Bon Beauty Spa",
+  "slug": "bon-beauty-spa",
+  "address": "250 Đường 3/2, P.12, Q.10",
+  "phone": "0938.462.186",
+  "email": "bonbeauty@1booking.asia",
+  "website": "facebook.com/BonBeautySpa",
+  "short_description": "Bon Beauty Spa tại 250 Đường 3/2, P.12, Q.10 là điểm đến lý tưởng cho các dịch vụ chăm sóc sắc đẹp và thư giãn hàng đầu.",
+  "description": "<b>Bon Beauty Spa</b> tự hào là địa chỉ làm đẹp uy tín tại <b>250 Đường 3/2, Phường 12, Quận 10</b>, TP.HCM. Với không gian sang trọng, ấm cúng cùng đội ngũ kỹ thuật viên giàu kinh nghiệm, chúng tôi cam kết mang đến cho bạn những trải nghiệm thư giãn và hiệu quả nhất.<br><br>Chúng tôi cung cấp đa dạng dịch vụ từ <b>gội đầu dưỡng sinh</b> giúp thư giãn tinh thần, <b>triệt lông</b> an toàn bằng công nghệ hiện đại, đến <b>nặn mụn</b> chuyên sâu giúp làn da sạch thoáng. Mỗi liệu trình đều được cá nhân hóa để phù hợp với từng khách hàng.<br><br>Hãy đến với Bon Beauty Spa để tận hưởng dịch vụ chất lượng và sự chăm sóc tận tâm. Liên hệ ngay <b>0938.462.186</b> để đặt lịch hẹn!",
+  "seo_title": "Bon Beauty Spa - Gội đầu dưỡng sinh, Triệt lông, Nặn mụn Q.10",
+  "seo_description": "Bon Beauty Spa tại 250 Đường 3/2, P.12, Q.10 cung cấp dịch vụ gội đầu dưỡng sinh, triệt lông, nặn mụn chuyên nghiệp. Đặt lịch ngay 0938.462.186.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Gội đầu dưỡng sinh",
+        "price": "200k-600k",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Triệt lông",
+        "price": "300k-1 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Nặn mụn",
+        "price": "200k-800k",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

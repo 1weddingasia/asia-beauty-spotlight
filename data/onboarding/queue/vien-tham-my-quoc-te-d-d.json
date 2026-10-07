@@ -1,0 +1,44 @@
+{
+  "name": "Viện Thẩm Mỹ Quốc Tế D&D",
+  "slug": "vien-tham-my-quoc-te-d-d",
+  "address": "839/12 Lê Hồng Phong, P.12, Q.10",
+  "phone": "0853.300.333",
+  "email": "info@drdong.net",
+  "website": "drdong.net",
+  "short_description": "Viện Thẩm Mỹ Quốc Tế D&D do ThS.BSCKII Đinh Phương Đông trực tiếp điều hành, mang đến dịch vụ thẩm mỹ an toàn và chất lượng cao.",
+  "description": "<b>Viện Thẩm Mỹ Quốc Tế D&D</b> tự hào là địa chỉ thẩm mỹ uy tín tại Việt Nam, được dẫn dắt bởi <b>ThS.BSCKII Đinh Phương Đông</b> – Trưởng Khoa Bỏng Tạo Hình Thẩm Mỹ Bệnh Viện Trưng Vương. Với đội ngũ kỹ thuật viên dày dạn kinh nghiệm và hệ thống trang thiết bị hiện đại, D&D cam kết mang lại vẻ đẹp hoàn mỹ và sự hài lòng cho khách hàng.<br><br>Chúng tôi chuyên cung cấp các dịch vụ thẩm mỹ như nâng mũi, cắt mí, tiêm filler, căng da mặt, tạo má lúm, cấy mỡ toàn mặt và nhiều dịch vụ khác. Mỗi ca phẫu thuật đều do chính bác sĩ Đinh Phương Đông trực tiếp thực hiện, đảm bảo an toàn và kết quả tự nhiên.<br><br>Với chính sách bảo hành đáng tin cậy và phong cách phục vụ chuyên nghiệp, Viện Thẩm Mỹ Quốc Tế D&D là sự lựa chọn hàng đầu cho những ai mong muốn thay đổi diện mạo một cách an toàn và hiệu quả.",
+  "seo_title": "Viện Thẩm Mỹ Quốc Tế D&D - Thẩm Mỹ An Toàn",
+  "seo_description": "Viện Thẩm Mỹ Quốc Tế D&D do ThS.BSCKII Đinh Phương Đông trực tiếp điều hành. Dịch vụ nâng mũi, cắt mí, tiêm filler an toàn, chất lượng cao.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://www.drdong.net/wp-content/uploads/2019/05/Logo-DD-01.png",
+      "https://www.drdong.net/wp-content/uploads/2019/05/Logo-DD-white-03-e1556783643501.png"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng mũi",
+        "price": "30-65 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Cắt mí",
+        "price": "12-30 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Tiêm filler",
+        "price": "5-15 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

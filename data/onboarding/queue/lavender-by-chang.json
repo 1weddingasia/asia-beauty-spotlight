@@ -1,0 +1,44 @@
+{
+  "name": "Lavender By Chang",
+  "slug": "lavender-by-chang",
+  "address": "60A Võ Văn Tần, P.6, Q.3, TP.HCM",
+  "phone": "0902.308.888",
+  "email": "lavenderbychang@1booking.asia",
+  "website": "lavenderbychang.com",
+  "short_description": "Lavender By Chang là viện thẩm mỹ cao cấp với hơn 19 năm kinh nghiệm, chuyên trị nám, giảm béo, trẻ hóa da bằng công nghệ hiện đại hàng đầu.",
+  "description": "<b>Lavender By Chang</b> – Viện thẩm mỹ đẳng cấp tọa lạc tại 60A Võ Văn Tần, P.6, Q.3, TP.HCM, là điểm đến tin cậy của hàng nghìn khách hàng và nhiều sao Việt.<br><br>Với bề dày <b>hơn 19 năm kinh nghiệm</b> trong lĩnh vực làm đẹp, Lavender By Chang không ngừng đầu tư vào công nghệ tiên tiến và trang thiết bị hiện đại. Viện hợp tác với nhiều tập đoàn thẩm mỹ quốc tế, chuyển giao chính hãng hơn 100 công nghệ làm đẹp không xâm lấn, cam kết hiệu quả bằng văn bản.<br><br>Các dịch vụ nổi bật tại Lavender By Chang bao gồm:<br>- <b>Trị nám công nghệ cao</b>: Xóa mờ nám, căng mọng da với công nghệ tiên tiến.<br>- <b>Giảm béo công nghệ</b>: Eo thon dáng gọn, không phẫu thuật.<br>- <b>Trẻ hóa da toàn diện</b>: Xóa nhăn, nâng cơ, mang lại làn da trẻ trung.<br><br>Không gian viện thẩm mỹ sang trọng, nội thất nhập khẩu, cùng đội ngũ bác sĩ trình độ cao mang đến trải nghiệm làm đẹp 5 sao. Lavender By Chang tự hào nhận được sự tin tưởng của hơn 30 sao Việt, 400 doanh nhân và hàng chục nghìn khách hàng.<br><br>Hãy đến với Lavender By Chang để trải nghiệm dịch vụ làm đẹp đẳng cấp và nhận ngay ưu đãi hấp dẫn!",
+  "seo_title": "Lavender By Chang - Viện Thẩm Mỹ Cao Cấp Trị Nám, Giảm Béo",
+  "seo_description": "Lavender By Chang - Viện thẩm mỹ 19 năm kinh nghiệm tại Q.3, TP.HCM. Chuyên trị nám, giảm béo, trẻ hóa da công nghệ cao. Đặt lịch ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://lavenderbychang.com/wp-content/uploads/2025/10/khuyen-mai-lavender-by-chang-10.webp",
+      "https://lavenderbychang.com/wp-content/uploads/2025/10/khuyen-mai-lavender-by-chang-11.webp"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Trị nám công nghệ cao",
+        "price": "từ 10-30 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Giảm béo công nghệ",
+        "price": "từ 15-40 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Trẻ hóa da toàn diện",
+        "price": "từ 20-50 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

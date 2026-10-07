@@ -1,0 +1,44 @@
+{
+  "name": "Seoul Center",
+  "slug": "seoul-center",
+  "address": "375 Nguyễn Thượng Hiền, P.11, Q.10",
+  "phone": "1800.3333",
+  "email": "cskh@seoulcenter.vn",
+  "website": "seoulcenter.vn",
+  "short_description": "Seoul Center - Bệnh viện thẩm mỹ hàng đầu với bác sĩ chuyên khoa giàu kinh nghiệm, phác đồ cá nhân hóa và công nghệ hiện đại.",
+  "description": "<b>Seoul Center</b> là địa chỉ thẩm mỹ uy tín tại TP.HCM, tọa lạc tại <b>375 Nguyễn Thượng Hiền, P.11, Q.10</b>. Với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm và hệ thống trang thiết bị hiện đại, chúng tôi cam kết mang đến cho khách hàng những dịch vụ làm đẹp an toàn và hiệu quả.<br><br>Chúng tôi cung cấp đa dạng các dịch vụ từ <b>thẩm mỹ nội khoa</b> như Botox, Filler, Rejuran, đến <b>thẩm mỹ ngoại khoa</b> như nâng mũi, cắt mí, căng da mặt. Đặc biệt, Seoul Center chú trọng vào <b>phác đồ cá nhân hóa</b>, giúp tối ưu hiệu quả cho từng khách hàng.<br><br>Với phương châm 'Khách hàng là trung tâm', Seoul Center không ngừng nâng cao chất lượng dịch vụ và mang đến trải nghiệm làm đẹp tuyệt vời nhất.<br><br><b>Liên hệ ngay 1800 3333 để được tư vấn miễn phí!</b>",
+  "seo_title": "Seoul Center - Thẩm mỹ viện uy tín Q.10, TP.HCM",
+  "seo_description": "Seoul Center cung cấp dịch vụ nâng mũi, cắt mí, căng da chỉ sinh học với bác sĩ giàu kinh nghiệm. Địa chỉ: 375 Nguyễn Thượng Hiền, Q.10. Hotline: 1800 3333.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://cdn.diemnhangroup.com/seoulcenter/2026/09/banner-master-phun-xam-pc.jpg",
+      "https://cdn.diemnhangroup.com/seoulcenter/2026/07/1903x704-18.webp"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng mũi",
+        "price": "35-70 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Cắt mí",
+        "price": "12-30 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Căng da chỉ sinh học",
+        "price": "25-60 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

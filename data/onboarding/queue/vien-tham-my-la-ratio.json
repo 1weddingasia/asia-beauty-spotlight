@@ -1,0 +1,43 @@
+{
+  "name": "Viện Thẩm Mỹ La Ratio",
+  "slug": "vien-tham-my-la-ratio",
+  "address": "391E Trần Hưng Đạo, P. Cầu Ông Lãnh, Q.1, TP.HCM",
+  "phone": "1800.6653",
+  "email": "info@laratio.vn",
+  "website": "laratio.vn",
+  "short_description": "Viện Thẩm Mỹ La Ratio tại Quận 1, TP.HCM, chuyên cung cấp dịch vụ thẩm mỹ cao cấp với tiêm filler môi/cằm, trẻ hóa da Ultherapy và phẫu thuật mắt.",
+  "description": "<b>Viện Thẩm Mỹ La Ratio</b> – Địa chỉ làm đẹp đáng tin cậy tại trung tâm Quận 1, TP.HCM.<br><br>Với đội ngũ bác sĩ giàu kinh nghiệm và công nghệ hiện đại, chúng tôi mang đến các giải pháp thẩm mỹ an toàn, hiệu quả, giúp bạn tự tin tỏa sáng.<br><br><b>Dịch vụ nổi bật:</b><br>- Tiêm filler môi/cằm: từ 5-15 triệu<br>- Trẻ hóa da Ultherapy: từ 20-50 triệu<br>- Phẫu thuật mắt: từ 18-40 triệu<br><br>Hãy đến với La Ratio để trải nghiệm dịch vụ chuyên nghiệp và tận tâm.",
+  "seo_title": "Viện Thẩm Mỹ La Ratio - Thẩm Mỹ Cao Cấp Q.1",
+  "seo_description": "Viện Thẩm Mỹ La Ratio tại 391E Trần Hưng Đạo, Q.1, TP.HCM. Chuyên tiêm filler, Ultherapy, phẫu thuật mắt. Liên hệ 1800.6653 để được tư vấn.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Tiêm filler môi/cằm",
+        "price": "từ 5-15 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Trẻ hóa da Ultherapy",
+        "price": "từ 20-50 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Phẫu thuật mắt",
+        "price": "từ 18-40 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

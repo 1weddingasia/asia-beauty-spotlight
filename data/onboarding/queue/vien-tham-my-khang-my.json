@@ -1,0 +1,24 @@
+{
+  "name": "Viện Thẩm Mỹ Khang My",
+  "slug": "vien-tham-my-khang-my",
+  "address": "829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7",
+  "phone": "0903.625.578",
+  "email": "marketing.khangmy@gmail.com",
+  "website": "vienthammykhangmy.com",
+  "short_description": "Viện Thẩm Mỹ Khang My tại Quận 7, TP.HCM chuyên cung cấp các dịch vụ chăm sóc da và thẩm mỹ an toàn, hiệu quả. Với đội ngũ chuyên viên giàu kinh nghiệm, chúng tôi cam kết mang đến vẻ đẹp rạng rỡ và tự tin cho bạn.",
+  "description": "Viện Thẩm Mỹ Khang My là điểm đến lý tưởng cho những ai mong muốn cải thiện vẻ đẹp và sức khỏe làn da. Tọa lạc tại địa chỉ 829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7, TP.HCM, chúng tôi tự hào là một trong những viện thẩm mỹ uy tín tại khu vực.<br><br>Với phương châm <b>\"Đẹp tự nhiên - An toàn - Hiệu quả\"</b>, Khang My không ngừng nâng cao chất lượng dịch vụ và đầu tư trang thiết bị hiện đại. Đội ngũ chuyên viên của chúng tôi được đào tạo bài bản, giàu kinh nghiệm và luôn tận tâm với khách hàng.<br><br>Các dịch vụ nổi bật tại Viện Thẩm Mỹ Khang My bao gồm:<br>- Chăm sóc da mặt chuyên sâu<br>- Điều trị mụn, nám, tàn nhang<br>- Trẻ hóa da, căng chỉ<br>- Các dịch vụ thẩm mỹ khác<br><br>Hãy đến với Viện Thẩm Mỹ Khang My để trải nghiệm không gian sang trọng, thư giãn và nhận được sự tư vấn tận tình từ các chuyên gia. Chúng tôi cam kết mang đến cho bạn kết quả tốt nhất với chi phí hợp lý.<br><br>Liên hệ ngay hotline <b>0903.625.578</b> để được tư vấn miễn phí!",
+  "seo_title": "Viện Thẩm Mỹ Khang My - Chăm sóc da & Thẩm mỹ uy tín Q.7",
+  "seo_description": "Viện Thẩm Mỹ Khang My tại 829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7. Chuyên chăm sóc da, trị mụn, nám, trẻ hóa. Hotline 0903.625.578. Đặt lịch ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [],
+    "deals": [],
+    "gallery": []
+  }
+}

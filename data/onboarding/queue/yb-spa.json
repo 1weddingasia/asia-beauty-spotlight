@@ -1,0 +1,74 @@
+{
+  "name": "YB Spa",
+  "slug": "yb-spa",
+  "address": "116A Lý Phục Man, P. Bình Thuận, Q.7",
+  "phone": "0764.208.777",
+  "email": "mail.ybgroup@gmail.com",
+  "website": "ybspa.vn",
+  "short_description": "YB Spa - Hệ thống thẩm mỹ viện hàng đầu với 13 chi nhánh, hơn 9 năm kinh nghiệm, phục vụ 6 triệu khách hàng. Chuyên điều trị mụn, nám, triệt lông công nghệ cao.",
+  "description": "<h2>Giới thiệu YB Spa</h2><br><b>YB Spa</b> được thành lập từ năm 2017, là hệ thống Viện Thẩm Mỹ uy tín với 13 chi nhánh trên toàn quốc. Với hơn 9 năm hình thành và phát triển, YB Spa tự hào đón nhận khách hàng thứ 6 triệu, khẳng định vị thế thương hiệu làm đẹp tiêu chuẩn Quốc tế.<br><br><h3>Dịch vụ nổi bật tại YB Spa</h3><br><ul><li><b>Chăm sóc da chuyên sâu:</b> Điều trị mụn, nám, cort, trẻ hóa da bằng công nghệ cao.</li><li><b>Triệt lông công nghệ IPL lạnh:</b> Ứng dụng công nghệ mới nhất, an toàn và hiệu quả vượt trội.</li><li><b>Collagen trẻ hóa căng bóng:</b> Giúp làn da săn chắc, mịn màng.</li><li><b>Peel Image:</b> Phương pháp peel da tiên tiến.</li><li><b>Tắm trắng:</b> Dịch vụ làm trắng da toàn thân.</li></ul><br><h3>Vì sao chọn YB Spa?</h3><br><ul><li><b>Hệ thống 13 chi nhánh:</b> Thuận tiện cho khách hàng trên toàn quốc.</li><li><b>Phác đồ điều trị 1:1:</b> Cá nhân hóa, rút ngắn thời gian và tăng hiệu quả.</li><li><b>Đội ngũ chuyên gia:</b> Kỹ thuật viên giàu kinh nghiệm, bác sĩ đầu ngành.</li><li><b>Chi phí hợp lý:</b> Dịch vụ chất lượng với giá cả cạnh tranh.</li><li><b>Cập nhật xu hướng:</b> Thường xuyên tham gia hội nghị khoa học quốc tế.</li></ul><br><h3>Địa chỉ và liên hệ</h3><br><b>YB Spa - Chi nhánh Quận 7</b><br>Địa chỉ: 116A Lý Phục Man, P. Bình Thuận, Q.7<br>Hotline: 0764.208.777<br><br>Hãy đến với YB Spa để trải nghiệm dịch vụ làm đẹp đẳng cấp!",
+  "seo_title": "YB Spa - Thẩm mỹ viện uy tín Q.7, triệt lông, trị mụn",
+  "seo_description": "YB Spa - Hệ thống thẩm mỹ viện 13 chi nhánh, 6 triệu khách hàng. Chuyên triệt lông IPL, trị mụn, nám, trẻ hóa da. Địa chỉ: 116A Lý Phục Man, Q.7. Hotline: 0764.208.777",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://ybspa.vn/wp-content/uploads/376968623a86b6d8ef97.webp",
+      "https://ybspa.vn/wp-content/uploads/cropped-vang-den-e1664182646629.png"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Chăm sóc da chuyên sâu",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Triệt lông công nghệ IPL lạnh",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Collagen trẻ hóa căng bóng",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s4",
+        "name": "Peel Image",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s5",
+        "name": "Điều trị mụn",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s6",
+        "name": "Điều trị nám",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s7",
+        "name": "Điều trị cort",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s8",
+        "name": "Tắm trắng",
+        "price": "Liên hệ",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

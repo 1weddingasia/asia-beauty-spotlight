@@ -1,0 +1,44 @@
+{
+  "name": "Bệnh viện Thẩm mỹ Nam An",
+  "slug": "benh-vien-tham-my-nam-an",
+  "address": "45A Ba Tháng Hai, P.10, Q.10",
+  "phone": "0901.939.229",
+  "email": "contact@bvnaman.com",
+  "website": "benhvienthammynaman.com",
+  "short_description": "Bệnh viện Thẩm mỹ Nam An tọa lạc tại Quận 10, TP.HCM, tự hào là địa chỉ vàng cho các dịch vụ phẫu thuật thẩm mỹ và chăm sóc sắc đẹp công nghệ cao.",
+  "description": "<h2>Bệnh viện Thẩm mỹ Nam An – Nơi Tôn Vinh Vẻ Đẹp Đích Thực</h2><p>Bệnh viện Thẩm mỹ Nam An là một trong những cơ sở thẩm mỹ uy tín hàng đầu tại TP.HCM, tọa lạc tại địa chỉ 45A Ba Tháng Hai, P.10, Q.10. Với gần 15 năm kinh nghiệm trong lĩnh vực phẫu thuật thẩm mỹ, bệnh viện đã khẳng định được vị thế của mình qua hàng ngàn ca phẫu thuật thành công và sự hài lòng của khách hàng.</p><h3>Đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm</h3><p>Bệnh viện tự hào có đội ngũ bác sĩ chuyên khoa giỏi, trong đó có <b>Bác sĩ, CKI Đỗ Quang Khải – Giám đốc Chuyên môn</b>, người đã có gần 15 năm kinh nghiệm và từng công tác 7 năm tại Bệnh viện Đại học Y Dược TP.HCM – Khoa Tạo hình Thẩm mỹ. Các bác sĩ tại Nam An đều có chứng chỉ hành nghề minh bạch, đảm bảo an toàn tuyệt đối cho khách hàng.</p><h3>Cơ sở vật chất và trang thiết bị hiện đại</h3><p>Bệnh viện được Bộ Y Tế đánh giá đạt tiêu chuẩn chất lượng khối thẩm mỹ năm 2024 và vinh dự lọt Top 10 bệnh viện uy tín hàng đầu ASEAN. Trang thiết bị y tế được nhập khẩu chính hãng, ứng dụng các công nghệ tiên tiến như <b>VASERlipo, Optimas, Geneo X, Ignite RF, Ultherapy Prime, Thermage FLX, Contoura</b>… giúp mang lại kết quả thẩm mỹ tối ưu và an toàn cho khách hàng.</p><h3>Dịch vụ đa dạng, đáp ứng mọi nhu cầu làm đẹp</h3><p>Nam An cung cấp đa dạng các dịch vụ từ phẫu thuật thẩm mỹ đến chăm sóc da không xâm lấn, bao gồm: <b>Căng da mặt nội soi, Nâng ngực, Hút mỡ công nghệ cao</b>, cùng nhiều dịch vụ khác như nâng mũi, cắt mí, gọt hàm, độn cằm, nâng mông, điêu khắc vùng kín, trị mụn, triệt lông… Mỗi dịch vụ đều được thực hiện bởi các chuyên gia đầu ngành với phác đồ cá nhân hóa, đảm bảo hiệu quả và thẩm mỹ tự nhiên.</p><h3>Khách hàng hài lòng – Thước đo thành công</h3><p>Với hơn 1.105+ đánh giá từ Google và điểm số 4.8/5, Bệnh viện Thẩm mỹ Nam An đã nhận được sự tin tưởng và yêu mến của đông đảo khách hàng. Bệnh viện cam kết mang đến trải nghiệm dịch vụ chuyên nghiệp, tận tâm và hiệu quả cao, xứng đáng là điểm đến lý tưởng cho mọi nhu cầu làm đẹp.</p><p><b>Địa chỉ:</b> 45A Ba Tháng Hai, P.10, Q.10<br><b>Hotline:</b> 0901 939 229<br><b>Email:</b> contact@bvnaman.com<br><b>Giờ làm việc:</b> Thứ 2 – Thứ 7: 7:00 – 19:00; Chủ Nhật: 7:00 – 17:00</p>",
+  "seo_title": "Bệnh viện Thẩm mỹ Nam An – Thẩm mỹ uy tín Q.10",
+  "seo_description": "Bệnh viện Thẩm mỹ Nam An tại Q.10, TP.HCM: Căng da mặt nội soi, nâng ngực, hút mỡ công nghệ cao. Bác sĩ giỏi, trang thiết bị hiện đại, 4.8/5 sao. Liên hệ 0901.939.229.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://benhvienthammynaman.com/wp-content/uploads/2026/06/Bi-Quyet-Nang-Nguc-Khong-Dau-Tai-Benh-Ven-Tham-My-Nam-An-4-400x225.jpg",
+      "https://benhvienthammynaman.com/wp-content/uploads/2026/07/BS-Do-Quang-Khai.jpg"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Căng da mặt nội soi",
+        "price": "60-100 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Nâng ngực",
+        "price": "55-90 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Hút mỡ công nghệ cao",
+        "price": "35-70 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

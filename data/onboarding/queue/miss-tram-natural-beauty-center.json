@@ -1,0 +1,43 @@
+{
+  "name": "Miss Tram Natural Beauty Center",
+  "slug": "miss-tram-natural-beauty-center",
+  "address": "30 Đặng Thị Nhu, P. Nguyễn Thái Bình, Q.1, TP.HCM",
+  "phone": "1900.7018 - 0909.783.289",
+  "email": "info@misstram.com",
+  "website": "thammymisstram.vn",
+  "short_description": "Miss Tram Natural Beauty Center offers premium beauty and wellness services in District 1, Ho Chi Minh City. Specializing in eyebrow and lip embroidery, acne treatment, and high-tech hair removal, we help you achieve natural beauty.",
+  "description": "<b>Miss Tram Natural Beauty Center</b> is a premier beauty and wellness destination located at 30 Đặng Thị Nhu, P. Nguyễn Thái Bình, Q.1, TP.HCM. We specialize in a range of advanced beauty treatments designed to enhance your natural beauty and boost your confidence.<br><br>Our expert team provides personalized services including <b>eyebrow and lip embroidery</b> to give you perfectly shaped and tinted features, <b>acne treatment and skin care</b> to promote clear and healthy skin, and <b>high-tech hair removal</b> for smooth, hair-free skin. We use only the latest technology and high-quality products to ensure safe and effective results.<br><br>At Miss Tram Natural Beauty Center, we are committed to delivering exceptional service in a relaxing and welcoming environment. Whether you're looking for a quick beauty fix or a comprehensive skincare regimen, our skilled professionals are here to help you look and feel your best. Visit us today and experience the difference!",
+  "seo_title": "Miss Tram Natural Beauty Center | Premium Beauty & Wellness in HCMC",
+  "seo_description": "Miss Tram Natural Beauty Center offers expert eyebrow embroidery, acne treatment, and high-tech hair removal in District 1, HCMC. Call 1900.7018 for a consultation.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Phun xăm điêu khắc mày/môi",
+        "price": "từ 3-8 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Chăm sóc da trị mụn",
+        "price": "từ 1-4 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Triệt lông công nghệ cao",
+        "price": "từ 1-5 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "Nitipon Clinic Việt Nam",
+  "slug": "nitipon-clinic-viet-nam",
+  "address": "1058 Nguyễn Văn Linh, P. Tân Phong, Q.7",
+  "phone": "1800.6194",
+  "email": "info@nitiponclinic.vn",
+  "website": "nitiponclinic.vn",
+  "short_description": "Nitipon Clinic Việt Nam mang đến giải pháp thẩm mỹ an toàn, hiệu quả với công nghệ tiên tiến và đội ngũ chuyên gia hàng đầu.",
+  "description": "<b>Nitipon Clinic Việt Nam</b> là địa chỉ thẩm mỹ uy tín tại Quận 7, TP.HCM, tọa lạc tại <b>1058 Nguyễn Văn Linh, P. Tân Phong</b>. Với sứ mệnh mang đến vẻ đẹp tự nhiên và rạng rỡ, chúng tôi không ngừng cập nhật những công nghệ thẩm mỹ tiên tiến nhất từ Hàn Quốc và Thái Lan.<br><br>Đội ngũ bác sĩ tại Nitipon Clinic đều là những chuyên gia giàu kinh nghiệm, được đào tạo bài bản, cam kết mang lại kết quả tối ưu và an toàn tuyệt đối cho khách hàng. Chúng tôi cung cấp đa dạng dịch vụ từ chăm sóc da, điều trị nám, trẻ hóa da đến phẫu thuật thẩm mỹ.<br><br>Hãy đến với Nitipon Clinic Việt Nam để trải nghiệm không gian sang trọng, dịch vụ tận tâm và nhận được tư vấn chuyên nghiệp. Liên hệ ngay <b>1800.6194</b> để được hỗ trợ!",
+  "seo_title": "Nitipon Clinic Việt Nam - Thẩm Mỹ Uy Tín Quận 7",
+  "seo_description": "Nitipon Clinic Việt Nam tại 1058 Nguyễn Văn Linh, Q.7. Dịch vụ thẩm mỹ an toàn, công nghệ tiên tiến. Hotline 1800.6194.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [],
+    "deals": [],
+    "gallery": []
+  }
+}

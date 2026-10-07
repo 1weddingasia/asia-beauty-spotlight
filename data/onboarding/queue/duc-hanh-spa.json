@@ -1,0 +1,24 @@
+{
+  "name": "Đức Hạnh Spa",
+  "slug": "duc-hanh-spa",
+  "address": "198 Hà Huy Tập, P. Phú Mỹ Hưng, Q.7",
+  "phone": "0937.913.799",
+  "email": "duchanhspa@1booking.asia",
+  "website": null,
+  "short_description": "Đức Hạnh Spa mang đến không gian thư giãn đẳng cấp với các liệu trình chăm sóc da và massage chuyên sâu tại Quận 7, TP.HCM.",
+  "description": "<b>Đức Hạnh Spa</b> – điểm hẹn thư giãn lý tưởng giữa lòng Quận 7, tọa lạc tại <b>198 Hà Huy Tập, P. Phú Mỹ Hưng, Q.7</b>.<br><br>Với đội ngũ kỹ thuật viên giàu kinh nghiệm và không gian sang trọng, ấm cúng, chúng tôi cam kết mang đến cho bạn những phút giây thư thái tuyệt đối. Các liệu trình tại <b>Đức Hạnh Spa</b> được thiết kế đa dạng, từ chăm sóc da mặt, massage body đến các dịch vụ trị liệu chuyên sâu, giúp bạn tái tạo năng lượng và làm đẹp toàn diện.<br><br>Đặc biệt, <b>Đức Hạnh Spa</b> luôn sử dụng các sản phẩm chất lượng cao, an toàn cho làn da, kết hợp kỹ thuật massage nhẹ nhàng, giúp bạn thư giãn sâu và cải thiện sức khỏe. Hãy đến và trải nghiệm dịch vụ tận tâm cùng mức giá hợp lý.<br><br>Để biết thêm chi tiết và đặt lịch hẹn, vui lòng liên hệ hotline <b>0937.913.799</b>.",
+  "seo_title": "Đức Hạnh Spa - Chăm sóc da & Massage Quận 7",
+  "seo_description": "Đức Hạnh Spa tại 198 Hà Huy Tập, P. Phú Mỹ Hưng, Q.7. Chuyên chăm sóc da, massage thư giãn. Không gian sang trọng, kỹ thuật viên giàu kinh nghiệm. Hotline 0937.913.799.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [],
+    "deals": [],
+    "gallery": []
+  }
+}

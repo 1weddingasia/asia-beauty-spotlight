@@ -1,0 +1,44 @@
+{
+  "name": "Bệnh viện Thẩm mỹ EMCAS",
+  "slug": "benh-vien-tham-my-emcas",
+  "address": "14/27 Hoàng Dư Khương, P. Hoà Hưng, Q.10",
+  "phone": "0903.082.836",
+  "email": "lienhe@emcas.com.vn",
+  "website": "emcas.vn",
+  "short_description": "Bệnh viện Thẩm mỹ EMCAS là địa chỉ uy tín hàng đầu tại TP.HCM với đội ngũ bác sĩ chuyên khoa và công nghệ hiện đại, mang đến vẻ đẹp tự nhiên và an toàn.",
+  "description": "<b>Bệnh viện Thẩm mỹ EMCAS</b> tự hào là trung tâm phẫu thuật thẩm mỹ toàn diện, cung cấp các dịch vụ làm đẹp chất lượng cao như nâng ngực, hút mỡ, phẫu thuật mũi và nhiều dịch vụ khác.<br><br>Với đội ngũ bác sĩ giàu kinh nghiệm và hệ thống trang thiết bị tiên tiến, EMCAS cam kết mang lại kết quả thẩm mỹ hoàn hảo và an toàn cho khách hàng. <br><br>Chúng tôi luôn cập nhật những công nghệ mới nhất trong ngành thẩm mỹ, điển hình là công nghệ tế bào gốc, giúp trẻ hóa làn da và điều trị sẹo rỗ hiệu quả.<br><br>Hãy đến với EMCAS để được tư vấn miễn phí và trải nghiệm dịch vụ đẳng cấp.<br><br>Địa chỉ: 14/27 Hoàng Dư Khương, P. Hoà Hưng, Q.10, TP.HCM<br>Hotline: 0903.082.836",
+  "seo_title": "Bệnh viện Thẩm mỹ EMCAS - Nâng ngực, hút mỡ, phẫu thuật mũi uy tín",
+  "seo_description": "Bệnh viện Thẩm mỹ EMCAS tại Q.10, TP.HCM chuyên nâng ngực, hút mỡ, phẫu thuật mũi với bác sĩ giàu kinh nghiệm, giá hợp lý, an toàn tuyệt đối.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://www.emcas.vn/upload/images/banner-web/banner-uu-dai-hut-mo-emcas.webp",
+      "https://www.emcas.vn/upload/images/banner-web/banner-home-t10-2026.webp"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng ngực",
+        "price": "60-90 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Hút mỡ",
+        "price": "40-80 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Phẫu thuật mũi",
+        "price": "35-70 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

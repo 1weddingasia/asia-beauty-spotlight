@@ -1,0 +1,512 @@
+{
+  "name": "Viện Thẩm Mỹ Kang My",
+  "slug": "vien-tham-my-kang-my",
+  "address": "117B Đường 79, P. Tân Quy, Q.7",
+  "phone": "0966.693.939",
+  "email": "kangmybeauty@gmail.com",
+  "website": "vienthammyquoctekangmy.com",
+  "short_description": "Viện Thẩm Mỹ Kang My – Địa chỉ làm đẹp uy tín tại Quận 7 với 10 năm kinh nghiệm, công nghệ hiện đại và đội ngũ bác sĩ tay nghề cao.",
+  "description": "<b>Viện Thẩm Mỹ Quốc Tế Kang My</b> là địa chỉ quen thuộc với phái nữ mỗi lúc nhắc đến thẩm mỹ và làm đẹp chất lượng cao, an toàn và đáng tin cậy tại quận 7, TP. HCM. Với sứ mệnh “làm đẹp an toàn và đáng tin cậy nâng tầm nhan sắc Việt”, Kang My liên tục đầu tư máy móc, dịch vụ, trung tâm hạ tầng trong ngành thẩm mỹ chất lượng cao.<br><br><b>Tại sao chọn Kang My?</b><br>- Không gian hiện đại - sang trọng<br>- 10 năm kinh nghiệm<br>- Uy tín - tận tâm<br>- Đảm bảo - bảo hành<br>- Bác sĩ tay nghề cao<br><br>Địa chỉ: 117B Đường 79, P. Tân Quy, Q.7<br>Điện thoại: 0966.693.939<br>Giờ mở cửa: 09:00 - 20:00 mỗi ngày",
+  "seo_title": "Viện Thẩm Mỹ Kang My - Thẩm Mỹ Quốc Tế Uy Tín Q.7",
+  "seo_description": "Viện Thẩm Mỹ Kang My tại Q.7, TP.HCM: 10 năm kinh nghiệm, dịch vụ thẩm mỹ đa dạng, bác sĩ tay nghề cao. Đặt lịch: 0966.693.939.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://vienthammyquoctekangmy.com/thumbs/1920x916x1/upload/photo/25-dsc02421-7626.jpg",
+      "https://vienthammyquoctekangmy.com/thumbs/1920x916x1/upload/photo/3109408685228232163441307778234647126563280n-60860.jpg"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Cằm tài lộc trọn gói",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Tai Vểnh Trung Hoa",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Phun môi đẹp tại Kang My",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s4",
+        "name": "Tinh chất trẻ hóa da KARISMA Rh Collagen",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s5",
+        "name": "Điêu khắc chân mày",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s6",
+        "name": "Liệu pháp PROFHILO",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s7",
+        "name": "Cấy 10 điểm Profhilo",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s8",
+        "name": "Nhấn mí siêu vi sợi",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s9",
+        "name": "Má núm tài lộc",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s10",
+        "name": "Dát vàng 24K",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s11",
+        "name": "Đầy rãnh cười trọn gói",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s12",
+        "name": "Đầy hốc mắt trọn gói",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s13",
+        "name": "Thon gọn hàm",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s14",
+        "name": "Xoá nốt ruồi Laser CO2",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s15",
+        "name": "Nặn mụn cơ bản",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s16",
+        "name": "Nặn mụn chuyên sâu",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s17",
+        "name": "Chăm sóc da cơ bản",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s18",
+        "name": "Chăm sóc da nâng cao",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s19",
+        "name": "Điều trị mụn trọn gói & thuốc",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s20",
+        "name": "Điều trị nám - gói 5-8 buổi",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s21",
+        "name": "Tiêm DNA cá hồi",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s22",
+        "name": "Tiêm khử thâm mắt",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s23",
+        "name": "Tiêm cải lão hoàn đồng",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s24",
+        "name": "Tiêm DNA cá hồi căng bóng da",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s25",
+        "name": "Tiêm khử mùi hôi cơ thể",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s26",
+        "name": "Trẻ hoá da bằng chỉ",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s27",
+        "name": "Cấy mũi chỉ",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s28",
+        "name": "Căng da mặt bằng chỉ bạch kim",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s29",
+        "name": "Làm đầy thái dương",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s30",
+        "name": "Căng da nọng cằm & rãnh cười",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s31",
+        "name": "Truyền trắng da",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s32",
+        "name": "Căng da toàn mặt",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s33",
+        "name": "Nâng cung chân mày",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s34",
+        "name": "Nhấn mí dáng Thái",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s35",
+        "name": "Nhấn mí Thái bóc tách mỡ",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s36",
+        "name": "Tạo hình môi trái tim",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s37",
+        "name": "Mở góc mắt trong",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s38",
+        "name": "Kéo lệ Trung Hoa",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s39",
+        "name": "Cắt bọng mắt dưới",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s40",
+        "name": "Cắt mí Minideep",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s41",
+        "name": "Cắt mí full xử lý da trùng",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s42",
+        "name": "Thu hẹp âm đạo",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s43",
+        "name": "Cắt thu gọn môi bé",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s44",
+        "name": "Tai tài lộc",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s45",
+        "name": "Nâng mũi cấy tinh chất",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s46",
+        "name": "Tạo hình môi với Filler",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s47",
+        "name": "Xoá nhăn khoé mắt",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s48",
+        "name": "Làm đầy cô bé",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s49",
+        "name": "Đầy mu bàn tay - bàn chân",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s50",
+        "name": "Mông quả đào 100cc",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s51",
+        "name": "Cấy má hóp",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s52",
+        "name": "Khử thâm môi",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s53",
+        "name": "Phun mí mở tròng",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s54",
+        "name": "Phun mày chạm hạt",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s55",
+        "name": "Phun mày tán bột",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s56",
+        "name": "Phun mày omber",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s57",
+        "name": "Điêu khắc chân mày châu Âu",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s58",
+        "name": "Phun môi collagen",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s59",
+        "name": "Phun môi phú quý",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s60",
+        "name": "Phun môi pha lê",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s61",
+        "name": "Phun hồng nhũ hoa",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s62",
+        "name": "Triệt full mặt",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s63",
+        "name": "Triệt nách 1 lần",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s64",
+        "name": "Triệt lông ngực 1 lần",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s65",
+        "name": "Triệt 1/2 tay",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s66",
+        "name": "Triệt 1/2 chân",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s67",
+        "name": "Triệt bikini 1 lần",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s68",
+        "name": "Triệt full lưng 1 lần",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s69",
+        "name": "Triệt full 2 tay 1 lần",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s70",
+        "name": "Triệt full 2 chân 1 lần",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s71",
+        "name": "Triệt lông nách liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s72",
+        "name": "Triệt full mặt liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s73",
+        "name": "Triệt lông ngực liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s74",
+        "name": "Triệt 1/2 tay liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s75",
+        "name": "Triệt bikini liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s76",
+        "name": "Triệt 1/2 chân liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s77",
+        "name": "Triệt full lưng liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s78",
+        "name": "Triệt full 2 tay liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s79",
+        "name": "Làm hồng cô bé",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s80",
+        "name": "Triệt full 2 chân liệu trình",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s81",
+        "name": "Làm hồng nhũ hoa",
+        "price": "Liên hệ",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

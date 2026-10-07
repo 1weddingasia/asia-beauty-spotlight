@@ -1,0 +1,25 @@
+{
+  "name": "Hương Nguyễn Beauty",
+  "slug": "huong-nguyen-beauty",
+  "address": "KDC Him Lam, P. Tân Hưng, Q.7",
+  "phone": "0906.806.864",
+  "email": "huongnguyen@1booking.asia",
+  "website": "sunshinespa.org",
+  "short_description": "Hương Nguyễn Beauty offers premium beauty and wellness services in the heart of Ho Chi Minh City. Experience expert care and relaxation tailored to your needs.",
+  "description": "<b>Welcome to Hương Nguyễn Beauty</b><br>Located in the vibrant area of KDC Him Lam, P. Tân Hưng, Q.7, Hương Nguyễn Beauty is your premier destination for beauty and wellness. Our dedicated team of professionals is committed to providing you with exceptional services in a serene and welcoming environment.<br><br><b>Our Mission</b><br>At Hương Nguyễn Beauty, our mission is to enhance your natural beauty and promote overall well-being through personalized treatments. We use only the finest products and techniques to ensure you leave feeling refreshed and confident.<br><br><b>Our Services</b><br>We offer a comprehensive range of beauty and wellness services designed to meet your unique needs. Whether you're looking for a rejuvenating facial, a relaxing massage, or expert skincare advice, our skilled therapists are here to help you look and feel your best.<br><br><b>Why Choose Us?</b><br>With a focus on quality and customer satisfaction, Hương Nguyễn Beauty has become a trusted name in the community. Our state-of-the-art facility and personalized approach ensure that every visit is a delightful experience. Come discover why our clients love us!",
+  "seo_title": "Hương Nguyễn Beauty | Beauty & Wellness in Q.7",
+  "seo_description": "Hương Nguyễn Beauty offers expert beauty and wellness services in Q.7, Ho Chi Minh City. Book your appointment today for a transformative experience.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://sunshinespa.org/6.png",
+      "https://img1.wsimg.com/isteam/getty/2018578391/:/rs=w:730,h:730,cg:true"
+    ],
+    "services": [],
+    "deals": [],
+    "gallery": []
+  }
+}

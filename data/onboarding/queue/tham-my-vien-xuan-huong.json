@@ -1,0 +1,43 @@
+{
+  "name": "Thẩm mỹ viện Xuân Hương",
+  "slug": "tham-my-vien-xuan-huong",
+  "address": "45A Đường 3 Tháng 2, P.11, Q.10",
+  "phone": "1800.6999",
+  "email": "contact@benhvienthammyxuanhuong.com",
+  "website": "thammyxuanhuong.com",
+  "short_description": "Thẩm mỹ viện Xuân Hương – hơn 10 năm kiến tạo nhan sắc an toàn, đẳng cấp cùng đội ngũ bác sĩ đầu ngành và công nghệ hiện đại.",
+  "description": "<b>Thẩm mỹ viện Xuân Hương</b> tự hào là địa chỉ làm đẹp uy tín được hàng triệu khách hàng tin chọn suốt hơn 10 năm qua.<br><br>Với tiêu chí <b>“Đẹp nhưng phải an toàn”</b>, chúng tôi không ngừng đầu tư vào trang thiết bị hiện đại, nhập khẩu từ Hoa Kỳ, Châu Âu và Hàn Quốc, đạt chứng nhận FDA, KFDA, CE.<br><br><b>Đội ngũ bác sĩ, chuyên gia đầu ngành</b> giàu kinh nghiệm, từng tu nghiệp tại Pháp, Mỹ, Nhật, Hàn, thực hiện thành công hàng ngàn ca thẩm mỹ mỗi năm.<br><br>Chúng tôi cung cấp đa dạng dịch vụ từ <b>phẫu thuật thẩm mỹ</b> (nâng ngực, hút mỡ, trẻ hóa da…), <b>phun thêu thẩm mỹ</b> đến <b>spa chăm sóc da</b> toàn diện.<br><br>Đặc biệt, <b>Thẩm mỹ viện Xuân Hương</b> vinh dự nhận được sự tin yêu của nhiều nghệ sĩ nổi tiếng như diễn viên Hoàng Xuân, Hoa hậu Ngô Thu Trang, danh thủ Khánh Thi, diễn viên Minh Tiệp, MC Thái Dũng.<br><br>Hãy đến với <b>Thẩm mỹ viện Xuân Hương</b> để trải nghiệm dịch vụ làm đẹp không xâm lấn, nhanh chóng và an toàn!",
+  "seo_title": "Thẩm mỹ viện Xuân Hương - Nâng ngực, hút mỡ, trẻ hóa da",
+  "seo_description": "Thẩm mỹ viện Xuân Hương hơn 10 năm kinh nghiệm, đội ngũ bác sĩ đầu ngành, công nghệ hiện đại. Dịch vụ nâng ngực, hút mỡ, trẻ hóa da an toàn, hiệu quả.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng ngực",
+        "price": "55-90 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Hút mỡ",
+        "price": "35-70 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Trẻ hóa da",
+        "price": "10-30 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

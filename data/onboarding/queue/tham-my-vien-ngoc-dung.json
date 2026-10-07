@@ -1,0 +1,44 @@
+{
+  "name": "Thẩm mỹ viện Ngọc Dung",
+  "slug": "tham-my-vien-ngoc-dung",
+  "address": "32-34-36 Đường 3 Tháng 2, P.11, Q.10",
+  "phone": "1800.6377",
+  "email": "info@ngocdung.com",
+  "website": "thammyvienngocdung.com",
+  "short_description": "Thẩm mỹ viện Ngọc Dung là hệ thống thẩm mỹ công nghệ cao 28 năm hoạt động, với 16 chi nhánh trên toàn quốc, chuyên cung cấp các giải pháp làm đẹp an toàn, hiệu quả.",
+  "description": "<b>Thẩm mỹ viện Ngọc Dung</b> là thương hiệu uy tín trong lĩnh vực chăm sóc sắc đẹp tại Việt Nam, hoạt động từ năm 1998 với 28 năm kinh nghiệm và 16 chi nhánh trải dài Bắc – Trung – Nam.<br><br>Chúng tôi tự hào phục vụ hơn 20.000 khách hàng mỗi năm, mang đến các giải pháp thẩm mỹ không xâm lấn và xâm lấn tối thiểu, giúp khách hàng tỏa sáng mà không cần nghỉ dưỡng.<br><br><b>Dịch vụ nổi bật:</b><br>- Nâng ngực NanoChip: 60-100 triệu<br>- Hút mỡ Lipo 360: 40-80 triệu<br>- Trẻ hóa da: 10-30 triệu<br><br>Với đội ngũ bác sĩ chuyên môn cao, thiết bị nhập khẩu từ Châu Âu và Hoa Kỳ, Thẩm mỹ viện Ngọc Dung cam kết mang đến phác đồ điều trị cá nhân hóa, an toàn và hiệu quả cho từng khách hàng.<br><br>Địa chỉ: 32-34-36 Đường 3 Tháng 2, P.11, Q.10<br>Hotline: 1800.6377",
+  "seo_title": "Thẩm mỹ viện Ngọc Dung - Thẩm mỹ công nghệ cao 28 năm",
+  "seo_description": "Thẩm mỹ viện Ngọc Dung với 28 năm kinh nghiệm, 16 chi nhánh toàn quốc. Dịch vụ nâng ngực NanoChip, hút mỡ Lipo 360, trẻ hóa da an toàn, hiệu quả. Liên hệ 1800.6377.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://thammyvienngocdung.com/wp-content/uploads/2026/09/2568x800-2-scaled.png",
+      "https://thammyvienngocdung.com/wp-content/uploads/2026/09/2560x800-3.png"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Nâng ngực NanoChip",
+        "price": "60-100 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Hút mỡ Lipo 360",
+        "price": "40-80 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Trẻ hóa da",
+        "price": "10-30 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

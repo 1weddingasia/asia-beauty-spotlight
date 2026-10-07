@@ -1,0 +1,44 @@
+{
+  "name": "LUNA Beauty Spa",
+  "slug": "luna-beauty-spa-366-duong-3-2-p12-q10",
+  "address": "366 Đường 3/2, P.12, Q.10",
+  "phone": "0909.123.456",
+  "email": "luna@1booking.asia",
+  "website": "facebook.com/lunabeautyspa",
+  "short_description": "LUNA Beauty Spa mang đến không gian thư giãn đẳng cấp với các dịch vụ chăm sóc da, massage body và triệt lông chuyên nghiệp. Đội ngũ kỹ thuật viên tận tâm, sản phẩm cao cấp, giúp bạn tỏa sáng rạng ngời.",
+  "description": "<b>LUNA Beauty Spa</b> – Địa chỉ làm đẹp uy tín tại trung tâm Quận 10, TP.HCM.<br> Tọa lạc tại <b>366 Đường 3/2, Phường 12, Quận 10</b>, LUNA Beauty Spa tự hào là điểm đến lý tưởng cho những ai yêu thích chăm sóc bản thân và tận hưởng dịch vụ spa chất lượng cao.<br><br> Với phương châm <i>“Đẹp tự nhiên nhưng không tự nhiên mà đẹp”</i>, chúng tôi cam kết mang đến cho khách hàng những trải nghiệm tuyệt vời nhất. Không gian sang trọng, ấm cúng cùng đội ngũ kỹ thuật viên giàu kinh nghiệm sẽ giúp bạn thư giãn và tái tạo năng lượng.<br><br> <b>Dịch vụ nổi bật tại LUNA Beauty Spa:</b><br> - <b>Chăm sóc da mặt</b>: Giá từ 400.000đ – 1.500.000đ, phù hợp cho mọi loại da, giúp da sáng khỏe, se khít lỗ chân lông.<br> - <b>Massage body</b>: Giá từ 500.000đ – 1.500.000đ, giảm căng thẳng, đào thải độc tố, mang lại cảm giác sảng khoái.<br> - <b>Triệt lông</b>: Giá từ 300.000đ – 1.000.000đ, công nghệ hiện đại, an toàn, hiệu quả lâu dài.<br><br> Đến với LUNA Beauty Spa, bạn sẽ được tư vấn tận tình và lựa chọn liệu trình phù hợp nhất với làn da và cơ thể. Hãy để chúng tôi đồng hành cùng bạn trên hành trình làm đẹp và chăm sóc sức khỏe!<br><br> <b>Địa chỉ:</b> 366 Đường 3/2, P.12, Q.10<br> <b>Điện thoại:</b> 0909.123.456<br> <b>Hãy gọi ngay để được phục vụ!</b>",
+  "seo_title": "LUNA Beauty Spa - Chăm sóc da, Massage body, Triệt lông Q.10",
+  "seo_description": "LUNA Beauty Spa tại 366 Đường 3/2, P.12, Q.10. Chuyên chăm sóc da mặt, massage body, triệt lông. Không gian sang trọng, kỹ thuật viên chuyên nghiệp. Đặt lịch ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://scontent.fsgn8-4.fna.fbcdn.net/v/t39.30808-6/470731837_989327009880741_1155647764677719705_n.jpg?stp=dst-jpg_tt6&cstp=mx1377x604&ctp=s960x960&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=5mk2jWIl-QMQ7kNvwFCeDmE&_nc_oc=AdrjwphZKp_LB_r-v8OAB83LyIKsOSo7kUDe2lZeroeL3zr8OPJBgjQPdemRaGgwn9o&_nc_zt=23&_nc_ht=scontent.fsgn8-4.fna&_nc_gid=WIqEHjajWRcg8PXUtK9zNA&_nc_ss=7f289&oh=00_AQNz2TniqBUliKy9_wrmuri5CJqeOXV5n2HaKxb3gMNlzg&oe=6ACC40B6",
+      "https://scontent.fsgn8-4.fna.fbcdn.net/v/t1.6435-9/50936358_2273664679332893_390834997369503744_n.jpg?stp=dst-jpg_tt6&cstp=mx720x1280&ctp=s590x590&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=wsLW89GMaeIQ7kNvwHR75-E&_nc_oc=Ado__4GVdgbtZVXzLhIeoYXTRTDmXD9RFHMh4oyBXAfk38rS0ywr8P9NdN-9GxIpyls&_nc_zt=23&_nc_ht=scontent.fsgn8-4.fna&_nc_gid=5gyTub69fSsc4vg1EyGWEQ&_nc_ss=7f289&oh=00_AQOTFgVIBswkheueGCLanI1qs-XC2RfXkjGmLArIEVNyBg&oe=6AEDC786"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Chăm sóc da mặt",
+        "price": "400k-1.5 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Massage body",
+        "price": "500k-1.5 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Triệt lông",
+        "price": "300k-1 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

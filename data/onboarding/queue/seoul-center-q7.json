@@ -1,0 +1,302 @@
+{
+  "name": "Seoul Center",
+  "slug": "seoul-center-q7",
+  "address": "R1-96 Bùi Bằng Đoàn, P. Tân Phong, Q.7",
+  "phone": "1800.3333",
+  "email": "cskh@seoulcenter.vn",
+  "website": "seoulcenter.vn",
+  "short_description": "Seoul Center là bệnh viện thẩm mỹ uy tín tại Quận 7, TP.HCM, cung cấp đa dạng dịch vụ từ chăm sóc da, phun xăm, điều trị công nghệ cao đến phẫu thuật thẩm mỹ với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm.",
+  "description": "<b>Seoul Center</b> – Địa chỉ thẩm mỹ uy tín tại Quận 7, TP.HCM<br><br>Với sứ mệnh mang đến vẻ đẹp hoàn hảo và sự tự tin cho khách hàng, Seoul Center tự hào là một trong những bệnh viện thẩm mỹ hàng đầu tại Việt Nam. Tọa lạc tại R1-96 Bùi Bằng Đoàn, P. Tân Phong, Q.7, Seoul Center sở hữu cơ sở vật chất hiện đại, không gian sang trọng và đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm.<br><br><b>Đa dạng dịch vụ thẩm mỹ</b><br>Seoul Center cung cấp đầy đủ các dịch vụ từ chăm sóc da cơ bản đến các phương pháp thẩm mỹ công nghệ cao:<br>- <b>Chăm sóc da:</b> Facial, Infusion, HA Peptide, Vitamin C, Luxury, AI Renew.<br>- <b>Phun xăm:</b> Phun môi, phun mày (Shading, Ombre, Hairstroke), phun mí, xử lý màu.<br>- <b>Điều trị công nghệ cao:</b> Laser triệt lông, xóa xăm, điều trị nám, trẻ hóa da, trị mụn, tái tạo mô.<br>- <b>Thẩm mỹ nội khoa:</b> Botox, Filler, Rejuran, Neo XCenlens, Karisma RH Collagen, Restylane Vital, Mesotherapy.<br>- <b>Thẩm mỹ ngoại khoa:</b> Phẫu thuật mũi (nâng mũi cấu trúc, bán cấu trúc, Surgiform, sụn sườn, sửa mũi), phẫu thuật mắt (cắt mí, chỉnh sụp mí, tạo hình mắt Phoenix, mở rộng góc mắt), phẫu thuật khuôn mặt (căng da mặt, nâng cung chân mày).<br><br><b>Cam kết chất lượng</b><br>Seoul Center luôn đặt an toàn và hiệu quả lên hàng đầu. Mỗi phác đồ điều trị đều được cá nhân hóa dựa trên tình trạng và mong muốn của từng khách hàng. Bệnh viện sử dụng các sản phẩm chính hãng, công nghệ tiên tiến và quy trình chuẩn y khoa.<br><br><b>Đội ngũ bác sĩ</b><br>Đội ngũ bác sĩ tại Seoul Center đều là các chuyên gia đầu ngành, được đào tạo bài bản trong và ngoài nước, có nhiều năm kinh nghiệm trong lĩnh vực phẫu thuật thẩm mỹ và điều trị da.<br><br><b>Dịch vụ khách hàng</b><br>Seoul Center cam kết mang đến trải nghiệm dịch vụ 5 sao với quy trình chăm sóc khách hàng tận tâm, chuyên nghiệp. Hotline 1800 3333 luôn sẵn sàng hỗ trợ mọi thắc mắc và đặt lịch hẹn.<br><br>Hãy đến với Seoul Center để trải nghiệm dịch vụ thẩm mỹ đẳng cấp và tỏa sáng với vẻ đẹp của chính bạn!",
+  "seo_title": "Seoul Center - Bệnh viện thẩm mỹ uy tín Q.7",
+  "seo_description": "Seoul Center tại Q.7, TP.HCM cung cấp dịch vụ thẩm mỹ toàn diện: chăm sóc da, phun xăm, laser, botox, filler, phẫu thuật mũi, mắt, căng da. Hotline 1800 3333.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://cdn.diemnhangroup.com/seoulcenter/2026/09/banner-master-phun-xam-pc.jpg",
+      "https://cdn.diemnhangroup.com/seoulcenter/2026/07/1903x704-18.webp"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Chăm sóc facial",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Chăm sóc da cao cấp Infusion",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Chăm sóc da HA Peptide",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s4",
+        "name": "Chăm sóc da vitamin C",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s5",
+        "name": "Chăm sóc da Luxury",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s6",
+        "name": "AI Renew",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s7",
+        "name": "Phun môi",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s8",
+        "name": "Phun môi collagen",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s9",
+        "name": "Phun mày",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s10",
+        "name": "Phun mày Shading",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s11",
+        "name": "Phun mày Ombre",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s12",
+        "name": "Phun mí",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s13",
+        "name": "Hairstroke",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s14",
+        "name": "Phun mí mở tròng",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s15",
+        "name": "Xử lý màu",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s16",
+        "name": "Xử lý phun mày",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s17",
+        "name": "Xử lý phun môi",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s18",
+        "name": "Laser triệt lông",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s19",
+        "name": "Triệt lông Laser",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s20",
+        "name": "Laser xóa xăm",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s21",
+        "name": "Xóa xăm mày",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s22",
+        "name": "Xóa hình xăm",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s23",
+        "name": "Điều trị nám - Laser sắc tố Matrix",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s24",
+        "name": "Laser 5.0 - Trẻ hóa",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s25",
+        "name": "Laser Điều Trị Mụn Matrix",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s26",
+        "name": "Tái tạo Mô - Derma Perfecta",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s27",
+        "name": "Tiêm botox xóa nhăn",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s28",
+        "name": "Tiêm Filler",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s29",
+        "name": "Tiêm tan filler",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s30",
+        "name": "Rejuran",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s31",
+        "name": "Neo XCenlens",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s32",
+        "name": "Karisma RH Collagen",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s33",
+        "name": "Restylane Vital",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s34",
+        "name": "Mesotherapy: Oxyx",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s35",
+        "name": "Nâng mũi cấu trúc",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s36",
+        "name": "Nâng mũi bán cấu trúc",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s37",
+        "name": "Nâng mũi Surgiform",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s38",
+        "name": "Nâng mũi sụn sườn",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s39",
+        "name": "Nâng mũi sửa lại",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s40",
+        "name": "Cắt mí trên",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s41",
+        "name": "Cắt mí dưới",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s42",
+        "name": "Chỉnh sụp mí",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s43",
+        "name": "Tạo hình mắt Phoenix",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s44",
+        "name": "Mở rộng góc mắt",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s45",
+        "name": "Căng da mặt",
+        "price": "Liên hệ",
+        "status": "active"
+      },
+      {
+        "id": "s46",
+        "name": "Nâng cung chân mày",
+        "price": "Liên hệ",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}

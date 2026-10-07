@@ -1,0 +1,43 @@
+{
+  "name": "Stamford Skin Centre",
+  "slug": "stamford-skin-centre",
+  "address": "99 Sương Nguyệt Ánh, P. Bến Thành, Q.1, TP.HCM",
+  "phone": "028.3925.1990",
+  "email": "info@stamfordclinic.com",
+  "website": "stamfordskin.com",
+  "short_description": "Phòng khám chuyên khoa da liễu chuẩn quốc tế, điều trị nám, mụn và trẻ hóa da hiệu quả.",
+  "description": "<b>Stamford Skin Centre (SSC)</b> là phòng khám chuyên khoa da liễu do tập đoàn Stamford Healthcare Ltd đầu tư và xây dựng theo tiêu chuẩn quốc tế từ năm 2006. Tọa lạc tại 99 Sương Nguyệt Ánh, Quận 1, TP.HCM, phòng khám tự hào mang đến dịch vụ chăm sóc da y khoa hàng đầu.<br><br>Với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm, SSC cung cấp các giải pháp điều trị nám, tàn nhang, mụn, sẹo rỗ và trẻ hóa da bằng công nghệ laser Pico Plus tiên tiến. Phòng khám cam kết mang lại hiệu quả cao, an toàn và ít xâm lấn, giúp khách hàng tự tin tỏa sáng.<br><br>Khách hàng đã tin tưởng và hài lòng với kết quả điều trị tại Stamford, như chia sẻ của một khách hàng: 'Sau quy trình điều trị gần 10 lần, da tôi đã hết nám. Tôi thật lòng cảm ơn bác sĩ Cường và y tá Tiên.'<br><br>Hãy đến với Stamford Skin Centre để trải nghiệm dịch vụ chăm sóc da đẳng cấp và tận tâm.",
+  "seo_title": "Stamford Skin Centre - Chuyên Khoa Da Liễu Uy Tín Q.1",
+  "seo_description": "Stamford Skin Centre - Phòng khám da liễu chuẩn quốc tế tại Q.1, TP.HCM. Điều trị nám, mụn, trẻ hóa da bằng laser. Đặt lịch ngay hôm nay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "banners": [
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+    ],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Chăm sóc da y khoa",
+        "price": "từ 1-5 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s2",
+        "name": "Trị mụn/nám chuyên sâu",
+        "price": "từ 3-15 triệu",
+        "status": "active"
+      },
+      {
+        "id": "s3",
+        "name": "Trẻ hóa da bằng laser",
+        "price": "từ 8-25 triệu",
+        "status": "active"
+      }
+    ],
+    "deals": [],
+    "gallery": []
+  }
+}
