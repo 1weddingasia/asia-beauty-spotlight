@@ -48,7 +48,29 @@ export async function proxy(request: NextRequest) {
 
     return rewriteResponse;
   }
-  // ── End multi-domain routing ──────────────────────────────────────────────
+
+  // ── Route trang phụ riêng cho từng domain ────────────────────────────────
+  if (pathname === '/gioi-thieu' || pathname === '/lien-he') {
+    let isBookingDomain = true;
+    for (const [domain] of Object.entries(DOMAIN_HOME_MAP)) {
+      if (hostname === domain || hostname.endsWith(`.${domain}`)) {
+        isBookingDomain = false;
+        break;
+      }
+    }
+    
+    // Nếu là domain của 1Booking (hoặc localhost fallback) -> trỏ vào trang -booking
+    if (isBookingDomain) {
+      const targetPath = pathname === '/gioi-thieu' ? '/gioi-thieu-booking' : '/lien-he-booking';
+      const sessionResponse = await updateSession(request);
+      const rewriteResponse = NextResponse.rewrite(new URL(targetPath, request.url));
+      sessionResponse.cookies.getAll().forEach((cookie) => {
+        rewriteResponse.cookies.set(cookie);
+      });
+      return rewriteResponse;
+    }
+  }
+  // ── End route trang phụ ──────────────────────────────────────────────────
 
   // Tất cả route còn lại: refresh auth session + bảo vệ /admin và /dashboard
   return await updateSession(request);
