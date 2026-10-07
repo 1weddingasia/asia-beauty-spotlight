@@ -5,20 +5,21 @@
  * chỉ cần chỉnh sửa file này. KHÔNG cần động vào bất kỳ trang con nào.
  */
 
+// ── Hằng số dùng chung ───────────────────────────────────────────────────────
+export const CONTACT_ZALO = "https://zalo.me/0918731411";
+
+// ── Type định nghĩa ──────────────────────────────────────────────────────────
 export type SiteConfig = {
-  brand: string;           // Tên thương hiệu ngắn, VD: "1Beauty"
-  domain: string;          // Domain đầy đủ, VD: "1beauty.asia"
-  tagline: string;         // Khẩu hiệu ngắn
-  logoText: string;        // Text logo phần đầu, VD: "1Beauty"
-  logoDomain: string;      // Text logo phần sau, VD: ".Asia"
-  logoImagePath: string;   // Đường dẫn file logo (để trống nếu dùng site_settings)
-  description: string;     // Mô tả ngắn cho footer và meta
-  exploreTitle: string;    // Tiêu đề trang khám phá ưu đãi
+  brand: string;           // Tên thương hiệu đầy đủ, VD: "1Beauty.Asia"
+  domain: string;          // Domain chính, VD: "1beauty.asia"
+  logoText: string;        // Phần đầu text logo, VD: "1Beauty"
+  logoDomain: string;      // Phần sau text logo, VD: ".Asia"
+  description: string;     // Mô tả ngắn cho footer
+  exploreTitle: string;    // Tiêu đề trang khám phá ưu đãi (h1)
   exploreSubtitle: string; // Mô tả trang khám phá
-  exploreHeroTag: string;  // Tag nhỏ phía trên hero ưu đãi
+  exploreHeroTag: string;  // Tag nhỏ phía trên hero
   industryFilter: string[] | null; // null = hiển thị tất cả; mảng = lọc theo ngành
-  poweredBy: string;       // Text "Vận hành bởi X" xuất hiện ở footer tiệm
-  contactZalo: string;     // Link Zalo liên hệ
+  poweredBy: string;       // Text "Vận hành bởi X" ở footer tiệm
   metaTitleSuffix: string; // Suffix cho thẻ <title>
 };
 
@@ -27,10 +28,8 @@ export type SiteConfig = {
 const BEAUTY_CONFIG: SiteConfig = {
   brand: "1Beauty.Asia",
   domain: "1beauty.asia",
-  tagline: "Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp",
   logoText: "1Beauty",
   logoDomain: ".Asia",
-  logoImagePath: "",
   description:
     "Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm mỹ viện, salon và học viện uy tín trên khắp Việt Nam.",
   exploreTitle: "Khám Phá Ưu Đãi Làm Đẹp",
@@ -39,17 +38,14 @@ const BEAUTY_CONFIG: SiteConfig = {
   exploreHeroTag: "Săn Deal Làm Đẹp",
   industryFilter: ["spa", "salon", "nail", "tham-my", "lam-dep"],
   poweredBy: "1Beauty.Asia",
-  contactZalo: "https://zalo.me/0918731411",
   metaTitleSuffix: "1Beauty.Asia",
 };
 
 const BOOKING_CONFIG: SiteConfig = {
   brand: "1Booking.Asia",
   domain: "1booking.asia",
-  tagline: "Cổng Đặt Hẹn 1-Chạm Cho Mọi Ngành Dịch Vụ",
   logoText: "1Booking",
   logoDomain: ".Asia",
-  logoImagePath: "",
   description:
     "Nền tảng đặt hẹn đa ngành, kết nối khách hàng với các cơ sở dịch vụ uy tín trên khắp Việt Nam.",
   exploreTitle: "Khám Phá Dịch Vụ Đặt Lịch",
@@ -58,22 +54,21 @@ const BOOKING_CONFIG: SiteConfig = {
   exploreHeroTag: "Khám Phá Dịch Vụ",
   industryFilter: null, // null = hiển thị TẤT CẢ ngành
   poweredBy: "1Booking.Asia",
-  contactZalo: "https://zalo.me/0918731411",
   metaTitleSuffix: "1Booking.Asia",
 };
 
 // ── Helper chính ──────────────────────────────────────────────────────────────
 
 /**
- * Dùng ở Server Components (page.tsx): truyền vào headers().get('host')
- * Dùng ở Client Components: truyền vào window.location.hostname
+ * Trả về SiteConfig tương ứng với hostname.
+ * Hàm này thuần (pure), đồng bộ — an toàn để gọi ở cả Server và Client.
  *
  * @example
  * // Server Component
  * import { headers } from 'next/headers';
  * const config = getSiteConfig((await headers()).get('host') || '');
  *
- * // Client Component
+ * // Client Component / Hook
  * const config = getSiteConfig(window.location.hostname);
  */
 export function getSiteConfig(host: string): SiteConfig {

@@ -12,25 +12,19 @@ const navLinks = [
   { to: "/lien-he", label: "Liên hệ" },
 ] as const;
 
-// Module-level cache để tránh re-fetch mỗi lần render
+// Module-level cache để tránh re-fetch mỗi lần render (5 phút)
 let _settingsCache: any = null;
 let _settingsCacheTime = 0;
-const SETTINGS_TTL = 5 * 60 * 1000; // 5 phút
+const SETTINGS_TTL = 5 * 60 * 1000;
 
 let _categoriesCache: any[] | null = null;
 let _categoriesCacheTime = 0;
 
 async function getSettings() {
   const now = Date.now();
-  if (_settingsCache && now - _settingsCacheTime < SETTINGS_TTL) {
-    return _settingsCache;
-  }
+  if (_settingsCache && now - _settingsCacheTime < SETTINGS_TTL) return _settingsCache;
   const supabase = createClient();
-  const { data } = await supabase
-    .from("site_settings")
-    .select("value")
-    .eq("key", "global")
-    .single();
+  const { data } = await supabase.from("site_settings").select("value").eq("key", "global").single();
   _settingsCache = data?.value || null;
   _settingsCacheTime = now;
   return _settingsCache;
@@ -38,17 +32,22 @@ async function getSettings() {
 
 async function getFooterCategories() {
   const now = Date.now();
-  if (_categoriesCache && now - _categoriesCacheTime < SETTINGS_TTL) {
-    return _categoriesCache;
-  }
+  if (_categoriesCache && now - _categoriesCacheTime < SETTINGS_TTL) return _categoriesCache;
   const supabase = createClient();
-  const { data } = await supabase
-    .from("directory_categories")
-    .select("*")
-    .limit(5);
+  const { data } = await supabase.from("directory_categories").select("*").limit(5);
   _categoriesCache = data || [];
   _categoriesCacheTime = now;
   return _categoriesCache;
+}
+
+// ── Shared hook: tránh duplicate state+effect ────────────────────────────────
+// getSiteConfig là hàm thuần, đồng bộ — khởi tạo ngay trong useState
+// để tránh render cycle thừa và flash logo sai thương hiệu
+function useSiteConfig(): SiteConfig {
+  const [config] = useState<SiteConfig>(() =>
+    getSiteConfig(typeof window !== "undefined" ? window.location.hostname : "")
+  );
+  return config;
 }
 
 // ── SiteHeader ────────────────────────────────────────────────────────────────
@@ -58,41 +57,34 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
   const [settings, setSettings] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
+  const siteConfig = useSiteConfig();
 
   useEffect(() => {
     getSettings().then(setSettings);
-    setSiteConfig(getSiteConfig(window.location.hostname));
     const supabase = createClient();
     supabase.auth
       .getUser()
-      .then(({ data }) => {
-        setUser(data?.user ?? null);
-      })
+      .then(({ data }) => setUser(data?.user ?? null))
       .catch((err) => {
         console.error("Auth error:", err);
         setUser(null);
       })
-      .finally(() => {
-        setAuthLoading(false);
-      });
+      .finally(() => setAuthLoading(false));
   }, []);
 
-  // Logo: ưu tiên logo từ site_settings DB; fallback theo siteConfig brand
+  // Logo: ưu tiên ảnh từ DB site_settings; fallback theo siteConfig brand text
   const logoNode = settings?.logo_url ? (
     <img
       src={settings.logo_url}
-      alt={siteConfig?.brand || "1Beauty.Asia"}
+      alt={siteConfig.brand}
       className="h-8 w-auto object-contain"
     />
   ) : (
     <>
       <span className={`font-display text-2xl ${solid ? "text-foreground" : "text-background"}`}>
-        {siteConfig?.logoText || "1Beauty"}
+        {siteConfig.logoText}
       </span>
-      <span className="text-gradient-gold font-display text-2xl">
-        {siteConfig?.logoDomain || ".Asia"}
-      </span>
+      <span className="text-gradient-gold font-display text-2xl">{siteConfig.logoDomain}</span>
     </>
   );
 
@@ -109,6 +101,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
           {logoNode}
         </Link>
 
+        {/* Mobile nav */}
         <div className="flex items-center gap-4 md:hidden">
           {authLoading ? (
             <div className="size-8 rounded-full border border-gold/30 border-t-gold animate-spin"></div>
@@ -134,12 +127,13 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
           <button
             onClick={() => setOpen(!open)}
             aria-label="Menu"
-            className={`${solid ? "text-foreground" : "text-background"}`}
+            className={solid ? "text-foreground" : "text-background"}
           >
             {open ? <X className="size-6" /> : <Menu className="size-6" />}
           </button>
         </div>
 
+        {/* Desktop nav */}
         <div className="hidden items-center gap-6 md:flex">
           <nav className="flex items-center gap-8">
             {navLinks.map((l) => (
@@ -200,16 +194,12 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
 export function SiteFooter() {
   const [settings, setSettings] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
-  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
+  const siteConfig = useSiteConfig();
 
   useEffect(() => {
     getSettings().then(setSettings);
     getFooterCategories().then(setCategories);
-    setSiteConfig(getSiteConfig(window.location.hostname));
   }, []);
-
-  const brand = siteConfig?.brand || settings?.site_name || "1Beauty.Asia";
-  const description = siteConfig?.description || "Kết nối khách hàng với các dịch vụ uy tín trên khắp Việt Nam.";
 
   return (
     <footer className="border-t border-border bg-ink text-background/70">
@@ -218,26 +208,23 @@ export function SiteFooter() {
           {settings?.logo_url ? (
             <img
               src={settings.logo_url}
-              alt={brand}
+              alt={siteConfig.brand}
               className="h-10 w-auto object-contain brightness-0 invert"
             />
           ) : (
             <p className="font-display text-2xl text-background">
-              {siteConfig?.logoText || "1Beauty"}
-              <span className="text-gradient-gold">{siteConfig?.logoDomain || ".Asia"}</span>
+              {siteConfig.logoText}
+              <span className="text-gradient-gold">{siteConfig.logoDomain}</span>
             </p>
           )}
-          <p className="mt-4 max-w-sm text-sm">{description}</p>
+          <p className="mt-4 max-w-sm text-sm">{siteConfig.description}</p>
         </div>
         <div>
           <p className="text-xs tracking-[0.25em] text-gold uppercase">Danh mục</p>
           <ul className="mt-4 space-y-2 text-sm">
             {categories.map((c) => (
               <li key={c.slug}>
-                <Link
-                  href={`/tim-kiem?category=${c.slug}`}
-                  className="transition-colors hover:text-gold"
-                >
+                <Link href={`/tim-kiem?category=${c.slug}`} className="transition-colors hover:text-gold">
                   {c.name}
                 </Link>
               </li>
@@ -257,7 +244,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-background/10 py-6 text-center text-xs">
-        © {new Date().getFullYear()} {brand}. Mọi quyền được bảo lưu.
+        © {new Date().getFullYear()} {siteConfig.brand}. Mọi quyền được bảo lưu.
       </div>
     </footer>
   );
