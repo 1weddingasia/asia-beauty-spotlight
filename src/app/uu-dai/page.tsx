@@ -29,7 +29,8 @@ export default async function OffersPage({
 
   const supabase = createStaticClient();
   const params = await searchParams;
-  const q = params.q?.toLowerCase() || "";
+  const rawQ = params.q || "";           // giữ nguyên chữ hoa/dấu để hiển thị
+  const q = rawQ.toLowerCase();           // chỉ dùng lowercase để so sánh/filter
   const currentPage = parseInt(params.page || "1") || 1;
   const ITEMS_PER_PAGE = 9;
 
@@ -108,7 +109,7 @@ export default async function OffersPage({
             <input
               type="text"
               name="q"
-              defaultValue={q}
+              defaultValue={rawQ}
               placeholder="Tìm ưu đãi, tên dịch vụ, tên cơ sở..."
               className="w-full h-14 pl-6 pr-14 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-white placeholder:text-white/60 focus:outline-none focus:border-gold focus:bg-white/20 transition-all text-lg shadow-xl"
             />
@@ -177,7 +178,7 @@ export default async function OffersPage({
               <div className="mt-16 flex items-center justify-center gap-2">
                 {currentPage > 1 ? (
                   <Link
-                    href={`/uu-dai?page=${currentPage - 1}${q ? `&q=${q}` : ""}`}
+                    href={`/uu-dai?page=${currentPage - 1}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}`}
                     className="p-3 border rounded-full hover:bg-gold hover:text-ink transition-colors"
                   >
                     <ChevronLeft className="size-5" />
@@ -194,7 +195,7 @@ export default async function OffersPage({
 
                 {currentPage < totalPages ? (
                   <Link
-                    href={`/uu-dai?page=${currentPage + 1}${q ? `&q=${q}` : ""}`}
+                    href={`/uu-dai?page=${currentPage + 1}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}`}
                     className="p-3 border rounded-full hover:bg-gold hover:text-ink transition-colors"
                   >
                     <ChevronRight className="size-5" />

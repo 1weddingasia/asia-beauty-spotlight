@@ -41,13 +41,15 @@ async function getFooterCategories() {
 }
 
 // ── Shared hook: tránh duplicate state+effect ────────────────────────────────
-// getSiteConfig là hàm thuần, đồng bộ — khởi tạo ngay trong useState
-// để tránh render cycle thừa và flash logo sai thương hiệu
+// Tránh hydration mismatch: server render null (không biết hostname),
+// client cập nhật đúng brand sau khi mount qua useEffect.
+// Fallback getSiteConfig("") = BOOKING_CONFIG khi chưa mount.
 function useSiteConfig(): SiteConfig {
-  const [config] = useState<SiteConfig>(() =>
-    getSiteConfig(typeof window !== "undefined" ? window.location.hostname : "")
-  );
-  return config;
+  const [config, setConfig] = useState<SiteConfig | null>(null);
+  useEffect(() => {
+    setConfig(getSiteConfig(window.location.hostname));
+  }, []);
+  return config ?? getSiteConfig("");
 }
 
 // ── SiteHeader ────────────────────────────────────────────────────────────────
