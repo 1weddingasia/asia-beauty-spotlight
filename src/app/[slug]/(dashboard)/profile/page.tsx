@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,8 @@ const AMENITY_OPTIONS = [
 export default function BusinessProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
+  const slug = params.slug;
   const currentTab = searchParams.get('tab') || "overview";
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
@@ -88,7 +90,7 @@ export default function BusinessProfilePage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
-        supabase.from("businesses").select("*, plans(name)").eq("owner_id", user.id).single().then(({ data }) => {
+        supabase.from("businesses").select("*, plans(name)").eq("owner_id", user.id).eq("slug", slug).single().then(({ data }) => {
           if (data) {
             setBusiness(data);
             

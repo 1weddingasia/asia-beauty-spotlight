@@ -5,12 +5,14 @@ import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Check, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function UpgradePage() {
   const supabase = createClient();
   const router = useRouter();
+  const params = useParams();
+  const slug = params.slug;
   const [business, setBusiness] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
@@ -19,7 +21,7 @@ export default function UpgradePage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
-        supabase.from("businesses").select("*").limit(500).eq("owner_id", user.id).single().then(({ data }) => {
+        supabase.from("businesses").select("*").limit(500).eq("owner_id", user.id).eq("slug", slug).single().then(({ data }) => {
           setBusiness(data);
           setLoading(false);
         });

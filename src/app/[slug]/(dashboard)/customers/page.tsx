@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Download, Phone, CheckCircle, X, History, Users, CalendarDays, Ticket } from "lucide-react";
@@ -36,6 +37,8 @@ const HISTORY_LIMIT = 20;
 
 export default function LeadsPage() {
   const siteConfig = useSiteConfig();
+  const params = useParams();
+  const slug = params.slug;
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -69,7 +72,7 @@ export default function LeadsPage() {
           return;
         }
 
-        const { data: bData, error: dbErr } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
+        const { data: bData, error: dbErr } = await supabase.from("businesses").select("*").eq("owner_id", user.id).eq("slug", slug).single();
         if (dbErr || !bData) {
           setLoading(false);
           return;

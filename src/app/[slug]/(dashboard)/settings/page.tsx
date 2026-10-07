@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,8 @@ import { toast } from "sonner";
 import { Lock, Mail, User, Send, CheckCircle2 } from "lucide-react";
 
 export default function AccountSettingsPage() {
+  const params = useParams();
+  const slug = params.slug;
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +35,7 @@ export default function AccountSettingsPage() {
           .from('businesses')
           .select('id, slug, page_content')
           .eq('owner_id', data.user.id)
+          .eq('slug', slug)
           .single();
           
         if (biz) {

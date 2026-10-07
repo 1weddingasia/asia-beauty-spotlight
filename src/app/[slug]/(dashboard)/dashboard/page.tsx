@@ -6,7 +6,8 @@ import DashboardPrintQR from "./DashboardPrintQR";
 import { headers } from "next/headers";
 import { getSiteConfig } from "@/config/site-config";
 
-export default async function BusinessDashboardPage() {
+export default async function BusinessDashboardPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const h = await headers();
@@ -15,6 +16,7 @@ export default async function BusinessDashboardPage() {
   const { data: business } = await supabase
     .from("businesses")
     .select("*, plans(name)")
+    .eq("slug", slug)
     .eq("owner_id", user?.id)
     .single();
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,8 @@ type Service = {
 
 export default function DealsManagementPage() {
   const siteConfig = useSiteConfig();
+  const params = useParams();
+  const slug = params.slug;
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -62,7 +65,7 @@ export default function DealsManagementPage() {
           return;
         }
 
-        const { data, error: dbError } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
+        const { data, error: dbError } = await supabase.from("businesses").select("*").eq("owner_id", user.id).eq("slug", slug).single();
         if (dbError || !data) {
           setLoading(false);
           return;
