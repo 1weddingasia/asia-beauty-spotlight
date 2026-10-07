@@ -9,30 +9,49 @@ import { updateSession } from '@/utils/supabase/middleware'
  *   npx @next/codemod@canary middleware-to-proxy .
  * để tự động đổi sang "proxy".
  */
+
+// ── Multi-domain home routing config ─────────────────────────────────────────
+// Thêm domain mới vào đây mà không cần sửa logic bên dưới
+const DOMAIN_HOME_MAP: Record<string, string> = {
+  '1beauty.asia': '/home-beauty',
+};
+const DEFAULT_HOME = '/home-booking'; // fallback: 1booking.asia, localhost, ...
+// ─────────────────────────────────────────────────────────────────────────────
+
 export async function proxy(request: NextRequest) {
   const hostname = (request.headers.get('host') || '').split(':')[0].toLowerCase();
   const { pathname } = request.nextUrl;
 
-  // ── Multi-domain home routing ────────────────────────────────────────────
+  // ── Multi-domain home routing ─────────────────────────────────────────────
   // Chỉ can thiệp đúng trang chủ "/"
-  // Dùng exact match + subdomain check để tránh lỗi bảo mật hostname spoofing
   if (pathname === '/') {
-    if (hostname === '1beauty.asia' || hostname.endsWith('.1beauty.asia')) {
-      // Domain 1beauty.asia → Rewrite ngầm về /home-beauty (URL thanh địa chỉ giữ nguyên)
-      const rewriteResponse = NextResponse.rewrite(new URL('/home-beauty', request.url));
-      // Vẫn cần refresh Supabase session dù là trang công khai
-      await updateSession(request);
-      return rewriteResponse;
+    // Tìm target page dựa theo hostname (exact match hoặc subdomain)
+    let targetHome = DEFAULT_HOME;
+    for (const [domain, home] of Object.entries(DOMAIN_HOME_MAP)) {
+      if (hostname === domain || hostname.endsWith(`.${domain}`)) {
+        targetHome = home;
+        break;
+      }
     }
-    // Domain 1booking.asia / localhost / bất kỳ domain khác → /home-booking
-    const rewriteResponse = NextResponse.rewrite(new URL('/home-booking', request.url));
-    await updateSession(request);
+
+    // Refresh Supabase session trước, lấy response có Set-Cookie headers
+    const sessionResponse = await updateSession(request);
+
+    // Tạo rewrite response (URL thanh địa chỉ giữ nguyên domain)
+    const rewriteResponse = NextResponse.rewrite(new URL(targetHome, request.url));
+
+    // Copy toàn bộ Set-Cookie từ sessionResponse sang rewriteResponse
+    // để session không bị expire/re-refresh liên tục
+    sessionResponse.cookies.getAll().forEach((cookie) => {
+      rewriteResponse.cookies.set(cookie);
+    });
+
     return rewriteResponse;
   }
-  // ── End multi-domain routing ─────────────────────────────────────────────
+  // ── End multi-domain routing ──────────────────────────────────────────────
 
   // Tất cả route còn lại: refresh auth session + bảo vệ /admin và /dashboard
-  return await updateSession(request)
+  return await updateSession(request);
 }
 
 export const config = {
