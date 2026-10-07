@@ -21,16 +21,16 @@ export const metadata = {
 
 // icon được render trực tiếp trong card — không có emoji field thừa
 const INDUSTRIES = [
-  { icon: <Stethoscope className="size-7 text-gold" />, title: "Nha Khoa & Phòng Khám", desc: "Đặt hẹn khám chữa răng, chọn bác sĩ chuyên khoa, nhắc lịch tái khám tự động." },
-  { icon: <UtensilsCrossed className="size-7 text-gold" />, title: "Nhà Hàng & Quán Ăn (F&B)", desc: "Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu, giữ chỗ không lo hủy bàn." },
-  { icon: <Car className="size-7 text-gold" />, title: "Chăm Sóc & Độ Xe Ô Tô", desc: "Đặt lịch rửa xe chi tiết, dán phim cách nhiệt, phủ ceramic với bảng giá minh bạch." },
-  { icon: <Dumbbell className="size-7 text-gold" />, title: "Thể Hình, Yoga & PT", desc: "Đăng ký buổi tập thử, chọn khung giờ 1:1 cùng huấn luyện viên, kiểm soát số học viên." },
-  { icon: <Sparkles className="size-7 text-gold" />, title: "Spa & Thẩm Mỹ Viện", desc: "Trưng bày liệu trình làm đẹp, săn voucher giảm giá giờ vàng, đặt lịch thư giãn cuối tuần." },
-  { icon: <Camera className="size-7 text-gold" />, title: "Studio Chụp Ảnh & Áo Cưới", desc: "Xem lookbook concept, đặt lịch thử váy cưới, giữ lịch chụp ngoại cảnh." },
-  { icon: <PawPrint className="size-7 text-gold" />, title: "Spa & Khách Sạn Thú Cưng", desc: "Đặt hẹn tắm tỉa lông, đưa đón thú cưng, đặt phòng gửi chó mèo an toàn." },
-  { icon: <Wrench className="size-7 text-gold" />, title: "Dịch Vụ Sửa Chữa Tại Nhà", desc: "Đặt thợ vệ sinh máy lạnh, sửa điện nước, giặt sofa tận nơi đúng giờ hẹn." },
-  { icon: <Home className="size-7 text-gold" />, title: "Homestay & Du Lịch Trải Nghiệm", desc: "Đặt phòng nghỉ dưỡng cuối tuần, thuê tour trải nghiệm trực tiếp không qua trung gian." },
-  { icon: <BriefcaseBusiness className="size-7 text-gold" />, title: "Tư Vấn & Coaching 1:1", desc: "Đặt lịch tham vấn trực tuyến hoặc trực tiếp, chọn gói thời lượng và chủ đề tư vấn." },
+  { slug: "nha-khoa-quoc-te", icon: <Stethoscope className="size-7 text-gold" />, title: "Nha Khoa & Phòng Khám", desc: "Đặt hẹn khám chữa răng, chọn bác sĩ chuyên khoa, nhắc lịch tái khám tự động." },
+  { slug: "luxury-spa-demo", icon: <UtensilsCrossed className="size-7 text-gold" />, title: "Nhà Hàng & Quán Ăn (F&B)", desc: "Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu, giữ chỗ không lo hủy bàn." },
+  { slug: "luxury-spa-demo", icon: <Car className="size-7 text-gold" />, title: "Chăm Sóc & Độ Xe Ô Tô", desc: "Đặt lịch rửa xe chi tiết, dán phim cách nhiệt, phủ ceramic với bảng giá minh bạch." },
+  { slug: "luxury-spa-demo", icon: <Dumbbell className="size-7 text-gold" />, title: "Thể Hình, Yoga & PT", desc: "Đăng ký buổi tập thử, chọn khung giờ 1:1 cùng huấn luyện viên, kiểm soát số học viên." },
+  { slug: "luxury-spa-demo", icon: <Sparkles className="size-7 text-gold" />, title: "Spa & Thẩm Mỹ Viện", desc: "Trưng bày liệu trình làm đẹp, săn voucher giảm giá giờ vàng, đặt lịch thư giãn cuối tuần." },
+  { slug: "luxury-spa-demo", icon: <Camera className="size-7 text-gold" />, title: "Studio Chụp Ảnh & Áo Cưới", desc: "Xem lookbook concept, đặt lịch thử váy cưới, giữ lịch chụp ngoại cảnh." },
+  { slug: "luxury-spa-demo", icon: <PawPrint className="size-7 text-gold" />, title: "Spa & Khách Sạn Thú Cưng", desc: "Đặt hẹn tắm tỉa lông, đưa đón thú cưng, đặt phòng gửi chó mèo an toàn." },
+  { slug: "luxury-spa-demo", icon: <Wrench className="size-7 text-gold" />, title: "Dịch Vụ Sửa Chữa Tại Nhà", desc: "Đặt thợ vệ sinh máy lạnh, sửa điện nước, giặt sofa tận nơi đúng giờ hẹn." },
+  { slug: "luxury-spa-demo", icon: <Home className="size-7 text-gold" />, title: "Homestay & Du Lịch Trải Nghiệm", desc: "Đặt phòng nghỉ dưỡng cuối tuần, thuê tour trải nghiệm trực tiếp không qua trung gian." },
+  { slug: "luxury-spa-demo", icon: <BriefcaseBusiness className="size-7 text-gold" />, title: "Tư Vấn & Coaching 1:1", desc: "Đặt lịch tham vấn trực tuyến hoặc trực tiếp, chọn gói thời lượng và chủ đề tư vấn." },
 ];
 
 export default async function HomeBookingPage() {
@@ -199,7 +199,7 @@ export default async function HomeBookingPage() {
             {INDUSTRIES.map((industry, i) => (
               <Link
                 key={i}
-                href="/luxury-spa-demo"
+                href={`/${industry.slug}`}
                 className="group relative flex flex-col items-start rounded-2xl border border-border bg-background p-5 transition-all hover:-translate-y-1 hover:border-gold hover:shadow-card"
               >
                 <div className="mb-3 p-2 rounded-xl bg-gold/10 group-hover:bg-gold/20 transition-colors">
