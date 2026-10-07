@@ -14,14 +14,13 @@ export async function generateMetadata(): Promise<Metadata> {
   
   const SITE_URL = `https://${siteConfig.domain}`;
   const SITE_NAME = siteConfig.brand;
-  const SITE_DESCRIPTION = siteConfig.domain === '1booking.asia' 
-    ? 'Hệ thống đặt lịch đa ngành hàng đầu Việt Nam — dễ dàng tìm kiếm và đặt chỗ tại các dịch vụ uy tín.'
-    : 'Danh bạ chuyên ngành làm đẹp hàng đầu Việt Nam — khám phá spa, thẩm mỹ viện, salon và học viện uy tín được tuyển chọn kỹ lưỡng.';
+  const SITE_DESCRIPTION = siteConfig.description;
+  const SITE_TITLE = `${SITE_NAME} — ${siteConfig.metaTitleSuffix}`;
 
   return {
     metadataBase: new URL(SITE_URL),
     title: {
-      default: `${SITE_NAME} — ${siteConfig.domain === '1booking.asia' ? 'Hệ thống đặt lịch' : 'Danh bạ làm đẹp Việt Nam'}`,
+      default: SITE_TITLE,
       template: `%s | ${SITE_NAME}`,
     },
     description: SITE_DESCRIPTION,
@@ -49,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: 'vi_VN',
       url: SITE_URL,
       siteName: SITE_NAME,
-      title: `${SITE_NAME} — ${siteConfig.domain === '1booking.asia' ? 'Hệ thống đặt lịch' : 'Danh bạ làm đẹp Việt Nam'}`,
+      title: SITE_TITLE,
       description: SITE_DESCRIPTION,
       images: [
         {
@@ -62,7 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${SITE_NAME} — ${siteConfig.domain === '1booking.asia' ? 'Hệ thống đặt lịch' : 'Danh bạ làm đẹp Việt Nam'}`,
+      title: SITE_TITLE,
       description: SITE_DESCRIPTION,
       images: [`${SITE_URL}/og-image.jpg`],
     },

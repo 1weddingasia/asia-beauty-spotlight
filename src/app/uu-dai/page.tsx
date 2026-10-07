@@ -37,7 +37,7 @@ export default async function OffersPage({
   // Lấy tất cả các doanh nghiệp đang hoạt động
   const { data: rawBusinesses, error } = await supabase
     .from("businesses")
-    .select("slug, name, page_content, status, category, category_slug")
+    .select("slug, name, page_content, status, category_slug")
     .in("status", ["published", "active"])
     .limit(500);
 
@@ -47,7 +47,7 @@ export default async function OffersPage({
 
   const businesses = (rawBusinesses || []).filter((b: any) => {
     if (!siteConfig.industryFilter) return true;
-    const cat = (b.category_slug || b.category || "").toLowerCase();
+    const cat = (b.category_slug || "").toLowerCase();
     return siteConfig.industryFilter.some((f) => cat.includes(f));
   });
 
