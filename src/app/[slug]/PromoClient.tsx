@@ -281,7 +281,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           <CarouselContent className="h-full">
             {banners.map((img: string, idx: number) => (
               <CarouselItem key={idx} className="relative h-[65vh] md:h-[75vh] w-full bg-black/90">
-                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-cover md:animate-ken-burns" priority={idx === 0} />
+                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-cover" priority={idx === 0} />
               </CarouselItem>
             ))}
           </CarouselContent>
