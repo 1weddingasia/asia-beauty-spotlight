@@ -116,9 +116,11 @@ async function run() {
       "services": [
          { "id": "s1", "name": "<Service name>", "price": "<price>", "status": "active", "description": "<brief description if any>" }
       ],
-      "deals": ["<list of deals or promotions found, else empty array>"],
-      "banners": ["<pick 2 valid URLs from Found Images, or return empty array if none valid>"],
-      "gallery": ["<pick up to 5 valid URLs from Found Images for gallery, else empty array>"],
+      "deals": [
+         { "id": "d1", "title": "<deal title>", "original_price": "<original price if any>", "promo_price": "<promo price or discount>", "status": "active" }
+      ],
+      "banners": ["<if a suitable wide cover image is found in Found Images, use it, else empty array>"],
+      "gallery": ["<pick valid URLs from Found Images for gallery, else empty array>"],
       "logo_url": ""
     }`;
 

@@ -32,7 +32,7 @@ type Deal = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string, avatar: string }) {
+export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string | null, avatar: string }) {
   const siteConfig = useSiteConfig();
   const b = business;
   const [name, setName] = useState("");
@@ -178,9 +178,20 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     setInterceptType(type);
   };
 
-  const hotline = business.page_content?.phone || business.phone || "(Chưa công khai)";
-  const zaloNumber = business.zalo || (hotline ? hotline.replace(/[^0-9]/g, '') : '');
+  const rawHotline = business.page_content?.phone || business.phone;
+  const hotline = rawHotline || "(Chưa công khai)";
+  const hotlineDigits = rawHotline ? rawHotline.replace(/[^0-9]/g, '') : '';
+  const zaloNumber = business.zalo || hotlineDigits;
   const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
+  let mapSrc = null;
+  if (typeof business.page_content?.map_embed === 'string') {
+    const srcMatch = business.page_content.map_embed.match(/src="([^"]+)"/);
+    if (srcMatch && srcMatch[1].startsWith('http')) {
+        mapSrc = srcMatch[1];
+    } else if (business.page_content.map_embed.startsWith('http')) {
+        mapSrc = business.page_content.map_embed;
+    }
+  }
 
   const handleInterceptSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,7 +234,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
       // 2. Chuyển hướng
       if (interceptType === 'hotline') {
-        window.location.href = `tel:${hotline.replace(/\D/g, '')}`;
+        if (!hotlineDigits) {
+          toast.error("Tiệm chưa cập nhật số điện thoại");
+          return;
+        }
+        window.location.href = `tel:${hotlineDigits}`;
       } else if (zaloWindow) {
         zaloWindow.location.href = zaloLink;
       }
@@ -711,8 +726,10 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 </div>
               </div>
 
-              {b.page_content?.map_embed ? (
-                <div className="mt-2 rounded-2xl overflow-hidden border border-border h-[200px] bg-secondary/30 relative [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0" dangerouslySetInnerHTML={{ __html: b.page_content.map_embed }} />
+              {mapSrc ? (
+                <div className="mt-2 rounded-2xl overflow-hidden border border-border h-[200px] bg-secondary/30 relative">
+                  <iframe src={mapSrc} width="100%" height="100%" style={{ border: 0 }} loading="lazy" allowFullScreen referrerPolicy="no-referrer-when-downgrade" />
+                </div>
               ) : b.address ? (
                 <div className="mt-2 rounded-2xl overflow-hidden border border-border h-[200px] bg-secondary/30 relative">
                   <iframe
@@ -882,11 +899,17 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
-                      <Link href={`tel:${hotline.replace(/\D/g, '')}`}>
+                    {hotlineDigits ? (
+                      <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
+                        <Link href={`tel:${hotlineDigits}`}>
+                          <Phone className="mr-2 size-5" /> Đặt lịch qua Hotline
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button onClick={() => toast.error("Tiệm chưa cập nhật số điện thoại")} className="w-full h-12 bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-xl">
                         <Phone className="mr-2 size-5" /> Đặt lịch qua Hotline
-                      </Link>
-                    </Button>
+                      </Button>
+                    )}
                   </div>
                 </div>
               )}
