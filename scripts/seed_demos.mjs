@@ -6,6 +6,12 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  process.exit(1);
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function run() {
@@ -69,20 +75,19 @@ async function run() {
   };
 
   for (const biz of [gemma, arena]) {
-    // Check if exists
-    const { data: existing } = await supabase.from('businesses').select('id').eq('slug', biz.slug).single();
-    if (existing) {
-      console.log(`Updating ${biz.slug}...`);
-      await supabase.from('businesses').update(biz).eq('id', existing.id);
-    } else {
-      console.log(`Inserting ${biz.slug}...`);
-      await supabase.from('businesses').insert(biz);
+    const { error } = await supabase.from('businesses').upsert(biz, { onConflict: 'slug' });
+    if (error) {
+      console.error(`Error seeding ${biz.slug}:`, error.message);
+      continue;
     }
+    console.log(`Seeded ${biz.slug}.`);
   }
 
   // Also remove the old arena-sport if it was in the DB
-  const { data: oldArena } = await supabase.from('businesses').select('id').eq('slug', 'arena-sport').single();
-  if (oldArena) {
+  const { data: oldArena, error: oldArenaError } = await supabase.from('businesses').select('id').eq('slug', 'arena-sport').maybeSingle();
+  if (oldArenaError) {
+    console.error('Error looking up legacy arena-sport:', oldArenaError.message);
+  } else if (oldArena) {
     console.log("Removing old arena-sport slug from DB...");
     await supabase.from('businesses').delete().eq('id', oldArena.id);
   }
@@ -90,4 +95,7 @@ async function run() {
   console.log("Done seeding!");
 }
 
-run();
+run().catch((e) => {
+  console.error("Seed failed:", e);
+  process.exit(1);
+});

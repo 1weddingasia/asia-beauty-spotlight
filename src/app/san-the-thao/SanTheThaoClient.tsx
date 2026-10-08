@@ -82,9 +82,15 @@ export default function SanTheThaoClient({ heroImage, nightImage, badmintonImage
 
   const totalPrice = () => {
     if (!form.time) return "—";
-    const hours = parseInt(form.duration);
+    const hours = parseFloat(form.duration);
     const hour = parseInt(form.time.split(":")[0]);
-    const base = form.sport === "Cầu Lông" ? 90000 : (hour >= 17 ? 180000 : 120000);
+    const isNight = hour >= 17;
+    let base = 120000;
+    if (form.sport === "Cầu Lông") base = isNight ? 120000 : 90000;
+    else if (form.sport === "Pickleball") base = isNight ? 180000 : 150000;
+    else if (form.sport === "Bóng Đá") base = isNight ? 300000 : 250000;
+    else if (form.sport === "Tennis") base = isNight ? 250000 : 200000;
+    
     return (base * hours).toLocaleString("vi-VN") + "đ";
   };
 
