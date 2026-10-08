@@ -3,7 +3,7 @@ import {
   ArrowRight, Bell, Smartphone, Sparkles, CheckCircle,
   Zap, Star, Users, Bot, Calendar,
   Stethoscope, UtensilsCrossed, Car, Dumbbell, Camera, PawPrint,
-  Wrench, Home, BriefcaseBusiness, MessageSquare, FileSpreadsheet, BadgeCheck, Swords,
+  Wrench, Home, BriefcaseBusiness, MessageSquare, FileSpreadsheet, BadgeCheck, Swords, ShoppingBag
 } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { HeroSlider } from "@/components/site/HeroSlider";
@@ -21,7 +21,8 @@ export const metadata = {
 
 // icon được render trực tiếp trong card — không có emoji field thừa
 const INDUSTRIES = [
-  { slug: "arena-sport", icon: <Swords className="size-7 text-lime-400" />, title: "Sân Thể Thao & Pickleball", desc: "Đặt sân Pickleball & Cầu Lông online tức thì. Hệ thống xác nhận tự động, không lo trùng lịch.", isNew: true },
+  { slug: "gemma-fashion", icon: <ShoppingBag className="size-7 text-pink-400" />, title: "Thời Trang & Phụ Kiện Bán Lẻ", desc: "Săn mã giảm giá, đặt giữ size quần áo ưu tiên hoặc đăng ký VIP. Form đặt hàng chốt đơn tự động.", isNew: true },
+  { slug: "arena-sport", icon: <Swords className="size-7 text-lime-400" />, title: "Sân Thể Thao & Pickleball", desc: "Đặt sân Pickleball & Cầu Lông online tức thì. Hệ thống xác nhận tự động, không lo trùng lịch." },
   { slug: "nha-khoa-quoc-te", icon: <Stethoscope className="size-7 text-gold" />, title: "Nha Khoa & Phòng Khám", desc: "Đặt hẹn khám chữa răng, chọn bác sĩ chuyên khoa, nhắc lịch tái khám tự động." },
   { slug: "the-golden-plate", icon: <UtensilsCrossed className="size-7 text-gold" />, title: "Nhà Hàng & Quán Ăn (F&B)", desc: "Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu, giữ chỗ không lo hủy bàn." },
   { slug: "pro-detailing", icon: <Car className="size-7 text-gold" />, title: "Chăm Sóc & Độ Xe Ô Tô", desc: "Đặt lịch rửa xe chi tiết, dán phim cách nhiệt, phủ ceramic với bảng giá minh bạch." },

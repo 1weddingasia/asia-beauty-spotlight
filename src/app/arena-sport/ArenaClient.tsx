@@ -101,10 +101,12 @@ export default function ArenaClient({ heroImage, nightImage, badmintonImage, equ
     setLoading(true);
     try {
       const supabase = createClient();
-      const { error } = await supabase.functions.invoke("send-lead", {
-        body: { business_slug: "arena-sport", type: "booking", ...form },
+      const res = await fetch("/api/demo-telegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: telegramPreview }),
       });
-      if (error) throw error;
+      if (!res.ok) throw new Error("Failed to send telegram");
       setSubmitted(true);
     } catch (err) {
       alert("Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại sau.");
