@@ -68,6 +68,7 @@ export default function FashionClient({ heroImage, product1, product2 }: Props) 
       return;
     }
     setLoading(true);
+    try {
       const res = await fetch("/api/demo-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
