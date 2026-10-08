@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import ArenaClient from "./ArenaClient";
 
 export const metadata: Metadata = {
@@ -13,11 +13,11 @@ const BASE =
 export default function ArenaPage() {
   return (
     <ArenaClient
-      heroImage={${BASE}/arena-hero.png}
-      nightImage={${BASE}/arena-night.png}
-      badmintonImage={${BASE}/arena-badminton.png}
-      equipmentImage={${BASE}/arena-equipment.png}
-      logoImage={${BASE}/arena-logo.png}
+      heroImage={`${BASE}/arena-hero.png`}
+      nightImage={`${BASE}/arena-night.png`}
+      badmintonImage={`${BASE}/arena-badminton.png`}
+      equipmentImage={`${BASE}/arena-equipment.png`}
+      logoImage={`${BASE}/arena-logo.png`}
     />
   );
 }

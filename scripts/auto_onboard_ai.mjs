@@ -66,7 +66,18 @@ async function run() {
           if (ogLogo && ogLogo.startsWith('http')) result.push({ type: 'logo', url: ogLogo });
           else if (icon && icon.startsWith('http')) result.push({ type: 'logo', url: icon });
           
-          return result;
+          const imgs = Array.from(document.querySelectorAll('img'));
+          for (let img of imgs) {
+            if (img.src && img.src.startsWith('http') && !img.src.includes('data:image')) {
+              // try to filter tiny icons by checking attributes if available
+              const w = img.getAttribute('width');
+              const h = img.getAttribute('height');
+              if ((w && parseInt(w) < 100) || (h && parseInt(h) < 100)) continue;
+              result.push({ type: 'gallery', url: img.src });
+            }
+          }
+          
+          return result.slice(0, 15); // limit to 15 images to avoid token bloat
         });
         
         await browser.close();

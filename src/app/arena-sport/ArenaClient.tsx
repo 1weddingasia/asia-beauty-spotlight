@@ -1,19 +1,17 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Zap, Clock, CheckCircle, Send, Phone, User, CalendarDays, StickyNote, ChevronRight, Trophy, Shield, Star, Bell, Dumbbell } from "lucide-react";
 
-const SUPABASE_URL = "https://ejlltaigohemjagfzxxh.supabase.co";
-const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { createClient } from "@/utils/supabase/client";
 
 interface Props {
   heroImage: string;
   nightImage: string;
   badmintonImage: string;
   equipmentImage: string;
-  logoImage: string;
 }
 
 const SERVICES = [
@@ -74,7 +72,7 @@ const AMENITIES = [
   { icon: "🔐", label: "Tủ Khóa Đồ" },
 ];
 
-export default function ArenaClient({ heroImage, nightImage, badmintonImage, equipmentImage, logoImage }: Props) {
+export default function ArenaClient({ heroImage, nightImage, badmintonImage, equipmentImage }: Props) {
   const [form, setForm] = useState({
     name: "", phone: "", sport: "Pickleball", court: "Sân 1",
     date: "", time: "", duration: "1 Tiếng", note: "",
@@ -85,12 +83,14 @@ export default function ArenaClient({ heroImage, nightImage, badmintonImage, equ
   const handle = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
 
   const totalPrice = () => {
+    if (!form.time) return "—";
     const hours = parseInt(form.duration);
-    const base = form.sport === "Cầu Lông" ? 90000 : (parseInt(form.time) >= 17 ? 180000 : 120000);
+    const hour = parseInt(form.time.split(":")[0]);
+    const base = form.sport === "Cầu Lông" ? 90000 : (hour >= 17 ? 180000 : 120000);
     return (base * hours).toLocaleString("vi-VN") + "đ";
   };
 
-  const telegramPreview = `🔔 CÓ LỊCH ĐẶT SÂN MỚI - ARENA SPORT\n• Khách hàng: ${form.name || "Chưa nhập"} (${form.phone || "---"})\n• Môn: ${form.sport} - ${form.court}\n• Thời gian: ${form.time || "--:--"} (${form.date || "Hôm nay"})\n• Thời lượng: ${form.duration}\n• Ghi chú: ${form.note || "Không có"}\n• Tạm tính: ~${totalPrice()} (Chờ xác nhận)`;
+  const telegramPreview = `🔔 CÓ LỊCH ĐẶT SÂN MỚI - ARENA SPORT\n• Khách hàng: ${form.name || "Chưa nhập"} (${form.phone || "---"})\n• Môn: ${form.sport} - ${form.court}\n• Thời gian: ${form.time || "--:--"} (${form.date || "Hôm nay"})\n• Thời lượng: ${form.duration}\n• Ghi chú: ${form.note || "Không có"}\n• Tạm tính: ${form.time ? "~" + totalPrice() : "—"} (Chờ xác nhận)`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,12 +100,15 @@ export default function ArenaClient({ heroImage, nightImage, badmintonImage, equ
     }
     setLoading(true);
     try {
-      await fetch(`${SUPABASE_URL}/functions/v1/send-lead`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${SUPABASE_ANON}` },
-        body: JSON.stringify({ business_slug: "arena-sport", type: "booking", ...form }),
-      }).catch(() => {});
+      const supabase = createClient();
+      const { error } = await supabase.functions.invoke("send-lead", {
+        body: { business_slug: "arena-sport", type: "booking", ...form },
+      });
+      if (error) throw error;
       setSubmitted(true);
+    } catch (err) {
+      alert("Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại sau.");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -307,7 +310,7 @@ export default function ArenaClient({ heroImage, nightImage, badmintonImage, equ
                 <div>
                   <label className="block text-sm font-bold text-white/70 mb-2 flex items-center gap-2"><CalendarDays className="size-3" /> Ngày Chơi *</label>
                   <input required type="date" value={form.date} onChange={e => handle("date", e.target.value)}
-                    min={new Date().toISOString().split("T")[0]}
+                    min={new Date().toLocaleDateString('en-CA')}
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400 transition" />
                 </div>
                 <div>

@@ -3,40 +3,52 @@
   "slug": "pensilia-skin-centre",
   "address": "413-415 Nguyễn Đình Chiểu, P. Bàn Cờ, Q.3, TP.HCM",
   "phone": "0938.777.885",
+  "zalo": null,
   "email": "info@pensilia.com",
   "website": "pensilia.com",
-  "short_description": "Pensilia Skin Centre chuyên trị sẹo rỗ, nám và trẻ hóa da bằng công nghệ cao tại Quận 3, TP.HCM.",
-  "description": "<b>Pensilia Skin Centre</b> là trung tâm da liễu uy tín tọa lạc tại địa chỉ 413-415 Nguyễn Đình Chiểu, P. Bàn Cờ, Q.3, TP.HCM.<br><br>Với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm và trang thiết bị hiện đại, chúng tôi tự hào mang đến các giải pháp điều trị da hiệu quả như trị sẹo rỗ laser, trị nám công nghệ cao và trẻ hóa da RF.<br><br><b>Dịch vụ nổi bật:</b><br>- Trị sẹo rỗ laser: từ 5-20 triệu<br>- Trị nám công nghệ cao: từ 8-25 triệu<br>- Trẻ hóa da RF: từ 10-30 triệu<br><br>Hãy liên hệ ngay qua số điện thoại 0938.777.885 để được tư vấn và đặt lịch.",
-  "seo_title": "Pensilia Skin Centre - Trị sẹo rỗ, nám, trẻ hóa da",
-  "seo_description": "Pensilia Skin Centre tại Q.3, TP.HCM chuyên trị sẹo rỗ laser, trị nám công nghệ cao, trẻ hóa da RF. Đặt lịch: 0938.777.885.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Pensilia Skin Centre - Hệ thống thẩm mỹ da hàng đầu từ năm 2011 với đội ngũ bác sĩ giàu kinh nghiệm và công nghệ quốc tế.",
+  "description": "Pensilia Skin Centre tự hào là một trong những hệ thống thẩm mỹ da uy tín hàng đầu tại Việt Nam, hoạt động từ năm 2011. Với hơn một thập kỷ phát triển, Pensilia không ngừng nâng cao chất lượng dịch vụ và trở thành điểm tựa đáng tin cậy cho những ai yêu làn da mình.\n\nĐội ngũ bác sĩ tại Pensilia được đào tạo bài bản trong và ngoài nước, luôn lắng nghe và điều trị bằng sự thấu cảm. Không chỉ theo phác đồ, các bác sĩ còn điều trị bằng cả trái tim và sự tận tâm dành riêng cho từng làn da. Đội ngũ bao gồm các chuyên gia như ThS.BS CKII Nguyễn Phương Thảo, BS. CKI Trần Thị Phương Anh, BS. CKII Nguyễn Thị Mỹ Hạnh, BS. CKII Võ Văn Minh, BS. CKI Đỗ Huy Bình, BS. CKI Phạm Hoài Minh Phương, BS. CKI Mai Thị Kim Oanh, BS. CKI Nguyễn Tuấn Anh, BS. CKI Trần Nguyễn Thuỷ Trúc.\n\nPensilia sử dụng các thiết bị đạt chuẩn y khoa, được chứng nhận quốc tế như FDA (Hoa Kỳ) và CE (Châu Âu), đảm bảo an toàn và hiệu quả tối ưu cho từng nhu cầu điều trị. Các công nghệ nổi bật bao gồm MCT Unit® từ Tây Ban Nha - ứng dụng công nghệ điều hòa quang - nhiệt (Photothermal Biomodulation) để kích hoạt vật liệu tự thân như PRP, tế bào gốc, exosome, giúp tăng năng lượng tế bào và thúc đẩy tái tạo da vượt trội. Ngoài ra, thiết bị Jovena từ Ý kết hợp hai công nghệ độc quyền: Facestim® nâng cơ sâu và Fractional Plasma® tái tạo bề mặt da, giúp săn chắc cơ, giảm nhăn sâu, xóa nhăn nông, cải thiện sẹo mụn, rạn da, nhấn mí không phẫu thuật và loại bỏ tổn thương da lành tính.\n\nPensilia cung cấp đa dạng dịch vụ điều trị da như trị sẹo rỗ laser, trị nám công nghệ cao, trẻ hóa da RF với mức giá hợp lý. Đến với Pensilia, bạn sẽ được chăm sóc như người thân và đồng hành như người bạn trong suốt hành trình chăm sóc làn da của mình.",
+  "seo_title": "Pensilia Skin Centre - Thẩm mỹ da uy tín từ 2011",
+  "seo_description": "Pensilia Skin Centre - Hệ thống thẩm mỹ da hàng đầu với đội ngũ bác sĩ giàu kinh nghiệm và công nghệ quốc tế. Trị sẹo rỗ, nám, trẻ hóa da hiệu quả.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "",
+    "logo_url": "https://82742572.delivery.rocketcdn.me/wp-content/uploads/2026/02/cropped-20260225.073024-logo-pen-250725_resized-32x32.jpeg",
     "banners": [],
+    "gallery": [],
     "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "5.000.000đ - 30.000.000đ",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Trị sẹo rỗ laser",
         "price": "từ 5-20 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Điều trị sẹo rỗ bằng công nghệ laser hiện đại, giúp cải thiện kết cấu da và làm mờ sẹo hiệu quả."
       },
       {
         "id": "s2",
         "name": "Trị nám công nghệ cao",
         "price": "từ 8-25 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Sử dụng công nghệ cao để điều trị nám da, giảm sắc tố và làm đều màu da."
       },
       {
         "id": "s3",
         "name": "Trẻ hóa da RF",
         "price": "từ 10-30 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Trẻ hóa da bằng sóng RF, kích thích collagen và elastin, giúp da săn chắc và giảm nếp nhăn."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

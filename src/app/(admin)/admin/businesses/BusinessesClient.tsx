@@ -206,13 +206,14 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                       : (b.location || "---")}
                   </TableCell>
                   <TableCell>
-                    {b.website || (b.page_content?.website) ? (
+                    {b.website ? (
                       <a 
-                        href={(b.website || b.page_content?.website).startsWith('http') ? (b.website || b.page_content?.website) : `https://${(b.website || b.page_content?.website)}`} 
+                        href={b.website.startsWith('http') ? b.website : `https://${b.website}`} 
                         target="_blank" 
+                        rel="noopener noreferrer"
                         className="text-gold hover:underline text-xs"
                       >
-                        {(b.website || b.page_content?.website).replace(/^https?:\/\//, '').split('/')[0]}
+                        {b.website.replace(/^https?:\/\//, '').split('/')[0]}
                       </a>
                     ) : (
                       <span className="text-xs text-muted-foreground">---</span>

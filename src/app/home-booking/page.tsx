@@ -16,7 +16,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới",
   description:
-    "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 10 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
+    "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
 };
 
 // icon được render trực tiếp trong card — không có emoji field thừa
@@ -185,13 +185,13 @@ export default async function HomeBookingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════ */}
-      {/* 10 NGÀNH TRỌNG ĐIỂM                               */}
+      {/* 11 NGÀNH TRỌNG ĐIỂM                               */}
       {/* ═══════════════════════════════════════════════════ */}
       <section id="demos" className="py-20 bg-muted/40 border-y border-border">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-14">
             <p className="text-xs tracking-[0.3em] text-gold uppercase">Đa ngành · Đa lĩnh vực</p>
-            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">10 Nhóm Ngành Được Hỗ Trợ</h2>
+            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ink">11 Nhóm Ngành Được Hỗ Trợ</h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
               Từ nha khoa, nhà hàng đến spa, thú cưng và coaching — 1Booking.Asia vận hành trơn tru cho mọi loại hình dịch vụ.
             </p>
