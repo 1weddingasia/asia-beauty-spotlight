@@ -12,6 +12,7 @@ import { Save, Plus, Trash2, Copy, Link as LinkIcon, Lock, MapPin, CheckSquare, 
 import { toast } from "sonner";
 import Link from "next/link";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { createOrUpdateOwner } from "@/app/actions/admin";
 
 /** Normalize a string into a valid URL slug */
 function normalizeSlug(str: string): string {
@@ -54,6 +55,8 @@ export default function BusinessEditorClient({
 
   const isNew = !initialBusiness;
   const [siteOrigin, setSiteOrigin] = useState('');
+  const [ownerEmail, setOwnerEmail] = useState('');
+  const [ownerPassword, setOwnerPassword] = useState('');
 
   useEffect(() => { setSiteOrigin(window.location.origin); }, []);
   const [formData, setFormData] = useState({
@@ -126,7 +129,7 @@ export default function BusinessEditorClient({
         return;
       }
 
-      const payload = {
+      const payload: any = {
         name: formData.name,
         address: formData.address,
         slug: formData.slug || normalizeSlug(formData.name) || DEFAULT_SLUG,
@@ -144,6 +147,18 @@ export default function BusinessEditorClient({
         chatbot_passcode: formData.chatbot_passcode || null,
         page_content: pageContent
       };
+
+      if (ownerEmail) {
+        const ownerRes = await createOrUpdateOwner(ownerEmail, ownerPassword);
+        if (ownerRes.error) {
+          toast.error("Lỗi tạo tài khoản: " + ownerRes.error);
+          setSaving(false);
+          return;
+        }
+        if (ownerRes.userId) {
+          payload.owner_id = ownerRes.userId;
+        }
+      }
 
       if (isNew) {
         const { data: inserted, error } = await supabase
@@ -462,6 +477,25 @@ export default function BusinessEditorClient({
               <div className="space-y-2">
                 <Label>TikTok</Label>
                 <Input value={pageContent.tiktok || ""} onChange={(e) => handlePageContentChange("tiktok", e.target.value)} placeholder="Link TikTok" />
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-6 border-t bg-secondary/20 p-4 rounded-xl">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <Lock className="size-5 text-gold" /> Tài khoản Đăng nhập (Bàn giao cho tiệm)
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Điền email và mật khẩu để cấp tài khoản quản trị cho chủ tiệm. Nếu để trống, gian hàng sẽ không có chủ. (Nếu tài khoản đã có, nhập mật khẩu mới sẽ đổi mật khẩu của họ)
+              </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>Email đăng nhập</Label>
+                  <Input value={ownerEmail} onChange={(e) => setOwnerEmail(e.target.value)} placeholder="chu-tiem@gmail.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Mật khẩu (mới)</Label>
+                  <Input type="password" value={ownerPassword} onChange={(e) => setOwnerPassword(e.target.value)} placeholder="Nhập mật khẩu..." />
+                </div>
               </div>
             </div>
 

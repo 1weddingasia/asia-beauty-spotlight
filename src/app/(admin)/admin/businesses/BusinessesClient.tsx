@@ -8,6 +8,42 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { createOrUpdateOwner } from "@/app/actions/admin";
+
+function AccountCell({ business }: { business: any }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
+
+  if (business.owner_id) {
+    return <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-md">Đã cấp</span>;
+  }
+
+  const handleCreate = async () => {
+    if (!email || !password) return toast.error("Nhập đủ email & pass");
+    setLoading(true);
+    const res = await createOrUpdateOwner(email, password, business.id);
+    if (res.error) {
+      toast.error(res.error);
+      setLoading(false);
+      return;
+    }
+    toast.success("Cấp thành công!");
+    setLoading(false);
+    router.refresh();
+  };
+
+  return (
+    <div className="flex flex-col gap-1 min-w-[140px]">
+      <Input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="h-7 text-xs" />
+      <Input type="password" placeholder="Pass" value={password} onChange={e => setPassword(e.target.value)} className="h-7 text-xs" />
+      <Button onClick={handleCreate} disabled={loading} size="sm" className="h-7 text-xs mt-1 bg-gold text-ink hover:bg-gold/90">Cấp</Button>
+    </div>
+  );
+}
 
 export default function BusinessesClient({ initialBusinesses }: { initialBusinesses: any[] }) {
   const supabase = createClient();
@@ -118,13 +154,15 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
               <TableHead>Trạng thái</TableHead>
               <TableHead>Danh mục</TableHead>
               <TableHead>Địa điểm</TableHead>
+              <TableHead>Website</TableHead>
+              <TableHead>Tài khoản</TableHead>
               <TableHead className="text-right">Hành động</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {!initialBusinesses || initialBusinesses.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={7} className="h-24 text-center">
                   Không có dữ liệu.
                 </TableCell>
               </TableRow>
@@ -166,6 +204,22 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                     {b.business_locations && b.business_locations.length > 0
                       ? b.business_locations.map((l: any) => l.directory_locations?.name).filter(Boolean).join(", ")
                       : (b.location || "---")}
+                  </TableCell>
+                  <TableCell>
+                    {b.website || (b.page_content?.website) ? (
+                      <a 
+                        href={(b.website || b.page_content?.website).startsWith('http') ? (b.website || b.page_content?.website) : `https://${(b.website || b.page_content?.website)}`} 
+                        target="_blank" 
+                        className="text-gold hover:underline text-xs"
+                      >
+                        {(b.website || b.page_content?.website).replace(/^https?:\/\//, '').split('/')[0]}
+                      </a>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">---</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <AccountCell business={b} />
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
