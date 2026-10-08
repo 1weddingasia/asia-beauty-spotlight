@@ -398,7 +398,7 @@ export default function BusinessEditorClient({
                 <div className="space-y-2">
                   <Label>Mật khẩu (tối thiểu 6 ký tự)</Label>
                   <Input 
-                    type="text" 
+                    type="password" 
                     value={ownerPassword} 
                     onChange={(e) => setOwnerPassword(e.target.value)} 
                     placeholder={isNew ? "VD: 123456" : "Để trống nếu không muốn đổi pass"} 
@@ -507,25 +507,6 @@ export default function BusinessEditorClient({
               <div className="space-y-2">
                 <Label>TikTok</Label>
                 <Input value={pageContent.tiktok || ""} onChange={(e) => handlePageContentChange("tiktok", e.target.value)} placeholder="Link TikTok" />
-              </div>
-            </div>
-
-            <div className="space-y-4 pt-6 border-t bg-secondary/20 p-4 rounded-xl">
-              <Label className="text-base font-semibold flex items-center gap-2">
-                <Lock className="size-5 text-gold" /> Tài khoản Đăng nhập (Bàn giao cho tiệm)
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Điền email và mật khẩu để cấp tài khoản quản trị cho chủ tiệm. Nếu để trống, gian hàng sẽ không có chủ. (Nếu tài khoản đã có, nhập mật khẩu mới sẽ đổi mật khẩu của họ)
-              </p>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>Email đăng nhập</Label>
-                  <Input value={ownerEmail} onChange={(e) => setOwnerEmail(e.target.value)} placeholder="chu-tiem@gmail.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Mật khẩu (mới)</Label>
-                  <Input type="password" value={ownerPassword} onChange={(e) => setOwnerPassword(e.target.value)} placeholder="Nhập mật khẩu..." />
-                </div>
               </div>
             </div>
 

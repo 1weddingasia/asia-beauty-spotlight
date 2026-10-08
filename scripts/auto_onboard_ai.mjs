@@ -207,7 +207,7 @@ async function run() {
     }
 
     // 5.5 Match existing business by name
-    const { data: existingBiz } = await supabase.from('businesses').select('id, slug').eq('name', businessData.name).single();
+    const { data: existingBiz } = await supabase.from('businesses').select('id, slug').eq('name', businessData.name).maybeSingle();
     if (existingBiz) {
       businessData.slug = existingBiz.slug; // Preserve original slug
       const { error: updateError } = await supabase.from('businesses').update(businessData).eq('id', existingBiz.id);
