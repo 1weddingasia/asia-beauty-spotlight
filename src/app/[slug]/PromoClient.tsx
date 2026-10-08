@@ -422,6 +422,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 if (!dtStr.includes('T')) return dtStr;
                 try {
                   const d = new Date(dtStr);
+                  if (isNaN(d.getTime())) return dtStr;
                   return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                 } catch { return dtStr; }
               };
