@@ -539,7 +539,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase mb-2">Bảng giá</p>
-                <h2 className="font-display text-2xl md:text-4xl text-ink">Dịch vụ nổi bật</h2>
+                <h2 className="font-display text-2xl md:text-4xl text-ink">Sản phẩm & Dịch vụ</h2>
               </div>
               <div className="hidden md:flex gap-2">
                 <button onClick={scrollPrevServices} className="grid size-10 place-items-center rounded-full border border-border bg-white hover:border-gold hover:text-gold transition-colors">
