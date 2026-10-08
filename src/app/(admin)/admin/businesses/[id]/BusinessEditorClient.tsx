@@ -377,7 +377,37 @@ export default function BusinessEditorClient({
               </div>
             )}
 
-            <div className="space-y-2">
+            <div className="space-y-4 pt-6 border-t">
+              <div className="flex items-center gap-2 mb-2">
+                <Lock className="size-5 text-gold" />
+                <Label className="text-base font-semibold">Tài khoản Quản trị Doanh nghiệp (Tự cấp cho khách)</Label>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0 mb-4">
+                Điền email và mật khẩu để cấp tài khoản đăng nhập cho chủ doanh nghiệp. Hệ thống sẽ tự động tạo hoặc cập nhật tài khoản.
+              </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>Email Đăng Nhập</Label>
+                  <Input 
+                    type="email" 
+                    value={ownerEmail} 
+                    onChange={(e) => setOwnerEmail(e.target.value)} 
+                    placeholder="VD: admin@tiemspa.com" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Mật khẩu (tối thiểu 6 ký tự)</Label>
+                  <Input 
+                    type="text" 
+                    value={ownerPassword} 
+                    onChange={(e) => setOwnerPassword(e.target.value)} 
+                    placeholder={isNew ? "VD: 123456" : "Để trống nếu không muốn đổi pass"} 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-6 border-t">
               <Label>Giới thiệu tóm tắt</Label>
               <Textarea 
                 value={pageContent.description || ""} 

@@ -206,11 +206,23 @@ async function run() {
       businessData.owner_id = user.id;
     }
 
-    const { error: upsertError } = await supabase.from('businesses').upsert(businessData, { onConflict: 'slug' });
-    if (upsertError) {
-      console.error("Upsert failed:", upsertError);
+    // 5.5 Match existing business by name
+    const { data: existingBiz } = await supabase.from('businesses').select('id, slug').eq('name', businessData.name).single();
+    if (existingBiz) {
+      businessData.slug = existingBiz.slug; // Preserve original slug
+      const { error: updateError } = await supabase.from('businesses').update(businessData).eq('id', existingBiz.id);
+      if (updateError) {
+        console.error("Update failed:", updateError);
+      } else {
+        console.log(`Success Updated: ${businessData.slug}`);
+      }
     } else {
-      console.log(`Success: ${businessData.slug}`);
+      const { error: upsertError } = await supabase.from('businesses').upsert(businessData, { onConflict: 'slug' });
+      if (upsertError) {
+        console.error("Upsert failed:", upsertError);
+      } else {
+        console.log(`Success Inserted: ${businessData.slug}`);
+      }
     }
 
     // Mark processed
