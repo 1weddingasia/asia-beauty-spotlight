@@ -264,7 +264,7 @@ export default function BusinessEditorClient({
           <TabsTrigger value="overview">Tổng quan</TabsTrigger>
           <TabsTrigger value="contact">Liên hệ & Bản đồ</TabsTrigger>
           <TabsTrigger value="media">Hình ảnh</TabsTrigger>
-          <TabsTrigger value="services">Bảng giá Dịch vụ</TabsTrigger>
+          <TabsTrigger value="services">Bảng giá Sản phẩm/Dịch vụ</TabsTrigger>
           <TabsTrigger value="offers">Ưu đãi</TabsTrigger>
         </TabsList>
 
@@ -617,16 +617,16 @@ export default function BusinessEditorClient({
         <TabsContent value="services" className="space-y-6">
           <div className="space-y-6 rounded-2xl border bg-card p-6 md:p-8 shadow-sm">
             <div className="flex items-center justify-between border-b pb-4">
-              <h3 className="font-semibold text-xl">Bảng giá Dịch vụ</h3>
+              <h3 className="font-semibold text-xl">Bảng giá Sản phẩm/Dịch vụ</h3>
               <Button onClick={addService} size="sm" variant="outline" className="text-gold border-gold hover:bg-gold/10">
-                <Plus className="size-4 mr-2" /> Thêm Dịch vụ
+                <Plus className="size-4 mr-2" /> Thêm Sản phẩm/Dịch vụ
               </Button>
             </div>
             
             <div className="space-y-4">
               {(!pageContent.services || pageContent.services.length === 0) && (
                 <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed">
-                  Chưa có dịch vụ nào. Bấm "Thêm Dịch vụ" để tạo.
+                  Chưa có sản phẩm/dịch vụ nào. Bấm "Thêm Sản phẩm/Dịch vụ" để tạo.
                 </div>
               )}
               {(pageContent.services || []).map((svc: any, i: number) => (
@@ -640,7 +640,7 @@ export default function BusinessEditorClient({
                   <div className="flex-grow space-y-3">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <Label className="text-xs">Tên dịch vụ</Label>
+                        <Label className="text-xs">Tên sản phẩm/dịch vụ</Label>
                         <Input value={svc.name || ""} onChange={e => updateService(i, "name", e.target.value)} placeholder="Gội đầu dưỡng sinh..." />
                       </div>
                       <div className="space-y-1">
