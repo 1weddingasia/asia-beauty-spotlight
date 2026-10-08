@@ -17,7 +17,6 @@ export default function ArenaPage() {
       nightImage={`${BASE}/arena-night.png`}
       badmintonImage={`${BASE}/arena-badminton.png`}
       equipmentImage={`${BASE}/arena-equipment.png`}
-      logoImage={`${BASE}/arena-logo.png`}
     />
   );
 }

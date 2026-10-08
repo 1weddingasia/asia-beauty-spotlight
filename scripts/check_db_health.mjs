@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-dotenv.config({path: '.env.local'});
+import path from 'path';
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!supabaseUrl || !supabaseKey) {
@@ -25,8 +25,13 @@ async function run() {
   console.log(`Analyzing ${data.length} businesses...`);
 
   data.forEach(b => {
-    const pc = (typeof b.page_content === 'string' ? JSON.parse(b.page_content) : b.page_content) || {};
-    let issues = [];
+    let pc = {};
+    try {
+      pc = (typeof b.page_content === 'string' ? JSON.parse(b.page_content) : b.page_content) || {};
+    } catch (e) {
+      // Ignored for now, will log as empty pc
+    }
+    const issues = [];
 
     // Check Phone
     const p = pc.phone || b.phone || '';
@@ -39,8 +44,8 @@ async function run() {
     }
 
     // Check Description HTML
-    const desc = pc.description || pc.short_description || b.description || b.short_description || '';
-    if (desc.includes('<b') || desc.includes('<br')) {
+    const desc = String(pc.description || pc.short_description || b.description || b.short_description || '');
+    if (/<[a-z][^>]*>/i.test(desc)) {
        htmlDescription++;
        issues.push('HTML in description');
     }
