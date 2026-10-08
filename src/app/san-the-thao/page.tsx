@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
-import ArenaClient from "./ArenaClient";
+import SanTheThaoClient from "./SanTheThaoClient";
 
 export const metadata: Metadata = {
-  title: "CLB Thể Thao Arena – Đặt Sân Pickleball & Cầu Lông Chuẩn Thi Đấu",
-  description:
-    "Đặt sân Pickleball & Cầu Lông online tức thì. Hệ thống tự động xác nhận ngay sau 1 giây.",
+  title: "Sân Thể Thao Đa Năng | Đặt Sân Tự Động",
+  description: "Đặt sân Bóng đá, Pickleball, Cầu Lông, Tennis nhanh chóng. Xác nhận tự động.",
 };
 
 const BASE =
   "https://ejlltaigohemjagfzxxh.supabase.co/storage/v1/object/public/media/demos/arena-sport";
 
-export default function ArenaPage() {
+export default function SanTheThaoPage() {
   return (
-    <ArenaClient
+    <SanTheThaoClient
       heroImage={`${BASE}/arena-hero.png`}
       nightImage={`${BASE}/arena-night.png`}
       badmintonImage={`${BASE}/arena-badminton.png`}

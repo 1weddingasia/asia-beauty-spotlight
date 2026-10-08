@@ -56,8 +56,8 @@ const SERVICES = [
 ];
 
 const COURTS = ["Sân 1", "Sân 2", "Sân 3", "Sân 4", "Sân 5", "Sân 6"];
-const SPORTS = ["Pickleball", "Cầu Lông"];
-const DURATIONS = ["1 Tiếng", "2 Tiếng", "3 Tiếng"];
+const SPORTS = ["Bóng Đá", "Pickleball", "Cầu Lông", "Tennis"];
+const DURATIONS = ["1 Tiếng", "1.5 Tiếng", "2 Tiếng", "3 Tiếng"];
 
 const AMENITIES = [
   { icon: "💡", label: "Đèn LED Chuyên Nghiệp" },
@@ -70,7 +70,7 @@ const AMENITIES = [
   { icon: "🔐", label: "Tủ Khóa Đồ" },
 ];
 
-export default function ArenaClient({ heroImage, nightImage, badmintonImage, equipmentImage }: Props) {
+export default function SanTheThaoClient({ heroImage, nightImage, badmintonImage, equipmentImage }: Props) {
   const [form, setForm] = useState({
     name: "", phone: "", sport: "Pickleball", court: "Sân 1",
     date: "", time: "", duration: "1 Tiếng", note: "",
@@ -88,7 +88,7 @@ export default function ArenaClient({ heroImage, nightImage, badmintonImage, equ
     return (base * hours).toLocaleString("vi-VN") + "đ";
   };
 
-  const telegramPreview = `🔔 CÓ LỊCH ĐẶT SÂN MỚI - ARENA SPORT\n• Khách hàng: ${form.name || "Chưa nhập"} (${form.phone || "---"})\n• Môn: ${form.sport} - ${form.court}\n• Thời gian: ${form.time || "--:--"} (${form.date || "Hôm nay"})\n• Thời lượng: ${form.duration}\n• Ghi chú: ${form.note || "Không có"}\n• Tạm tính: ${form.time ? "~" + totalPrice() : "—"} (Chờ xác nhận)`;
+  const telegramPreview = `🔔 CÓ LỊCH ĐẶT SÂN MỚI - SÂN THỂ THAO\n• Khách hàng: ${form.name || "Chưa nhập"} (${form.phone || "---"})\n• Môn: ${form.sport} - ${form.court}\n• Thời gian: ${form.time || "--:--"} (${form.date || "Hôm nay"})\n• Thời lượng: ${form.duration}\n• Ghi chú: ${form.note || "Không có"}\n• Tạm tính: ${form.time ? "~" + totalPrice() : "—"} (Chờ xác nhận)`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,7 +101,7 @@ export default function ArenaClient({ heroImage, nightImage, badmintonImage, equ
       const res = await fetch("/api/demo-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: telegramPreview }),
+        body: JSON.stringify({ business_slug: "san-the-thao", type: "booking", ...form, message: telegramPreview }),
       });
       if (!res.ok) {
         const detail = await res.text().catch(() => "");
@@ -143,7 +143,7 @@ export default function ArenaClient({ heroImage, nightImage, badmintonImage, equ
           <div className="w-9 h-9 rounded-lg bg-lime-400 flex items-center justify-center">
             <Dumbbell className="size-5 text-black" />
           </div>
-          <span className="font-black text-lg tracking-tight">ARENA <span className="text-lime-400">SPORT</span></span>
+          <span className="font-black text-lg tracking-tight">SÂN THỂ THAO <span className="text-lime-400">ĐA NĂNG</span></span>
         </div>
         <a href="#booking" className="bg-lime-400 text-black text-sm font-bold px-5 py-2 rounded-full hover:bg-lime-300 transition">
           ⚡ Đặt Sân Ngay
