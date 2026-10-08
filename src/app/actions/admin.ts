@@ -17,7 +17,8 @@ export async function createOrUpdateOwner(email: string, password?: string, busi
     // SECURITY FIX: Verify the caller is an authenticated user (admin)
     const supabase = await createServerClient();
     const { data: { user: currentUser } } = await supabase.auth.getUser();
-    if (!currentUser) {
+    const role = currentUser?.user_metadata?.role;
+    if (!currentUser || (role !== 'admin' && role !== 'superadmin')) {
       return { error: "Bạn cần đăng nhập với quyền quản trị để thực hiện hành động này." };
     }
 
