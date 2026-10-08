@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest) {
     }
     
     // Kiểm tra quyền hạn Admin
-    const role = user.user_metadata?.role;
+    const role = user?.user_metadata?.role;
     if (role !== 'admin' && role !== 'superadmin') {
       url.pathname = '/dashboard'; 
       return NextResponse.redirect(url);
