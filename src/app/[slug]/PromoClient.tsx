@@ -342,7 +342,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <button
               onClick={() => {
                 setBookingService("");
-                setSelectedDeal({ id: 'booking', title: 'Đặt Hẹn Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
+                setSelectedDeal({ id: 'booking', title: 'Yêu Cầu Tư Vấn / Đặt Lịch', original_price: '', promo_price: '', valid_until: '' });
                 setIsDialogOpen(true);
               }}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110"
@@ -587,13 +587,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                             onClick={(e) => {
                               e.stopPropagation();
                               setBookingService(s.name);
-                              setSelectedDeal({ id: 'booking', title: 'Đặt Lịch & Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
+                              setSelectedDeal({ id: 'booking', title: 'Yêu Cầu Tư Vấn / Đặt Lịch', original_price: '', promo_price: '', valid_until: '' });
                               setVoucher("");
                               setIsDialogOpen(true);
                             }}
                             className="mt-2 text-[10px] md:text-xs font-bold text-white bg-gold py-1.5 px-4 rounded-full w-fit hover:bg-ink transition-colors shadow-sm"
                           >
-                            Giữ Chỗ Ngay
+                            Liên Hệ
                           </button>
                         </div>
                       </div>
@@ -762,9 +762,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
         let dialogTitle = "";
         if (voucher) {
-          dialogTitle = isBooking ? "🎉 Đặt lịch thành công!" : "🎉 Đăng ký thành công!";
+          dialogTitle = isBooking ? "🎉 Đã gửi yêu cầu thành công!" : "🎉 Đăng ký thành công!";
         } else {
-          dialogTitle = isBooking ? "Thông tin đặt lịch hẹn" : "Điền thông tin nhận ưu đãi";
+          dialogTitle = isBooking ? "Thông tin liên hệ / đặt lịch" : "Điền thông tin nhận ưu đãi";
         }
 
         return (
@@ -875,7 +875,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               ) : (
                 <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
                   <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã đặt lịch hẹn! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
+                  <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã gửi yêu cầu! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
                   {/* Success message based on type */}
                   {!isBooking ? (
                     <>
@@ -889,7 +889,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                       </div>
                     </>
                   ) : (
-                    <p className="text-sm text-muted-foreground mb-5">Cảm ơn bạn đã đặt lịch. Tiệm sẽ sớm liên hệ qua số điện thoại <strong>{phone}</strong> để xác nhận thời gian với bạn nhé!</p>
+                    <p className="text-sm text-muted-foreground mb-5">Cảm ơn bạn. Chúng tôi sẽ sớm liên hệ qua số điện thoại <strong>{phone}</strong> để xác nhận với bạn nhé!</p>
                   )}
 
                   {/* Gói đã chọn */}
@@ -902,12 +902,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     {hotlineDigits ? (
                       <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
                         <Link href={`tel:${hotlineDigits}`}>
-                          <Phone className="mr-2 size-5" /> Đặt lịch qua Hotline
+                          <Phone className="mr-2 size-5" /> Liên hệ qua Hotline
                         </Link>
                       </Button>
                     ) : (
                       <Button onClick={() => toast.error("Tiệm chưa cập nhật số điện thoại")} className="w-full h-12 bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-xl">
-                        <Phone className="mr-2 size-5" /> Đặt lịch qua Hotline
+                        <Phone className="mr-2 size-5" /> Liên hệ qua Hotline
                       </Button>
                     )}
                   </div>
@@ -968,7 +968,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 <button
                   onClick={() => {
                     setBookingService(selectedService.name);
-                    setSelectedDeal({ id: 'booking', title: 'Đặt Hẹn Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
+                    setSelectedDeal({ id: 'booking', title: 'Yêu Cầu Tư Vấn / Đặt Lịch', original_price: '', promo_price: '', valid_until: '' });
                     setSelectedService(null);
                     setIsDialogOpen(true);
                   }}
@@ -1002,7 +1002,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <button
           onClick={() => {
             setBookingService("");
-            setSelectedDeal({ id: 'booking', title: 'Đặt Hẹn Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
+            setSelectedDeal({ id: 'booking', title: 'Yêu Cầu Tư Vấn / Đặt Lịch', original_price: '', promo_price: '', valid_until: '' });
             setIsDialogOpen(true);
           }}
           className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl hover:bg-gold transition-colors shadow-lg"
