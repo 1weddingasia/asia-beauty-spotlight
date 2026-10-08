@@ -347,7 +347,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               }}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110"
             >
-              <Calendar className="size-5" /> BOOKING ĐẶT HẸN
+              <Calendar className="size-5" /> LIÊN HỆ NGAY
             </button>
           </div>
         </div>
@@ -869,7 +869,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   )}
 
                   <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
-                    {loading ? "Đang gửi..." : (isBooking ? "XÁC NHẬN BOOKING" : "NHẬN ƯU ĐÃI")}
+                    {loading ? "Đang gửi..." : (isBooking ? "GỬI YÊU CẦU" : "NHẬN ƯU ĐÃI")}
                   </Button>
                 </form>
               ) : (
@@ -1007,7 +1007,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           }}
           className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl hover:bg-gold transition-colors shadow-lg"
         >
-          <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> Đặt Hẹn Ngay</span>
+          <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> Liên Hệ Ngay</span>
         </button>
       </div>
 
