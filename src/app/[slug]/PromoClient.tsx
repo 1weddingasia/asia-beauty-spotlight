@@ -342,7 +342,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <button
               onClick={() => {
                 setBookingService("");
-                setSelectedDeal({ id: 'booking', title: 'Yêu Cầu Tư Vấn / Đặt Lịch', original_price: '', promo_price: '', valid_until: '' });
+                setSelectedDeal({ id: 'booking', title: 'Liên Hệ', original_price: '', promo_price: '', valid_until: '' });
                 setIsDialogOpen(true);
               }}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110"
@@ -587,7 +587,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                             onClick={(e) => {
                               e.stopPropagation();
                               setBookingService(s.name);
-                              setSelectedDeal({ id: 'booking', title: 'Yêu Cầu Tư Vấn / Đặt Lịch', original_price: '', promo_price: '', valid_until: '' });
+                              setSelectedDeal({ id: 'booking', title: 'Liên Hệ', original_price: '', promo_price: '', valid_until: '' });
                               setVoucher("");
                               setIsDialogOpen(true);
                             }}
@@ -764,7 +764,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         if (voucher) {
           dialogTitle = isBooking ? "🎉 Đã gửi yêu cầu thành công!" : "🎉 Đăng ký thành công!";
         } else {
-          dialogTitle = isBooking ? "Thông tin liên hệ / đặt lịch" : "Điền thông tin nhận ưu đãi";
+          dialogTitle = isBooking ? "Thông tin liên hệ" : "Điền thông tin nhận ưu đãi";
         }
 
         return (
@@ -968,7 +968,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 <button
                   onClick={() => {
                     setBookingService(selectedService.name);
-                    setSelectedDeal({ id: 'booking', title: 'Yêu Cầu Tư Vấn / Đặt Lịch', original_price: '', promo_price: '', valid_until: '' });
+                    setSelectedDeal({ id: 'booking', title: 'Liên Hệ', original_price: '', promo_price: '', valid_until: '' });
                     setSelectedService(null);
                     setIsDialogOpen(true);
                   }}
@@ -1002,7 +1002,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <button
           onClick={() => {
             setBookingService("");
-            setSelectedDeal({ id: 'booking', title: 'Yêu Cầu Tư Vấn / Đặt Lịch', original_price: '', promo_price: '', valid_until: '' });
+            setSelectedDeal({ id: 'booking', title: 'Liên Hệ', original_price: '', promo_price: '', valid_until: '' });
             setIsDialogOpen(true);
           }}
           className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl hover:bg-gold transition-colors shadow-lg"
