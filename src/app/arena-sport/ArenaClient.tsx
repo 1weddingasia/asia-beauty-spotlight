@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Zap, Clock, CheckCircle, Send, Phone, User, CalendarDays, StickyNote, ChevronRight, Trophy, Shield, Star, Bell, Dumbbell } from "lucide-react";
 
-import { createClient } from "@/utils/supabase/client";
-
 interface Props {
   heroImage: string;
   nightImage: string;
@@ -100,13 +98,15 @@ export default function ArenaClient({ heroImage, nightImage, badmintonImage, equ
     }
     setLoading(true);
     try {
-      const supabase = createClient();
       const res = await fetch("/api/demo-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: telegramPreview }),
       });
-      if (!res.ok) throw new Error("Failed to send telegram");
+      if (!res.ok) {
+        const detail = await res.text().catch(() => "");
+        throw new Error(`Failed to send telegram: ${res.status} ${detail}`);
+      }
       setSubmitted(true);
     } catch (err) {
       alert("Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại sau.");

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { CheckCircle, Send, MapPin, Tag, ShoppingBag, Star, Crown, Gift, Truck } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
 
 interface Props {
   heroImage: string;
@@ -52,7 +51,7 @@ export default function FashionClient({ heroImage, product1, product2 }: Props) 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handle = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
+  const handle = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
 
   const telegramPreview = `🛒 CÓ ĐƠN ĐẶT HÀNG / NHẬN ƯU ĐÃI MỚI - GEMMA CLOTHING
 • Khách hàng: ${form.name || "Chưa nhập"} (${form.phone || "---"})
@@ -69,14 +68,15 @@ export default function FashionClient({ heroImage, product1, product2 }: Props) 
       return;
     }
     setLoading(true);
-    try {
-      const supabase = createClient();
       const res = await fetch("/api/demo-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: telegramPreview }),
       });
-      if (!res.ok) throw new Error("Failed to send telegram");
+      if (!res.ok) {
+        const detail = await res.text().catch(() => "");
+        throw new Error(`Failed to send telegram: ${res.status} ${detail}`);
+      }
       setSubmitted(true);
     } catch (err) {
       alert("Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại sau.");
@@ -103,7 +103,7 @@ export default function FashionClient({ heroImage, product1, product2 }: Props) 
           </div>
           
           <button onClick={() => setSubmitted(false)} className="w-full bg-[#1A1A1A] text-white font-bold px-8 py-3.5 rounded-full hover:bg-black transition shadow-lg">
-            Quay Lại Trang Chủ
+            Gửi Yêu Cầu Khác
           </button>
         </div>
       </div>
