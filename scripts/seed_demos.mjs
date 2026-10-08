@@ -74,10 +74,13 @@ async function run() {
     }
   };
 
+  let hasError = false;
+  
   for (const biz of [gemma, arena]) {
     const { error } = await supabase.from('businesses').upsert(biz, { onConflict: 'slug' });
     if (error) {
       console.error(`Error seeding ${biz.slug}:`, error.message);
+      hasError = true;
       continue;
     }
     console.log(`Seeded ${biz.slug}.`);
@@ -93,6 +96,9 @@ async function run() {
   }
 
   console.log("Done seeding!");
+  if (hasError) {
+    process.exit(1);
+  }
 }
 
 run().catch((e) => {

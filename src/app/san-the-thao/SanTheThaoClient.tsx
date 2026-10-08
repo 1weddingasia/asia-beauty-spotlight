@@ -27,7 +27,7 @@ const SERVICES = [
     emoji: "☀️",
     name: "Ca Giờ Thường Pickleball",
     time: "06:00 – 16:00",
-    price: "120.000đ",
+    price: "150.000đ",
     unit: "/giờ",
     desc: "Ưu đãi giờ vắng, tặng kèm nước suối lạnh cho nhóm đặt từ 2 tiếng.",
     tag: "TIẾT KIỆM",
