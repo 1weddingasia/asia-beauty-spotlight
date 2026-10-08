@@ -826,7 +826,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                           value={bookingService}
                           onChange={e => setBookingService(e.target.value)}
                         >
-                          <option value="">-- Chọn dịch vụ quan tâm (Tùy chọn) --</option>
+                          <option value="">-- Chọn sản phẩm/dịch vụ quan tâm (Tùy chọn) --</option>
                           {b.page_content?.services?.map((s: any, idx: number) => (
                             <option key={idx} value={s.name}>{s.name}</option>
                           ))}
@@ -894,7 +894,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
                   {/* Gói đã chọn */}
                   <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
-                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Dịch vụ đã chọn" : "Gói ưu đãi"}</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Sản phẩm/dịch vụ đã chọn" : "Gói ưu đãi"}</p>
                     <p className="text-sm font-bold text-ink leading-snug">{isBooking ? (bookingService || selectedDeal?.title) : selectedDeal?.title}</p>
                   </div>
 
@@ -957,10 +957,10 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               <div className="p-6 md:p-8">
                 <h3 className="font-display text-xl md:text-3xl mb-3 md:mb-4 leading-tight text-ink">{selectedService.name}</h3>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-6">
-                  {selectedService.description || "Liên hệ để biết thêm thông tin chi tiết về dịch vụ này."}
+                  {selectedService.description || "Liên hệ để biết thêm thông tin chi tiết về sản phẩm/dịch vụ này."}
                 </p>
                 <div className="flex items-center justify-between p-4 rounded-2xl bg-champagne border border-gold-soft mb-6 md:mb-8">
-                  <span className="text-[10px] md:text-sm uppercase tracking-wider text-muted-foreground">Chi phí dự kiến</span>
+                  <span className="text-[10px] md:text-sm uppercase tracking-wider text-muted-foreground">Giá</span>
                   <span className="font-display text-xl md:text-2xl text-gold font-semibold">
                     {formatPrice(selectedService.price || selectedService.price_min) || "Liên hệ"}
                   </span>
@@ -974,7 +974,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   }}
                   className="block text-center w-full bg-gradient-to-r from-gold to-gold-soft rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity shadow-lg"
                 >
-                  ĐẶT HẸN DỊCH VỤ NÀY
+                  LIÊN HỆ
                 </button>
               </div>
             </motion.div>
