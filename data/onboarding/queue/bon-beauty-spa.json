@@ -3,41 +3,52 @@
   "slug": "bon-beauty-spa",
   "address": "250 Đường 3/2, P.12, Q.10",
   "phone": "0938.462.186",
+  "zalo": null,
   "email": "bonbeauty@1booking.asia",
   "website": "facebook.com/BonBeautySpa",
-  "short_description": "Bon Beauty Spa tại 250 Đường 3/2, P.12, Q.10 là điểm đến lý tưởng cho các dịch vụ chăm sóc sắc đẹp và thư giãn hàng đầu.",
-  "description": "<b>Bon Beauty Spa</b> tự hào là địa chỉ làm đẹp uy tín tại <b>250 Đường 3/2, Phường 12, Quận 10</b>, TP.HCM. Với không gian sang trọng, ấm cúng cùng đội ngũ kỹ thuật viên giàu kinh nghiệm, chúng tôi cam kết mang đến cho bạn những trải nghiệm thư giãn và hiệu quả nhất.<br><br>Chúng tôi cung cấp đa dạng dịch vụ từ <b>gội đầu dưỡng sinh</b> giúp thư giãn tinh thần, <b>triệt lông</b> an toàn bằng công nghệ hiện đại, đến <b>nặn mụn</b> chuyên sâu giúp làn da sạch thoáng. Mỗi liệu trình đều được cá nhân hóa để phù hợp với từng khách hàng.<br><br>Hãy đến với Bon Beauty Spa để tận hưởng dịch vụ chất lượng và sự chăm sóc tận tâm. Liên hệ ngay <b>0938.462.186</b> để đặt lịch hẹn!",
-  "seo_title": "Bon Beauty Spa - Gội đầu dưỡng sinh, Triệt lông, Nặn mụn Q.10",
-  "seo_description": "Bon Beauty Spa tại 250 Đường 3/2, P.12, Q.10 cung cấp dịch vụ gội đầu dưỡng sinh, triệt lông, nặn mụn chuyên nghiệp. Đặt lịch ngay 0938.462.186.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Bon Beauty Spa mang đến không gian thư giãn đẳng cấp với các dịch vụ chăm sóc da và tóc chuyên nghiệp tại Quận 10, TP.HCM.",
+  "description": "<b>Bon Beauty Spa</b> - Địa chỉ làm đẹp uy tín tại 250 Đường 3/2, P.12, Q.10, TP.HCM. <br>Chúng tôi tự hào là điểm đến lý tưởng cho phái đẹp với các dịch vụ chăm sóc sắc đẹp toàn diện, từ gội đầu dưỡng sinh, triệt lông công nghệ cao đến nặn mụn lấy nhân chuyên sâu. <br>Với đội ngũ kỹ thuật viên giàu kinh nghiệm và tận tâm, Bon Beauty Spa cam kết mang lại cho bạn làn da khỏe đẹp và mái tóc suôn mượt. <br>Không gian spa ấm cúng, sang trọng cùng các sản phẩm chăm sóc da an toàn, chính hãng sẽ giúp bạn thư giãn tuyệt đối. <br>Hãy đến và trải nghiệm dịch vụ chất lượng tại Bon Beauty Spa ngay hôm nay!",
+  "seo_title": "Bon Beauty Spa - Chăm sóc da & tóc uy tín Q.10",
+  "seo_description": "Bon Beauty Spa tại 250 Đường 3/2, Q.10 chuyên gội đầu dưỡng sinh, triệt lông, nặn mụn. Không gian thư giãn, kỹ thuật viên chuyên nghiệp. Đặt lịch ngay!",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "200.000đ - 1.000.000đ",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Gội đầu dưỡng sinh",
         "price": "200k-600k",
-        "status": "active"
+        "status": "active",
+        "description": "Thư giãn với phương pháp gội đầu kết hợp massage cổ vai gáy, giúp giảm căng thẳng và nuôi dưỡng tóc chắc khỏe."
       },
       {
         "id": "s2",
         "name": "Triệt lông",
         "price": "300k-1 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Loại bỏ lông không mong muốn bằng công nghệ hiện đại, an toàn cho da, mang lại làn da mịn màng."
       },
       {
         "id": "s3",
         "name": "Nặn mụn",
         "price": "200k-800k",
-        "status": "active"
+        "status": "active",
+        "description": "Lấy nhân mụn sạch, giảm viêm nhiễm, phục hồi da nhanh chóng với quy trình vô khuẩn nghiêm ngặt."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

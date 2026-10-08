@@ -3,59 +3,30 @@
   "slug": "anna-sanctuary-wellness-spa",
   "address": "4 Phan Văn Chương, P. Tân Phú, Q.7",
   "phone": "0345.543.741",
+  "zalo": null,
   "email": "annaspa@halgroup.com.vn",
   "website": "annasanctuarywellnessspa.com",
-  "short_description": "Anna Sanctuary Wellness Spa offers a tranquil retreat in District 7, Ho Chi Minh City, providing premium beauty and wellness treatments to rejuvenate body and mind.",
-  "description": "<b>Welcome to Anna Sanctuary Wellness Spa – Your Oasis of Tranquility in District 7</b><br><br>Nestled at 4 Phan Văn Chương, P. Tân Phú, Q.7, Anna Sanctuary Wellness Spa is a haven of relaxation and rejuvenation in the heart of Ho Chi Minh City. Our spa combines traditional wellness rituals with modern techniques to deliver an unforgettable experience for every guest.<br><br><b>Our Philosophy</b><br>At Anna Sanctuary, we believe that true wellness encompasses the harmony of body, mind, and spirit. Our dedicated therapists are trained to provide personalized care, ensuring that each treatment addresses your unique needs. Whether you seek relief from stress, muscle tension, or simply desire a moment of peace, our sanctuary is designed to restore your balance.<br><br><b>Signature Treatments</b><br>Indulge in our range of therapeutic massages, revitalizing facials, and body treatments using only the finest natural products. From hot stone therapy to aromatherapy, each service is crafted to melt away tension and leave you feeling refreshed and renewed.<br><br><b>Exceptional Ambiance</b><br>Our spa features a serene atmosphere with soothing music, aromatic scents, and elegant decor, creating the perfect escape from the bustling city. Every detail is curated to ensure your comfort and privacy.<br><br><b>Visit Us</b><br>Experience the ultimate relaxation at Anna Sanctuary Wellness Spa. Book your appointment today by calling 0345.543.741. Let us help you discover the path to wellness and serenity.",
-  "seo_title": "Anna Sanctuary Wellness Spa | District 7 Spa & Massage",
-  "seo_description": "Experience premium spa treatments at Anna Sanctuary Wellness Spa in District 7, Ho Chi Minh City. Massages, facials, and wellness therapies. Book now: 0345.543.741.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Anna Sanctuary Wellness Spa là điểm đến lý tưởng cho những ai tìm kiếm sự thư giãn và chăm sóc sức khỏe toàn diện tại Quận 7, TP.HCM.",
+  "description": "<b>Anna Sanctuary Wellness Spa</b> tọa lạc tại địa chỉ 4 Phan Văn Chương, Phường Tân Phú, Quận 7, TP.HCM, là một không gian yên bình và sang trọng dành cho những ai muốn tìm lại sự cân bằng trong cuộc sống.<br><br>Với đội ngũ nhân viên chuyên nghiệp, tận tâm và giàu kinh nghiệm, chúng tôi cam kết mang đến cho bạn những liệu trình chăm sóc sức khỏe và sắc đẹp tuyệt vời nhất. Không gian spa được thiết kế ấm cúng, thư thái, giúp bạn thư giãn hoàn toàn.<br><br>Hãy đến với <b>Anna Sanctuary Wellness Spa</b> để trải nghiệm những dịch vụ đẳng cấp và tận hưởng những phút giây thư giãn tuyệt vời. Liên hệ ngay qua số điện thoại 0345.543.741 để được tư vấn và đặt lịch.",
+  "seo_title": "Anna Sanctuary Wellness Spa - Spa Quận 7",
+  "seo_description": "Anna Sanctuary Wellness Spa tại Quận 7, TP.HCM. Dịch vụ chăm sóc sức khỏe và sắc đẹp chuyên nghiệp. Đặt lịch ngay: 0345.543.741.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
-    "services": [
-      {
-        "id": "s1",
-        "name": "Relaxing Massage",
-        "price": "Contact for price",
-        "status": "active"
-      },
-      {
-        "id": "s2",
-        "name": "Aromatherapy Massage",
-        "price": "Contact for price",
-        "status": "active"
-      },
-      {
-        "id": "s3",
-        "name": "Hot Stone Massage",
-        "price": "Contact for price",
-        "status": "active"
-      },
-      {
-        "id": "s4",
-        "name": "Facial Treatment",
-        "price": "Contact for price",
-        "status": "active"
-      },
-      {
-        "id": "s5",
-        "name": "Body Scrub",
-        "price": "Contact for price",
-        "status": "active"
-      },
-      {
-        "id": "s6",
-        "name": "Foot Massage",
-        "price": "Contact for price",
-        "status": "active"
-      }
-    ],
-    "deals": [],
-    "gallery": []
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
+    "services": [],
+    "deals": []
   }
 }

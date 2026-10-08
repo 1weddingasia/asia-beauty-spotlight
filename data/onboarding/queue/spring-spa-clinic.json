@@ -3,41 +3,52 @@
   "slug": "spring-spa-clinic",
   "address": "D2-D6 Thất Sơn, P.15, Q.10",
   "phone": "0919.383.344",
+  "zalo": null,
   "email": "springspa@1booking.asia",
   "website": "facebook.com/springspaclinic",
-  "short_description": "Spring Spa & Clinic mang đến không gian thư giãn đẳng cấp với các liệu trình massage body, chăm sóc da mặt và gội đầu dưỡng sinh chuyên sâu.",
-  "description": "<b>Spring Spa & Clinic</b> – điểm đến lý tưởng cho sức khỏe và sắc đẹp của bạn.<br><br>Tọa lạc tại <b>D2-D6 Thất Sơn, P.15, Q.10</b>, Spring Spa & Clinic tự hào là một trong những trung tâm chăm sóc sức khỏe và sắc đẹp hàng đầu tại TP.HCM. Với không gian sang trọng, yên tĩnh cùng đội ngũ chuyên viên giàu kinh nghiệm, chúng tôi cam kết mang đến cho bạn những phút giây thư giãn tuyệt đối và hiệu quả chăm sóc vượt trội.<br><br><b>Dịch vụ nổi bật:</b><br>- <b>Massage body</b>: Giúp giảm căng thẳng, đau mỏi cơ bắp, lưu thông khí huyết với giá chỉ từ 500k đến 1.5 triệu.<br>- <b>Chăm sóc da mặt</b>: Các liệu trình chuyên sâu giúp da sáng mịn, se khít lỗ chân lông, giá từ 400k đến 1.2 triệu.<br>- <b>Gội đầu dưỡng sinh</b>: Thư giãn tinh thần, giảm stress, tốt cho tóc và da đầu, giá từ 300k đến 800k.<br><br>Hãy đến với Spring Spa & Clinic để trải nghiệm dịch vụ chất lượng cao với mức giá hợp lý. Liên hệ ngay <b>0919.383.344</b> để đặt lịch hẹn!",
-  "seo_title": "Spring Spa & Clinic - Massage, Chăm sóc da, Gội đầu dưỡng sinh Q.10",
-  "seo_description": "Spring Spa & Clinic tại Q.10, TP.HCM cung cấp dịch vụ massage body, chăm sóc da mặt, gội đầu dưỡng sinh chất lượng cao. Đặt lịch: 0919.383.344.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Spring Spa & Clinic mang đến không gian thư giãn đẳng cấp với các liệu trình massage body, chăm sóc da mặt và gội đầu dưỡng sinh chuyên sâu, giúp bạn tái tạo năng lượng và tỏa sáng.",
+  "description": "<h2>Spring Spa & Clinic – Điểm hẹn thư giãn và chăm sóc sắc đẹp lý tưởng</h2><br><p>Tọa lạc tại địa chỉ D2-D6 Thất Sơn, P.15, Q.10, <b>Spring Spa & Clinic</b> là không gian wellness kết hợp phòng khám chuyên sâu, mang đến cho khách hàng những trải nghiệm thư giãn trọn vẹn và dịch vụ chăm sóc da chuẩn y khoa. Với đội ngũ kỹ thuật viên giàu kinh nghiệm cùng quy trình bài bản, chúng tôi cam kết mang lại hiệu quả rõ rệt sau mỗi liệu trình.</p><br><p>Các dịch vụ nổi bật tại Spring Spa & Clinic bao gồm <b>Massage body</b> giúp giảm căng cơ, lưu thông khí huyết; <b>Chăm sóc da mặt</b> chuyên sâu với công nghệ hiện đại, phù hợp mọi loại da; và <b>Gội đầu dưỡng sinh</b> thư giãn tinh thần, nuôi dưỡng mái tóc chắc khỏe. Mỗi liệu trình đều được thiết kế riêng biệt, đáp ứng nhu cầu đa dạng của khách hàng.</p><br><p>Không gian tại Spring Spa & Clinic được thiết kế ấm cúng, sang trọng với hương thơm dịu nhẹ, âm nhạc thư giãn, giúp bạn hoàn toàn tách biệt khỏi nhịp sống hối hả. Đội ngũ nhân viên tận tâm, chuyên nghiệp luôn sẵn sàng tư vấn và đồng hành cùng bạn trên hành trình chăm sóc sức khỏe và sắc đẹp.</p><br><p>Hãy đến với <b>Spring Spa & Clinic</b> để trải nghiệm dịch vụ đẳng cấp và tận hưởng những phút giây thư giãn tuyệt vời. Đặt lịch ngay hôm nay qua số điện thoại <b>0919.383.344</b> để nhận nhiều ưu đãi hấp dẫn!</p>",
+  "seo_title": "Spring Spa & Clinic – Massage, Chăm sóc da, Gội đầu dưỡng sinh Q.10",
+  "seo_description": "Spring Spa & Clinic tại Q.10, TP.HCM cung cấp dịch vụ massage body, chăm sóc da mặt, gội đầu dưỡng sinh chuyên nghiệp. Đặt lịch ngay: 0919.383.344.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "300.000đ - 1.500.000đ",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Massage body",
         "price": "500k-1.5 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Liệu trình massage body giúp giảm căng cơ, thư giãn sâu và lưu thông khí huyết."
       },
       {
         "id": "s2",
         "name": "Chăm sóc da mặt",
         "price": "400k-1.2 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Chăm sóc da mặt chuyên sâu với công nghệ hiện đại, phù hợp mọi loại da."
       },
       {
         "id": "s3",
         "name": "Gội đầu dưỡng sinh",
         "price": "300k-800k",
-        "status": "active"
+        "status": "active",
+        "description": "Gội đầu dưỡng sinh kết hợp massage thư giãn, giúp tinh thần sảng khoái và tóc chắc khỏe."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

@@ -1,0 +1,58 @@
+{
+  "name": "Thẩm mỹ viện Sothic",
+  "slug": "tham-my-vien-sothic",
+  "address": "283/29 Cách Mạng Tháng 8, P.12, Q.10",
+  "phone": "0903.177.798",
+  "zalo": null,
+  "email": "tuvan@sothic.vn",
+  "website": "sothic.vn",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Phòng khám chuyên khoa da liễu Sothic chuyên sâu điều trị mụn, nám, sẹo rỗ với bác sĩ trực tiếp thăm khám và phác đồ điều trị riêng biệt.",
+  "description": "<b>Thẩm mỹ viện Sothic</b> là phòng khám chuyên khoa da liễu uy tín tại địa chỉ 283/29 Cách Mạng Tháng 8, P.12, Q.10, TP.HCM. Với giấy phép hoạt động số 04772/HCM-GPHĐ, Sothic cam kết mang đến dịch vụ điều trị da liễu chất lượng cao, an toàn và hiệu quả.<br><br><b>Đội ngũ bác sĩ chuyên khoa</b> trực tiếp thăm khám, xác định nguyên nhân và xây dựng phác đồ điều trị riêng cho từng khách hàng. Không áp dụng gói chung cho mọi người, mỗi liệu trình đều được cá nhân hóa dựa trên tình trạng da thực tế.<br><br><b>Các dịch vụ nổi bật</b> tại Sothic bao gồm:<br>- <b>Trị mụn chuyên sâu</b>: 3-10 triệu đồng<br>- <b>Trị nám</b>: 8-25 triệu đồng<br>- <b>Trẻ hóa da RF</b>: 10-30 triệu đồng<br><br>Quy trình điều trị tại Sothic bắt đầu bằng thăm khám và soi da, sau đó bác sĩ sẽ phân loại tình trạng cụ thể như mụn viêm, nám và sắc tố, sẹo rỗ sau mụn, da lão hóa. Từ đó, bác sĩ chỉ định phương pháp phù hợp và theo dõi xuyên suốt quá trình điều trị, điều chỉnh phác đồ khi cần thiết.<br><br><b>Không gian phòng khám</b> được thiết kế sang trọng, ấm cúng với các khu vực riêng biệt: khu tiếp nhận, phòng khám, phòng thủ thuật và khu nghỉ chăm sóc da sau thủ thuật. Trang thiết bị laser hiện đại được vận hành bởi bác sĩ, đảm bảo hiệu quả và an toàn tối đa.<br><br>Đến với Sothic, bạn sẽ được tư vấn online miễn phí cùng bác sĩ, trao đổi đủ thời gian trước khi quyết định điều trị. Hãy để Sothic đồng hành cùng bạn trên hành trình chinh phục làn da khỏe đẹp.",
+  "seo_title": "Thẩm mỹ viện Sothic - Trị mụn, nám, sẹo rỗ",
+  "seo_description": "Phòng khám da liễu Sothic chuyên sâu trị mụn, nám, sẹo rỗ, trẻ hóa da RF. Bác sĩ trực tiếp thăm khám, phác đồ riêng. Đặt lịch ngay!",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "https://sothic.vn/bieu-tuong-sothic-32.png",
+    "banners": [
+      "https://sothic.vn/og-sothic.png"
+    ],
+    "gallery": [
+      "https://sothic.vn/og-sothic.png"
+    ],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "3.000.000đ - 30.000.000đ",
+    "amenities": [],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Trị mụn chuyên sâu",
+        "price": "3-10 triệu",
+        "status": "active",
+        "description": "Điều trị mụn theo mức độ tổn thương, bác sĩ xác định nguyên nhân và phối hợp thuốc với thủ thuật."
+      },
+      {
+        "id": "s2",
+        "name": "Trị nám",
+        "price": "8-25 triệu",
+        "status": "active",
+        "description": "Điều trị nám theo loại và độ sâu sắc tố, làm mờ nám và kiểm soát tái phát."
+      },
+      {
+        "id": "s3",
+        "name": "Trẻ hóa da RF",
+        "price": "10-30 triệu",
+        "status": "active",
+        "description": "Sử dụng công nghệ RF để trẻ hóa da, cải thiện độ đàn hồi và nếp nhăn."
+      }
+    ],
+    "deals": []
+  }
+}

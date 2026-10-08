@@ -5,18 +5,17 @@
   "phone": "028.3925.1990",
   "email": "info@stamfordclinic.com",
   "website": "stamfordskin.com",
-  "short_description": "Phòng khám chuyên khoa da liễu chuẩn quốc tế, điều trị nám, mụn và trẻ hóa da hiệu quả.",
-  "description": "<b>Stamford Skin Centre (SSC)</b> là phòng khám chuyên khoa da liễu do tập đoàn Stamford Healthcare Ltd đầu tư và xây dựng theo tiêu chuẩn quốc tế từ năm 2006. Tọa lạc tại 99 Sương Nguyệt Ánh, Quận 1, TP.HCM, phòng khám tự hào mang đến dịch vụ chăm sóc da y khoa hàng đầu.<br><br>Với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm, SSC cung cấp các giải pháp điều trị nám, tàn nhang, mụn, sẹo rỗ và trẻ hóa da bằng công nghệ laser Pico Plus tiên tiến. Phòng khám cam kết mang lại hiệu quả cao, an toàn và ít xâm lấn, giúp khách hàng tự tin tỏa sáng.<br><br>Khách hàng đã tin tưởng và hài lòng với kết quả điều trị tại Stamford, như chia sẻ của một khách hàng: 'Sau quy trình điều trị gần 10 lần, da tôi đã hết nám. Tôi thật lòng cảm ơn bác sĩ Cường và y tá Tiên.'<br><br>Hãy đến với Stamford Skin Centre để trải nghiệm dịch vụ chăm sóc da đẳng cấp và tận tâm.",
-  "seo_title": "Stamford Skin Centre - Chuyên Khoa Da Liễu Uy Tín Q.1",
-  "seo_description": "Stamford Skin Centre - Phòng khám da liễu chuẩn quốc tế tại Q.1, TP.HCM. Điều trị nám, mụn, trẻ hóa da bằng laser. Đặt lịch ngay hôm nay!",
+  "short_description": "Phòng khám chuyên khoa da liễu hàng đầu tại TP.HCM, cung cấp dịch vụ chăm sóc da y khoa, trị mụn/nám và trẻ hóa da bằng laser.",
+  "description": "<b>Stamford Skin Centre (SSC)</b> là phòng khám chuyên khoa da liễu được tập đoàn Stamford Healthcare Ltd đầu tư và xây dựng theo tiêu chuẩn quốc tế từ năm 2006. Phòng khám luôn hướng đến sự hoàn hảo trong dịch vụ chăm sóc y khoa để không ngừng nâng cao sức khoẻ và chất lượng cuộc sống của mọi người.<br><br>Với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm, Stamford Skin Centre cung cấp các dịch vụ đa dạng từ khám và điều trị bệnh da liễu đến thẩm mỹ da công nghệ cao. Đặc biệt, phòng khám tự hào là địa chỉ uy tín trong điều trị nám, tàn nhang, xóa xăm và trẻ hóa da bằng công nghệ laser Pico Plus tiên tiến, được chứng minh lâm sàng về hiệu quả và độ an toàn.<br><br>Stamford Skin Centre cam kết mang đến cho khách hàng những phác đồ điều trị cá nhân hóa, giúp làn da khỏe đẹp từ sâu bên trong. Hãy đến với chúng tôi để trải nghiệm dịch vụ chăm sóc da chuyên nghiệp và tận tâm.",
+  "seo_title": "Stamford Skin Centre - Chuyên Khoa Da Liễu & Thẩm Mỹ Da",
+  "seo_description": "Stamford Skin Centre: Phòng khám da liễu hàng đầu tại TP.HCM. Điều trị mụn, nám, trẻ hóa da bằng laser. Đặt lịch: 028.3925.1990.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "https://stamfordskin.com/wp-content/uploads/2017/12/cropped-logo_vi-address-number-1-32x32.png",
+    "banners": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
     "services": [
       {
         "id": "s1",

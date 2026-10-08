@@ -57,9 +57,16 @@ async function run() {
         });
         
         images = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('img'))
-            .map(i => i.src)
-            .filter(src => src && src.startsWith('http') && !src.includes('logo') && !src.includes('icon'));
+          const ogImage = document.querySelector('meta[property="og:image"]')?.content;
+          const ogLogo = document.querySelector('meta[property="og:logo"]')?.content;
+          const icon = document.querySelector('link[rel="icon"]')?.href || document.querySelector('link[rel="shortcut icon"]')?.href;
+          
+          let result = [];
+          if (ogImage && ogImage.startsWith('http')) result.push({ type: 'banner', url: ogImage });
+          if (ogLogo && ogLogo.startsWith('http')) result.push({ type: 'logo', url: ogLogo });
+          else if (icon && icon.startsWith('http')) result.push({ type: 'logo', url: icon });
+          
+          return result;
         });
         
         await browser.close();
@@ -81,21 +88,37 @@ async function run() {
     Scraped text from website (may be empty or dirty):
     ${pageText.substring(0, 3000)}
 
-    Found Images:
-    ${images.slice(0, 10).join('\n')}
+    Found OpenGraph Images/Logos:
+    ${JSON.stringify(images)}
 
     Return a JSON object strictly matching this format. Output ONLY valid JSON, no markdown blocks.
+    IMPORTANT RULES FOR IMAGES:
+    1. For 'banners', use the 'banner' url from Found Images. If none found or if it's a temporary facebook link, YOU MUST return an empty array []. DO NOT use any placeholders or stock images.
+    2. For 'logo_url', use the 'logo' url from Found Images. If none found, return an empty string "". DO NOT use any placeholders.
     {
       "name": "${item.name}",
       "slug": "<generate-seo-friendly-slug-without-diacritics>",
       "short_description": "<1-2 engaging sentences>",
-      "description": "<detailed HTML string, beautiful PR article about the brand, use <b> and <br>>",
+      "description": "<detailed PR article about the brand, ONLY plain text with \\n for newlines, DO NOT use HTML tags like <b> or <br>>",
       "seo_title": "<seo title, max 60 chars>",
       "seo_description": "<seo description, max 160 chars>",
+      "phone": "<extract phone from text if provided phone is invalid/missing, else use provided. If NOT FOUND AT ALL, leave it empty. DO NOT use fake numbers>",
+      "zalo": "<extract zalo phone number if any, else empty string>",
+      "socials": {
+        "facebook": "<facebook url if found, else empty string>",
+        "tiktok": "<tiktok url if found, else empty string>",
+        "youtube": "<youtube url if found, else empty string>",
+        "instagram": "<instagram url if found, else empty string>"
+      },
+      "working_hours": "<extract working hours, else default to '08:00 - 20:00 (Thứ 2 - Chủ Nhật)'>",
+      "price_range": "<extract price range, e.g. '100.000đ - 5.000.000đ' or '$$ - $$$', else empty string>",
+      "amenities": ["<list of amenities like 'Có chỗ đậu xe', 'Wifi miễn phí' if found, else empty array>"],
       "services": [
-         { "id": "s1", "name": "<Service name>", "price": "<price>", "status": "active" }
+         { "id": "s1", "name": "<Service name>", "price": "<price>", "status": "active", "description": "<brief description if any>" }
       ],
+      "deals": ["<list of deals or promotions found, else empty array>"],
       "banners": ["<pick 2 valid URLs from Found Images, or return empty array if none valid>"],
+      "gallery": ["<pick up to 5 valid URLs from Found Images for gallery, else empty array>"],
       "logo_url": ""
     }`;
 
@@ -122,9 +145,11 @@ async function run() {
       name: item.name,
       slug: aiData.slug,
       address: item.address,
-      phone: item.phone,
+      phone: aiData.phone || item.phone,
+      zalo: aiData.zalo || null,
       email: item.email || (aiData.slug + "@1booking.asia"),
       website: item.website || null,
+      socials: aiData.socials || null,
       short_description: aiData.short_description,
       description: aiData.description,
       seo_title: aiData.seo_title,
@@ -133,11 +158,14 @@ async function run() {
       is_featured: false,
       plan_tier: 'premium',
       page_content: {
-        logo_url: aiData.logo_url || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200',
-        banners: (aiData.banners && aiData.banners.length > 0) ? aiData.banners : ['https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600'],
+        logo_url: aiData.logo_url || '',
+        banners: (aiData.banners && aiData.banners.length > 0) ? aiData.banners : [],
+        gallery: (aiData.gallery && aiData.gallery.length > 0) ? aiData.gallery : [],
+        working_hours: aiData.working_hours || "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+        price_range: aiData.price_range || '',
+        amenities: aiData.amenities || [],
         services: (aiData.services && aiData.services.length > 0) ? aiData.services : (item.services || []).map((s,i) => ({ id: 's'+i, name: s.name, price: s.price, status: 'active'})),
-        deals: [],
-        gallery: []
+        deals: aiData.deals || []
       }
     };
 

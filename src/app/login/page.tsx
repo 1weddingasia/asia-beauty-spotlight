@@ -137,7 +137,7 @@ function LoginContent() {
             Nền Tảng Quản Lý<br />Dành Cho Đối Tác
           </h1>
           <p className="text-champagne/80 text-lg leading-relaxed mb-8">
-            Tham gia mạng lưới hơn 10.000+ Spa, Thẩm mỹ viện uy tín trên toàn quốc. Đưa dịch vụ của bạn đến gần hơn với hàng triệu khách hàng tiềm năng.
+            Tham gia mạng lưới hơn 10.000+ Doanh nghiệp & Dịch vụ uy tín trên toàn quốc. Đưa thương hiệu của bạn đến gần hơn với hàng triệu khách hàng tiềm năng.
           </p>
           
           <div className="flex items-center justify-center gap-4 text-sm font-semibold text-white/90">

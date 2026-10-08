@@ -3,41 +3,52 @@
   "slug": "mon-ami-spa",
   "address": "163/1 Tô Hiến Thành, P.13, Q.10",
   "phone": "0764.208.777",
+  "zalo": null,
   "email": "monami@1booking.asia",
   "website": "monamispa.vn",
-  "short_description": "Mon Ami Spa mang đến không gian thư giãn đẳng cấp với các liệu trình chăm sóc da, massage đá nóng và gội đầu dưỡng sinh chuyên sâu.",
-  "description": "<b>Mon Ami Spa</b> – điểm hẹn làm đẹp và thư giãn lý tưởng tại trung tâm Quận 10, TP.HCM.<br><br>Tọa lạc tại <b>163/1 Tô Hiến Thành, P.13, Q.10</b>, Mon Ami Spa tự hào là địa chỉ tin cậy của hàng ngàn khách hàng yêu thích sự chăm sóc tận tâm và không gian yên tĩnh, sang trọng.<br><br>Với đội ngũ kỹ thuật viên giàu kinh nghiệm, chúng tôi cung cấp các dịch vụ đa dạng từ <b>gội đầu dưỡng sinh</b> giúp thư giãn tinh thần, <b>chăm sóc da</b> chuyên sâu mang lại làn da rạng rỡ, đến <b>massage đá nóng</b> giúp lưu thông khí huyết và giảm căng thẳng hiệu quả.<br><br>Hãy đến với Mon Ami Spa để trải nghiệm dịch vụ chất lượng với mức giá hợp lý, phù hợp với mọi nhu cầu. Đặt hẹn ngay hôm nay qua số điện thoại <b>0764.208.777</b> để nhận ưu đãi đặc biệt!",
-  "seo_title": "Mon Ami Spa - Chăm sóc da, massage đá nóng Q.10",
-  "seo_description": "Mon Ami Spa tại 163/1 Tô Hiến Thành, P.13, Q.10. Dịch vụ gội đầu dưỡng sinh, chăm sóc da, massage đá nóng. Đặt hẹn: 0764.208.777.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Mon Ami Spa - Địa chỉ chăm sóc sắc đẹp và thư giãn hàng đầu tại Quận 10, TP.HCM. Chúng tôi mang đến các liệu trình gội đầu dưỡng sinh, chăm sóc da và massage đá nóng giúp bạn tái tạo năng lượng và tỏa sáng.",
+  "description": "<b>Mon Ami Spa</b> - Thiên đường thư giãn giữa lòng Sài Gòn<br><br>Tọa lạc tại địa chỉ <b>163/1 Tô Hiến Thành, P.13, Q.10</b>, Mon Ami Spa là điểm đến lý tưởng cho những ai đang tìm kiếm sự thư thái và chăm sóc sắc đẹp toàn diện. Với không gian ấm cúng, sang trọng cùng đội ngũ nhân viên chuyên nghiệp, chúng tôi cam kết mang đến cho bạn những trải nghiệm tuyệt vời nhất.<br><br><b>Dịch vụ nổi bật:</b><br>- <b>Gội đầu dưỡng sinh:</b> Thư giãn tinh thần, giảm căng thẳng, kích thích mọc tóc tự nhiên.<br>- <b>Chăm sóc da:</b> Các liệu trình chuyên sâu giúp làn da sáng khỏe, mịn màng.<br>- <b>Massage đá nóng:</b> Đá nóng kết hợp tinh dầu giúp lưu thông khí huyết, giảm đau mỏi hiệu quả.<br><br>Hãy đến với Mon Ami Spa để tận hưởng những phút giây thư giãn đích thực và nâng niu vẻ đẹp của bạn!",
+  "seo_title": "Mon Ami Spa - Gội đầu dưỡng sinh, chăm sóc da, massage đá nóng Q.10",
+  "seo_description": "Mon Ami Spa tại 163/1 Tô Hiến Thành, P.13, Q.10. Chuyên gội đầu dưỡng sinh, chăm sóc da, massage đá nóng. Đặt lịch ngay: 0764.208.777.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "250.000đ - 1.500.000đ",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Gội đầu dưỡng sinh",
         "price": "250k-700k",
-        "status": "active"
+        "status": "active",
+        "description": "Thư giãn tinh thần, giảm căng thẳng, kích thích mọc tóc tự nhiên."
       },
       {
         "id": "s2",
         "name": "Chăm sóc da",
         "price": "400k-1.2 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Các liệu trình chuyên sâu giúp làn da sáng khỏe, mịn màng."
       },
       {
         "id": "s3",
         "name": "Massage đá nóng",
         "price": "500k-1.5 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Đá nóng kết hợp tinh dầu giúp lưu thông khí huyết, giảm đau mỏi hiệu quả."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

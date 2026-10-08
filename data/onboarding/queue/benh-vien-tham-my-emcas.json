@@ -3,42 +3,52 @@
   "slug": "benh-vien-tham-my-emcas",
   "address": "14/27 Hoàng Dư Khương, P. Hoà Hưng, Q.10",
   "phone": "0903.082.836",
+  "zalo": null,
   "email": "lienhe@emcas.com.vn",
   "website": "emcas.vn",
-  "short_description": "Bệnh viện Thẩm mỹ EMCAS là địa chỉ uy tín hàng đầu tại TP.HCM với đội ngũ bác sĩ chuyên khoa và công nghệ hiện đại, mang đến vẻ đẹp tự nhiên và an toàn.",
-  "description": "<b>Bệnh viện Thẩm mỹ EMCAS</b> tự hào là trung tâm phẫu thuật thẩm mỹ toàn diện, cung cấp các dịch vụ làm đẹp chất lượng cao như nâng ngực, hút mỡ, phẫu thuật mũi và nhiều dịch vụ khác.<br><br>Với đội ngũ bác sĩ giàu kinh nghiệm và hệ thống trang thiết bị tiên tiến, EMCAS cam kết mang lại kết quả thẩm mỹ hoàn hảo và an toàn cho khách hàng. <br><br>Chúng tôi luôn cập nhật những công nghệ mới nhất trong ngành thẩm mỹ, điển hình là công nghệ tế bào gốc, giúp trẻ hóa làn da và điều trị sẹo rỗ hiệu quả.<br><br>Hãy đến với EMCAS để được tư vấn miễn phí và trải nghiệm dịch vụ đẳng cấp.<br><br>Địa chỉ: 14/27 Hoàng Dư Khương, P. Hoà Hưng, Q.10, TP.HCM<br>Hotline: 0903.082.836",
-  "seo_title": "Bệnh viện Thẩm mỹ EMCAS - Nâng ngực, hút mỡ, phẫu thuật mũi uy tín",
-  "seo_description": "Bệnh viện Thẩm mỹ EMCAS tại Q.10, TP.HCM chuyên nâng ngực, hút mỡ, phẫu thuật mũi với bác sĩ giàu kinh nghiệm, giá hợp lý, an toàn tuyệt đối.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Bệnh viện Thẩm mỹ EMCAS là trung tâm phẫu thuật thẩm mỹ toàn diện với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm, mang đến kết quả thẩm mỹ an toàn và tự nhiên.",
+  "description": "<b>Bệnh viện Thẩm mỹ EMCAS</b> tự hào là một trong những địa chỉ thẩm mỹ uy tín hàng đầu tại TP.HCM, chuyên cung cấp các dịch vụ phẫu thuật thẩm mỹ và chăm sóc sắc đẹp chất lượng cao.<br><br>Với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm cùng hệ thống cơ sở vật chất hiện đại, EMCAS cam kết mang đến cho khách hàng những trải nghiệm an toàn, thoải mái và kết quả thẩm mỹ vượt trội.<br><br>Các dịch vụ nổi bật tại EMCAS bao gồm: <b>Nâng ngực</b>, <b>Hút mỡ</b>, <b>Phẫu thuật mũi</b>, Thẩm mỹ mắt, Nâng mông SVF, Trồng răng Implant 24H, Thẩm mỹ da, Giảm cân khoa học, Tiêm mỡ toàn mặt SVF và nhiều dịch vụ khác.<br><br>EMCAS không ngừng cập nhật công nghệ tiên tiến, ứng dụng tế bào gốc trong làm đẹp và điều trị sẹo rỗ, nám da, mang lại làn da tươi trẻ và vóc dáng hoàn hảo cho khách hàng.<br><br>Hãy đến với <b>Bệnh viện Thẩm mỹ EMCAS</b> để được tư vấn miễn phí và trải nghiệm dịch vụ đẳng cấp!",
+  "seo_title": "Bệnh viện Thẩm mỹ EMCAS - Nâng ngực, Hút mỡ, Phẫu thuật mũi",
+  "seo_description": "Bệnh viện Thẩm mỹ EMCAS tại Q.10, TP.HCM chuyên nâng ngực, hút mỡ, phẫu thuật mũi với bác sĩ chuyên khoa. Tư vấn miễn phí: 0903.082.836.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://www.emcas.vn/upload/images/banner-web/banner-uu-dai-hut-mo-emcas.webp",
-      "https://www.emcas.vn/upload/images/banner-web/banner-home-t10-2026.webp"
-    ],
+    "logo_url": "https://www.emcas.vn/html/assets/images/icons/192x192.png",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "35.000.000đ - 90.000.000đ",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Nâng ngực",
         "price": "60-90 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Phẫu thuật nâng ngực an toàn, thẩm mỹ, giúp vòng 1 căng tròn tự nhiên."
       },
       {
         "id": "s2",
         "name": "Hút mỡ",
         "price": "40-80 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Hút mỡ bụng, đùi, cánh tay hiệu quả, loại bỏ mỡ thừa, định hình vóc dáng."
       },
       {
         "id": "s3",
         "name": "Phẫu thuật mũi",
         "price": "35-70 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Nâng mũi S-line, thẩm mỹ mũi đẹp tự nhiên, hài hòa với khuôn mặt."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

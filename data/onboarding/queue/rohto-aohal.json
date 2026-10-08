@@ -3,22 +3,30 @@
   "slug": "rohto-aohal",
   "address": "139 Tôn Dật Tiên, P. Tân Phú, Q.7",
   "phone": "028.5412.1577",
+  "zalo": null,
   "email": "rohto.aoahal@gmail.com",
   "website": "rohto-aoahal.com.vn",
-  "short_description": "ROHTO AOHAL là thương hiệu chăm sóc sức khỏe và sắc đẹp hàng đầu Nhật Bản, mang đến giải pháp toàn diện cho làn da và cơ thể.",
-  "description": "<b>ROHTO AOHAL</b> – Thương hiệu uy tín đến từ Nhật Bản, tự hào mang đến những sản phẩm chăm sóc sức khỏe và sắc đẹp chất lượng cao.<br><br>Với bề dày kinh nghiệm và công nghệ tiên tiến, ROHTO AOHAL cam kết mang lại hiệu quả vượt trội, an toàn cho người sử dụng.<br><br>Địa chỉ: 139 Tôn Dật Tiên, P. Tân Phú, Q.7<br>Điện thoại: 028.5412.1577<br><br>Hãy đến với ROHTO AOHAL để trải nghiệm sự khác biệt!",
-  "seo_title": "ROHTO AOHAL - Chăm sóc sức khỏe & sắc đẹp Nhật Bản",
-  "seo_description": "ROHTO AOHAL tại 139 Tôn Dật Tiên, Q.7. Thương hiệu Nhật Bản với sản phẩm chăm sóc sức khỏe và sắc đẹp chất lượng cao. Liên hệ 028.5412.1577.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "ROHTO AOHAL là thương hiệu chăm sóc sức khỏe và sắc đẹp hàng đầu tại Quận 7, TP.HCM, cung cấp các sản phẩm chất lượng cao từ Nhật Bản.",
+  "description": "<b>ROHTO AOHAL</b> là điểm đến tin cậy cho những ai quan tâm đến sức khỏe và sắc đẹp tại địa chỉ 139 Tôn Dật Tiên, Phường Tân Phú, Quận 7, TP. Hồ Chí Minh.<br><br>Với uy tín và chất lượng đến từ thương hiệu Nhật Bản, ROHTO AOHAL mang đến các giải pháp chăm sóc da, sức khỏe toàn diện, đáp ứng nhu cầu đa dạng của khách hàng.<br><br>Đội ngũ nhân viên chuyên nghiệp, tận tâm cùng không gian mua sắm hiện đại, ROHTO AOHAL cam kết mang lại trải nghiệm hài lòng nhất cho khách hàng khi ghé thăm.",
+  "seo_title": "ROHTO AOHAL - Chăm sóc sức khỏe & sắc đẹp Quận 7",
+  "seo_description": "ROHTO AOHAL tại 139 Tôn Dật Tiên, P. Tân Phú, Q.7, TP.HCM. Cung cấp sản phẩm chăm sóc sức khỏe và sắc đẹp chất lượng cao từ Nhật Bản.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
     "services": [],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

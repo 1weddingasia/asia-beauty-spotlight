@@ -1,0 +1,54 @@
+{
+  "name": "Gà Spa",
+  "slug": "ga-spa-quan-10",
+  "address": "200 Đường 3/2, P.12, Q.10",
+  "phone": "1900.9424",
+  "zalo": null,
+  "email": "gaspavn@gmail.com",
+  "website": "gaspa.vn",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Gà Spa - Địa chỉ làm đẹp uy tín tại Quận 10 với dịch vụ trị mụn chuyên sâu, chăm sóc da và triệt lông an toàn, hiệu quả.",
+  "description": "<b>Gà Spa</b> là điểm đến lý tưởng cho làn da của bạn tại địa chỉ 200 Đường 3/2, Phường 12, Quận 10, TP.HCM. Với phương châm mang đến vẻ đẹp tự nhiên và bền vững, chúng tôi chuyên cung cấp các dịch vụ <b>trị mụn chuyên sâu</b>, <b>chăm sóc da</b> và <b>triệt lông</b> bằng công nghệ hiện đại, an toàn cho mọi loại da.<br><br>Đội ngũ kỹ thuật viên giàu kinh nghiệm tại Gà Spa sẽ tận tình tư vấn và điều trị dứt điểm các vấn đề về mụn, giúp bạn sở hữu làn da sáng khỏe, mịn màng. Không gian spa ấm cúng, sạch sẽ cùng mức giá hợp lý từ 500.000đ đến 5.000.000đ chắc chắn sẽ làm hài lòng cả những khách hàng khó tính nhất.<br><br>Hãy đến Gà Spa để trải nghiệm dịch vụ làm đẹp đẳng cấp và nhận những ưu đãi hấp dẫn!",
+  "seo_title": "Gà Spa - Trị mụn, Chăm sóc da, Triệt lông tại Quận 10",
+  "seo_description": "Gà Spa tại 200 Đường 3/2, P.12, Q.10 chuyên trị mụn chuyên sâu, chăm sóc da và triệt lông an toàn, hiệu quả. Giá từ 500k. LH 1900.9424.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "500.000đ - 5.000.000đ",
+    "amenities": [],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Trị mụn chuyên sâu",
+        "price": "1-5 triệu",
+        "status": "active",
+        "description": "Điều trị mụn hiệu quả, ngăn ngừa tái phát, phù hợp mọi loại da."
+      },
+      {
+        "id": "s2",
+        "name": "Chăm sóc da",
+        "price": "500k-3 triệu",
+        "status": "active",
+        "description": "Chăm sóc da mặt chuyên sâu, giúp da sáng khỏe, se khít lỗ chân lông."
+      },
+      {
+        "id": "s3",
+        "name": "Triệt lông",
+        "price": "1-4 triệu",
+        "status": "active",
+        "description": "Triệt lông vĩnh viễn bằng công nghệ cao, an toàn, không đau rát."
+      }
+    ],
+    "deals": []
+  }
+}

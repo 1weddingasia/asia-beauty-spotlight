@@ -3,22 +3,30 @@
   "slug": "nitipon-clinic-viet-nam",
   "address": "1058 Nguyễn Văn Linh, P. Tân Phong, Q.7",
   "phone": "1800.6194",
+  "zalo": null,
   "email": "info@nitiponclinic.vn",
   "website": "nitiponclinic.vn",
-  "short_description": "Nitipon Clinic Việt Nam mang đến giải pháp thẩm mỹ an toàn, hiệu quả với công nghệ tiên tiến và đội ngũ chuyên gia hàng đầu.",
-  "description": "<b>Nitipon Clinic Việt Nam</b> là địa chỉ thẩm mỹ uy tín tại Quận 7, TP.HCM, tọa lạc tại <b>1058 Nguyễn Văn Linh, P. Tân Phong</b>. Với sứ mệnh mang đến vẻ đẹp tự nhiên và rạng rỡ, chúng tôi không ngừng cập nhật những công nghệ thẩm mỹ tiên tiến nhất từ Hàn Quốc và Thái Lan.<br><br>Đội ngũ bác sĩ tại Nitipon Clinic đều là những chuyên gia giàu kinh nghiệm, được đào tạo bài bản, cam kết mang lại kết quả tối ưu và an toàn tuyệt đối cho khách hàng. Chúng tôi cung cấp đa dạng dịch vụ từ chăm sóc da, điều trị nám, trẻ hóa da đến phẫu thuật thẩm mỹ.<br><br>Hãy đến với Nitipon Clinic Việt Nam để trải nghiệm không gian sang trọng, dịch vụ tận tâm và nhận được tư vấn chuyên nghiệp. Liên hệ ngay <b>1800.6194</b> để được hỗ trợ!",
-  "seo_title": "Nitipon Clinic Việt Nam - Thẩm Mỹ Uy Tín Quận 7",
-  "seo_description": "Nitipon Clinic Việt Nam tại 1058 Nguyễn Văn Linh, Q.7. Dịch vụ thẩm mỹ an toàn, công nghệ tiên tiến. Hotline 1800.6194.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Nitipon Clinic Việt Nam - Thẩm mỹ viện hàng đầu tại Quận 7, TP.HCM với công nghệ Hàn Quốc và đội ngũ bác sĩ chuyên nghiệp.",
+  "description": "<b>Nitipon Clinic Việt Nam</b> là thẩm mỹ viện uy tín tọa lạc tại địa chỉ 1058 Nguyễn Văn Linh, P. Tân Phong, Q.7, TP.HCM. Với phương châm mang đến vẻ đẹp tự nhiên và an toàn, Nitipon Clinic tự hào là địa chỉ làm đẹp được nhiều khách hàng tin tưởng lựa chọn.<br><br>Chúng tôi sở hữu đội ngũ bác sĩ giàu kinh nghiệm, được đào tạo bài bản tại Hàn Quốc, cùng hệ thống trang thiết bị hiện đại, nhập khẩu 100%. Các dịch vụ nổi bật tại Nitipon Clinic bao gồm: <b>nâng mũi, cắt mí, độn cằm, hút mỡ, nâng ngực, trẻ hóa da, điều trị mụn</b> và nhiều liệu trình chăm sóc da chuyên sâu khác.<br><br>Đến với Nitipon Clinic, khách hàng sẽ được tư vấn tận tình, thiết kế phác đồ điều trị cá nhân hóa, đảm bảo mang lại kết quả hài lòng và an toàn tuyệt đối. Hãy liên hệ ngay qua hotline <b>1800.6194</b> để được hỗ trợ và đặt lịch hẹn!",
+  "seo_title": "Nitipon Clinic Việt Nam - Thẩm Mỹ Viện Quận 7 Uy Tín",
+  "seo_description": "Nitipon Clinic Việt Nam tại 1058 Nguyễn Văn Linh, Q.7. Dịch vụ thẩm mỹ Hàn Quốc: nâng mũi, cắt mí, trẻ hóa da. Hotline 1800.6194. Đặt lịch ngay!",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
     "services": [],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

@@ -5,19 +5,19 @@
   "phone": "028.3520.8108 - 1900.636.099",
   "email": "service@anamqtspa.com",
   "website": "anamqtspa.com",
-  "short_description": "Anam QT Spa - Ốc đảo bình yên giữa lòng thành phố, nơi bạn tìm thấy sự thư giãn và chữa lành.",
-  "description": "<p><b>Anam QT Spa</b> – Cảm xúc thú vị từ bước chân đầu tiên. Tọa lạc tại trung tâm Quận 1, TP.HCM, Anam QT Spa là điểm đến lý tưởng cho những ai tìm kiếm một không gian yên bình, tĩnh lặng để thư giãn và tái tạo năng lượng.</p><br><p>Với không gian kiến trúc độc đáo, Anam QT Spa mang đến cảm giác như lạc vào một ốc đảo làm đẹp bình yên giữa lòng thành phố nhộn nhịp. Nơi đây, thời gian như ngừng lại, nhường chỗ cho những giây phút thư thái đích thực.</p><br><p>Anam QT Spa cung cấp đa dạng dịch vụ chăm sóc sức khỏe và sắc đẹp cao cấp, từ massage trị liệu, xông hơi đá muối Himalaya đến chăm sóc da mặt chuyên sâu. Đội ngũ chuyên viên tận tâm và giàu kinh nghiệm sẽ mang đến cho bạn những trải nghiệm tuyệt vời nhất.</p><br><p>Hãy đến với Anam QT Spa để tận hưởng những khoảnh khắc đáng nhớ, chăm sóc bản thân và tìm lại sự cân bằng trong cuộc sống.</p>",
-  "seo_title": "Anam QT Spa - Ốc đảo bình yên giữa lòng thành phố",
-  "seo_description": "Anam QT Spa tại 26/1-2 Lê Thánh Tôn, Q.1, TP.HCM. Dịch vụ massage trị liệu, xông hơi đá muối Himalaya, chăm sóc da mặt cao cấp. Đặt hẹn ngay!",
+  "short_description": "Anam QT Spa - Ốc đảo làm đẹp bình yên giữa lòng thành phố, nơi bạn tìm thấy sự thư giãn và chữa lành.",
+  "description": "<b>Anam QT Spa</b> – cảm xúc thú vị từ bước chân đầu tiên. Nơi thời gian ngừng lại, một thiên đường của cảm giác, một không gian mộng giữa thế giới thực.<br><br>Đến với <b>Anam QT Spa</b>, bạn sẽ được trải nghiệm không gian riêng tư, ấm cúng, cùng các liệu trình chăm sóc sức khỏe và sắc đẹp cao cấp. Chúng tôi tự hào mang đến:<br>- <b>Massage trị liệu</b> giúp thư giãn sâu, giảm căng thẳng mệt mỏi.<br>- <b>Xông hơi đá muối Himalaya</b> thanh lọc cơ thể, tái tạo năng lượng.<br>- <b>Chăm sóc da mặt cao cấp</b> với các sản phẩm an toàn, hiệu quả.<br><br>Ngoài ra, Anam QT Spa còn có các dịch vụ spa cho tóc và da đầu, hồ ngâm thủy lực, và không gian riêng tư cho các dịp đặc biệt. Đặc biệt, chương trình <b>Happy Hour 666k</b> từ 10:00 - 14:00 mỗi ngày sẽ mang đến cho bạn những phút giây thư giãn tuyệt vời với chi phí hợp lý.<br><br>Hãy để <b>Anam QT Spa</b> kiến tạo những khoảnh khắc đáng nhớ cho bạn. Chúng tôi luôn chào đón bạn!",
+  "seo_title": "Anam QT Spa - Massage trị liệu & Chăm sóc da cao cấp Q1",
+  "seo_description": "Anam QT Spa tại 26/1-2 Lê Thánh Tôn, Q.1, TP.HCM. Massage trị liệu, xông hơi đá muối Himalaya, chăm sóc da mặt cao cấp. Đặt hẹn ngay!",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "logo_url": "https://theme.hstatic.net/200000715841/1001166346/14/favicon.png?v=1967",
     "banners": [
-      "https://theme.hstatic.net/200000715841/1001166346/14/bannerdesktopallimg11.png?v=1967",
-      "https://theme.hstatic.net/200000715841/1001166346/14/showbanertheimg1.png?v=1967"
+      "http://theme.hstatic.net/200000715841/1001166346/14/share_fb_home.png?v=1967"
     ],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
     "services": [
       {
         "id": "s1",

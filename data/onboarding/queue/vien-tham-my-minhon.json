@@ -3,22 +3,30 @@
   "slug": "vien-tham-my-minhon",
   "address": "829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7",
   "phone": "0903.625.578",
+  "zalo": null,
   "email": "minhon@1booking.asia",
   "website": "minhon.vn",
-  "short_description": "Viện Thẩm Mỹ Minhon tại Quận 7, TP.HCM chuyên cung cấp các dịch vụ làm đẹp và chăm sóc sắc đẹp chất lượng cao. Với đội ngũ chuyên viên giàu kinh nghiệm, chúng tôi cam kết mang đến cho bạn vẻ đẹp rạng rỡ và tự tin.",
-  "description": "<b>Viện Thẩm Mỹ Minhon</b> là địa chỉ làm đẹp uy tín tại Quận 7, TP.HCM, tọa lạc tại 829 Huỳnh Tấn Phát, Phường Phú Thuận. Với phương châm \"Vẻ đẹp của bạn là sứ mệnh của chúng tôi\", Minhon không ngừng nỗ lực mang đến những dịch vụ thẩm mỹ an toàn và hiệu quả.<br><br>Chúng tôi tự hào sở hữu đội ngũ chuyên viên tay nghề cao, giàu kinh nghiệm cùng hệ thống trang thiết bị hiện đại, nhập khẩu từ các thương hiệu nổi tiếng thế giới. Mỗi liệu trình tại Minhon đều được cá nhân hóa để phù hợp với tình trạng da và mong muốn của từng khách hàng.<br><br>Đến với Viện Thẩm Mỹ Minhon, bạn sẽ được trải nghiệm không gian sang trọng, ấm cúng cùng dịch vụ chăm sóc khách hàng tận tâm. Hãy để chúng tôi đồng hành cùng bạn trên hành trình gìn giữ và nâng cao vẻ đẹp tự nhiên.<br><br><b>Địa chỉ:</b> 829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7<br><b>Điện thoại:</b> 0903.625.578",
-  "seo_title": "Viện Thẩm Mỹ Minhon - Thẩm Mỹ Viện Uy Tín Quận 7",
-  "seo_description": "Viện Thẩm Mỹ Minhon tại 829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7. Chuyên các dịch vụ thẩm mỹ, chăm sóc da, trị liệu công nghệ cao. Đặt lịch ngay: 0903.625.578.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Viện Thẩm Mỹ Minhon - Địa chỉ làm đẹp uy tín tại Quận 7, TP.HCM với dịch vụ chăm sóc da và thẩm mỹ chất lượng cao.",
+  "description": "<b>Viện Thẩm Mỹ Minhon</b> là một trong những địa chỉ làm đẹp được nhiều khách hàng tin tưởng tại khu vực Quận 7, TP.HCM. Tọa lạc tại <b>829 Huỳnh Tấn Phát, Phường Phú Thuận, Quận 7</b>, viện sở hữu không gian sang trọng, hiện đại cùng đội ngũ chuyên viên giàu kinh nghiệm.<br><br>Với phương châm mang đến vẻ đẹp tự nhiên và bền vững, Minhon cung cấp đa dạng dịch vụ từ chăm sóc da mặt, trị mụn, trẻ hóa da đến các liệu trình thẩm mỹ không xâm lấn. Khách hàng sẽ được tư vấn tận tình và trải nghiệm các công nghệ làm đẹp tiên tiến, an toàn.<br><br>Hãy đến với <b>Viện Thẩm Mỹ Minhon</b> để được tỏa sáng và tự tin hơn với làn da khỏe đẹp!",
+  "seo_title": "Viện Thẩm Mỹ Minhon - Chăm sóc da & thẩm mỹ uy tín Quận 7",
+  "seo_description": "Viện Thẩm Mỹ Minhon tại 829 Huỳnh Tấn Phát, Q.7, TP.HCM. Dịch vụ chăm sóc da, trị mụn, trẻ hóa, thẩm mỹ không xâm lấn. Đặt hẹn: 0903.625.578.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
     "services": [],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

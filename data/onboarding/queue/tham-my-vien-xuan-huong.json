@@ -3,41 +3,56 @@
   "slug": "tham-my-vien-xuan-huong",
   "address": "45A Đường 3 Tháng 2, P.11, Q.10",
   "phone": "1800.6999",
+  "zalo": null,
   "email": "contact@benhvienthammyxuanhuong.com",
   "website": "thammyxuanhuong.com",
-  "short_description": "Thẩm mỹ viện Xuân Hương – hơn 10 năm kiến tạo nhan sắc an toàn, đẳng cấp cùng đội ngũ bác sĩ đầu ngành và công nghệ hiện đại.",
-  "description": "<b>Thẩm mỹ viện Xuân Hương</b> tự hào là địa chỉ làm đẹp uy tín được hàng triệu khách hàng tin chọn suốt hơn 10 năm qua.<br><br>Với tiêu chí <b>“Đẹp nhưng phải an toàn”</b>, chúng tôi không ngừng đầu tư vào trang thiết bị hiện đại, nhập khẩu từ Hoa Kỳ, Châu Âu và Hàn Quốc, đạt chứng nhận FDA, KFDA, CE.<br><br><b>Đội ngũ bác sĩ, chuyên gia đầu ngành</b> giàu kinh nghiệm, từng tu nghiệp tại Pháp, Mỹ, Nhật, Hàn, thực hiện thành công hàng ngàn ca thẩm mỹ mỗi năm.<br><br>Chúng tôi cung cấp đa dạng dịch vụ từ <b>phẫu thuật thẩm mỹ</b> (nâng ngực, hút mỡ, trẻ hóa da…), <b>phun thêu thẩm mỹ</b> đến <b>spa chăm sóc da</b> toàn diện.<br><br>Đặc biệt, <b>Thẩm mỹ viện Xuân Hương</b> vinh dự nhận được sự tin yêu của nhiều nghệ sĩ nổi tiếng như diễn viên Hoàng Xuân, Hoa hậu Ngô Thu Trang, danh thủ Khánh Thi, diễn viên Minh Tiệp, MC Thái Dũng.<br><br>Hãy đến với <b>Thẩm mỹ viện Xuân Hương</b> để trải nghiệm dịch vụ làm đẹp không xâm lấn, nhanh chóng và an toàn!",
-  "seo_title": "Thẩm mỹ viện Xuân Hương - Nâng ngực, hút mỡ, trẻ hóa da",
-  "seo_description": "Thẩm mỹ viện Xuân Hương hơn 10 năm kinh nghiệm, đội ngũ bác sĩ đầu ngành, công nghệ hiện đại. Dịch vụ nâng ngực, hút mỡ, trẻ hóa da an toàn, hiệu quả.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Thẩm mỹ viện Xuân Hương - hơn 10 năm kinh nghiệm, đội ngũ bác sĩ đầu ngành, công nghệ hiện đại chuẩn quốc tế, mang đến vẻ đẹp an toàn và tự nhiên.",
+  "description": "<b>Thẩm mỹ viện Xuân Hương</b> là địa chỉ làm đẹp uy tín tại TP.HCM, tọa lạc tại <b>45A Đường 3 Tháng 2, P.11, Q.10</b>. Với hơn <b>10 năm kinh nghiệm</b> trong ngành thẩm mỹ, chúng tôi tự hào là nơi gửi gắm niềm tin của hàng ngàn khách hàng, trong đó có nhiều nghệ sĩ nổi tiếng.<br><br>Thẩm mỹ viện Xuân Hương cung cấp đa dạng dịch vụ từ <b>phẫu thuật thẩm mỹ</b> (nâng ngực, hút mỡ, thẩm mỹ mắt, mũi, độn cằm...), <b>phun thêu thẩm mỹ</b> (phun môi, phun mày, điêu khắc chân tóc...), đến <b>spa - chăm sóc da</b> (trẻ hóa da, tắm trắng, triệt lông, trị mụn...). <br><br>Đội ngũ bác sĩ, chuyên gia đầu ngành của Xuân Hương đã từng tu nghiệp tại Pháp, Mỹ, Nhật, Hàn và thực hiện thành công hàng ngàn ca thẩm mỹ mỗi năm. Chúng tôi đặt tiêu chí <b>“đẹp nhưng phải an toàn”</b> lên hàng đầu, không ngừng đầu tư vào trang thiết bị hiện đại, nhập khẩu từ Hoa Kỳ, châu Âu, Hàn Quốc và đạt chứng nhận an toàn FDA, KFDA, CE.<br><br>Đến với Xuân Hương, bạn sẽ được trải nghiệm dịch vụ chất lượng cao, tư vấn tận tâm và kết quả thẩm mỹ tự nhiên, bền vững. Hãy liên hệ ngay <b>1800.6999</b> để được tư vấn miễn phí!",
+  "seo_title": "Thẩm mỹ viện Xuân Hương - Nâng ngực, hút mỡ, trẻ hóa da uy tín",
+  "seo_description": "Thẩm mỹ viện Xuân Hương tại Q.10, TP.HCM: Nâng ngực, hút mỡ, trẻ hóa da, phun thêu, spa. Hơn 10 năm kinh nghiệm, bác sĩ đầu ngành, công nghệ hiện đại. Hotline 1800.6999.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "logo_url": "https://vienthammyxuanhuong.com.vn/wp-content/uploads/2023/03/logo_site.png",
     "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
+      "https://vienthammyxuanhuong.com.vn/wp-content/uploads/2025/07/CTKM-122025-home-des.png"
     ],
+    "gallery": [
+      "https://vienthammyxuanhuong.com.vn/wp-content/uploads/2025/07/CTKM-122025-home-des.png"
+    ],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "10.000.000đ - 90.000.000đ",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Nâng ngực",
         "price": "55-90 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Phẫu thuật nâng ngực an toàn, đẹp tự nhiên, sử dụng túi độn nhập khẩu chính hãng."
       },
       {
         "id": "s2",
         "name": "Hút mỡ",
         "price": "35-70 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Hút mỡ bụng, đùi, cánh tay... công nghệ hiện đại, không đau, nhanh hồi phục."
       },
       {
         "id": "s3",
         "name": "Trẻ hóa da",
         "price": "10-30 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Trẻ hóa da bằng công nghệ cao, giúp da căng mịn, giảm nếp nhăn, tươi trẻ."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

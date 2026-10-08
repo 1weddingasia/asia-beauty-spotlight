@@ -39,24 +39,24 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [voucher, setVoucher] = useState("");
-  
+
   // Modal state
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [savedDeals, setSavedDeals] = useState<string[]>([]);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [selectedCrossSells, setSelectedCrossSells] = useState<string[]>([]);
-  
+
   // Booking fields
   const [bookingTime, setBookingTime] = useState("");
   const [bookingService, setBookingService] = useState("");
-  
+
   // Intercept modal state
   const [interceptType, setInterceptType] = useState<'hotline' | 'zalo' | null>(null);
   const [interceptPhone, setInterceptPhone] = useState("");
   const [interceptName, setInterceptName] = useState("");
   const [interceptLoading, setInterceptLoading] = useState(false);
-  
+
   // Carousel state
   const [api, setApi] = useState<CarouselApi>();
   const [servicesRef, servicesApi] = useEmblaCarousel({ loop: false, align: "start" });
@@ -79,14 +79,14 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       if (local) {
         try {
           setSavedDeals(JSON.parse(local));
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   }, [siteConfig.domain, savedDeals.length]);
 
   // Lấy danh sách deals từ JSON
   let rawDeals: Deal[] = Array.isArray(business.page_content?.deals) ? business.page_content.deals : [];
-  
+
   // Tương thích ngược: Nếu tiệm chưa cấu hình deals mảng, lấy từ offers cũ
   if (rawDeals.length === 0) {
     if (Array.isArray(business.page_content?.offers) && business.page_content.offers.length > 0) {
@@ -114,7 +114,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDeal) return;
-    
+
     const cleanPhone = phone.replace(/\D/g, '');
     if (!/^(03|05|07|08|09)\d{8}$/.test(cleanPhone)) {
       toast.error("Vui lòng nhập số điện thoại hợp lệ");
@@ -130,12 +130,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         return;
       }
     }
-    
+
     setLoading(true);
     try {
       const actualDealName = selectedDeal.id === 'booking' ? (bookingService || selectedDeal.title) : selectedDeal.title;
       const bTime = selectedDeal.id === 'booking' ? bookingTime : null;
-      
+
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -148,9 +148,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           booking_time: bTime
         })
       });
-      
+
       const data = await res.json();
-      
+
       if (!res.ok) {
         toast.error(data.error || "Có lỗi xảy ra");
       } else if (!data.voucher_code) {
@@ -158,7 +158,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       } else {
         setVoucher(data.voucher_code);
         toast.success("Lưu ưu đãi thành công!");
-        
+
         // Lưu vào localStorage nếu không phải booking
         if (selectedDeal.id !== 'booking') {
           const updatedSavedDeals = [...savedDeals, dealKey];
@@ -178,14 +178,14 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     setInterceptType(type);
   };
 
-  const hotline = business.page_content?.phone || "1900 xxxx";
+  const hotline = business.page_content?.phone || business.phone || "(Chưa công khai)";
   const zaloNumber = business.zalo || (hotline ? hotline.replace(/[^0-9]/g, '') : '');
   const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
 
   const handleInterceptSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setInterceptLoading(true);
-    
+
     // Mở tab mới ngay lập tức cho Zalo để tránh bị trình duyệt chặn pop-up sau await
     let zaloWindow: Window | null = null;
     if (interceptType === 'zalo') {
@@ -195,8 +195,8 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     try {
       // Thêm thời gian vào deal_name để tránh bị chặn duplicate (vì API có check trùng deal_name)
       const timeStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      const interceptDealName = interceptType === 'hotline' 
-        ? `Liên hệ qua Hotline (${timeStr})` 
+      const interceptDealName = interceptType === 'hotline'
+        ? `Liên hệ qua Hotline (${timeStr})`
         : `Tư vấn Booking qua Zalo (${timeStr})`;
       const response = await fetch('/api/leads', {
         method: 'POST',
@@ -208,19 +208,19 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           deal_name: interceptDealName
         }),
       });
-      
+
       let data = {};
       try {
         data = await response.json();
-      } catch (err) {}
-      
+      } catch (err) { }
+
       if (!response.ok) {
         toast.error((data as any).error || "Số điện thoại không hợp lệ");
         if (zaloWindow) zaloWindow.close();
         setInterceptLoading(false);
         return;
       }
-      
+
       // 2. Chuyển hướng
       if (interceptType === 'hotline') {
         window.location.href = `tel:${hotline.replace(/\D/g, '')}`;
@@ -250,7 +250,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
   const formatPrice = (price: number | string) => {
     if (!price) return "";
-    
+
     if (typeof price === 'string') {
       const trimmed = price.trim();
       // Nếu là số thuần túy (có thể có khoảng trắng) thì format, nếu không thì giữ nguyên chữ (VD: "Liên hệ")
@@ -259,31 +259,35 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       }
       return price;
     }
-    
+
     if (typeof price === 'number' && price > 0) {
       return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     }
-    
+
     return price;
   };
 
   const banners = Array.isArray(business.page_content?.banners) && business.page_content.banners.length > 0
-    ? business.page_content.banners 
-    : [bannerImg];
+    ? business.page_content.banners
+    : bannerImg ? [bannerImg] : [];
 
   return (
     <div className="min-h-screen bg-[#FCFAF5] pb-20 md:pb-0 relative">
       <SiteHeader solid={false} />
-      
+
       {/* Premium Hero Section */}
-      <div className="relative h-[65vh] md:h-[75vh] w-full overflow-hidden group">
+      <div className="relative h-[75vh] md:h-[90vh] w-full overflow-hidden group">
         <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
-            {banners.map((img: string, idx: number) => (
-              <CarouselItem key={idx} className="relative h-[65vh] md:h-[75vh] w-full bg-black/90">
-                <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-cover" priority={idx === 0} />
-              </CarouselItem>
-            ))}
+            {banners.length > 0 ? (
+              banners.map((img: string, idx: number) => (
+                <CarouselItem key={idx} className="relative h-[75vh] md:h-[90vh] w-full bg-black/90">
+                  <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-cover" priority={idx === 0} />
+                </CarouselItem>
+              ))
+            ) : (
+              <CarouselItem className="relative h-[75vh] md:h-[90vh] w-full bg-gradient-to-br from-gold/30 via-black to-[#2A241C]" />
+            )}
           </CarouselContent>
           {banners.length > 1 && (
             <div className="absolute inset-y-0 w-full flex items-center justify-between px-4 pointer-events-none z-20">
@@ -312,7 +316,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-8">
-            <button 
+            <button
               onClick={() => {
                 document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
@@ -320,7 +324,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             >
               <Gift className="size-5" /> NHẬN ƯU ĐÃI
             </button>
-            <button 
+            <button
               onClick={() => {
                 setBookingService("");
                 setSelectedDeal({ id: 'booking', title: 'Đặt Hẹn Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
@@ -346,26 +350,26 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           </DialogHeader>
           <form onSubmit={handleInterceptSubmit} className="space-y-4 mt-4">
             <div className="space-y-2">
-              <Input 
-                placeholder="Tên của bạn (Tùy chọn)" 
-                value={interceptName} 
-                onChange={e => setInterceptName(e.target.value)} 
+              <Input
+                placeholder="Tên của bạn (Tùy chọn)"
+                value={interceptName}
+                onChange={e => setInterceptName(e.target.value)}
                 className="h-12 bg-white text-ink border-gray-200 focus:border-gold focus:ring-gold"
               />
             </div>
             <div className="space-y-2">
-              <Input 
-                placeholder="Số điện thoại của bạn *" 
-                required 
-                type="tel" 
-                value={interceptPhone} 
-                onChange={e => setInterceptPhone(e.target.value)} 
+              <Input
+                placeholder="Số điện thoại của bạn *"
+                required
+                type="tel"
+                value={interceptPhone}
+                onChange={e => setInterceptPhone(e.target.value)}
                 className="h-12 bg-white text-ink border-gray-200 focus:border-gold focus:ring-gold font-medium"
               />
             </div>
-            <Button 
-              type="submit" 
-              className="w-full h-12 bg-gold hover:bg-gold-soft text-ink font-bold text-lg rounded-xl transition-all hover:scale-[1.02]" 
+            <Button
+              type="submit"
+              className="w-full h-12 bg-gold hover:bg-gold-soft text-ink font-bold text-lg rounded-xl transition-all hover:scale-[1.02]"
               disabled={interceptLoading}
             >
               {interceptLoading ? "Đang kết nối..." : (interceptType === 'hotline' ? "Tiếp tục gọi" : "Tiếp tục mở Zalo")}
@@ -397,122 +401,120 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               const isUpcoming = deal.valid_from ? new Date(deal.valid_from) > now : false;
               const isExpired = deal.valid_until ? new Date(deal.valid_until) < now : false;
               const isDisabled = isUpcoming || isExpired;
-              
+
               const formatDT = (dtStr: string) => {
                 if (!dtStr) return '';
                 if (!dtStr.includes('T')) return dtStr;
                 try {
                   const d = new Date(dtStr);
-                  return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+                  return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                 } catch { return dtStr; }
               };
 
               return (
-              <div 
-                key={deal.id} 
-                role="button"
-                tabIndex={isDisabled ? -1 : 0}
-                onKeyDown={(e) => {
-                  if (isDisabled) return;
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
+                <div
+                  key={deal.id}
+                  role="button"
+                  tabIndex={isDisabled ? -1 : 0}
+                  onKeyDown={(e) => {
+                    if (isDisabled) return;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedDeal(deal);
+                      setVoucher("");
+                      setIsDialogOpen(true);
+                    }
+                  }}
+                  onClick={() => {
+                    if (isDisabled) return;
                     setSelectedDeal(deal);
                     setVoucher("");
                     setIsDialogOpen(true);
-                  }
-                }}
-                onClick={() => {
-                  if (isDisabled) return;
-                  setSelectedDeal(deal);
-                  setVoucher("");
-                  setIsDialogOpen(true);
-                }}
-                className={`group rounded-3xl bg-white p-1.5 relative overflow-hidden transition-all duration-500 flex flex-col h-full border ${
-                  isDisabled 
-                    ? 'opacity-60 grayscale cursor-not-allowed border-gray-200' 
-                    : 'shadow-xl shadow-gold/10 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-gold/20'
-                }`}
-              >
-                <div className={`rounded-[1.4rem] border p-5 md:p-8 flex flex-col h-full relative ${
-                  isDisabled ? 'bg-gray-50 border-gray-200' : 'border-gold/30 bg-gradient-to-br from-white to-champagne/50'
-                }`}>
-                  {isExpired ? (
-                    <div className="absolute top-4 right-4 bg-gray-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
-                      Đã kết thúc
-                    </div>
-                  ) : isUpcoming ? (
-                    <div className="absolute top-4 right-4 bg-blue-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
-                      Sắp diễn ra
-                    </div>
-                  ) : deal.badge ? (
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-rose-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
-                      {deal.badge}
-                    </div>
-                  ) : null}
-                  
-                  <h3 className="text-xl md:text-2xl font-bold font-display text-ink pr-20 leading-tight mb-3">
-                    {deal.title}
-                  </h3>
-                  
-                  {deal.note && (
-                    <p className={`text-sm text-muted-foreground mb-4 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm ${!deal.terms ? 'grow' : ''}`}>
-                      <span className="font-semibold text-ink">Mô tả:</span> {deal.note}
-                    </p>
-                  )}
-
-                  {deal.terms && (
-                    <div className="text-xs text-muted-foreground mb-4 p-3 rounded-xl border border-dashed border-gray-200 bg-white/50 grow">
-                      <span className="font-semibold text-ink block mb-1">Điều kiện áp dụng:</span>
-                      <p className="whitespace-pre-wrap">{deal.terms}</p>
-                    </div>
-                  )}
-
-                  {(!deal.note && !deal.terms) && <div className="grow" />}
-
-                  {(deal.valid_from || deal.valid_until) && (
-                    <div className={`flex flex-col gap-1 text-xs md:text-sm font-semibold py-1.5 px-3 rounded-lg w-fit mb-4 ${
-                      isDisabled ? 'bg-gray-200 text-gray-600' : 'bg-red-50 text-red-600'
+                  }}
+                  className={`group rounded-3xl bg-white p-1.5 relative overflow-hidden transition-all duration-500 flex flex-col h-full border ${isDisabled
+                      ? 'opacity-60 grayscale cursor-not-allowed border-gray-200'
+                      : 'shadow-xl shadow-gold/10 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-gold/20'
+                    }`}
+                >
+                  <div className={`rounded-[1.4rem] border p-5 md:p-8 flex flex-col h-full relative ${isDisabled ? 'bg-gray-50 border-gray-200' : 'border-gold/30 bg-gradient-to-br from-white to-champagne/50'
                     }`}>
-                      {deal.valid_from && (
-                        <div className="flex items-center gap-2">
-                          <Clock className="size-3.5" />
-                          Bắt đầu: {formatDT(deal.valid_from)}
-                        </div>
-                      )}
-                      {deal.valid_until && (
-                        <div className="flex items-center gap-2">
-                          <Clock className="size-3.5" />
-                          Hết hạn: {formatDT(deal.valid_until)}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  
-                  <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mt-auto pt-6 border-t border-gold/20">
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground line-through mb-1">
-                        {formatPrice(deal.original_price)}
+                    {isExpired ? (
+                      <div className="absolute top-4 right-4 bg-gray-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
+                        Đã kết thúc
                       </div>
-                      <div className="text-3xl font-black text-red-600 leading-none">
-                        {formatPrice(deal.promo_price)}
+                    ) : isUpcoming ? (
+                      <div className="absolute top-4 right-4 bg-blue-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
+                        Sắp diễn ra
                       </div>
+                    ) : deal.badge ? (
+                      <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-rose-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
+                        {deal.badge}
+                      </div>
+                    ) : null}
+
+                    <h3 className="text-xl md:text-2xl font-bold font-display text-ink pr-20 leading-tight mb-3">
+                      {deal.title}
+                    </h3>
+
+                    {deal.note && (
+                      <p className={`text-sm text-muted-foreground mb-4 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm ${!deal.terms ? 'grow' : ''}`}>
+                        <span className="font-semibold text-ink">Mô tả:</span> {deal.note}
+                      </p>
+                    )}
+
+                    {deal.terms && (
+                      <div className="text-xs text-muted-foreground mb-4 p-3 rounded-xl border border-dashed border-gray-200 bg-white/50 grow">
+                        <span className="font-semibold text-ink block mb-1">Điều kiện áp dụng:</span>
+                        <p className="whitespace-pre-wrap">{deal.terms}</p>
+                      </div>
+                    )}
+
+                    {(!deal.note && !deal.terms) && <div className="grow" />}
+
+                    {(deal.valid_from || deal.valid_until) && (
+                      <div className={`flex flex-col gap-1 text-xs md:text-sm font-semibold py-1.5 px-3 rounded-lg w-fit mb-4 ${isDisabled ? 'bg-gray-200 text-gray-600' : 'bg-red-50 text-red-600'
+                        }`}>
+                        {deal.valid_from && (
+                          <div className="flex items-center gap-2">
+                            <Clock className="size-3.5" />
+                            Bắt đầu: {formatDT(deal.valid_from)}
+                          </div>
+                        )}
+                        {deal.valid_until && (
+                          <div className="flex items-center gap-2">
+                            <Clock className="size-3.5" />
+                            Hết hạn: {formatDT(deal.valid_until)}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mt-auto pt-6 border-t border-gold/20">
+                      <div>
+                        <div className="text-sm font-medium text-muted-foreground line-through mb-1">
+                          {formatPrice(deal.original_price)}
+                        </div>
+                        <div className="text-3xl font-black text-red-600 leading-none">
+                          {formatPrice(deal.promo_price)}
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Ngăn onClick thẻ cha chạy 2 lần
+                          setSelectedDeal(deal);
+                          setVoucher("");
+                          setIsDialogOpen(true);
+                        }}
+                        className="w-full xl:w-auto bg-gradient-to-r from-gold to-gold-soft text-ink font-bold hover:brightness-110 shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border border-gold/50"
+                      >
+                        Nhận và Lưu Ưu Đãi
+                      </Button>
                     </div>
-                    
-                    <Button 
-                      onClick={(e) => {
-                        e.stopPropagation(); // Ngăn onClick thẻ cha chạy 2 lần
-                        setSelectedDeal(deal);
-                        setVoucher("");
-                        setIsDialogOpen(true);
-                      }}
-                      className="w-full xl:w-auto bg-gradient-to-r from-gold to-gold-soft text-ink font-bold hover:brightness-110 shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border border-gold/50"
-                    >
-                      Nhận và Lưu Ưu Đãi
-                    </Button>
                   </div>
                 </div>
-              </div>
-            )})
+              )
+            })
           )}
         </div>
 
@@ -566,7 +568,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                           <span className="font-semibold text-gold text-base md:text-lg">
                             {formatPrice(s.price || s.price_min) || "Liên hệ"}
                           </span>
-                          <button 
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setBookingService(s.name);
@@ -617,6 +619,21 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </div>
                 </div>
               )}
+
+              {/* THƯ VIỆN ẢNH (GALLERY) */}
+              {galleryItems.length > 0 && (
+                <div className="pt-8 mt-8 border-t border-border/50">
+                  <h3 className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold mb-6">Thư Viện Ảnh</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {galleryItems.slice(0, 6).map((img: string, idx: number) => (
+                      <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden shadow-sm group">
+                        <Image src={img} alt={`Gallery ${idx + 1}`} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Cột phải: Card liên hệ */}
@@ -632,10 +649,30 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   <span className="text-xs md:text-sm font-medium">{hotline}</span>
                 </div>
 
-                {b.socials?.facebook && (
+                {b.page_content?.price_range && (
                   <div className="flex items-center gap-3">
-                    <Globe className="size-4 md:size-5 text-gold shrink-0" />
-                    <a href={b.socials.facebook} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">Facebook Fanpage</a>
+                    <Tag className="size-4 md:size-5 text-gold shrink-0" />
+                    <span className="text-xs md:text-sm font-medium text-foreground">{b.page_content.price_range}</span>
+                  </div>
+                )}
+
+                {b.socials && Object.values(b.socials).some(Boolean) && (
+                  <div className="flex items-start gap-3">
+                    <Globe className="size-4 md:size-5 text-gold shrink-0 mt-0.5" />
+                    <div className="flex flex-col gap-2">
+                      {b.socials.facebook && (
+                        <a href={b.socials.facebook} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">Facebook</a>
+                      )}
+                      {b.socials.tiktok && (
+                        <a href={b.socials.tiktok} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">TikTok</a>
+                      )}
+                      {b.socials.instagram && (
+                        <a href={b.socials.instagram} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">Instagram</a>
+                      )}
+                      {b.socials.youtube && (
+                        <a href={b.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">YouTube</a>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -674,7 +711,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 </div>
               </div>
 
-              {b.address && (
+              {b.page_content?.map_embed ? (
+                <div className="mt-2 rounded-2xl overflow-hidden border border-border h-[200px] bg-secondary/30 relative [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0" dangerouslySetInnerHTML={{ __html: b.page_content.map_embed }} />
+              ) : b.address ? (
                 <div className="mt-2 rounded-2xl overflow-hidden border border-border h-[200px] bg-secondary/30 relative">
                   <iframe
                     width="100%" height="100%" style={{ border: 0 }} loading="lazy" allowFullScreen
@@ -682,7 +721,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     src={`https://maps.google.com/maps?q=${encodeURIComponent((b.address || '') + ' ' + (b.name || ''))}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                   />
                 </div>
-              )}
+              ) : null}
 
               {zaloLink !== '#' && (
                 <a
@@ -703,7 +742,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       {/* Modal / Dialog Form Nhận Mã */}
       {(() => {
         const isBooking = selectedDeal?.id === 'booking';
-        
+
         let dialogTitle = "";
         if (voucher) {
           dialogTitle = isBooking ? "🎉 Đặt lịch thành công!" : "🎉 Đăng ký thành công!";
@@ -712,147 +751,147 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         }
 
         return (
-      <Dialog open={isDialogOpen} onOpenChange={(open) => {
-        setIsDialogOpen(open);
-        if (!open) {
-          setName("");
-          setPhone("");
-          setVoucher("");
-          setSelectedDeal(null);
-          setSelectedCrossSells([]);
-        }
-      }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-center text-ink leading-tight">
-              {dialogTitle}
-            </DialogTitle>
-            <DialogDescription className="text-center">
-              {!voucher && <span className="font-semibold text-gold mt-2 block">{selectedDeal?.title}</span>}
-            </DialogDescription>
-          </DialogHeader>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) {
+              setName("");
+              setPhone("");
+              setVoucher("");
+              setSelectedDeal(null);
+              setSelectedCrossSells([]);
+            }
+          }}>
+            <DialogContent className="sm:max-w-md rounded-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-center text-ink leading-tight">
+                  {dialogTitle}
+                </DialogTitle>
+                <DialogDescription className="text-center">
+                  {!voucher && <span className="font-semibold text-gold mt-2 block">{selectedDeal?.title}</span>}
+                </DialogDescription>
+              </DialogHeader>
 
-          {!voucher ? (
-            <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-              <div>
-                <Input 
-                  placeholder="Họ và tên của bạn (Tùy chọn)" 
-                  value={name} 
-                  onChange={e => setName(e.target.value)} 
-                  className="h-12 bg-muted/50 rounded-xl"
-                />
-              </div>
-              <div>
-                <Input 
-                  type="tel" 
-                  required 
-                  placeholder="Số điện thoại Zalo (*)" 
-                  value={phone} 
-                  onChange={e => setPhone(e.target.value)} 
-                  className="h-12 bg-muted/50 font-medium rounded-xl"
-                />
-              </div>
-
-              {isBooking && (
-                <>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
-                      placeholder="VD: 15:30 chiều mai, hoặc sáng Thứ Bảy"
-                      value={bookingTime}
-                      onChange={e => setBookingTime(e.target.value)}
+              {!voucher ? (
+                <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+                  <div>
+                    <Input
+                      placeholder="Họ và tên của bạn (Tùy chọn)"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      className="h-12 bg-muted/50 rounded-xl"
                     />
                   </div>
                   <div>
-                    <select
-                      className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
-                      value={bookingService}
-                      onChange={e => setBookingService(e.target.value)}
-                    >
-                      <option value="">-- Chọn dịch vụ quan tâm (Tùy chọn) --</option>
-                      {b.page_content?.services?.map((s: any, idx: number) => (
-                        <option key={idx} value={s.name}>{s.name}</option>
-                      ))}
-                    </select>
+                    <Input
+                      type="tel"
+                      required
+                      placeholder="Số điện thoại Zalo (*)"
+                      value={phone}
+                      onChange={e => setPhone(e.target.value)}
+                      className="h-12 bg-muted/50 font-medium rounded-xl"
+                    />
                   </div>
-                </>
-              )}
 
-              {!isBooking && crossSells.length > 0 && (
-                <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4 mt-2">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-purple-700 mb-3">Đăng ký dùng thêm khi đến tiệm</p>
-                  <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
-                    {crossSells.map((cs: any, index: number) => {
-                      const itemName = typeof cs === 'string' ? cs : cs.name;
-                      const itemPrice = typeof cs === 'string' ? null : cs.price;
-                      
-                      return (
-                      <label key={cs.id || index} className="flex items-start gap-3 cursor-pointer group">
+                  {isBooking && (
+                    <>
+                      <div className="mb-3">
                         <input
-                          type="checkbox"
-                          className="mt-1 flex-shrink-0 w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500 cursor-pointer"
-                          checked={selectedCrossSells.includes(itemName)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedCrossSells([...selectedCrossSells, itemName]);
-                            } else {
-                              setSelectedCrossSells(selectedCrossSells.filter(n => n !== itemName));
-                            }
-                          }}
+                          type="text"
+                          className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
+                          placeholder="VD: 15:30 chiều mai, hoặc sáng Thứ Bảy"
+                          value={bookingTime}
+                          onChange={e => setBookingTime(e.target.value)}
                         />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-ink group-hover:text-purple-700 transition-colors">{itemName}</p>
-                          {itemPrice != null && <p className="text-xs text-muted-foreground">{formatPrice(itemPrice)}</p>}
-                        </div>
-                      </label>
-                      );
-                    })}
+                      </div>
+                      <div>
+                        <select
+                          className="w-full h-12 px-3 rounded-xl border border-input bg-muted/50 text-sm font-medium text-ink focus:outline-none focus:ring-1 focus:ring-gold"
+                          value={bookingService}
+                          onChange={e => setBookingService(e.target.value)}
+                        >
+                          <option value="">-- Chọn dịch vụ quan tâm (Tùy chọn) --</option>
+                          {b.page_content?.services?.map((s: any, idx: number) => (
+                            <option key={idx} value={s.name}>{s.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {!isBooking && crossSells.length > 0 && (
+                    <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4 mt-2">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-purple-700 mb-3">Đăng ký dùng thêm khi đến tiệm</p>
+                      <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
+                        {crossSells.map((cs: any, index: number) => {
+                          const itemName = typeof cs === 'string' ? cs : cs.name;
+                          const itemPrice = typeof cs === 'string' ? null : cs.price;
+
+                          return (
+                            <label key={cs.id || index} className="flex items-start gap-3 cursor-pointer group">
+                              <input
+                                type="checkbox"
+                                className="mt-1 flex-shrink-0 w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500 cursor-pointer"
+                                checked={selectedCrossSells.includes(itemName)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedCrossSells([...selectedCrossSells, itemName]);
+                                  } else {
+                                    setSelectedCrossSells(selectedCrossSells.filter(n => n !== itemName));
+                                  }
+                                }}
+                              />
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-ink group-hover:text-purple-700 transition-colors">{itemName}</p>
+                                {itemPrice != null && <p className="text-xs text-muted-foreground">{formatPrice(itemPrice)}</p>}
+                              </div>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
+                    {loading ? "Đang gửi..." : (isBooking ? "XÁC NHẬN BOOKING" : "NHẬN ƯU ĐÃI")}
+                  </Button>
+                </form>
+              ) : (
+                <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
+                  <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã đặt lịch hẹn! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
+                  {/* Success message based on type */}
+                  {!isBooking ? (
+                    <>
+                      <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
+
+                      {/* Mã ưu đãi = Số điện thoại */}
+                      <div className="rounded-2xl border-2 border-gold bg-gradient-to-b from-yellow-50 to-amber-50 px-5 py-4 mb-3 text-left shadow-inner">
+                        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Mã ưu đãi của bạn</p>
+                        <p className="text-3xl font-black tracking-widest text-gold">{phone}</p>
+                        <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để nhận ngay mức giá ưu đãi</p>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground mb-5">Cảm ơn bạn đã đặt lịch. Tiệm sẽ sớm liên hệ qua số điện thoại <strong>{phone}</strong> để xác nhận thời gian với bạn nhé!</p>
+                  )}
+
+                  {/* Gói đã chọn */}
+                  <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Dịch vụ đã chọn" : "Gói ưu đãi"}</p>
+                    <p className="text-sm font-bold text-ink leading-snug">{isBooking ? (bookingService || selectedDeal?.title) : selectedDeal?.title}</p>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
+                      <Link href={`tel:${hotline.replace(/\D/g, '')}`}>
+                        <Phone className="mr-2 size-5" /> Đặt lịch qua Hotline
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               )}
-
-              <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
-                {loading ? "Đang gửi..." : (isBooking ? "XÁC NHẬN BOOKING" : "NHẬN ƯU ĐÃI")}
-              </Button>
-            </form>
-          ) : (
-            <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
-              <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã đặt lịch hẹn! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
-              {/* Success message based on type */}
-              {!isBooking ? (
-                <>
-                  <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
-                  
-                  {/* Mã ưu đãi = Số điện thoại */}
-                  <div className="rounded-2xl border-2 border-gold bg-gradient-to-b from-yellow-50 to-amber-50 px-5 py-4 mb-3 text-left shadow-inner">
-                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Mã ưu đãi của bạn</p>
-                    <p className="text-3xl font-black tracking-widest text-gold">{phone}</p>
-                    <p className="text-xs text-muted-foreground mt-1 italic">Khi đến tiệm, đọc số này cho lễ tân để nhận ngay mức giá ưu đãi</p>
-                  </div>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground mb-5">Cảm ơn bạn đã đặt lịch. Tiệm sẽ sớm liên hệ qua số điện thoại <strong>{phone}</strong> để xác nhận thời gian với bạn nhé!</p>
-              )}
-
-              {/* Gói đã chọn */}
-              <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Dịch vụ đã chọn" : "Gói ưu đãi"}</p>
-                <p className="text-sm font-bold text-ink leading-snug">{isBooking ? (bookingService || selectedDeal?.title) : selectedDeal?.title}</p>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
-                  <Link href={`tel:${hotline.replace(/\D/g, '')}`}>
-                    <Phone className="mr-2 size-5" /> Đặt lịch qua Hotline
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            </DialogContent>
+          </Dialog>
         );
       })()}
 
@@ -919,17 +958,17 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           </motion.div>
         )}
       </AnimatePresence>
-      
+
 
       <div className="mt-16 pb-8 text-center px-4">
         <p className="text-xs text-muted-foreground">
           Được thực hiện bởi <Link href="/lien-he" className="font-semibold text-ink hover:text-gold transition-colors">{siteConfig.brand}</Link>
         </p>
       </div>
-      
+
       {/* Sticky Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-3 flex gap-3 md:hidden">
-        <button 
+        <button
           onClick={() => {
             document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
           }}
@@ -937,7 +976,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         >
           <span className="flex items-center justify-center gap-2"><Gift className="size-4" /> Nhận Ưu Đãi</span>
         </button>
-        <button 
+        <button
           onClick={() => {
             setBookingService("");
             setSelectedDeal({ id: 'booking', title: 'Đặt Hẹn Giữ Chỗ', original_price: '', promo_price: '', valid_until: '' });
@@ -948,7 +987,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> Đặt Hẹn Ngay</span>
         </button>
       </div>
-      
+
       <SiteFooter />
     </div>
   );

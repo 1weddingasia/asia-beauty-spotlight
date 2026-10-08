@@ -3,22 +3,30 @@
   "slug": "vy-spa",
   "address": "G13 Đường 3A, P. Tân Hưng, Q.7",
   "phone": "0938.838.299",
+  "zalo": null,
   "email": "vyspaq7@gmail.com",
   "website": "vyspa.vn",
-  "short_description": "Vy Spa mang đến không gian thư giãn đẳng cấp tại Quận 7, với các liệu trình chăm sóc da và massage chuyên sâu giúp bạn tái tạo năng lượng.",
-  "description": "<b>Vy Spa</b> – Điểm đến lý tưởng cho sắc đẹp và sức khỏe tại Quận 7, TP.HCM.<br><br>Tọa lạc tại địa chỉ <b>G13 Đường 3A, P. Tân Hưng, Q.7</b>, Vy Spa tự hào là một trong những trung tâm chăm sóc sắc đẹp và wellness được yêu thích nhất khu vực. Với không gian sang trọng, ấm cúng cùng đội ngũ chuyên viên giàu kinh nghiệm, chúng tôi cam kết mang đến cho bạn những phút giây thư giãn tuyệt đối.<br><br>Các dịch vụ nổi bật tại Vy Spa bao gồm:<br>- Chăm sóc da mặt chuyên sâu<br>- Massage body và massage đá nóng<br>- Trị liệu giảm căng thẳng<br>- Chăm sóc da toàn thân<br><br>Hãy đến với Vy Spa để trải nghiệm dịch vụ đẳng cấp và tận hưởng vẻ đẹp rạng rỡ. Liên hệ ngay <b>0938.838.299</b> để được tư vấn và đặt lịch.",
-  "seo_title": "Vy Spa - Chăm sóc da & Massage Quận 7",
-  "seo_description": "Vy Spa tại Q.7, TP.HCM cung cấp dịch vụ chăm sóc da, massage thư giãn chuyên nghiệp. Đặt lịch ngay: 0938.838.299.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Vy Spa mang đến không gian thư giãn và các liệu trình chăm sóc sắc đẹp chuyên nghiệp tại Quận 7, TP.HCM.",
+  "description": "<b>Vy Spa</b> tọa lạc tại địa chỉ G13 Đường 3A, P. Tân Hưng, Q.7, là điểm đến lý tưởng cho những ai tìm kiếm sự thư thái và chăm sóc sắc đẹp toàn diện.<br><br>Với đội ngũ kỹ thuật viên giàu kinh nghiệm và tận tâm, Vy Spa cam kết mang đến cho khách hàng những trải nghiệm dịch vụ chất lượng, giúp bạn thư giãn tinh thần và nâng cao vẻ đẹp tự nhiên.<br><br>Không gian spa được thiết kế ấm cúng, sang trọng cùng các liệu trình đa dạng từ chăm sóc da, massage đến các dịch vụ làm đẹp chuyên sâu. Hãy liên hệ ngay qua số điện thoại 0938.838.299 để được tư vấn và đặt lịch.",
+  "seo_title": "Vy Spa - Chăm sóc sắc đẹp tại Quận 7, TP.HCM",
+  "seo_description": "Vy Spa tại G13 Đường 3A, P. Tân Hưng, Q.7. Dịch vụ chăm sóc da, massage, làm đẹp chuyên nghiệp. Đặt lịch: 0938.838.299.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
     "services": [],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

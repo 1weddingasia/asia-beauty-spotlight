@@ -3,72 +3,105 @@
   "slug": "yb-spa",
   "address": "116A Lý Phục Man, P. Bình Thuận, Q.7",
   "phone": "0764.208.777",
+  "zalo": "0764208777",
   "email": "mail.ybgroup@gmail.com",
   "website": "ybspa.vn",
-  "short_description": "YB Spa - Hệ thống thẩm mỹ viện hàng đầu với 13 chi nhánh, hơn 9 năm kinh nghiệm, phục vụ 6 triệu khách hàng. Chuyên điều trị mụn, nám, triệt lông công nghệ cao.",
-  "description": "<h2>Giới thiệu YB Spa</h2><br><b>YB Spa</b> được thành lập từ năm 2017, là hệ thống Viện Thẩm Mỹ uy tín với 13 chi nhánh trên toàn quốc. Với hơn 9 năm hình thành và phát triển, YB Spa tự hào đón nhận khách hàng thứ 6 triệu, khẳng định vị thế thương hiệu làm đẹp tiêu chuẩn Quốc tế.<br><br><h3>Dịch vụ nổi bật tại YB Spa</h3><br><ul><li><b>Chăm sóc da chuyên sâu:</b> Điều trị mụn, nám, cort, trẻ hóa da bằng công nghệ cao.</li><li><b>Triệt lông công nghệ IPL lạnh:</b> Ứng dụng công nghệ mới nhất, an toàn và hiệu quả vượt trội.</li><li><b>Collagen trẻ hóa căng bóng:</b> Giúp làn da săn chắc, mịn màng.</li><li><b>Peel Image:</b> Phương pháp peel da tiên tiến.</li><li><b>Tắm trắng:</b> Dịch vụ làm trắng da toàn thân.</li></ul><br><h3>Vì sao chọn YB Spa?</h3><br><ul><li><b>Hệ thống 13 chi nhánh:</b> Thuận tiện cho khách hàng trên toàn quốc.</li><li><b>Phác đồ điều trị 1:1:</b> Cá nhân hóa, rút ngắn thời gian và tăng hiệu quả.</li><li><b>Đội ngũ chuyên gia:</b> Kỹ thuật viên giàu kinh nghiệm, bác sĩ đầu ngành.</li><li><b>Chi phí hợp lý:</b> Dịch vụ chất lượng với giá cả cạnh tranh.</li><li><b>Cập nhật xu hướng:</b> Thường xuyên tham gia hội nghị khoa học quốc tế.</li></ul><br><h3>Địa chỉ và liên hệ</h3><br><b>YB Spa - Chi nhánh Quận 7</b><br>Địa chỉ: 116A Lý Phục Man, P. Bình Thuận, Q.7<br>Hotline: 0764.208.777<br><br>Hãy đến với YB Spa để trải nghiệm dịch vụ làm đẹp đẳng cấp!",
-  "seo_title": "YB Spa - Thẩm mỹ viện uy tín Q.7, triệt lông, trị mụn",
-  "seo_description": "YB Spa - Hệ thống thẩm mỹ viện 13 chi nhánh, 6 triệu khách hàng. Chuyên triệt lông IPL, trị mụn, nám, trẻ hóa da. Địa chỉ: 116A Lý Phục Man, Q.7. Hotline: 0764.208.777",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "YB Spa - Hệ thống viện thẩm mỹ hàng đầu với 13 chi nhánh, hơn 6 triệu khách hàng tin tưởng. Chuyên các dịch vụ chăm sóc da, triệt lông, trẻ hóa da bằng công nghệ hiện đại.",
+  "description": "<b>Giới thiệu YB Spa</b><br>YB Spa được thành lập từ năm 2017, đến nay đã phát triển thành hệ thống viện thẩm mỹ với 13 chi nhánh trên toàn quốc. Với hơn 9 năm kinh nghiệm, YB Spa tự hào đón nhận khách hàng thứ 6 triệu, khẳng định vị thế thương hiệu làm đẹp tiêu chuẩn quốc tế.<br><br><b>Dịch vụ nổi bật</b><br>YB Spa cung cấp đa dạng dịch vụ làm đẹp chất lượng cao:<br>- Chăm sóc da chuyên sâu<br>- Triệt lông công nghệ IPL lạnh thế hệ mới<br>- Collagen trẻ hóa căng bóng<br>- Peel Image<br>- Điều trị mụn, nám, cort<br>- Tắm trắng, công nghệ cao<br><br><b>Vì sao chọn YB Spa?</b><br>Đội ngũ bác sĩ và kỹ thuật viên giàu kinh nghiệm, áp dụng phác đồ điều trị 1:1 cá nhân hóa, giúp rút ngắn thời gian và đảm bảo hiệu quả. Chi phí dịch vụ hợp lý, phù hợp với nhiều đối tượng khách hàng.<br><br><b>Địa chỉ</b><br>116A Lý Phục Man, P. Bình Thuận, Q.7, TP.HCM<br>Hotline: 0764.208.777",
+  "seo_title": "YB Spa - Viện Thẩm Mỹ Hàng Đầu Quận 7, TP.HCM",
+  "seo_description": "YB Spa - Hệ thống viện thẩm mỹ 13 chi nhánh, 6 triệu khách hàng. Dịch vụ chăm sóc da, triệt lông, trẻ hóa da công nghệ cao. Địa chỉ: 116A Lý Phục Man, Q.7. Hotline: 0764.208.777",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "logo_url": "https://ybspa.vn/wp-content/uploads/2023/05/cropped-Logo-YBSPA-512x512-1-32x32.png",
     "banners": [
-      "https://ybspa.vn/wp-content/uploads/376968623a86b6d8ef97.webp",
-      "https://ybspa.vn/wp-content/uploads/cropped-vang-den-e1664182646629.png"
+      "https://ybspa.vn/wp-content/uploads/Thumnall-trang-chu.webp"
     ],
+    "gallery": [
+      "https://ybspa.vn/wp-content/uploads/Thumnall-trang-chu.webp"
+    ],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Chăm sóc da chuyên sâu",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Liệu trình chăm sóc da chuyên sâu, phù hợp với mọi loại da."
       },
       {
         "id": "s2",
         "name": "Triệt lông công nghệ IPL lạnh",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Triệt lông bằng công nghệ IPL lạnh thế hệ mới, an toàn và hiệu quả."
       },
       {
         "id": "s3",
         "name": "Collagen trẻ hóa căng bóng",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Liệu trình collagen giúp trẻ hóa làn da, mang lại vẻ căng bóng tự nhiên."
       },
       {
         "id": "s4",
         "name": "Peel Image",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Peel Image - phương pháp peel da an toàn, cải thiện sắc tố và mụn."
       },
       {
         "id": "s5",
         "name": "Điều trị mụn",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Điều trị mụn hiệu quả với phác đồ cá nhân hóa."
       },
       {
         "id": "s6",
         "name": "Điều trị nám",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Điều trị nám, tàn nhang, giúp da đều màu."
       },
       {
         "id": "s7",
         "name": "Điều trị cort",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Điều trị da nhiễm cort, phục hồi da khỏe mạnh."
       },
       {
         "id": "s8",
+        "name": "Điều trị da",
+        "price": "",
+        "status": "active",
+        "description": "Các liệu trình điều trị da đa dạng, phù hợp với từng tình trạng."
+      },
+      {
+        "id": "s9",
+        "name": "Công nghệ cao",
+        "price": "",
+        "status": "active",
+        "description": "Ứng dụng công nghệ cao trong làm đẹp, mang lại hiệu quả vượt trội."
+      },
+      {
+        "id": "s10",
         "name": "Tắm trắng",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Dịch vụ tắm trắng an toàn, giúp da sáng mịn."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

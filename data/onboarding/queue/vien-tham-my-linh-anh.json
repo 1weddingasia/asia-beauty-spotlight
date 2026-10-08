@@ -3,72 +3,93 @@
   "slug": "vien-tham-my-linh-anh",
   "address": "98 Hoàng Trọng Mậu, P. Tân Hưng, Q.7",
   "phone": "0906.933.888",
+  "zalo": null,
   "email": "cskh@thammylinhanh.vn",
   "website": "thammylinhanh.vn",
-  "short_description": "Viện Thẩm Mỹ Linh Anh là thương hiệu làm đẹp uy tín tại Việt Nam, chuyên cung cấp dịch vụ phun xăm thẩm mỹ, thẩm mỹ công nghệ cao và phẫu thuật thẩm mỹ với đội ngũ bác sĩ giàu kinh nghiệm.",
-  "description": "<b>Viện Thẩm Mỹ Linh Anh</b> tự hào là điểm đến làm đẹp uy tín hàng đầu tại Việt Nam, tọa lạc tại <b>98 Hoàng Trọng Mậu, P. Tân Hưng, Q.7</b>. Với hệ thống chi nhánh trải dài khắp cả nước, chúng tôi mang đến cho khách hàng những trải nghiệm dịch vụ đẳng cấp và chuyên nghiệp.<br><br>Chúng tôi chuyên cung cấp các dịch vụ <b>phun xăm thẩm mỹ</b> như phun môi, phun mí, điêu khắc chân mày, cùng với đó là các dịch vụ <b>thẩm mỹ công nghệ cao</b> và <b>phẫu thuật thẩm mỹ</b>. Đặc biệt, với công nghệ <b>Personal 4K Color</b> tiên tiến, khách hàng sẽ được giải mã sắc môi độc bản, phù hợp với từng cá nhân.<br><br>Đội ngũ bác sĩ và kỹ thuật viên tại Linh Anh đều là những chuyên gia đầu ngành, giàu kinh nghiệm như BSCKI. Nguyễn Quốc Huy (19 năm kinh nghiệm Da liễu – Thẩm mỹ), Bác sĩ Phạm Anh Trí (30 năm kinh nghiệm Phẫu thuật Tạo hình Thẩm mỹ), cùng nhiều bác sĩ khác. Chúng tôi cam kết mang đến kết quả thẩm mỹ tự nhiên, an toàn và hài lòng nhất.<br><br>Với cơ sở vật chất hiện đại, không gian sang trọng, cùng công nghệ chuyển giao từ các tập đoàn uy tín trên thế giới, Viện Thẩm Mỹ Linh Anh xứng đáng là lựa chọn hàng đầu cho vẻ đẹp của bạn.",
-  "seo_title": "Viện Thẩm Mỹ Linh Anh - Thẩm Mỹ Uy Tín Tại Quận 7",
-  "seo_description": "Viện Thẩm Mỹ Linh Anh tại Q.7, TP.HCM cung cấp dịch vụ phun xăm, thẩm mỹ công nghệ cao, phẫu thuật thẩm mỹ với đội ngũ bác sĩ giàu kinh nghiệm. Liên hệ 0906.933.888.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Viện Thẩm Mỹ Linh Anh - Thương hiệu làm đẹp uy tín hàng đầu Việt Nam với công nghệ tiên tiến và đội ngũ bác sĩ giàu kinh nghiệm.",
+  "description": "<b>Viện Thẩm Mỹ Linh Anh</b> là thương hiệu làm đẹp uy tín tại Việt Nam, chuyên cung cấp các dịch vụ phun xăm thẩm mỹ, thẩm mỹ công nghệ cao và phẫu thuật thẩm mỹ.<br><br>Với hệ thống chi nhánh rộng khắp tại TP.HCM, Đồng Nai, Bình Dương, Đà Nẵng và Đà Lạt, Linh Anh tự hào mang đến cho khách hàng không gian sang trọng, cơ sở vật chất hiện đại và công nghệ thẩm mỹ tiên tiến được chuyển giao từ các tập đoàn công nghệ uy tín trên thế giới.<br><br><b>Đội ngũ bác sĩ và kỹ thuật viên</b> tại Linh Anh đều là những chuyên gia giàu kinh nghiệm, được đào tạo bài bản từ các trường đại học y khoa hàng đầu như Đại học Y khoa Phạm Ngọc Thạch, Đại học Y dược TP.HCM. Tiêu biểu như BSCKI. Nguyễn Quốc Huy với 19 năm kinh nghiệm trong lĩnh vực Da liễu - Thẩm mỹ da, Bác sĩ Phạm Anh Trí với 30 năm kinh nghiệm trong Phẫu thuật Tạo hình Thẩm mỹ.<br><br>Các dịch vụ nổi bật tại Viện Thẩm Mỹ Linh Anh bao gồm: <b>Phun xăm thẩm mỹ</b> (phun môi, phun mí, phun chân mày, điêu khắc chân mày), <b>Thẩm mỹ công nghệ cao</b> và <b>Phẫu thuật thẩm mỹ</b>. Đặc biệt, công nghệ <b>Personal 4K Color</b> giúp giải mã sắc môi độc bản cho từng khách hàng. Hãy đến với Linh Anh để trải nghiệm dịch vụ làm đẹp đẳng cấp và chuyên nghiệp!",
+  "seo_title": "Viện Thẩm Mỹ Linh Anh - Thẩm Mỹ Uy Tín Hàng Đầu",
+  "seo_description": "Viện Thẩm Mỹ Linh Anh cung cấp dịch vụ phun xăm thẩm mỹ, thẩm mỹ công nghệ cao, phẫu thuật thẩm mỹ. Đội ngũ bác sĩ giàu kinh nghiệm, công nghệ tiên tiến.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "logo_url": "https://thammylinhanh.vn/wp-content/uploads/2026/07/cropped-favicon-tham-my-vien-linh-anh-32x32.png",
     "banners": [
-      "https://thammylinhanh.vn/wp-content/uploads/2026/10/banner-sn-linhanh-fn-des.jpg",
-      "https://thammylinhanh.vn/wp-content/uploads/2024/11/gift-boxfn.png"
+      "https://thammylinhanh.vn/wp-content/uploads/2024/11/Hoa-hau-Huong-Giang-lam-dai-su-thuong-hieu-Linh-Anh.jpg"
     ],
+    "gallery": [
+      "https://thammylinhanh.vn/wp-content/uploads/2024/11/Hoa-hau-Huong-Giang-lam-dai-su-thuong-hieu-Linh-Anh.jpg"
+    ],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Phun xăm thẩm mỹ",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Phun môi, phun mí, phun chân mày, điêu khắc chân mày"
       },
       {
         "id": "s2",
         "name": "Thẩm mỹ công nghệ cao",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Ứng dụng công nghệ tiên tiến"
       },
       {
         "id": "s3",
         "name": "Phẫu thuật thẩm mỹ",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Phẫu thuật tạo hình thẩm mỹ"
       },
       {
         "id": "s4",
         "name": "Personal 4K Color",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Giải mã sắc môi độc bản"
       },
       {
         "id": "s5",
         "name": "Phun xăm chân mày",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Phương pháp làm đẹp hiện đại, giúp sở hữu đôi chân mày sắc nét, tự nhiên và bền màu"
       },
       {
         "id": "s6",
         "name": "Điêu khắc chân mày",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Kỹ thuật điêu khắc từng sợi lông mày tinh tế, tạo khuôn mày phù hợp với gương mặt"
       },
       {
         "id": "s7",
         "name": "Phun và cấy môi",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Hai kỹ thuật làm đẹp môi hiện đại, giúp đôi môi căng mọng, màu sắc tươi tắn"
       },
       {
         "id": "s8",
         "name": "Phun mí",
-        "price": "Liên hệ",
-        "status": "active"
+        "price": "",
+        "status": "active",
+        "description": "Giải pháp hoàn hảo để sở hữu đôi mắt to tròn, long lanh và cuốn hút"
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": [
+      "Đại tiệc khuyến mãi"
+    ]
   }
 }

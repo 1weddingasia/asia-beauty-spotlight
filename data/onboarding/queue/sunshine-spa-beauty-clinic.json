@@ -3,23 +3,30 @@
   "slug": "sunshine-spa-beauty-clinic",
   "address": "74 Trần Trọng Cung, P. Tân Thuận Đông, Q.7",
   "phone": "0906.806.863",
+  "zalo": null,
   "email": "cskh@sunshinespa.org",
   "website": "sunshinespaclinic.com",
-  "short_description": "Expert RN-led medical aesthetics and wellness in District 7, Ho Chi Minh City. Personalized, safe, and natural-looking results.",
-  "description": "<b>Welcome to Sunshine Spa & Beauty Clinic</b><br><br>At Sunshine Spa & Beauty Clinic, we believe that true beauty is a balance of clinical precision and natural grace. Located at 74 Trần Trọng Cung, P. Tân Thuận Đông, Q.7, our clinic offers expert RN-led medical aesthetics and wellness services tailored to your unique goals.<br><br>Our philosophy is rooted in patient education, safety, and personalized care. Every treatment is a personalized journey, ensuring your health and well-being are our highest priority.<br><br><b>Our Services</b><br><br>We specialize in a comprehensive range of medical-grade treatments, including:<br><br><b>Neurotoxins & Fillers:</b> Expertly administered treatments designed to restore your natural beauty with clinical precision and long-lasting results.<br><br><b>Advanced Skin Treatments:</b> From microneedling to chemical peels, we offer medical-grade skincare to address your specific concerns.<br><br><b>Our Commitment to You</b><br><br><b>Clinical Precision:</b> Every procedure is performed by a licensed RN with a focus on anatomical accuracy and medical-grade results.<br><br><b>Personalized Care:</b> We prioritize your individual goals and medical history to create a safe, customized treatment plan.<br><br><b>Medical Integrity:</b> Our RN-led philosophy ensures that every treatment is backed by clinical credibility and patient education.<br><br><b>Safe & Ethical:</b> We uphold the highest standards of medical ethics, ensuring your safety and long-term health are our top priority.<br><br><b>Your First Visit</b><br><br>Step 1 - Consultation and Assessment: We discuss your goals and medical history, and our founder and nurse injector will assess your face in person.<br><br>Step 2 - Your Plan, in Plain Language: We discuss what may help and what won't, what it costs, and what to expect.<br><br>Step 3 - Treatment: We treat only when you are ready and consent is given. Some patients treat the same day; plenty go home and think about it first.<br><br>Step 4 - Follow-up: You'll hear from us afterward, and your follow-up appointment is booked before you leave. If a series of treatments is right for you, we can map out a full treatment schedule together.<br><br><b>Visit Us</b><br><br>74 Trần Trọng Cung, P. Tân Thuận Đông, Q.7<br><br>Phone: 0906.806.863<br><br>By appointment only. Consultation required.<br><br>Experience the Sunshine Spa & Beauty Clinic difference – where natural beauty meets clinical care.",
-  "seo_title": "Sunshine Spa & Beauty Clinic | Medical Aesthetics Q.7",
-  "seo_description": "Expert RN-led medical aesthetics in Q.7, Ho Chi Minh City. Neurotoxins, fillers, advanced skin treatments. Personalized care for natural results. Book now!",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Sunshine Spa & Beauty Clinic offers a range of beauty and wellness treatments in a relaxing environment. Located in District 7, Ho Chi Minh City, our experienced therapists provide personalized care to help you look and feel your best.",
+  "description": "<b>Sunshine Spa & Beauty Clinic</b> is a premier beauty and wellness destination located at 74 Trần Trọng Cung, P. Tân Thuận Đông, Q.7, Ho Chi Minh City. We specialize in a variety of spa and beauty treatments designed to rejuvenate your body and enhance your natural beauty.<br><br>Our team of skilled professionals is dedicated to providing you with a personalized experience, using high-quality products and advanced techniques. Whether you're seeking relaxation or specific skincare solutions, we tailor our services to meet your unique needs.<br><br>At Sunshine Spa & Beauty Clinic, we believe that self-care is essential. Our tranquil atmosphere and attentive staff ensure that every visit is a peaceful retreat from the hustle and bustle of daily life. Come discover why our clients trust us for their beauty and wellness needs.<br><br>We look forward to welcoming you and helping you achieve your beauty goals.",
+  "seo_title": "Sunshine Spa & Beauty Clinic | Q.7, Ho Chi Minh City",
+  "seo_description": "Sunshine Spa & Beauty Clinic in District 7 offers expert spa and beauty treatments. Relax and rejuvenate with our personalized services. Book now!",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://static.wixstatic.com/media/fc56ab_3450448d8e064212b321810e8ec0459b~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/hero-b-sunshine-spa-lobby-covington-tn.jpg",
-      "https://static.wixstatic.com/media/fc56ab_4b1654557e504c64af1fd8d29bb9f5a4~mv2.jpg/v1/fill/w_980,h_1225,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/hero-a-rn-led-care-covington-tn.jpg"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
     "services": [],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

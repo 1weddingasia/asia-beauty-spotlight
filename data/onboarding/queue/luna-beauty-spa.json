@@ -1,0 +1,54 @@
+{
+  "name": "LUNA Beauty Spa",
+  "slug": "luna-beauty-spa",
+  "address": "366 Đường 3/2, P.12, Q.10",
+  "phone": "0909.123.456",
+  "zalo": null,
+  "email": "luna@1booking.asia",
+  "website": "facebook.com/lunabeautyspa",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "LUNA Beauty Spa - Địa chỉ làm đẹp uy tín tại Quận 10 với dịch vụ chăm sóc da, massage body và triệt lông chuyên nghiệp.",
+  "description": "<b>LUNA Beauty Spa</b> tọa lạc tại <b>366 Đường 3/2, P.12, Q.10</b>, là điểm đến lý tưởng cho những ai đang tìm kiếm một không gian thư giãn và chăm sóc sắc đẹp đẳng cấp. Với đội ngũ kỹ thuật viên giàu kinh nghiệm cùng các liệu trình được thiết kế riêng biệt, chúng tôi cam kết mang lại cho bạn làn da khỏe mạnh, vóc dáng thon gọn và cảm giác thư thái tuyệt đối.<br><br>LUNA Beauty Spa cung cấp đa dạng các dịch vụ từ <b>chăm sóc da mặt</b> chuyên sâu, <b>massage body</b> thư giãn đến <b>triệt lông</b> an toàn, hiệu quả. Mỗi liệu trình đều sử dụng sản phẩm cao cấp, thân thiện với làn da, đảm bảo mang lại kết quả tối ưu cho khách hàng.<br><br>Hãy đến với LUNA Beauty Spa để trải nghiệm dịch vụ làm đẹp chất lượng với mức giá hợp lý. Đội ngũ nhân viên tận tâm của chúng tôi luôn sẵn sàng lắng nghe và tư vấn giải pháp phù hợp nhất cho bạn.",
+  "seo_title": "LUNA Beauty Spa - Chăm sóc da, Massage body, Triệt lông Q.10",
+  "seo_description": "LUNA Beauty Spa tại 366 Đường 3/2, P.12, Q.10 chuyên chăm sóc da mặt, massage body, triệt lông chất lượng cao. Đặt lịch ngay qua 0909.123.456.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "300.000đ - 1.500.000đ",
+    "amenities": [],
+    "services": [
+      {
+        "id": "s1",
+        "name": "Chăm sóc da mặt",
+        "price": "400k-1.5 triệu",
+        "status": "active",
+        "description": "Liệu trình chăm sóc da mặt chuyên sâu giúp làm sạch, dưỡng ẩm và trẻ hóa làn da."
+      },
+      {
+        "id": "s2",
+        "name": "Massage body",
+        "price": "500k-1.5 triệu",
+        "status": "active",
+        "description": "Massage body thư giãn giúp giảm căng thẳng, đau mỏi cơ và cải thiện tuần hoàn máu."
+      },
+      {
+        "id": "s3",
+        "name": "Triệt lông",
+        "price": "300k-1 triệu",
+        "status": "active",
+        "description": "Dịch vụ triệt lông an toàn, hiệu quả bằng công nghệ hiện đại, không gây đau rát."
+      }
+    ],
+    "deals": []
+  }
+}

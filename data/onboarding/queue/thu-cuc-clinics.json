@@ -5,18 +5,17 @@
   "phone": "1900.5588.96",
   "email": "contact@thucucclinics.vn",
   "website": "thucucclinics.com",
-  "short_description": "Thu Cúc Clinics là thương hiệu thẩm mỹ viện uy tín hàng đầu tại TP.HCM, cung cấp các dịch vụ trẻ hóa da, trị nám và chăm sóc da chuyên sâu với công nghệ tiên tiến.",
-  "description": "<b>Thu Cúc Clinics</b> – Địa chỉ làm đẹp đáng tin cậy tại trung tâm Quận 1, TP.HCM.<br><br>Với đội ngũ bác sĩ giàu kinh nghiệm và công nghệ hiện đại, chúng tôi tự hào mang đến cho khách hàng những giải pháp thẩm mỹ an toàn và hiệu quả.<br><br><b>Dịch vụ nổi bật:</b><br>- Trẻ hóa Thermage/Hifu: từ 15-40 triệu<br>- Trị nám laser: từ 5-15 triệu<br>- Chăm sóc da chuyên sâu: từ 1-3 triệu<br><br>Hãy đến với Thu Cúc Clinics để trải nghiệm dịch vụ chuyên nghiệp và tận hưởng làn da khỏe đẹp rạng ngời.",
-  "seo_title": "Thu Cúc Clinics - Thẩm mỹ viện uy tín Q.1 TP.HCM",
-  "seo_description": "Thu Cúc Clinics cung cấp dịch vụ trẻ hóa Thermage/Hifu, trị nám laser, chăm sóc da chuyên sâu. Địa chỉ: 185-187 Nguyễn Thái Học, Q.1, TP.HCM. Hotline: 1900.5588.96",
+  "short_description": "Thu Cúc Clinics là địa chỉ thẩm mỹ uy tín tại TP.HCM, chuyên cung cấp các dịch vụ trẻ hóa, trị nám và chăm sóc da chuyên sâu với công nghệ hiện đại.",
+  "description": "<b>Thu Cúc Clinics</b> – Thương hiệu thẩm mỹ hàng đầu Việt Nam, tự hào mang đến cho khách hàng những giải pháp làm đẹp an toàn và hiệu quả.<br><br>Với hệ thống cơ sở vật chất hiện đại, trang thiết bị nhập khẩu từ châu Âu, cùng đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm, Thu Cúc Clinics cam kết mang lại kết quả tối ưu nhất cho từng khách hàng.<br><br>Các dịch vụ nổi bật tại Thu Cúc Clinics bao gồm:<br>- <b>Trẻ hóa Thermage/Hifu</b>: Giúp nâng cơ, săn chắc da, xóa nhăn hiệu quả mà không cần phẫu thuật.<br>- <b>Trị nám laser</b>: Loại bỏ nám, tàn nhang, mang lại làn da đều màu rạng rỡ.<br>- <b>Chăm sóc da chuyên sâu</b>: Các liệu trình chăm sóc da mặt giúp da khỏe mạnh, căng bóng từ sâu bên trong.<br><br>Đến với Thu Cúc Clinics, bạn sẽ được trải nghiệm dịch vụ đẳng cấp, không gian sang trọng và sự chăm sóc tận tâm từ đội ngũ nhân viên chuyên nghiệp.<br><br>Địa chỉ: 185-187 Nguyễn Thái Học, P. Phạm Ngũ Lão, Q.1, TP.HCM.<br>Hotline: 1900.5588.96<br>Hãy liên hệ ngay để được tư vấn miễn phí!",
+  "seo_title": "Thu Cúc Clinics - Thẩm mỹ viện uy tín tại TP.HCM",
+  "seo_description": "Thu Cúc Clinics cung cấp dịch vụ trẻ hóa Thermage/Hifu, trị nám laser, chăm sóc da chuyên sâu. Địa chỉ: 185-187 Nguyễn Thái Học, Q.1, TP.HCM. Hotline: 1900.5588.96.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "https://thammythucuc.vn/logo/favicon.ico",
+    "banners": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
     "services": [
       {
         "id": "s1",

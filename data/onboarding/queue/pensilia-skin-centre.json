@@ -5,18 +5,17 @@
   "phone": "0938.777.885",
   "email": "info@pensilia.com",
   "website": "pensilia.com",
-  "short_description": "Pensilia Skin Centre – Hệ thống thẩm mỹ da hàng đầu từ 2011, với đội ngũ bác sĩ giàu kinh nghiệm và công nghệ quốc tế, mang đến giải pháp trị sẹo rỗ, trị nám, trẻ hóa da hiệu quả và an toàn.",
-  "description": "<b>Pensilia Skin Centre</b> – Tự hào là hệ thống thẩm mỹ da uy tín tại TP.HCM từ năm 2011, đã đồng hành cùng hàng nghìn khách hàng trên hành trình chăm sóc và tái tạo làn da.<br><br>Với phương châm <b>“Bác sĩ không chỉ giỏi – mà còn hiểu bạn”</b>, đội ngũ bác sĩ tại Pensilia được đào tạo bài bản trong và ngoài nước, luôn lắng nghe và điều trị bằng sự thấu cảm, tận tâm cho từng làn da.<br><br><b>Công nghệ quốc tế – Lựa chọn có chọn lọc:</b> Pensilia sử dụng các thiết bị y khoa đạt chuẩn FDA (Hoa Kỳ) và CE (Châu Âu) như MCT Unit® (Tây Ban Nha) và Jovena (Ý), giúp tối ưu hiệu quả điều trị và đảm bảo an toàn tuyệt đối.<br><br><b>Dịch vụ nổi bật:</b><br>- Trị sẹo rỗ laser: từ 5-20 triệu<br>- Trị nám công nghệ cao: từ 8-25 triệu<br>- Trẻ hóa da RF: từ 10-30 triệu<br><br>Đến với Pensilia, bạn không chỉ được điều trị mà còn được đồng hành như người thân, để mỗi liệu trình là một trải nghiệm thư giãn và hiệu quả.<br><br><b>Địa chỉ:</b> 413-415 Nguyễn Đình Chiểu, P. Bàn Cờ, Q.3, TP.HCM<br><b>Điện thoại:</b> 0938.777.885",
+  "short_description": "Pensilia Skin Centre chuyên trị sẹo rỗ, nám và trẻ hóa da bằng công nghệ cao tại Quận 3, TP.HCM.",
+  "description": "<b>Pensilia Skin Centre</b> là trung tâm da liễu uy tín tọa lạc tại địa chỉ 413-415 Nguyễn Đình Chiểu, P. Bàn Cờ, Q.3, TP.HCM.<br><br>Với đội ngũ bác sĩ chuyên khoa giàu kinh nghiệm và trang thiết bị hiện đại, chúng tôi tự hào mang đến các giải pháp điều trị da hiệu quả như trị sẹo rỗ laser, trị nám công nghệ cao và trẻ hóa da RF.<br><br><b>Dịch vụ nổi bật:</b><br>- Trị sẹo rỗ laser: từ 5-20 triệu<br>- Trị nám công nghệ cao: từ 8-25 triệu<br>- Trẻ hóa da RF: từ 10-30 triệu<br><br>Hãy liên hệ ngay qua số điện thoại 0938.777.885 để được tư vấn và đặt lịch.",
   "seo_title": "Pensilia Skin Centre - Trị sẹo rỗ, nám, trẻ hóa da",
-  "seo_description": "Pensilia Skin Centre tại Q.3, TP.HCM: Trị sẹo rỗ laser, trị nám công nghệ cao, trẻ hóa da RF. Đội ngũ bác sĩ giàu kinh nghiệm, công nghệ FDA & CE. Đặt hẹn ngay!",
+  "seo_description": "Pensilia Skin Centre tại Q.3, TP.HCM chuyên trị sẹo rỗ laser, trị nám công nghệ cao, trẻ hóa da RF. Đặt lịch: 0938.777.885.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
     "services": [
       {
         "id": "s1",

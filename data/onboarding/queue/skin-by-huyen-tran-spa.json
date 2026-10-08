@@ -3,22 +3,30 @@
   "slug": "skin-by-huyen-tran-spa",
   "address": "15 Phú Thuận, P. Phú Thuận, Q.7",
   "phone": "0901.054.003",
+  "zalo": null,
   "email": "huyentranspa@1booking.asia",
   "website": null,
-  "short_description": "Premium skin care and wellness spa in Phú Thuận, District 7, Ho Chi Minh City. Experience expert treatments tailored to your skin's needs.",
-  "description": "<b>Skin by Huyen Tran Spa</b> is a premium beauty and wellness destination nestled in the heart of Phú Thuận, District 7. With a passion for enhancing natural beauty, our skilled therapists provide personalized skin care treatments using high-quality products and advanced techniques.<br><br>At Skin by Huyen Tran Spa, we believe that healthy skin is the foundation of confidence. Our serene and inviting atmosphere offers the perfect escape from the hustle and bustle of city life. Whether you're seeking a rejuvenating facial, a relaxing massage, or specialized skin therapy, our dedicated team is committed to delivering exceptional results.<br><br>Conveniently located at 15 Phú Thuận, P. Phú Thuận, Q.7, we invite you to indulge in a luxurious experience that will leave you feeling refreshed and radiant. Book your appointment today by calling <b>0901.054.003</b>.",
-  "seo_title": "Skin by Huyen Tran Spa | District 7 Beauty & Wellness",
-  "seo_description": "Discover premium skin care and spa treatments at Skin by Huyen Tran Spa in District 7, Ho Chi Minh City. Call 0901.054.003 to book your appointment.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Skin by Huyen Tran Spa là địa chỉ chăm sóc da và thư giãn uy tín tại Quận 7, TP.HCM. Với đội ngũ chuyên viên giàu kinh nghiệm, chúng tôi mang đến giải pháp làm đẹp an toàn và hiệu quả.",
+  "description": "<b>Skin by Huyen Tran Spa</b> – Nơi hội tụ vẻ đẹp tự nhiên và sự thư thái.<br><br>Tọa lạc tại <b>15 Phú Thuận, Phường Phú Thuận, Quận 7, TP.HCM</b>, Skin by Huyen Tran Spa là điểm đến lý tưởng cho những ai đang tìm kiếm dịch vụ chăm sóc da chuyên sâu và các liệu trình thư giãn tuyệt vời. Với không gian sang trọng, ấm cúng cùng đội ngũ chuyên viên tay nghề cao, chúng tôi cam kết mang đến cho bạn những trải nghiệm làm đẹp đáng nhớ.<br><br>Chúng tôi hiểu rằng mỗi làn da đều có nhu cầu riêng, vì vậy các liệu trình tại Skin by Huyen Tran Spa luôn được cá nhân hóa, sử dụng sản phẩm chất lượng và công nghệ hiện đại. Dù bạn cần điều trị mụn, làm sáng da, trẻ hóa hay chỉ đơn giản là thư giãn, chúng tôi đều có giải pháp phù hợp.<br><br>Hãy đến và cảm nhận sự khác biệt! Để đặt lịch hoặc biết thêm thông tin, vui lòng liên hệ <b>0901.054.003</b>.",
+  "seo_title": "Skin by Huyen Tran Spa - Chăm sóc da & Thư giãn Q.7",
+  "seo_description": "Skin by Huyen Tran Spa tại 15 Phú Thuận, Q.7, TP.HCM. Dịch vụ chăm sóc da chuyên nghiệp, không gian thư giãn. Đặt lịch: 0901.054.003.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "https://static.xx.fbcdn.net/rsrc.php/y1/r/ay1hV6OlegS.ico",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
     "services": [],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

@@ -1,0 +1,32 @@
+{
+  "name": "Spa Phương Linh",
+  "slug": "spa-phuong-linh",
+  "address": "829 Huỳnh Tấn Phát, P. Phú Thuận, Q.7",
+  "phone": "0903.625.578",
+  "zalo": null,
+  "email": "spaphuonglinh@1booking.asia",
+  "website": null,
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Spa Phương Linh tại Quận 7 mang đến không gian thư giãn đẳng cấp với các dịch vụ chăm sóc da, massage và trị liệu hàng đầu.",
+  "description": "<b>Spa Phương Linh</b> - Địa chỉ làm đẹp và thư giãn uy tín tại khu vực Phú Thuận, Quận 7.<br><br>Với không gian ấm cúng, sang trọng cùng đội ngũ kỹ thuật viên giàu kinh nghiệm, Spa Phương Linh cam kết mang lại cho khách hàng những phút giây thư giãn tuyệt đối và làn da khỏe mạnh.<br><br>Các dịch vụ nổi bật bao gồm chăm sóc da mặt, massage body, xông hơi và các liệu trình trị liệu chuyên sâu. Sử dụng các sản phẩm thiên nhiên an toàn, Spa Phương Linh luôn đặt sức khỏe và sự hài lòng của khách hàng lên hàng đầu.<br><br>Hãy đến và trải nghiệm dịch vụ tại <b>Spa Phương Linh</b> - 829 Huỳnh Tấn Phát, Phường Phú Thuận, Quận 7, TP.HCM. Liên hệ ngay <b>0903.625.578</b> để được tư vấn và đặt lịch.",
+  "seo_title": "Spa Phương Linh - Chăm sóc sắc đẹp Quận 7",
+  "seo_description": "Spa Phương Linh tại 829 Huỳnh Tấn Phát, Q.7. Dịch vụ chăm sóc da, massage, trị liệu chuyên nghiệp. Đặt lịch: 0903.625.578.",
+  "status": "draft",
+  "is_featured": false,
+  "plan_tier": "premium",
+  "page_content": {
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "",
+    "amenities": [],
+    "services": [],
+    "deals": []
+  }
+}

@@ -3,42 +3,60 @@
   "slug": "tham-my-vien-ngoc-dung",
   "address": "32-34-36 Đường 3 Tháng 2, P.11, Q.10",
   "phone": "1800.6377",
+  "zalo": null,
   "email": "info@ngocdung.com",
   "website": "thammyvienngocdung.com",
-  "short_description": "Thẩm mỹ viện Ngọc Dung là hệ thống thẩm mỹ công nghệ cao 28 năm hoạt động, với 16 chi nhánh trên toàn quốc, chuyên cung cấp các giải pháp làm đẹp an toàn, hiệu quả.",
-  "description": "<b>Thẩm mỹ viện Ngọc Dung</b> là thương hiệu uy tín trong lĩnh vực chăm sóc sắc đẹp tại Việt Nam, hoạt động từ năm 1998 với 28 năm kinh nghiệm và 16 chi nhánh trải dài Bắc – Trung – Nam.<br><br>Chúng tôi tự hào phục vụ hơn 20.000 khách hàng mỗi năm, mang đến các giải pháp thẩm mỹ không xâm lấn và xâm lấn tối thiểu, giúp khách hàng tỏa sáng mà không cần nghỉ dưỡng.<br><br><b>Dịch vụ nổi bật:</b><br>- Nâng ngực NanoChip: 60-100 triệu<br>- Hút mỡ Lipo 360: 40-80 triệu<br>- Trẻ hóa da: 10-30 triệu<br><br>Với đội ngũ bác sĩ chuyên môn cao, thiết bị nhập khẩu từ Châu Âu và Hoa Kỳ, Thẩm mỹ viện Ngọc Dung cam kết mang đến phác đồ điều trị cá nhân hóa, an toàn và hiệu quả cho từng khách hàng.<br><br>Địa chỉ: 32-34-36 Đường 3 Tháng 2, P.11, Q.10<br>Hotline: 1800.6377",
-  "seo_title": "Thẩm mỹ viện Ngọc Dung - Thẩm mỹ công nghệ cao 28 năm",
-  "seo_description": "Thẩm mỹ viện Ngọc Dung với 28 năm kinh nghiệm, 16 chi nhánh toàn quốc. Dịch vụ nâng ngực NanoChip, hút mỡ Lipo 360, trẻ hóa da an toàn, hiệu quả. Liên hệ 1800.6377.",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Thẩm mỹ viện Ngọc Dung – 28 năm hoạt động với 16 chi nhánh, chuyên điều trị da, trẻ hóa và thẩm mỹ công nghệ cao.",
+  "description": "<b>Thẩm mỹ viện Ngọc Dung</b> là hệ thống thẩm mỹ công nghệ cao với 28 năm kinh nghiệm, 16 chi nhánh trải dài Bắc – Trung – Nam, phục vụ hơn 20.000 khách hàng mỗi năm.<br><br>Chúng tôi chuyên cung cấp các dịch vụ chăm sóc và điều trị da, phun xăm, triệt lông, trẻ hóa bằng công nghệ không xâm lấn hoặc xâm lấn tối thiểu, không cần nghỉ dưỡng. Mỗi ca điều trị đều bắt đầu bằng việc soi da và xác định đúng nguyên nhân, sau đó bác sĩ chỉ định công nghệ phù hợp. Không có phác đồ dùng chung cho tất cả khách hàng.<br><br>Toàn bộ thiết bị được nhập khẩu từ Châu Âu và Hoa Kỳ, vận hành dưới sự giám sát chuyên môn của đội ngũ bác sĩ và chuyên gia được đào tạo trong nước lẫn quốc tế.<br><br><b>Dịch vụ nổi bật:</b><br>- Nâng ngực NanoChip: 60-100 triệu<br>- Hút mỡ Lipo 360: 40-80 triệu<br>- Trẻ hóa da: 10-30 triệu<br><br><b>Cơ sở vật chất chuẩn 5 sao</b> tại các vị trí thuận tiện, trang thiết bị hiện đại bậc nhất, mang đến trải nghiệm làm đẹp toàn diện.",
+  "seo_title": "Thẩm mỹ viện Ngọc Dung - 28 năm, 16 chi nhánh",
+  "seo_description": "Thẩm mỹ viện Ngọc Dung với 28 năm kinh nghiệm, 16 chi nhánh. Chuyên nâng ngực NanoChip, hút mỡ Lipo 360, trẻ hóa da. Đặt lịch ngay!",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
+    "logo_url": "https://thammyvienngocdung.com/wp-content/uploads/2026/06/cropped-favicon-32x32.png",
     "banners": [
-      "https://thammyvienngocdung.com/wp-content/uploads/2026/09/2568x800-2-scaled.png",
-      "https://thammyvienngocdung.com/wp-content/uploads/2026/09/2560x800-3.png"
+      "https://thammyvienngocdung.com/wp-content/uploads/2024/09/logo-1-1024x640-1.png"
     ],
+    "gallery": [
+      "https://thammyvienngocdung.com/wp-content/uploads/2024/09/logo-1-1024x640-1.png"
+    ],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "10.000.000đ - 100.000.000đ",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Nâng ngực NanoChip",
         "price": "60-100 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Nâng ngực bằng công nghệ NanoChip tiên tiến, an toàn, hiệu quả tự nhiên."
       },
       {
         "id": "s2",
         "name": "Hút mỡ Lipo 360",
         "price": "40-80 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Hút mỡ toàn thân Lipo 360 giúp định hình vóc dáng, loại bỏ mỡ thừa hiệu quả."
       },
       {
         "id": "s3",
         "name": "Trẻ hóa da",
         "price": "10-30 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Trẻ hóa da bằng công nghệ cao, giảm nếp nhăn, tăng đàn hồi, mang lại làn da tươi trẻ."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": [
+      "Đại tiệc ưu đãi combo cùng Ngọc Dung Beauty",
+      "Nhân ngày của nàng – Siêu deal chỉ từ 168K tại Ngọc Dung",
+      "Săn deal phun xăm, có ngay mày xinh môi thắm rạng rỡ"
+    ]
   }
 }

@@ -5,18 +5,17 @@
   "phone": "1800.6653",
   "email": "info@laratio.vn",
   "website": "laratio.vn",
-  "short_description": "Viện Thẩm Mỹ La Ratio tại Quận 1, TP.HCM, chuyên cung cấp dịch vụ thẩm mỹ cao cấp với tiêm filler môi/cằm, trẻ hóa da Ultherapy và phẫu thuật mắt.",
-  "description": "<b>Viện Thẩm Mỹ La Ratio</b> – Địa chỉ làm đẹp đáng tin cậy tại trung tâm Quận 1, TP.HCM.<br><br>Với đội ngũ bác sĩ giàu kinh nghiệm và công nghệ hiện đại, chúng tôi mang đến các giải pháp thẩm mỹ an toàn, hiệu quả, giúp bạn tự tin tỏa sáng.<br><br><b>Dịch vụ nổi bật:</b><br>- Tiêm filler môi/cằm: từ 5-15 triệu<br>- Trẻ hóa da Ultherapy: từ 20-50 triệu<br>- Phẫu thuật mắt: từ 18-40 triệu<br><br>Hãy đến với La Ratio để trải nghiệm dịch vụ chuyên nghiệp và tận tâm.",
-  "seo_title": "Viện Thẩm Mỹ La Ratio - Thẩm Mỹ Cao Cấp Q.1",
-  "seo_description": "Viện Thẩm Mỹ La Ratio tại 391E Trần Hưng Đạo, Q.1, TP.HCM. Chuyên tiêm filler, Ultherapy, phẫu thuật mắt. Liên hệ 1800.6653 để được tư vấn.",
+  "short_description": "Viện Thẩm Mỹ La Ratio mang đến giải pháp làm đẹp an toàn, hiệu quả với công nghệ tiên tiến và đội ngũ chuyên gia hàng đầu.",
+  "description": "<b>Viện Thẩm Mỹ La Ratio</b> là địa chỉ uy tín trong lĩnh vực thẩm mỹ tại TP.HCM, tọa lạc tại <b>391E Trần Hưng Đạo, P. Cầu Ông Lãnh, Q.1</b>. Với phương châm lấy khách hàng làm trung tâm, chúng tôi không ngừng cập nhật công nghệ và kỹ thuật tiên tiến để mang lại vẻ đẹp hoàn hảo và an toàn.<br><br>Chúng tôi cung cấp đa dạng dịch vụ từ <b>tiêm filler môi/cằm</b> giúp khuôn mặt thêm hài hòa, <b>trẻ hóa da Ultherapy</b> không xâm lấn, đến <b>phẫu thuật mắt</b> tinh tế, giúp đôi mắt thêm cuốn hút. Mỗi dịch vụ đều được thực hiện bởi đội ngũ bác sĩ giàu kinh nghiệm, đảm bảo mang lại kết quả tự nhiên và bền vững.<br><br>Đến với La Ratio, bạn sẽ được tư vấn tận tình, trải nghiệm không gian sang trọng và dịch vụ chuyên nghiệp. Hãy liên hệ ngay qua hotline <b>1800.6653</b> để được hỗ trợ.",
+  "seo_title": "Viện Thẩm Mỹ La Ratio - Thẩm Mỹ Uy Tín Q.1",
+  "seo_description": "Viện Thẩm Mỹ La Ratio tại Q.1, TP.HCM chuyên tiêm filler, Ultherapy, phẫu thuật mắt. An toàn, hiệu quả, chuyên gia hàng đầu. Liên hệ 1800.6653.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
     "services": [
       {
         "id": "s1",

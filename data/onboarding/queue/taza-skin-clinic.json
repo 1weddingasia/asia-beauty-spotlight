@@ -3,41 +3,52 @@
   "slug": "taza-skin-clinic",
   "address": "408 Cao Thắng, P.12, Q.10",
   "phone": "1900.2664",
+  "zalo": null,
   "email": "tuvan@tazaskinclinic.com",
   "website": "tazaskin.com",
-  "short_description": "Taza Skin Clinic cung cấp giải pháp điều trị mụn, sẹo và làm trắng da hiệu quả tại Quận 10, TP.HCM.",
-  "description": "<b>Giới thiệu Taza Skin Clinic</b><br>Tọa lạc tại địa chỉ 408 Cao Thắng, Phường 12, Quận 10, Taza Skin Clinic là điểm đến lý tưởng cho những ai đang tìm kiếm giải pháp chăm sóc da chuyên sâu và an toàn. Với đội ngũ bác sĩ giàu kinh nghiệm cùng trang thiết bị hiện đại, chúng tôi cam kết mang đến hiệu quả tối ưu cho làn da của bạn.<br><br><b>Dịch vụ nổi bật</b><br>- <b>Trị mụn</b>: Loại bỏ mụn hiệu quả, ngăn ngừa tái phát, giá từ 2-8 triệu đồng.<br>- <b>Lăn kim trị sẹo</b>: Cải thiện sẹo rỗ, sẹo thâm, kích thích tái tạo da, giá từ 5-20 triệu đồng.<br>- <b>Tắm trắng</b>: Làm sáng da toàn thân, đều màu, giá từ 3-10 triệu đồng.<br><br>Hãy liên hệ ngay qua hotline 1900.2664 để được tư vấn miễn phí và đặt lịch hẹn.",
-  "seo_title": "Taza Skin Clinic - Trị mụn, lăn kim, tắm trắng Q.10",
-  "seo_description": "Taza Skin Clinic tại 408 Cao Thắng, P.12, Q.10 chuyên trị mụn, lăn kim trị sẹo, tắm trắng. Hotline 1900.2664. Đặt lịch ngay!",
+  "socials": {
+    "facebook": "",
+    "tiktok": "",
+    "youtube": "",
+    "instagram": ""
+  },
+  "short_description": "Taza Skin Clinic là địa chỉ trị mụn, lăn kim trị sẹo và tắm trắng uy tín tại Quận 10, TP.HCM. Với đội ngũ bác sĩ chuyên sâu và công nghệ hiện đại, chúng tôi mang đến làn da khỏe đẹp cho bạn.",
+  "description": "<b>Giới thiệu Taza Skin Clinic</b><br>Tọa lạc tại 408 Cao Thắng, P.12, Q.10, Taza Skin Clinic là phòng khám da liễu thẩm mỹ chuyên sâu, mang đến giải pháp toàn diện cho các vấn đề về da. Với phương châm \"Làn da khỏe là nền tảng của vẻ đẹp\", chúng tôi không ngừng cập nhật công nghệ tiên tiến và phác đồ điều trị cá nhân hóa.<br><br><b>Dịch vụ nổi bật</b><br>- <b>Trị mụn</b>: Liệu trình trị mụn chuẩn y khoa, loại bỏ mụn tận gốc, ngăn ngừa tái phát, giá từ 2-8 triệu đồng.<br>- <b>Lăn kim trị sẹo</b>: Sử dụng kim lăn siêu nhỏ kết hợp dưỡng chất tái tạo da, làm mờ sẹo rỗ, sẹo thâm hiệu quả, giá từ 5-20 triệu đồng.<br>- <b>Tắm trắng</b>: Công nghệ tắm trắng an toàn, giúp da trắng sáng mịn màng từ 3-10 triệu đồng.<br><br><b>Cam kết chất lượng</b><br>Đội ngũ bác sĩ giàu kinh nghiệm, trang thiết bị hiện đại, quy trình vô trùng nghiêm ngặt. Taza Skin Clinic cam kết mang lại kết quả rõ rệt và an toàn cho khách hàng.<br><br><b>Liên hệ ngay</b><br>Điện thoại: 1900.2664 để được tư vấn miễn phí!",
+  "seo_title": "Taza Skin Clinic - Trị mụn, lăn kim trị sẹo, tắm trắng Q.10",
+  "seo_description": "Taza Skin Clinic tại 408 Cao Thắng, P.12, Q.10 chuyên trị mụn, lăn kim trị sẹo, tắm trắng. Đội ngũ bác sĩ giỏi, công nghệ hiện đại. Liên hệ 1900.2664.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&q=80&w=1200&h=600"
-    ],
+    "logo_url": "",
+    "banners": [],
+    "gallery": [],
+    "working_hours": "08:00 - 20:00 (Thứ 2 - Chủ Nhật)",
+    "price_range": "2.000.000đ - 20.000.000đ",
+    "amenities": [],
     "services": [
       {
         "id": "s1",
         "name": "Trị mụn",
         "price": "2-8 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Liệu trình trị mụn chuẩn y khoa, loại bỏ mụn tận gốc, ngăn ngừa tái phát."
       },
       {
         "id": "s2",
         "name": "Lăn kim trị sẹo",
         "price": "5-20 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Sử dụng kim lăn siêu nhỏ kết hợp dưỡng chất tái tạo da, làm mờ sẹo rỗ, sẹo thâm."
       },
       {
         "id": "s3",
         "name": "Tắm trắng",
         "price": "3-10 triệu",
-        "status": "active"
+        "status": "active",
+        "description": "Công nghệ tắm trắng an toàn, giúp da trắng sáng mịn màng."
       }
     ],
-    "deals": [],
-    "gallery": []
+    "deals": []
   }
 }

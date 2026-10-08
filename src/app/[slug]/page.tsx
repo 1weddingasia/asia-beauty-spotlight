@@ -56,7 +56,7 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
   if (business.status === 'suspended') {
     const h = await headers();
     const siteConfig = getSiteConfig(h.get('host') || '');
-    const hotline = business.page_content?.phone || '';
+    const hotline = business.page_content?.phone || business.phone || '';
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center bg-white rounded-3xl shadow-xl p-10 border border-slate-100">
@@ -83,7 +83,7 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
   // Lấy ảnh bìa hoặc avatar làm background an toàn
   const firstGalleryItem = business.page_content?.gallery?.[0];
   const galleryUrl = typeof firstGalleryItem === 'string' ? firstGalleryItem : firstGalleryItem?.url;
-  const bannerImg = business.page_content?.banners?.[0] || galleryUrl || "/images/fallback/spa_1.jpg";
+  const bannerImg = business.page_content?.banners?.[0] || galleryUrl || null;
   const avatar = business.page_content?.logo_url || "https://placehold.co/100x100/gold/white?text=SPA";
 
   return (

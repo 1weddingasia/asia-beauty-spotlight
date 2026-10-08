@@ -5,19 +5,17 @@
   "phone": "1900.633.563",
   "email": "bongspa@1booking.asia",
   "website": "bongspa.com",
-  "short_description": "Bông Spa - Thiên đường thư giãn và chăm sóc sắc đẹp với liệu trình từ hoa tươi, thảo mộc tự nhiên, không gian sang trọng và dịch vụ tận tâm.",
-  "description": "<b>Bông Spa</b> là điểm đến lý tưởng cho những ai tìm kiếm sự thư giãn và chăm sóc da hoàn hảo tại trung tâm Quận 1, TP.HCM. Với không gian sang trọng, ấm cúng cùng hương thơm thảo mộc dịu nhẹ, Bông Spa mang đến trải nghiệm thư giãn trọn vẹn từ khi bước chân vào.<br><br>Chúng tôi tự hào cung cấp các liệu trình chăm sóc da mặt độc đáo từ hoa tươi, kết hợp massage đá nóng và tắm trắng thảo mộc, giúp bạn tái tạo làn da và tinh thần. Đội ngũ nhân viên giàu kinh nghiệm, kỹ thuật chuyên sâu, luôn tận tình chăm sóc từng khách hàng.<br><br>Khách hàng đã tin tưởng và yêu mến Bông Spa qua những chia sẻ chân thành: <i>“Đến Bông mình thoải mái lắm, nhân viên làm rất tốt, có kỹ thuật chuyên sâu, cơ sở vật chất sang trọng, dịch vụ rất tốt, giá quá rẻ”</i> - Chị KimMy Trương. Hay <i>“Bông đã làm hài lòng 1 khách hàng khó tính là mình đây thì chắc ai cũng sẽ thích Bông thôi”</i> - Chị Minh Hạnh.<br><br>Hãy đến Bông Spa để trải nghiệm dịch vụ đẳng cấp với mức giá hợp lý. Đặt lịch ngay hôm nay qua số điện thoại 1900.633.563!",
+  "short_description": "Bông Spa - Thiên đường thư giãn với các liệu trình chăm sóc da mặt hoa tươi, massage đá nóng và tắm trắng thảo mộc. Không gian sang trọng, nhân viên chuyên nghiệp, giá cả phải chăng.",
+  "description": "<b>Bông Spa</b> là điểm đến lý tưởng cho những ai tìm kiếm sự thư giãn và chăm sóc sắc đẹp tại TP.HCM. Với không gian sang trọng, ấm cúng cùng mùi thơm thảo mộc nhẹ nhàng, Bông Spa mang đến cảm giác thư thái ngay từ khi bước chân vào.<br><br>Chúng tôi tự hào cung cấp các dịch vụ đa dạng như <b>chăm sóc da mặt hoa tươi</b>, <b>massage đá nóng</b>, <b>tắm trắng thảo mộc</b>, cùng nhiều liệu trình đặc biệt khác. Đội ngũ nhân viên được đào tạo chuyên sâu, tận tâm và thân thiện, luôn mang đến trải nghiệm tốt nhất cho khách hàng.<br><br>Đến với Bông Spa, bạn không chỉ được làm đẹp mà còn được tận hưởng những phút giây thư giãn tuyệt vời. Hãy để Bông Spa chăm sóc bạn!",
   "seo_title": "Bông Spa - Chăm sóc da & Massage thư giãn Q.1",
-  "seo_description": "Bông Spa tại Q.1, TP.HCM cung cấp dịch vụ chăm sóc da mặt hoa tươi, massage đá nóng, tắm trắng thảo mộc. Không gian sang trọng, giá hợp lý. Đặt lịch: 1900.633.563",
+  "seo_description": "Bông Spa tại Q.1, TP.HCM cung cấp dịch vụ chăm sóc da mặt hoa tươi, massage đá nóng, tắm trắng thảo mộc. Không gian sang trọng, nhân viên chuyên nghiệp, giá ưu đãi.",
   "status": "draft",
   "is_featured": false,
   "plan_tier": "premium",
   "page_content": {
-    "logo_url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=200&h=200",
-    "banners": [
-      "https://www.bongspa.com/images/hinhanh/f24c6e5e-b812-4ade-89f3-4b3f082c619020241218162558.jpeg",
-      "https://www.bongspa.com/images/hinhanh/p1535694-bong-spa-204820241015162516.jpg"
-    ],
+    "logo_url": "https://www.bongspa.com/favicon.ico",
+    "banners": [],
+    "working_hours": "10:00 - 21:00 (Thứ 2 - Chủ Nhật)",
     "services": [
       {
         "id": "s1",
