@@ -24,7 +24,7 @@ export default function CreateBusinessForm() {
               name="name" 
               required 
               className="w-full px-3 py-2 border border-border rounded-md"
-              placeholder="Vd: Thẩm Mỹ Viện Ngọc Dung"
+              placeholder="Vd: Tên doanh nghiệp / Cửa hàng của bạn"
             />
           </div>
 
@@ -34,7 +34,7 @@ export default function CreateBusinessForm() {
               name="slug" 
               required 
               className="w-full px-3 py-2 border border-border rounded-md"
-              placeholder="Vd: tham-my-vien-ngoc-dung"
+              placeholder="Vd: ten-doanh-nghiep-cua-ban"
             />
           </div>
 
