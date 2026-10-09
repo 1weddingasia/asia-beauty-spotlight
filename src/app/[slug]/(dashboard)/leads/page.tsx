@@ -72,6 +72,24 @@ export default function LeadsPage() {
     return { label: `⭐ VIP - Lần ${count}`, cls: 'bg-purple-100 text-purple-700 font-bold' };
   }
 
+  const fetchLeads = async (businessId: string) => {
+    // 1. Fetch Bookings (Leads)
+    const { data: leadsData, error: leadsErr } = await supabase
+      .from("business_leads")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: false });
+      
+    if (leadsErr) {
+      console.error(leadsErr);
+      toast.error("Lỗi khi tải danh sách khách hàng");
+    } else {
+      setLeads(leadsData || []);
+    }
+
+    setLoading(false);
+  };
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -98,23 +116,7 @@ export default function LeadsPage() {
     loadData();
   }, []);
 
-  const fetchLeads = async (businessId: string) => {
-    // 1. Fetch Bookings (Leads)
-    const { data: leadsData, error: leadsErr } = await supabase
-      .from("business_leads")
-      .select("*")
-      .eq("business_id", businessId)
-      .order("created_at", { ascending: false });
-      
-    if (leadsErr) {
-      console.error(leadsErr);
-      toast.error("Lỗi khi tải danh sách khách hàng");
-    } else {
-      setLeads(leadsData || []);
-    }
 
-    setLoading(false);
-  };
 
   const fetchHistory = async (phone: string) => {
     setHistoryLoading(true);

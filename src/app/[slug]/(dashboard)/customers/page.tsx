@@ -63,6 +63,21 @@ export default function LeadsPage() {
     return { label: `⭐ VIP - Lần ${count}`, cls: 'bg-purple-100 text-purple-700 font-bold' };
   }
 
+  const fetchCustomers = async (businessId: string) => {
+    // Fetch Unique Customers
+    const { data: custData, error: custErr } = await supabase
+      .from("business_customers")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("last_visit_at", { ascending: false });
+
+    if (!custErr && custData) {
+      setCustomers(custData);
+    }
+
+    setLoading(false);
+  };
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -89,20 +104,6 @@ export default function LeadsPage() {
     loadData();
   }, []);
 
-  const fetchCustomers = async (businessId: string) => {
-    // Fetch Unique Customers
-    const { data: custData, error: custErr } = await supabase
-      .from("business_customers")
-      .select("*")
-      .eq("business_id", businessId)
-      .order("last_visit_at", { ascending: false });
-
-    if (!custErr && custData) {
-      setCustomers(custData);
-    }
-
-    setLoading(false);
-  };
 
   const fetchHistory = async (phone: string) => {
     setHistoryLoading(true);

@@ -74,7 +74,7 @@ QUY TẮC BẮT BUỘC:
 4. Khi khách muốn lấy ưu đãi/đặt lịch, nhắc khách khi đến tiệm chỉ cần đọc Số Điện Thoại đã đăng ký để xác nhận. TUYỆT ĐỐI KHÔNG yêu cầu mang theo CMND hay CCCD.
 5. Mục tiêu cao nhất: Khéo léo nhắc khách để lại Số Điện Thoại để nhận voucher giảm giá hoặc giữ lịch hẹn.
 6. NẾU KHÁCH ĐÃ CUNG CẤP SỐ ĐIỆN THOẠI (xem ở mục Thông tin khách đã biết): TUYỆT ĐỐI KHÔNG HỎI LẠI SĐT. Hãy ghi nhớ số này và tư vấn trực tiếp.
-7. Nếu khách hàng tỏ ý "chốt đơn", "đặt lịch hẹn", "mua liệu trình", bạn BẮT BUỘC phải chèn thêm đúng chuỗi "[CHOT_DON]" vào cuối câu trả lời của bạn.
+7. Khi đã lấy đủ SĐT và thông tin đặt lịch, HÃY CHỦ ĐỘNG đề nghị khách xác nhận: "Bạn vui lòng gõ 'Xác nhận' để hệ thống gửi đơn đặt lịch nhé". KHI VÀ CHỈ KHI khách gõ chữ đồng ý hoặc "xác nhận", bạn BẮT BUỘC phải chèn thêm đúng chuỗi "[CHOT_DON]" vào cuối câu trả lời của bạn. TRONG CÂU TRẢ LỜI ĐÓ, tuyệt đối KHÔNG tự ý báo là "đã đặt lịch thành công", mà CHỈ ĐƯỢC báo là "hệ thống đã ghi nhận thông tin và nhân viên của tiệm sẽ liên hệ sớm nhất để xác nhận lại lịch đặt".
 8. BÁN CHÉO (UPSELL/CROSS-SELL): Nếu khách có vẻ quan tâm hoặc đã đồng ý lấy ưu đãi, HÃY KHÉO LÉO tư vấn và mời khách mua/đăng ký thêm các "Sản phẩm/Dịch vụ mua kèm" (ưu đãi thêm) dưới đây để tiệm gia tăng doanh thu. Chỉ giới thiệu các sản phẩm mua kèm CÓ TRONG DANH SÁCH.
 
 [DỮ LIỆU TIỆM]:
@@ -148,7 +148,7 @@ QUY TẮC BẮT BUỘC:
 
       if (telegramChatId && userPhoneFound) {
         const msg = `🔥 [${platformStr} AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${lastUserMsg?.content || ''}"\nAI đã phản hồi: "${reply}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
-        sendTelegramAsync(telegramChatId, msg);
+        await sendTelegramAsync(telegramChatId, msg);
       }
     }
 

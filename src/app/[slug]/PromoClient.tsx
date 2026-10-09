@@ -35,6 +35,8 @@ type Deal = {
 export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string | null, avatar: string }) {
   const siteConfig = useSiteConfig();
   const b = business;
+  const actionName = b.page_content?.action_name || "Liên hệ";
+  const actionNameUpper = actionName.toUpperCase();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -342,12 +344,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <button
               onClick={() => {
                 setBookingService("");
-                setSelectedDeal({ id: 'booking', title: 'Liên Hệ', original_price: '', promo_price: '', valid_until: '' });
+                setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
                 setIsDialogOpen(true);
               }}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110"
             >
-              <Calendar className="size-5" /> LIÊN HỆ NGAY
+              <Calendar className="size-5" /> {actionNameUpper} NGAY
             </button>
           </div>
         </div>
@@ -588,13 +590,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                             onClick={(e) => {
                               e.stopPropagation();
                               setBookingService(s.name);
-                              setSelectedDeal({ id: 'booking', title: 'Liên Hệ', original_price: '', promo_price: '', valid_until: '' });
+                              setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
                               setVoucher("");
                               setIsDialogOpen(true);
                             }}
                             className="mt-2 text-[10px] md:text-xs font-bold text-white bg-gold py-1.5 px-4 rounded-full w-fit hover:bg-ink transition-colors shadow-sm"
                           >
-                            Liên Hệ
+                            {actionName}
                           </button>
                         </div>
                       </div>
@@ -765,7 +767,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         if (voucher) {
           dialogTitle = isBooking ? "🎉 Đã gửi yêu cầu thành công!" : "🎉 Đăng ký thành công!";
         } else {
-          dialogTitle = isBooking ? "Thông tin liên hệ" : "Điền thông tin nhận ưu đãi";
+          dialogTitle = isBooking ? `Thông tin ${actionName}` : "Điền thông tin nhận ưu đãi";
         }
 
         return (
@@ -870,7 +872,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   )}
 
                   <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
-                    {loading ? "Đang gửi..." : (isBooking ? "GỬI YÊU CẦU" : "NHẬN ƯU ĐÃI")}
+                    {loading ? "Đang gửi..." : (isBooking ? `XÁC NHẬN ${actionNameUpper}` : "NHẬN ƯU ĐÃI")}
                   </Button>
                 </form>
               ) : (
@@ -969,13 +971,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 <button
                   onClick={() => {
                     setBookingService(selectedService.name);
-                    setSelectedDeal({ id: 'booking', title: 'Liên Hệ', original_price: '', promo_price: '', valid_until: '' });
+                    setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
                     setSelectedService(null);
                     setIsDialogOpen(true);
                   }}
                   className="block text-center w-full bg-gradient-to-r from-gold to-gold-soft rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity shadow-lg"
                 >
-                  LIÊN HỆ
+                  {actionNameUpper}
                 </button>
               </div>
             </motion.div>
@@ -1003,12 +1005,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         <button
           onClick={() => {
             setBookingService("");
-            setSelectedDeal({ id: 'booking', title: 'Liên Hệ', original_price: '', promo_price: '', valid_until: '' });
+            setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
             setIsDialogOpen(true);
           }}
           className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl hover:bg-gold transition-colors shadow-lg"
         >
-          <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> Liên Hệ Ngay</span>
+          <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> {actionName} Ngay</span>
         </button>
       </div>
 

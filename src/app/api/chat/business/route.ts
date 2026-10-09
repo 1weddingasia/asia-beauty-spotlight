@@ -4,6 +4,24 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import jwt from 'jsonwebtoken';
 
+function extractPhone(text: string): string | null {
+  const cleaned = text.replace(/[\s\.\-]/g, '');
+  const match = cleaned.match(/(03|05|07|08|09)\d{8}/);
+  return match ? match[0] : null;
+}
+
+function sendTelegramAsync(chatId: string, message: string) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token || !chatId) return Promise.resolve();
+
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: message })
+  }).catch(err => console.error("Telegram error:", err));
+}
+
 export const maxDuration = 60; // Allow longer execution time for Vercel
 
 const isValidUrl = (url?: string) => {
@@ -86,7 +104,10 @@ Danh sách dịch vụ của tiệm:
 ${servicesInfo}
 Danh sách ưu đãi (Deals) hiện có:
 ${dealsInfo}
-Hãy dựa vào danh sách trên để tư vấn giá cả và dịch vụ cho khách hàng nếu họ hỏi. Nếu khách muốn đặt lịch hoặc nhận ưu đãi, hãy khuyến khích họ để lại SĐT hoặc bấm chọn Ưu đãi trên màn hình.
+Hãy dựa vào danh sách trên để tư vấn giá cả và dịch vụ cho khách hàng nếu họ hỏi. Nếu khách muốn đặt lịch hoặc nhận ưu đãi, hãy yêu cầu họ cung cấp Tên và Số điện thoại, cùng thời gian mong muốn.
+Khi đã có đủ SĐT và thông tin, hãy chủ động đề nghị khách xác nhận bằng câu: "Bạn vui lòng gõ 'Xác nhận' để hệ thống gửi đơn đặt lịch nhé".
+KHI VÀ CHỈ KHI khách đã gõ chữ đồng ý hoặc "xác nhận", bạn mới chèn thêm chuỗi "[CHOT_DON]" vào cuối câu trả lời xác nhận của bạn.
+Nếu khách hỏi đã đặt thành công chưa, hãy báo là "hệ thống đã ghi nhận thông tin, nhân viên của tiệm sẽ liên hệ với anh/chị trong thời gian sớm nhất để xác nhận lại lịch đặt". Tuyệt đối không được tự ý khẳng định là "đã đặt lịch thành công".
 `;
 
     if (isAdmin) {
@@ -95,6 +116,25 @@ Bạn CÓ QUYỀN VÀ BẮT BUỘC PHẢI gọi các Tool (update_business_info,
     } else {
       systemPrompt += `\nNếu người dùng là khách: Hỗ trợ thân thiện, ngắn gọn.
 Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu cầu họ cung cấp Mật khẩu/Passcode của tiệm để bật chế độ Quản trị. Đừng gọi hàm sửa nếu chưa có passcode.`;
+    }
+
+    // Lọc SĐT và gửi Telegram
+    const lastUserMsg = messages[messages.length - 1];
+    if (!isAdmin && lastUserMsg && typeof lastUserMsg.content === 'string') {
+      const phoneInLastMsg = extractPhone(lastUserMsg.content);
+      if (phoneInLastMsg) {
+        const voucher_code = `1B-${business.name.substring(0, 3).toUpperCase().replace(/[^A-Z0-9]/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
+        
+        await supabase.from('business_leads').insert({
+          business_id: business.id,
+          customer_name: 'Khách từ Chatbot',
+          customer_phone: phoneInLastMsg,
+          deal_name: 'Tư vấn trực tiếp',
+          voucher_code,
+        });
+
+        // Chỉ lưu lead vào database, telegram sẽ gửi khi AI chốt đơn
+      }
     }
 
     const allMessages = [
@@ -429,8 +469,21 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         revalidatePath('/[slug]', 'page');
       }
 
+      let replyText = finalResponse.choices[0].message.content || '';
+      if (replyText.includes('[CHOT_DON]')) {
+        replyText = replyText.replace(/\[CHOT_DON\]/g, '').trim();
+        const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
+        const userMessages = messages.filter((m: any) => m.role === 'user' || m.role === 'assistant');
+        const allUserTexts = userMessages.map((m: any) => m.content).join(' ');
+        const userPhoneFound = extractPhone(allUserTexts);
+        if (telegramChatId && userPhoneFound) {
+          const msg = `🔥 [1BEAUTY AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${messages[messages.length - 1]?.content || ''}"\nAI đã phản hồi: "${replyText}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
+          await sendTelegramAsync(telegramChatId, msg);
+        }
+      }
+
       return NextResponse.json({
-        reply: finalResponse.choices[0].message.content,
+        reply: replyText,
         adminToken: newToken,
         dataUpdated: isDataUpdated
       });
@@ -447,8 +500,21 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         if (usageErr) console.error("Failed to log API usage:", usageErr);
       }
 
+      let replyText = responseMessage.content || '';
+      if (replyText.includes('[CHOT_DON]')) {
+        replyText = replyText.replace(/\[CHOT_DON\]/g, '').trim();
+        const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
+        const userMessages = messages.filter((m: any) => m.role === 'user' || m.role === 'assistant');
+        const allUserTexts = userMessages.map((m: any) => m.content).join(' ');
+        const userPhoneFound = extractPhone(allUserTexts);
+        if (telegramChatId && userPhoneFound) {
+          const msg = `🔥 [1BEAUTY AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${messages[messages.length - 1]?.content || ''}"\nAI đã phản hồi: "${replyText}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
+          await sendTelegramAsync(telegramChatId, msg);
+        }
+      }
+
       return NextResponse.json({
-        reply: responseMessage.content,
+        reply: replyText,
         adminToken: newToken,
         dataUpdated: false
       });
