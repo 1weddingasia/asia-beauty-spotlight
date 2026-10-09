@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { createAdminClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import jwt from 'jsonwebtoken';
+import { getSiteConfig } from '@/config/site-config';
 
 function extractPhone(text: string): string | null {
   const cleaned = text.replace(/[\s\.\-]/g, '');
@@ -36,6 +37,11 @@ const isValidUrl = (url?: string) => {
 
 export async function POST(req: Request) {
   try {
+    const host = req.headers.get('host') || '';
+    const platformConfig = getSiteConfig(host);
+    const platformStr = platformConfig.brand.toUpperCase();
+    const platformName = platformConfig.brand;
+
     const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
     if (!DEEPSEEK_API_KEY) {
       return NextResponse.json({ error: "Chưa cấu hình API Key" }, { status: 500 });
@@ -98,7 +104,7 @@ export async function POST(req: Request) {
     }
 
     // Build the system prompt
-    let systemPrompt = `Bạn là nhân viên chăm sóc khách hàng của cơ sở ${business.name} trên nền tảng 1Beauty. Bạn đang tư vấn trực tiếp cho khách. TUYỆT ĐỐI KHÔNG xưng là "Trợ lý AI" hay "Bot". Hãy xưng hô thân thiện, tự nhiên như một người thật (ví dụ: xưng em/mình và gọi khách là anh/chị/bạn).
+    let systemPrompt = `Bạn là nhân viên chăm sóc khách hàng của cơ sở ${business.name} trên nền tảng ${platformName}. Bạn đang tư vấn trực tiếp cho khách. TUYỆT ĐỐI KHÔNG xưng là "Trợ lý AI" hay "Bot". Hãy xưng hô thân thiện, tự nhiên như một người thật (ví dụ: xưng em/mình và gọi khách là anh/chị/bạn).
 Thông tin tiệm: SĐT ${business.phone || 'không có'}, Địa chỉ ${business.address || 'không có'}.
 Danh sách dịch vụ của tiệm:
 ${servicesInfo}
@@ -477,7 +483,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         const allUserTexts = userMessages.map((m: any) => m.content).join(' ');
         const userPhoneFound = extractPhone(allUserTexts);
         if (telegramChatId && userPhoneFound) {
-          const msg = `🔥 [1BEAUTY AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${messages[messages.length - 1]?.content || ''}"\nAI đã phản hồi: "${replyText}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
+          const msg = `🔥 [${platformStr} AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${messages[messages.length - 1]?.content || ''}"\nAI đã phản hồi: "${replyText}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
           await sendTelegramAsync(telegramChatId, msg);
         }
       }
@@ -508,7 +514,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         const allUserTexts = userMessages.map((m: any) => m.content).join(' ');
         const userPhoneFound = extractPhone(allUserTexts);
         if (telegramChatId && userPhoneFound) {
-          const msg = `🔥 [1BEAUTY AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${messages[messages.length - 1]?.content || ''}"\nAI đã phản hồi: "${replyText}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
+          const msg = `🔥 [${platformStr} AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${messages[messages.length - 1]?.content || ''}"\nAI đã phản hồi: "${replyText}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
           await sendTelegramAsync(telegramChatId, msg);
         }
       }

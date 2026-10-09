@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "./LogoutButton";
+import CreateBusinessForm from "./CreateBusinessForm";
 
 export default async function DashboardRedirect() {
   const supabase = await createClient();
@@ -31,9 +32,11 @@ export default async function DashboardRedirect() {
         <h1 className="text-xl font-bold mb-4">Chưa có gian hàng</h1>
         <p className="text-muted-foreground mb-6">Tài khoản <b>{user.email}</b> hiện chưa sở hữu gian hàng nào trên hệ thống.</p>
         <div className="flex flex-col gap-3">
-          <LogoutButton />
           <Link href="/" className="px-4 py-2 bg-muted text-foreground font-medium rounded-lg inline-block w-full">Về trang chủ</Link>
+          <LogoutButton />
         </div>
+        
+        <CreateBusinessForm />
       </div>
     </div>
   );
