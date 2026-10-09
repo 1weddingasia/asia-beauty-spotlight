@@ -134,7 +134,7 @@ export default function AiImportPage() {
             <div className="space-y-2">
               <Label>Danh sách link (mỗi dòng 1 link)</Label>
               <Textarea
-                placeholder={`https://maps.google.com/?q=Lisa+Nail+Spa+Q1\nhttps://maps.google.com/?q=Laboho+Spa+Q1\nhttps://theprivespa.com`}
+                placeholder={`https://maps.google.com/?q=Highlands+Coffee+Q1\nhttps://nha-khoa-nu-cuoi.com`}
                 className="font-mono text-sm h-52"
                 value={bulkLinks}
                 onChange={(e) => setBulkLinks(e.target.value)}

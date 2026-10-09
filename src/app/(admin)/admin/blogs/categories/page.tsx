@@ -152,7 +152,7 @@ export default function BlogCategoriesClient() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-2">
                 <Label>Tên danh mục</Label>
-                <Input type="text" required value={name} onChange={e => handleNameChange(e.target.value)} placeholder="vd: Kiến thức làm đẹp" />
+                <Input type="text" required value={name} onChange={e => handleNameChange(e.target.value)} placeholder="vd: Kinh nghiệm kinh doanh" />
               </div>
               <div className="space-y-2">
                 <Label>Slug (Tạo tự động)</Label>

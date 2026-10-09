@@ -274,7 +274,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ id: strin
                 <Textarea 
                   value={aiPrompt} 
                   onChange={e => setAiPrompt(e.target.value)} 
-                  placeholder="vd: Viết bài 5 mẹo chăm sóc da mụn tại nhà chuẩn spa..."
+                  placeholder="vd: Viết bài 5 mẹo thu hút khách hàng cho quán cafe dịp lễ..."
                   className="h-32"
                 />
               </div>

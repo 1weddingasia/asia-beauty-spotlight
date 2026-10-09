@@ -163,7 +163,7 @@ export default function DirectoryCategoriesClient() {
             <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-2">
                 <Label>Tên danh mục</Label>
-                <Input type="text" required value={name} onChange={e => handleNameChange(e.target.value)} placeholder="vd: Clinic" />
+                <Input type="text" required value={name} onChange={e => handleNameChange(e.target.value)} placeholder="vd: Quán Cafe" />
               </div>
               <div className="space-y-2">
                 <Label>Slug</Label>

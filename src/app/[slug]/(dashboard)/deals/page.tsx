@@ -368,7 +368,7 @@ export default function DealsManagementPage() {
                   <div className="space-y-2 md:col-span-2">
                     <Label>Tên dịch vụ / Gói ưu đãi (*)</Label>
                     <Input 
-                      placeholder="VD: Triệt lông nách vĩnh viễn Laser Diode" 
+                      placeholder="VD: Combo 3 Món - Tặng Nước Mát" 
                       value={deal.title}
                       onChange={e => updateDeal(idx, 'title', e.target.value)}
                       className={deal.status === 'paused' ? 'opacity-70' : ''}
@@ -472,7 +472,7 @@ export default function DealsManagementPage() {
                 <div className="flex-1 space-y-2">
                   <Label>Tên Sản phẩm / Dịch vụ</Label>
                   <Input 
-                    placeholder="VD: Tinh dầu dưỡng tóc, Mặt nạ phục hồi..." 
+                    placeholder="VD: Bánh kem sinh nhật mini, Áo thun basic..." 
                     value={cs.name}
                     onChange={e => updateCrossSell(idx, 'name', e.target.value)}
                     className={cs.status === 'paused' ? 'opacity-70' : ''}

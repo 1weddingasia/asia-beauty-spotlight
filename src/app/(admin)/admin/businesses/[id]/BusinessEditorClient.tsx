@@ -392,7 +392,7 @@ export default function BusinessEditorClient({
                     type="email" 
                     value={ownerEmail} 
                     onChange={(e) => setOwnerEmail(e.target.value)} 
-                    placeholder="VD: admin@tiemspa.com" 
+                    placeholder="VD: admin@example.com" 
                   />
                 </div>
                 <div className="space-y-2">
@@ -641,7 +641,7 @@ export default function BusinessEditorClient({
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <Label className="text-xs">Tên sản phẩm/dịch vụ</Label>
-                        <Input value={svc.name || ""} onChange={e => updateService(i, "name", e.target.value)} placeholder="Gội đầu dưỡng sinh..." />
+                        <Input value={svc.name || ""} onChange={e => updateService(i, "name", e.target.value)} placeholder="Tên dịch vụ/sản phẩm..." />
                       </div>
                       <div className="space-y-1">
                         <Label className="text-xs">Giá tiền</Label>
