@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
@@ -33,16 +33,13 @@ END:VCARD`;
   const downloadCardImage = async () => {
     if (!cardRef.current) return;
     try {
-      // Temporarily hide some buttons during capture if needed, 
-      // but we will only capture the card inner div anyway.
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 3, // High resolution for printing
-        backgroundColor: "#0f172a", // slate-900
-        useCORS: true,
+      const dataUrl = await toPng(cardRef.current, {
+        quality: 1,
+        pixelRatio: 3,
+        cacheBust: true,
       });
-      const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
-      a.href = url;
+      a.href = dataUrl;
       a.download = "Le-Tan-Loi-Business-Card.png";
       document.body.appendChild(a);
       a.click();
@@ -78,14 +75,14 @@ END:VCARD`;
         </button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-md w-full p-6 bg-transparent border-none shadow-none flex flex-col items-center overflow-y-auto max-h-[100dvh]">
+      <DialogContent className="w-auto p-4 md:p-6 bg-transparent border-none shadow-none flex flex-col items-center">
         <DialogTitle className="sr-only">Thẻ liên hệ số — Lê Tấn Lợi</DialogTitle>
         <DialogDescription className="sr-only">Thông tin liên hệ và mã QR để lưu danh bạ.</DialogDescription>
         
         {/* The Card Design */}
         <div 
           ref={cardRef}
-          className="relative w-[320px] h-[540px] shrink-0 text-white rounded-2xl overflow-hidden shadow-2xl border border-gold/30 flex flex-col items-center py-10 px-6"
+          className="relative w-[280px] h-[460px] shrink-0 text-white rounded-2xl overflow-hidden shadow-2xl border border-gold/30 flex flex-col items-center py-6 px-5"
           style={{
             backgroundImage: "url('/images/premium-card-bg.png')",
             backgroundSize: "cover",
@@ -98,39 +95,39 @@ END:VCARD`;
           <div className="relative z-10 w-full h-full flex flex-col items-center">
             
             {/* Avatar */}
-            <div className="w-16 h-16 rounded-full border border-gold/40 flex items-center justify-center bg-black/80 shadow-[0_0_15px_rgba(234,179,8,0.15)] mb-4">
-              <span className="text-xl font-black bg-gradient-to-tr from-gold via-yellow-200 to-amber-600 bg-clip-text text-transparent">
+            <div className="w-12 h-12 rounded-full border border-gold/40 flex items-center justify-center bg-black/80 shadow-[0_0_15px_rgba(234,179,8,0.15)] mb-3">
+              <span className="text-sm font-black bg-gradient-to-tr from-gold via-yellow-200 to-amber-600 bg-clip-text text-transparent">
                 LTL
               </span>
             </div>
 
             {/* Name & Title */}
-            <h2 className="text-2xl font-black font-display tracking-widest text-white drop-shadow-md">
+            <h2 className="text-xl font-medium font-display tracking-[0.2em] text-white drop-shadow-md">
               LÊ TẤN LỢI
             </h2>
-            <p className="text-gold/70 text-[10px] font-bold tracking-[0.3em] uppercase mt-2 mb-8">
+            <p className="text-gold/80 text-[9px] font-bold tracking-[0.3em] uppercase mt-1.5 mb-5">
               Founder & CEO
             </p>
 
             {/* Ecosystem Logos (Display Font) */}
-            <div className="flex-1 w-full flex flex-col items-center justify-center gap-4 mb-8 border-y border-gold/20 py-6">
+            <div className="flex-1 w-full flex flex-col items-center justify-center gap-3 mb-5 border-y border-gold/20 py-4">
               {DOMAINS.map((domain) => (
-                <span key={domain} className="font-display text-lg font-medium tracking-wider bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent drop-shadow-sm">
+                <span key={domain} className="font-display italic text-[15px] font-medium tracking-widest bg-gradient-to-r from-gold via-yellow-100 to-gold bg-clip-text text-transparent drop-shadow-sm">
                   {domain}
                 </span>
               ))}
             </div>
 
             {/* Phone & QR Section */}
-            <div className="w-full flex items-center justify-between px-2 mt-auto">
+            <div className="w-full flex items-center justify-between px-1 mt-auto">
               <div className="flex flex-col items-start">
-                <span className="text-gold/50 text-[10px] tracking-widest uppercase mb-1">Điện thoại</span>
-                <span className="text-white font-bold tracking-widest text-sm">0918 731 411</span>
+                <span className="text-gold/50 text-[9px] tracking-widest uppercase mb-1">Điện thoại</span>
+                <span className="text-white font-bold tracking-widest text-xs">0918 731 411</span>
               </div>
-              <div className="bg-white/90 p-2 rounded-xl shadow-lg">
+              <div className="bg-white/95 p-1.5 rounded-lg shadow-lg">
                 <QRCodeSVG 
                   value={vCardData} 
-                  size={64}
+                  size={52}
                   level="M"
                   includeMargin={false}
                 />
@@ -141,20 +138,20 @@ END:VCARD`;
         </div>
 
         {/* Action Buttons (outside the capture area) */}
-        <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6 w-[320px] shrink-0">
+        <div className="flex justify-center gap-2 mt-4 w-[280px] shrink-0">
           <Button 
             onClick={downloadVCard} 
             variant="outline" 
-            className="flex-1 rounded-xl bg-black/50 border-gold/30 text-gold hover:bg-gold hover:text-black backdrop-blur-md"
+            className="flex-1 rounded-xl bg-black/50 border-gold/30 text-gold hover:bg-gold hover:text-black backdrop-blur-md text-xs h-10"
           >
-            <Share2 className="w-4 h-4 mr-2" /> Lưu Danh Bạ
+            <Share2 className="w-3.5 h-3.5 mr-1.5" /> Lưu Danh Bạ
           </Button>
           <Button 
             onClick={downloadCardImage} 
             variant="outline"
-            className="flex-1 rounded-xl bg-black/50 border-gold/30 text-gold hover:bg-gold hover:text-black backdrop-blur-md"
+            className="flex-1 rounded-xl bg-black/50 border-gold/30 text-gold hover:bg-gold hover:text-black backdrop-blur-md text-xs h-10"
           >
-            <Download className="w-4 h-4 mr-2" /> Tải Ảnh In
+            <Download className="w-3.5 h-3.5 mr-1.5" /> Tải Ảnh In
           </Button>
         </div>
       </DialogContent>
