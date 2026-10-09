@@ -64,24 +64,23 @@ END:VCARD`;
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        {/* Discreet button positioned on the right */}
+        {/* Very subtle discreet button on the bottom left */}
         <button
-          className="fixed bottom-4 right-20 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-gold/10 text-gold/60 border border-gold/20 hover:bg-gold hover:text-ink hover:scale-110 shadow-lg backdrop-blur-sm transition-all duration-300 group"
+          className="fixed bottom-4 left-4 z-50 flex items-center justify-center w-8 h-8 rounded-full bg-black/20 text-white/30 border border-white/10 hover:bg-gold/20 hover:text-gold hover:border-gold/30 backdrop-blur-md transition-all duration-300"
           title="Digital Business Card"
         >
-          <span className="text-[10px] font-bold uppercase tracking-wider group-hover:hidden">Card</span>
-          <span className="hidden text-xs font-black group-hover:block">1B</span>
+          <span className="text-[9px] font-black">1B</span>
         </button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-[400px] p-0 overflow-hidden bg-transparent border-none shadow-none">
+      <DialogContent className="max-w-md w-full p-6 bg-transparent border-none shadow-none flex flex-col items-center overflow-y-auto max-h-[100dvh]">
         <DialogTitle className="sr-only">Thẻ liên hệ số — Lê Tấn Lợi</DialogTitle>
         <DialogDescription className="sr-only">Thông tin liên hệ và mã QR để lưu danh bạ.</DialogDescription>
         
         {/* The Card Design */}
         <div 
           ref={cardRef}
-          className="relative text-white rounded-3xl overflow-hidden shadow-2xl border-2 border-gold/40"
+          className="relative w-[320px] h-[540px] shrink-0 text-white rounded-2xl overflow-hidden shadow-2xl border border-gold/30 flex flex-col items-center py-10 px-6"
           style={{
             backgroundImage: "url('/images/premium-card-bg.png')",
             backgroundSize: "cover",
@@ -89,81 +88,72 @@ END:VCARD`;
           }}
         >
           {/* Subtle overlay to ensure text readability */}
-          <div className="absolute inset-0 bg-black/40 z-0"></div>
+          <div className="absolute inset-0 bg-black/60 z-0"></div>
 
-          <div className="relative z-10 p-8 flex flex-col items-center text-center">
-            {/* Header Logos */}
-            <div className="flex items-center gap-4 mb-6">
-              <span className="font-display font-black text-xl tracking-wider text-white drop-shadow-md">
-                1BOOKING
-              </span>
-              <div className="w-1.5 h-1.5 rounded-full bg-gold"></div>
-              <span className="font-display font-black text-xl tracking-wider text-white drop-shadow-md">
-                1BEAUTY
-              </span>
-            </div>
-
+          <div className="relative z-10 w-full h-full flex flex-col items-center">
+            
             {/* Avatar */}
-            <div className="w-28 h-28 mb-5 rounded-full p-1 bg-gradient-to-tr from-gold via-yellow-200 to-amber-600 shadow-[0_0_20px_rgba(234,179,8,0.3)]">
-              <div className="w-full h-full rounded-full bg-black/80 flex items-center justify-center overflow-hidden border border-black/50 backdrop-blur-sm">
-                <span className="text-4xl font-black bg-gradient-to-tr from-gold via-yellow-200 to-amber-600 bg-clip-text text-transparent drop-shadow-md">
-                  LTL
-                </span>
-              </div>
+            <div className="w-16 h-16 rounded-full border border-gold/40 flex items-center justify-center bg-black/80 shadow-[0_0_15px_rgba(234,179,8,0.15)] mb-4">
+              <span className="text-xl font-black bg-gradient-to-tr from-gold via-yellow-200 to-amber-600 bg-clip-text text-transparent">
+                LTL
+              </span>
             </div>
 
             {/* Name & Title */}
-            <h2 className="text-3xl font-black font-display tracking-widest mb-1 text-white drop-shadow-lg">
+            <h2 className="text-2xl font-black font-display tracking-widest text-white drop-shadow-md">
               LÊ TẤN LỢI
             </h2>
-            <p className="text-gold text-sm font-bold tracking-[0.2em] uppercase mb-8 drop-shadow-md">
+            <p className="text-gold/70 text-[10px] font-bold tracking-[0.3em] uppercase mt-2 mb-8">
               Founder & CEO
             </p>
 
-            {/* Contact Info */}
-            <div className="w-full space-y-3 mb-8 text-sm">
-              <div className="flex justify-between items-center px-5 py-3 bg-black/50 backdrop-blur-md rounded-xl border border-gold/20 shadow-inner">
-                <span className="text-gold/70 font-medium tracking-wider uppercase text-xs">Điện thoại</span>
-                <span className="font-bold text-white tracking-widest text-base">0918 731 411</span>
-              </div>
-              <div className="flex flex-col gap-1.5 px-5 py-4 bg-black/50 backdrop-blur-md rounded-xl border border-gold/20 text-right shadow-inner">
-                <span className="text-gold/70 text-left mb-2 font-medium tracking-wider uppercase text-xs border-b border-gold/20 pb-2">Hệ sinh thái</span>
-                <span className="text-white font-semibold tracking-wider">1beauty.asia</span>
-                <span className="text-white font-semibold tracking-wider">1booking.asia</span>
-                <span className="text-white font-semibold tracking-wider">1learn.asia</span>
-                <span className="text-white font-semibold tracking-wider">1travel.asia</span>
-                <span className="text-white font-semibold tracking-wider">maisondining.asia</span>
-              </div>
+            {/* Ecosystem Logos (Display Font) */}
+            <div className="flex-1 w-full flex flex-col items-center justify-center gap-4 mb-8 border-y border-gold/20 py-6">
+              {[
+                "1Booking.Asia", 
+                "1Beauty.Asia", 
+                "1Learn.Asia", 
+                "1Travel.Asia", 
+                "MaisonDining.Asia"
+              ].map((domain) => (
+                <span key={domain} className="font-display text-lg font-medium tracking-wider bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent drop-shadow-sm">
+                  {domain}
+                </span>
+              ))}
             </div>
 
-            {/* QR Code Section */}
-            <div className="bg-white p-3 rounded-xl shadow-inner mb-2 flex flex-col items-center">
-              <QRCodeSVG 
-                value={vCardData} 
-                size={140}
-                level="M"
-                includeMargin={false}
-              />
+            {/* Phone & QR Section */}
+            <div className="w-full flex items-center justify-between px-2 mt-auto">
+              <div className="flex flex-col items-start">
+                <span className="text-gold/50 text-[10px] tracking-widest uppercase mb-1">Điện thoại</span>
+                <span className="text-white font-bold tracking-widest text-sm">0918 731 411</span>
+              </div>
+              <div className="bg-white/90 p-2 rounded-xl shadow-lg">
+                <QRCodeSVG 
+                  value={vCardData} 
+                  size={64}
+                  level="M"
+                  includeMargin={false}
+                />
+              </div>
             </div>
-            <p className="text-[10px] text-slate-400 mt-2 uppercase tracking-widest">
-              Quét để lưu danh bạ
-            </p>
+            
           </div>
         </div>
 
         {/* Action Buttons (outside the capture area) */}
-        <div className="flex justify-center gap-3 mt-4">
+        <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6 w-[320px] shrink-0">
           <Button 
             onClick={downloadVCard} 
             variant="outline" 
-            className="rounded-full bg-slate-900 border-gold/30 text-gold hover:bg-gold hover:text-slate-900"
+            className="flex-1 rounded-xl bg-black/50 border-gold/30 text-gold hover:bg-gold hover:text-black backdrop-blur-md"
           >
             <Share2 className="w-4 h-4 mr-2" /> Lưu Danh Bạ
           </Button>
           <Button 
             onClick={downloadCardImage} 
             variant="outline"
-            className="rounded-full bg-slate-900 border-gold/30 text-gold hover:bg-gold hover:text-slate-900"
+            className="flex-1 rounded-xl bg-black/50 border-gold/30 text-gold hover:bg-gold hover:text-black backdrop-blur-md"
           >
             <Download className="w-4 h-4 mr-2" /> Tải Ảnh In
           </Button>
