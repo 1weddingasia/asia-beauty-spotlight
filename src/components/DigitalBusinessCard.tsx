@@ -3,8 +3,9 @@
 import { useState, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import html2canvas from "html2canvas";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Download, Share2, CreditCard, X } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Download, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export function DigitalBusinessCard() {
@@ -42,6 +43,7 @@ END:VCARD`;
       a.click();
     } catch (err) {
       console.error("Failed to generate card image", err);
+      toast.error("Không thể tạo ảnh thẻ. Vui lòng thử lại.");
     }
   };
 
@@ -51,8 +53,10 @@ END:VCARD`;
     const a = document.createElement("a");
     a.href = url;
     a.download = "Le-Tan-Loi.vcf";
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   };
 
   return (
@@ -68,6 +72,9 @@ END:VCARD`;
       </DialogTrigger>
       
       <DialogContent className="max-w-[400px] p-0 overflow-hidden bg-transparent border-none shadow-none">
+        <DialogTitle className="sr-only">Thẻ liên hệ số — Lê Tấn Lợi</DialogTitle>
+        <DialogDescription className="sr-only">Thông tin liên hệ và mã QR để lưu danh bạ.</DialogDescription>
+        
         {/* The Card Design */}
         <div 
           ref={cardRef}
