@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { getSiteConfig } from "@/config/site-config";
 import PromoClient from "./PromoClient";
 
-export const revalidate = 0; // Disabled cache to show updates instantly
+export const revalidate = 60; // Cache trang 60 giây để tăng tốc độ tải cực nhanh
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

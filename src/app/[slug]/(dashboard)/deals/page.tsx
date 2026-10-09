@@ -288,7 +288,7 @@ export default function DealsManagementPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <Label className="text-xs">Tên dịch vụ</Label>
-                      <Input value={svc.name || ""} onChange={e => updateService(i, "name", e.target.value)} placeholder="Gội đầu dưỡng sinh..." />
+                      <Input value={svc.name || ""} onChange={e => updateService(i, "name", e.target.value)} placeholder="Tên dịch vụ/sản phẩm..." />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">Giá tiền</Label>

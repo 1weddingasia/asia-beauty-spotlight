@@ -175,11 +175,6 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     }
   };
 
-  const handleInterceptClick = (e: React.MouseEvent, type: 'hotline' | 'zalo') => {
-    e.preventDefault();
-    setInterceptType(type);
-  };
-
   const rawHotline = business.page_content?.phone || business.phone;
   const hotline = rawHotline || "(Chưa công khai)";
   const hotlineDigits = rawHotline ? rawHotline.replace(/[^0-9]/g, '') : '';
@@ -194,66 +189,6 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         mapSrc = business.page_content.map_embed;
     }
   }
-
-  const handleInterceptSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setInterceptLoading(true);
-
-    // Mở tab mới ngay lập tức cho Zalo để tránh bị trình duyệt chặn pop-up sau await
-    let zaloWindow: Window | null = null;
-    if (interceptType === 'zalo') {
-      zaloWindow = window.open('', '_blank');
-    }
-
-    try {
-      // Thêm thời gian vào deal_name để tránh bị chặn duplicate (vì API có check trùng deal_name)
-      const timeStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      const interceptDealName = interceptType === 'hotline'
-        ? `Liên hệ qua Hotline (${timeStr})`
-        : `Tư vấn Booking qua Zalo (${timeStr})`;
-      const response = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          business_id: business.id,
-          customer_name: interceptName || (interceptType === 'hotline' ? 'Khách click Gọi Hotline' : 'Khách click Zalo Booking'),
-          customer_phone: interceptPhone,
-          deal_name: interceptDealName
-        }),
-      });
-
-      let data = {};
-      try {
-        data = await response.json();
-      } catch (err) { }
-
-      if (!response.ok) {
-        toast.error((data as any).error || "Số điện thoại không hợp lệ");
-        if (zaloWindow) zaloWindow.close();
-        setInterceptLoading(false);
-        return;
-      }
-
-      // 2. Chuyển hướng
-      if (interceptType === 'hotline') {
-        if (!hotlineDigits) {
-          toast.error("Tiệm chưa cập nhật số điện thoại");
-          return;
-        }
-        window.location.href = `tel:${hotlineDigits}`;
-      } else if (zaloWindow) {
-        zaloWindow.location.href = zaloLink;
-      }
-      setInterceptType(null);
-      setInterceptPhone("");
-      setInterceptName("");
-    } catch (err) {
-      toast.error("Lỗi kết nối");
-      if (zaloWindow) zaloWindow.close();
-    } finally {
-      setInterceptLoading(false);
-    }
-  };
 
   const services = Array.isArray(business.page_content?.services) && business.page_content.services.length > 0
     ? business.page_content.services.filter((s: any) => s.status !== 'paused')
@@ -351,47 +286,6 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           </div>
         </div>
       </div>
-
-      <Dialog open={!!interceptType} onOpenChange={() => setInterceptType(null)}>
-        <DialogContent className="sm:max-w-[425px] rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold font-display text-ink">
-              {interceptType === 'hotline' ? 'Liên hệ Hotline' : 'Nhận tư vấn qua Zalo'}
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground text-sm">
-              Vui lòng để lại Số Điện Thoại để <b>{business.name}</b> chuẩn bị đón tiếp và giữ ưu đãi tốt nhất cho bạn nhé!
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleInterceptSubmit} className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Input
-                placeholder="Tên của bạn (Tùy chọn)"
-                value={interceptName}
-                onChange={e => setInterceptName(e.target.value)}
-                className="h-12 bg-white text-ink border-gray-200 focus:border-gold focus:ring-gold"
-              />
-            </div>
-            <div className="space-y-2">
-              <Input
-                placeholder="Số điện thoại của bạn *"
-                required
-                type="tel"
-                value={interceptPhone}
-                onChange={e => setInterceptPhone(e.target.value)}
-                className="h-12 bg-white text-ink border-gray-200 focus:border-gold focus:ring-gold font-medium"
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full h-12 bg-gold hover:bg-gold-soft text-ink font-bold text-lg rounded-xl transition-all hover:scale-[1.02]"
-              disabled={interceptLoading}
-            >
-              {interceptLoading ? "Đang kết nối..." : (interceptType === 'hotline' ? "Tiếp tục gọi" : "Tiếp tục mở Zalo")}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-
       <div id="deals-section" className="max-w-5xl mx-auto px-4 py-8 md:py-12 -mt-16 md:-mt-24 relative z-10">
         <div className="text-center mb-8 md:mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto flex flex-col items-center justify-center">
           <div className="mb-6 md:mb-8 w-full flex justify-center">
@@ -678,27 +572,25 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </div>
                 )}
 
-                {b.socials && Object.values(b.socials).some(Boolean) && (
+                {b.socials && (b.socials.facebook || b.socials.tiktok || b.socials.instagram || b.socials.youtube) ? (
                   <div className="flex items-start gap-3">
                     <Globe className="size-4 md:size-5 text-gold shrink-0 mt-0.5" />
                     <div className="flex flex-col gap-2">
-                      {b.socials.facebook && (
+                      {b.socials?.facebook && (
                         <a href={b.socials.facebook} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">Facebook</a>
                       )}
-                      {b.socials.tiktok && (
+                      {b.socials?.tiktok && (
                         <a href={b.socials.tiktok} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">TikTok</a>
                       )}
-                      {b.socials.instagram && (
+                      {b.socials?.instagram && (
                         <a href={b.socials.instagram} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">Instagram</a>
                       )}
-                      {b.socials.youtube && (
+                      {b.socials?.youtube && (
                         <a href={b.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">YouTube</a>
                       )}
                     </div>
                   </div>
-                )}
-
-
+                ) : null}
 
                 {b.email && (
                   <div className="flex items-center gap-3">
@@ -707,11 +599,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   </div>
                 )}
 
-                {b.website && (
+                {(b.website || b.page_content?.website || b.socials?.website) && (
                   <div className="flex items-center gap-3">
                     <Globe className="size-4 md:size-5 text-gold shrink-0" />
-                    <a href={b.website.startsWith('http') ? b.website : `https://${b.website}`} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">
-                      {b.website.replace(/^https?:\/\//, '')}
+                    <a href={(b.website || b.page_content?.website || b.socials?.website).startsWith('http') ? (b.website || b.page_content?.website || b.socials?.website) : `https://${(b.website || b.page_content?.website || b.socials?.website)}`} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-medium text-gold hover:underline line-clamp-1">
+                      {(b.website || b.page_content?.website || b.socials?.website).replace(/^https?:\/\//, '')}
                     </a>
                   </div>
                 )}
@@ -752,7 +644,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                   href={zaloLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 rounded-2xl px-6 py-5 text-center text-sm md:text-base font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02]"
+                  className="w-full flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 rounded-2xl px-6 py-5 text-center text-sm md:text-base font-bold text-white shadow-lg shadow-blue-500/30 transition-all duration-200 hover:scale-[1.02] active:scale-95 active:opacity-90"
                 >
                   <MessageCircle className="size-5 md:size-6" /> Chat qua Zalo
                 </a>
@@ -979,7 +871,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     setSelectedService(null);
                     setIsDialogOpen(true);
                   }}
-                  className="block text-center w-full bg-gradient-to-r from-gold to-gold-soft rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest hover:opacity-90 transition-opacity shadow-lg"
+                  className="block text-center w-full bg-gradient-to-r from-gold to-gold-soft rounded-full py-3.5 md:py-4 text-ink text-xs md:text-sm font-semibold uppercase tracking-widest transition-all duration-200 shadow-lg active:scale-95 active:opacity-90 hover:opacity-90"
                 >
                   {actionNameUpper}
                 </button>
@@ -1002,7 +894,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           onClick={() => {
             document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
           }}
-          className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 hover:bg-gold hover:text-white transition-colors"
+          className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 transition-all duration-200 active:scale-95 active:opacity-90 hover:bg-gold hover:text-white"
         >
           <span className="flex items-center justify-center gap-2"><Gift className="size-4" /> Nhận Ưu Đãi</span>
         </button>
@@ -1012,7 +904,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
             setIsDialogOpen(true);
           }}
-          className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl hover:bg-gold transition-colors shadow-lg"
+          className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg active:scale-95 active:opacity-90 hover:bg-gold"
         >
           <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> {actionName} Ngay</span>
         </button>

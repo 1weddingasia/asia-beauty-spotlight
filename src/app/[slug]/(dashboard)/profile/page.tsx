@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { revalidatePagePath } from "@/actions/revalidate";
+import { revalidatePagePath } from "@/actions/revalidate";
 import { Save, Plus, Trash2, Link as LinkIcon, Lock, MapPin, CheckSquare, Square } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -188,6 +190,7 @@ export default function BusinessProfilePage() {
       }).eq("id", business.id);
 
       if (error) throw error;
+      await revalidatePagePath(`/${business.slug}`);
       toast.success("Đã lưu thông tin doanh nghiệp");
     } catch (error: any) {
       toast.error("Lỗi khi lưu: " + error.message);
@@ -508,7 +511,7 @@ export default function BusinessProfilePage() {
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-1">
                       <Label className="text-xs">Tên Ưu Đãi</Label>
-                      <Input value={deal.title || ""} onChange={e => updateDeal(i, "title", e.target.value)} placeholder="Trị mụn chuyên sâu" />
+                      <Input value={deal.title || ""} onChange={e => updateDeal(i, "title", e.target.value)} placeholder="VD: Gói Khám Đặc Biệt" />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">Nhãn nổi bật (Badge)</Label>

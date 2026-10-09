@@ -286,8 +286,8 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
             <div>
               <h4 className="font-semibold text-foreground mb-1">Câu lệnh mẫu:</h4>
               <ul className="list-disc list-inside space-y-1">
-                <li><i className="text-foreground/80">"Giảm giá combo gội đầu xuống 99k"</i></li>
-                <li><i className="text-foreground/80">"Thêm dịch vụ Nặn Mụn giá 250k"</i></li>
+                <li><i className="text-foreground/80">"Giảm giá combo Sản phẩm A xuống 99k"</i></li>
+                <li><i className="text-foreground/80">"Thêm dịch vụ Gói VIP giá 250k"</i></li>
                 <li><i className="text-foreground/80">"Thay banner thành link http..."</i></li>
                 <li><i className="text-foreground/80">"Đổi mã bảo mật của tôi thành 8888"</i></li>
               </ul>

@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { createOrUpdateOwner } from "@/app/actions/admin";
+import { revalidatePagePath } from "@/actions/revalidate";
 
 /** Normalize a string into a valid URL slug */
 function normalizeSlug(str: string): string {
@@ -182,6 +183,7 @@ export default function BusinessEditorClient({
           .update(payload)
           .eq('id', business.id);
         if (error) throw error;
+        await revalidatePagePath('/' + payload.slug);
         toast.success('Đã lưu thông tin doanh nghiệp');
       }
     } catch (error: any) {
