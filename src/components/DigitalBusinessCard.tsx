@@ -12,6 +12,14 @@ export function DigitalBusinessCard() {
   const [isOpen, setIsOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  const DOMAINS = [
+    "1Booking.Asia",
+    "1Beauty.Asia",
+    "1Learn.Asia",
+    "1Travel.Asia",
+    "MaisonDining.Asia"
+  ];
+
   const vCardData = `BEGIN:VCARD
 VERSION:3.0
 N:Lê;Tấn Lợi;;;
@@ -19,11 +27,7 @@ FN:Lê Tấn Lợi
 ORG:1Booking & 1Beauty
 TITLE:Founder & CEO
 TEL;TYPE=CELL:0918731411
-URL:https://1booking.asia
-URL:https://1beauty.asia
-URL:https://1learn.asia
-URL:https://1travel.asia
-URL:https://maisondining.asia
+${DOMAINS.map(d => `URL:https://${d.toLowerCase()}`).join('\n')}
 END:VCARD`;
 
   const downloadCardImage = async () => {
@@ -66,10 +70,11 @@ END:VCARD`;
       <DialogTrigger asChild>
         {/* Very subtle discreet button on the bottom left */}
         <button
-          className="fixed bottom-4 left-4 z-50 flex items-center justify-center w-8 h-8 rounded-full bg-black/20 text-white/30 border border-white/10 hover:bg-gold/20 hover:text-gold hover:border-gold/30 backdrop-blur-md transition-all duration-300"
+          className="fixed bottom-4 left-4 z-[99] flex items-center justify-center w-10 h-10 rounded-full bg-black/20 text-white/30 border border-white/10 hover:bg-gold/20 hover:text-gold hover:border-gold/30 backdrop-blur-md transition-all duration-300"
           title="Digital Business Card"
+          aria-label="Thẻ liên hệ số Lê Tấn Lợi"
         >
-          <span className="text-[9px] font-black">1B</span>
+          <span className="text-[10px] font-black">1B</span>
         </button>
       </DialogTrigger>
       
@@ -109,13 +114,7 @@ END:VCARD`;
 
             {/* Ecosystem Logos (Display Font) */}
             <div className="flex-1 w-full flex flex-col items-center justify-center gap-4 mb-8 border-y border-gold/20 py-6">
-              {[
-                "1Booking.Asia", 
-                "1Beauty.Asia", 
-                "1Learn.Asia", 
-                "1Travel.Asia", 
-                "MaisonDining.Asia"
-              ].map((domain) => (
+              {DOMAINS.map((domain) => (
                 <span key={domain} className="font-display text-lg font-medium tracking-wider bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent drop-shadow-sm">
                   {domain}
                 </span>
