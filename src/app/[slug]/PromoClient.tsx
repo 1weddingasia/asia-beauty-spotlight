@@ -315,11 +315,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         </Carousel>
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90 pointer-events-none z-10" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-20">
-          <div className="bg-white rounded-2xl shadow-2xl mb-6 p-2 md:p-3 border-2 border-gold/50 inline-flex items-center justify-center">
+          <div className="mb-6 inline-flex items-center justify-center">
             <img 
               src={avatar} 
               alt="Logo" 
-              className="max-h-20 md:max-h-28 max-w-[200px] md:max-w-[300px] w-auto h-auto object-contain rounded-xl" 
+              className="max-h-24 md:max-h-32 max-w-[200px] md:max-w-[300px] w-auto h-auto object-contain drop-shadow-2xl" 
             />
           </div>
           <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-3 flex items-center justify-center gap-2">
