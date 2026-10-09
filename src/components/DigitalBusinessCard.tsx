@@ -40,7 +40,9 @@ END:VCARD`;
       const a = document.createElement("a");
       a.href = url;
       a.download = "Le-Tan-Loi-Business-Card.png";
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
     } catch (err) {
       console.error("Failed to generate card image", err);
       toast.error("Không thể tạo ảnh thẻ. Vui lòng thử lại.");
