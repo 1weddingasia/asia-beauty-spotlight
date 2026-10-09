@@ -1,10 +1,36 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { createBusinessAction } from './actions';
 
 export default function CreateBusinessForm() {
   const [state, formAction, pending] = useActionState(createBusinessAction, null);
+  const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
+  const [isSlugEdited, setIsSlugEdited] = useState(false);
+
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // remove accents
+      .replace(/đ/g, "d")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setName(newName);
+    if (!isSlugEdited) {
+      setSlug(generateSlug(newName));
+    }
+  };
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSlug(e.target.value);
+    setIsSlugEdited(true);
+  };
 
   return (
     <form action={formAction} className="mt-6 flex flex-col gap-4 text-left">
@@ -23,6 +49,8 @@ export default function CreateBusinessForm() {
             <input 
               name="name" 
               required 
+              value={name}
+              onChange={handleNameChange}
               className="w-full px-3 py-2 border border-border rounded-md"
               placeholder="Vd: Tên doanh nghiệp / Cửa hàng của bạn"
             />
@@ -33,6 +61,8 @@ export default function CreateBusinessForm() {
             <input 
               name="slug" 
               required 
+              value={slug}
+              onChange={handleSlugChange}
               className="w-full px-3 py-2 border border-border rounded-md"
               placeholder="Vd: ten-doanh-nghiep-cua-ban"
             />
