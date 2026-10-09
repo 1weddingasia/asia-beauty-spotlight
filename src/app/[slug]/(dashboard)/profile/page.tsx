@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { revalidatePagePath } from "@/actions/revalidate";
-import { revalidatePagePath } from "@/actions/revalidate";
 import { Save, Plus, Trash2, Link as LinkIcon, Lock, MapPin, CheckSquare, Square } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
