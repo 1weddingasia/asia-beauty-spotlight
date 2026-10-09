@@ -66,7 +66,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import { GlobalPromoFAB } from '@/components/admin/GlobalPromoFAB';
-import { DigitalBusinessCard } from '@/components/DigitalBusinessCard';
 
 import { Be_Vietnam_Pro, Playfair_Display } from 'next/font/google';
 
@@ -96,7 +95,6 @@ export default function RootLayout({
         <Analytics />
         <BackToTop />
         <GlobalPromoFAB />
-        <DigitalBusinessCard />
       </body>
     </html>
   );

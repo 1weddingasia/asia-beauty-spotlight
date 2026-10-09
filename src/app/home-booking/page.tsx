@@ -10,6 +10,7 @@ import { HeroSlider } from "@/components/site/HeroSlider";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
 import { createStaticClient } from "@/utils/supabase/server";
 import { CONTACT_ZALO } from "@/config/site-config";
+import { DigitalBusinessCard } from "@/components/DigitalBusinessCard";
 
 export const revalidate = 3600;
 
@@ -388,6 +389,7 @@ export default async function HomeBookingPage() {
 
       <SiteFooter />
       <PlatformChatWidget />
+      <DigitalBusinessCard />
     </div>
   );
 }
