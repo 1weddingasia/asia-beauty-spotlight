@@ -26,6 +26,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         images: [ogImage],
       },
+      alternates: {
+        canonical: `https://1booking.asia/${slug}`
+      }
     };
   } catch (error) {
     return { title: `Không tìm thấy - ${siteConfig.brand}` };

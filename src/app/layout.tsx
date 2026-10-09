@@ -40,9 +40,6 @@ export async function generateMetadata(): Promise<Metadata> {
         'max-snippet': -1,
       },
     },
-    alternates: {
-      canonical: SITE_URL,
-    },
     openGraph: {
       type: 'website',
       locale: 'vi_VN',
