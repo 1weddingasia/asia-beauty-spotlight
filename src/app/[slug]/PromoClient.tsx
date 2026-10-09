@@ -315,13 +315,6 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         </Carousel>
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90 pointer-events-none z-10" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-20">
-          <div className="mb-6 inline-flex items-center justify-center">
-            <img 
-              src={avatar} 
-              alt="Logo" 
-              className="max-h-20 md:max-h-28 max-w-[200px] md:max-w-[300px] w-auto h-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] drop-shadow-[0_0_30px_rgba(255,255,255,0.6)]" 
-            />
-          </div>
           <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-3 flex items-center justify-center gap-2">
             {business.name}
             {(business.plan_tier === 'premium' || business.is_featured) && (
@@ -400,7 +393,14 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       </Dialog>
 
       <div id="deals-section" className="max-w-5xl mx-auto px-4 py-8 md:py-12 -mt-16 md:-mt-24 relative z-10">
-        <div className="text-center mb-8 md:mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto">
+        <div className="text-center mb-8 md:mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto flex flex-col items-center justify-center">
+          <div className="mb-6 md:mb-8 w-full flex justify-center">
+            <img 
+              src={avatar} 
+              alt="Logo" 
+              className="max-h-20 md:max-h-28 max-w-[90%] md:max-w-[300px] w-auto h-auto object-contain drop-shadow-md" 
+            />
+          </div>
           <h2 className="text-3xl md:text-4xl font-black font-display text-ink flex flex-col md:flex-row items-center justify-center gap-3">
             <Tag className="size-8 md:size-10 text-gold" />
             ƯU ĐÃI ĐỘC QUYỀN
