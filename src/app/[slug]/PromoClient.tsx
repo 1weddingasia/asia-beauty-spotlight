@@ -941,9 +941,9 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-full h-40 md:h-56 bg-champagne relative">
-                {(selectedService.image || selectedService.image_url) ? (
+                {(selectedService.image || selectedService.image_url || galleryItems[0] || avatar) ? (
                   <Image
-                    src={selectedService.image || selectedService.image_url}
+                    src={selectedService.image || selectedService.image_url || galleryItems[0] || avatar}
                     alt={selectedService.name}
                     fill
                     sizes="(max-width: 768px) 100vw, 600px"
