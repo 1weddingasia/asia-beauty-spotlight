@@ -184,7 +184,7 @@ export default function PlansAdminClient() {
               </div>
               <div className="space-y-2">
                 <Label>Mô tả ngắn</Label>
-                <Input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="vd: Phù hợp cho Spa nhỏ" />
+                <Input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="vd: Phù hợp cho cửa hàng nhỏ" />
               </div>
               <div className="space-y-2">
                 <Label>Giá theo tháng (VND)</Label>

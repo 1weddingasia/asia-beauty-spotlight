@@ -25,7 +25,7 @@ function normalizeSlug(str: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
-const DEFAULT_SLUG = 'ten-spa';
+const DEFAULT_SLUG = 'ten-gian-hang';
 
 const AMENITY_OPTIONS = [
   "Có chỗ đỗ xe",
@@ -326,7 +326,7 @@ export default function BusinessEditorClient({
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Tên Doanh Nghiệp (Thương hiệu)</Label>
-                <Input value={formData.name || ""} onChange={(e) => handleChange("name", e.target.value)} placeholder="VD: Spa Cô Ba Sài Gòn" />
+                <Input value={formData.name || ""} onChange={(e) => handleChange("name", e.target.value)} placeholder="VD: Tên thương hiệu của bạn" />
               </div>
               <div className="space-y-2">
                 <Label>Khoảng giá trung bình</Label>
@@ -486,7 +486,7 @@ export default function BusinessEditorClient({
                 <Label>Email</Label>
                 <div className="relative">
                   <LinkIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input value={pageContent.email || ""} onChange={(e) => handlePageContentChange("email", e.target.value)} className="pl-9" placeholder="contact@spa.com" />
+                  <Input value={pageContent.email || ""} onChange={(e) => handlePageContentChange("email", e.target.value)} className="pl-9" placeholder="contact@example.com" />
                 </div>
               </div>
             </div>

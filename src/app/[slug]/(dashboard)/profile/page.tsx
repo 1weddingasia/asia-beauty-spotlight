@@ -337,7 +337,7 @@ export default function BusinessProfilePage() {
                 <Label>Email</Label>
                 <div className="relative">
                   <LinkIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input value={pageContent.email || ""} onChange={(e) => handlePageContentChange("email", e.target.value)} className="pl-9" placeholder="contact@spa.com" />
+                  <Input value={pageContent.email || ""} onChange={(e) => handlePageContentChange("email", e.target.value)} className="pl-9" placeholder="contact@example.com" />
                 </div>
               </div>
             </div>
@@ -433,7 +433,7 @@ export default function BusinessProfilePage() {
                 <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center p-6 text-center border border-gold/50 rounded-xl">
                   <Lock className="size-8 text-gold mb-3" />
                   <h4 className="font-bold text-lg mb-2">Tính năng Premium</h4>
-                  <p className="text-sm text-muted-foreground mb-4">Nâng cấp để tải lên không giới hạn Thư viện Ảnh (Gallery) thực tế của Spa.</p>
+                  <p className="text-sm text-muted-foreground mb-4">Nâng cấp để tải lên không giới hạn Thư viện Ảnh (Gallery) thực tế của cửa hàng.</p>
                   <Button asChild className="bg-gold text-ink hover:bg-gold/90">
                     <Link href={`/${business.slug}/upgrade`}>Nâng cấp 399k / Năm</Link>
                   </Button>

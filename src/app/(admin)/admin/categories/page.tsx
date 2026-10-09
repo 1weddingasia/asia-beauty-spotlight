@@ -111,7 +111,7 @@ export default function DirectoryCategoriesClient() {
           </Button>
           <div>
             <h2 className="text-3xl font-bold tracking-tight">Danh mục Ngành (Directory)</h2>
-            <p className="text-muted-foreground mt-2">Quản lý các danh mục làm đẹp (vd: Spa, Clinic).</p>
+            <p className="text-muted-foreground mt-2">Quản lý các danh mục dịch vụ (vd: Nhà hàng, Phòng khám).</p>
           </div>
         </div>
         <Button onClick={openCreateModal} className="bg-gold text-ink hover:bg-gold/90">

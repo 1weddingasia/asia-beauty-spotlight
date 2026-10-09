@@ -98,7 +98,7 @@ export default function ClaimClient({ business, token }: { business: any, token:
             <Input 
               type="email" 
               required 
-              placeholder="admin@spa.com" 
+              placeholder="admin@example.com" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />

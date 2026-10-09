@@ -76,7 +76,7 @@ export default function ContactBookingClient() {
                 )}
                 <div>
                   <label className="text-sm font-bold text-ink mb-2 block">Tên cơ sở / Cửa hàng</label>
-                  <input required type="text" name="businessName" placeholder="VD: Nha khoa Nụ Cười, Spa Relax..." className="w-full rounded-xl border border-border bg-muted/30 p-3.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all" />
+                  <input required type="text" name="businessName" placeholder="VD: Nha khoa Nụ Cười, Quán cafe ABC..." className="w-full rounded-xl border border-border bg-muted/30 p-3.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all" />
                 </div>
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
