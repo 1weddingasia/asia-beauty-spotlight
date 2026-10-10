@@ -13,7 +13,7 @@ function extractPhone(text: string): string | null {
 
 // Fire and forget telegram alert
 function sendTelegramAsync(chatId: string, message: string, host: string = '') {
-  const isBookingSite = host.toLowerCase().includes('1booking');
+  const isBookingSite = getSiteConfig(host).brand.startsWith('1Booking');
   const token = isBookingSite
     ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN)
     : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
@@ -32,6 +32,7 @@ export async function POST(req: Request) {
   try {
     const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
     const { shop_id, messages } = await req.json();
+    const host = req.headers.get('host') || '';
 
     if (!shop_id || !messages || messages.length === 0) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -147,7 +148,6 @@ QUY TẮC BẮT BUỘC:
     if (reply.includes('[CHOT_DON]')) {
       reply = reply.replace(/\[CHOT_DON\]/g, '').trim();
       const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
-      const host = req.headers.get('host') || '';
       const platformStr = getSiteConfig(host).brand.toUpperCase();
 
       if (telegramChatId && userPhoneFound) {

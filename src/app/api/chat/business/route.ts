@@ -12,7 +12,7 @@ function extractPhone(text: string): string | null {
 }
 
 function sendTelegramAsync(chatId: string, message: string, host: string = '') {
-  const isBookingSite = host.toLowerCase().includes('1booking');
+  const isBookingSite = getSiteConfig(host).brand.startsWith('1Booking');
   const token = isBookingSite
     ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN)
     : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
