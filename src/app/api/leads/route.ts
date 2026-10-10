@@ -171,7 +171,7 @@ export async function POST(req: Request) {
     // Fetch business to get name and telegram_chat_id
     const { data: business } = await supabase
       .from('businesses')
-      .select('name, telegram_chat_id:page_content->>telegram_chat_id, zalo_owner_id:page_content->>zalo_owner_id')
+      .select('name, category_slug, telegram_chat_id:page_content->>telegram_chat_id, zalo_owner_id:page_content->>zalo_owner_id')
       .eq('id', business_id)
       .single();
 
@@ -318,12 +318,25 @@ export async function POST(req: Request) {
       const host = req.headers.get('host') || '';
       const platformStr = getSiteConfig(host).brand.toUpperCase();
 
+      let actionStr = 'LỊCH HẸN';
       if (isBookingDeal) {
+        const actionNames: Record<string, string> = {
+          'sports': 'ĐẶT SÂN',
+          'dining': 'ĐẶT BÀN',
+          'health': 'ĐẶT LỊCH KHÁM',
+          'auto': 'ĐẶT DỊCH VỤ XE',
+          'travel': 'ĐẶT PHÒNG/TOUR',
+          'repair': 'GỌI THỢ',
+          'studio': 'ĐẶT LỊCH CHỤP',
+          'pet': 'ĐẶT LỊCH PET',
+        };
+        actionStr = actionNames[business.category_slug] || 'LỊCH HẸN';
+
         header = isVIP
-          ? `🏆 [${platformStr}] LỊCH HẸN TỪ KHÁCH VIP (Lần ${visitNumber})`
+          ? `🏆 [${platformStr}] ${actionStr} TỪ KHÁCH VIP (Lần ${visitNumber})`
           : isReturning
-          ? `⭐ [${platformStr}] LỊCH HẸN TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
-          : `📅 [${platformStr}] LỊCH HẸN MỚI`;
+          ? `⭐ [${platformStr}] ${actionStr} TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
+          : `📅 [${platformStr}] ${actionStr} MỚI`;
       } else {
         header = isVIP
           ? `🏆 [${platformStr}] ƯU ĐÃI TỪ KHÁCH VIP (Lần ${visitNumber})`
@@ -335,14 +348,14 @@ export async function POST(req: Request) {
       // 🔔 KÊNH 1: Bắn về tiệm
       const crossSellStr = cross_sell_items ? `\n🛒 Bán chéo: ${escapeHtml(cross_sell_items)}` : '';
       const bookingTimeStr = booking_time ? `\n🕒 Lịch hẹn: ${escapeHtml(booking_time)}` : '';
-      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n${isBookingDeal ? '📅 Dịch vụ' : '🎁 Gói'}: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
+      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n${isBookingDeal ? `📅 ${actionStr}` : '🎁 Gói'}: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
       notifications.push(sendTelegramAsync(telegramChatId, msgForShop));
 
       // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Beauty để giám sát toàn mạng
       const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
       if (adminChatId && adminChatId !== telegramChatId) {
         const safeBusinessName = escapeHtml(business.name || 'Không rõ tiệm');
-        const msgForAdmin = `<b>📊 [${platformStr} - TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | ${isBookingDeal ? '📅 Lịch hẹn' : '🎁 Ưu đãi'}: ${safeDeal}\nMã: ${voucher_code}`;
+        const msgForAdmin = `<b>📊 [${platformStr} - TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | ${isBookingDeal ? `📅 ${actionStr}` : '🎁 Ưu đãi'}: ${safeDeal}\nMã: ${voucher_code}`;
         notifications.push(sendTelegramAsync(adminChatId, msgForAdmin));
       }
     }

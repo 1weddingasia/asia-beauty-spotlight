@@ -31,12 +31,30 @@ type Deal = {
   terms?: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const INDUSTRY_CTAS: Record<string, { btnText: string, modalTitle: string, icon: any }> = {
+  'fashion': { btnText: 'Nhận Tư Vấn', modalTitle: 'Tư Vấn & Mua Sắm', icon: MessageCircle },
+  'sports': { btnText: 'Đặt Sân Ngay', modalTitle: 'Đặt Sân & Đăng Ký', icon: Calendar },
+  'health': { btnText: 'Đặt Lịch Khám', modalTitle: 'Đặt Lịch Khám', icon: Calendar },
+  'dining': { btnText: 'Đặt Bàn Ngay', modalTitle: 'Đặt Bàn & Giữ Chỗ', icon: Calendar },
+  'auto': { btnText: 'Đặt Lịch Dịch Vụ', modalTitle: 'Đặt Lịch Chăm Sóc Xe', icon: Calendar },
+  'fitness': { btnText: 'Đăng Ký Tập', modalTitle: 'Đăng Ký & Đặt Lịch', icon: Calendar },
+  'beauty': { btnText: 'Đặt Lịch Làm Đẹp', modalTitle: 'Đặt Lịch & Tư Vấn', icon: Sparkles },
+  'studio': { btnText: 'Đặt Lịch Chụp', modalTitle: 'Đặt Lịch Chụp Ảnh', icon: Calendar },
+  'pet': { btnText: 'Đặt Lịch Chăm Sóc', modalTitle: 'Đặt Lịch Cho Thú Cưng', icon: Calendar },
+  'repair': { btnText: 'Gọi Thợ Ngay', modalTitle: 'Yêu Cầu Dịch Vụ', icon: Clock },
+  'travel': { btnText: 'Đặt Phòng / Tour', modalTitle: 'Đặt Phòng & Tour', icon: Globe },
+  'consulting': { btnText: 'Đặt Lịch Tư Vấn', modalTitle: 'Tư Vấn 1:1', icon: MessageCircle },
+  'other': { btnText: 'Liên Hệ Ngay', modalTitle: 'Liên Hệ Với Chúng Tôi', icon: MessageCircle }
+};
+
 export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string | null, avatar: string }) {
   const siteConfig = useSiteConfig();
   const b = business;
-  const actionName = b.page_content?.action_name || "Liên hệ";
+  const ctaConfig = INDUSTRY_CTAS[b.category_slug] || INDUSTRY_CTAS['other'];
+  const actionName = b.page_content?.action_name || ctaConfig.btnText;
+  const modalTitle = ctaConfig.modalTitle;
   const actionNameUpper = actionName.toUpperCase();
+  const ActionIcon = ctaConfig.icon;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -292,12 +310,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             <button
               onClick={() => {
                 setBookingService("");
-                setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
+                setSelectedDeal({ id: 'booking', title: modalTitle, original_price: '', promo_price: '', valid_until: '' });
                 setIsDialogOpen(true);
               }}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-ink font-black px-8 py-3.5 md:py-3 rounded-full shadow-lg shadow-gold/30 hover:shadow-gold/50 transition-all hover:scale-105 w-64 sm:w-auto hover:brightness-110"
             >
-              <Calendar className="size-5" /> {actionNameUpper} NGAY
+              <ActionIcon className="size-5" /> {actionNameUpper}
             </button>
           </div>
           
