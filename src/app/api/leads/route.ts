@@ -321,14 +321,19 @@ export async function POST(req: Request) {
       let actionStr = 'LỊCH HẸN';
       if (isBookingDeal) {
         const actionNames: Record<string, string> = {
+          'fashion': 'NHẬN TƯ VẤN',
           'sports': 'ĐẶT SÂN',
-          'dining': 'ĐẶT BÀN',
           'health': 'ĐẶT LỊCH KHÁM',
-          'auto': 'ĐẶT DỊCH VỤ XE',
-          'travel': 'ĐẶT PHÒNG/TOUR',
-          'repair': 'GỌI THỢ',
+          'dining': 'ĐẶT BÀN',
+          'auto': 'ĐẶT LỊCH DỊCH VỤ',
+          'fitness': 'ĐĂNG KÝ TẬP',
+          'beauty': 'ĐẶT LỊCH LÀM ĐẸP',
           'studio': 'ĐẶT LỊCH CHỤP',
-          'pet': 'ĐẶT LỊCH PET',
+          'pet': 'ĐẶT LỊCH CHĂM SÓC',
+          'repair': 'GỌI THỢ',
+          'travel': 'ĐẶT PHÒNG/TOUR',
+          'consulting': 'ĐẶT LỊCH TƯ VẤN',
+          'other': 'LIÊN HỆ'
         };
         actionStr = actionNames[business.category_slug] || 'LỊCH HẸN';
 

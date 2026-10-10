@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles, ChevronLeft, ChevronRight, X, BadgeCheck, Gift, Calendar, Eye } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles, ChevronLeft, ChevronRight, X, BadgeCheck, Gift, Calendar, Eye, type LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
@@ -31,7 +31,7 @@ type Deal = {
   terms?: string;
 };
 
-const INDUSTRY_CTAS: Record<string, { btnText: string, modalTitle: string, icon: any }> = {
+const INDUSTRY_CTAS: Record<string, { btnText: string, modalTitle: string, icon: LucideIcon }> = {
   'fashion': { btnText: 'Nhận Tư Vấn', modalTitle: 'Tư Vấn & Mua Sắm', icon: MessageCircle },
   'sports': { btnText: 'Đặt Sân Ngay', modalTitle: 'Đặt Sân & Đăng Ký', icon: Calendar },
   'health': { btnText: 'Đặt Lịch Khám', modalTitle: 'Đặt Lịch Khám', icon: Calendar },
