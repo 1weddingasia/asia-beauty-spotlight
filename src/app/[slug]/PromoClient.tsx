@@ -53,11 +53,27 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   const [bookingTime, setBookingTime] = useState("");
   const [bookingService, setBookingService] = useState("");
 
-  // Intercept modal state
   const [interceptType, setInterceptType] = useState<'hotline' | 'zalo' | null>(null);
   const [interceptPhone, setInterceptPhone] = useState("");
   const [interceptName, setInterceptName] = useState("");
   const [interceptLoading, setInterceptLoading] = useState(false);
+
+  // Page views tracking
+  const [views, setViews] = useState<{ real: number; random: number; total: number } | null>(null);
+
+  useEffect(() => {
+    if (!business?.slug) return;
+    // Don't track views in admin mode (if there was a way to know, but for now we track all)
+    // Actually, simple fetch is fine
+    fetch(`/api/businesses/${business.slug}/view`, { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.total_views) {
+          setViews({ real: data.page_views, random: data.random_views, total: data.total_views });
+        }
+      })
+      .catch(err => console.error("View tracking error:", err));
+  }, [business?.slug]);
 
   // Carousel state
   const [api, setApi] = useState<CarouselApi>();
@@ -284,6 +300,15 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               <Calendar className="size-5" /> {actionNameUpper} NGAY
             </button>
           </div>
+          
+          {views && (
+            <div className="mt-8 flex items-center justify-center gap-2 text-white/90 bg-black/40 backdrop-blur-md px-5 py-2 rounded-full text-sm border border-gold/20 shadow-lg">
+              <Eye className="w-4 h-4 text-gold" />
+              <span className="font-medium tracking-wide">
+                <span className="text-gold font-bold">{views.total}</span> lượt xem trang
+              </span>
+            </div>
+          )}
         </div>
       </div>
       <div id="deals-section" className="max-w-5xl mx-auto px-4 py-8 md:py-12 -mt-16 md:-mt-24 relative z-10">

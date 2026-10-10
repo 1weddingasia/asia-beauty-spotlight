@@ -161,7 +161,7 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {/* Tổng lượt đăng ký */}
         <Link href={`/${business.slug}/customers`} className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between hover:border-gold/50 hover:bg-gold/5 transition group cursor-pointer">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -197,6 +197,20 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
             <p className="text-xs text-muted-foreground mt-1">Lượt khách nhận mã KM</p>
           </div>
         </Link>
+
+        {/* Lượt Xem Trang */}
+        <div className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between hover:border-emerald-500/50 hover:bg-emerald-50 transition group cursor-pointer">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="tracking-tight text-sm font-medium group-hover:text-emerald-600 transition">Lượt Xem Trang</h3>
+            <Eye className="size-4 text-muted-foreground group-hover:text-emerald-600 transition" />
+          </div>
+          <div>
+            <div className="text-3xl font-bold group-hover:text-emerald-600 transition">
+              {(business.page_views || 0) + (business.random_views || 0)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Lượt truy cập gian hàng</p>
+          </div>
+        </div>
 
         {/* Lượt đăng ký tháng này */}
         <div className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between">
