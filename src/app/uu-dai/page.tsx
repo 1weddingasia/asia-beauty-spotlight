@@ -45,6 +45,22 @@ export default async function OffersPage({
     { id: 'other', name: 'Dịch vụ khác', icon: MoreHorizontal }
   ];
 
+  const validCategory = CATEGORIES.some(c => c.id === currentCategory) ? currentCategory : "";
+
+  const buildUrl = (overrides: { page?: number; category?: string | null; q?: string }) => {
+    const search = new URLSearchParams();
+    const newQ = overrides.q !== undefined ? overrides.q : rawQ;
+    const newCat = overrides.category !== undefined ? overrides.category : validCategory;
+    const newPage = overrides.page !== undefined ? overrides.page : currentPage;
+
+    if (newQ) search.set("q", newQ);
+    if (newCat) search.set("category", newCat);
+    if (newPage > 1) search.set("page", newPage.toString());
+
+    const qs = search.toString();
+    return `/uu-dai${qs ? `?${qs}` : ""}`;
+  };
+
   // Lấy tất cả các doanh nghiệp đang hoạt động
   const { data: rawBusinesses, error } = await supabase
     .from("businesses")
@@ -57,12 +73,15 @@ export default async function OffersPage({
   }
 
   const businesses = (rawBusinesses || []).filter((b: any) => {
-    // Nếu chọn category, lọc theo category đó trước
-    if (currentCategory && b.category_slug !== currentCategory) {
+    const cat = (b.category_slug || "").toLowerCase();
+    
+    // Nếu chọn category, lọc theo category đó trước bằng substring match
+    if (validCategory && !cat.includes(validCategory)) {
       return false;
     }
+    
+    // Domain filtering
     if (!siteConfig.industryFilter) return true;
-    const cat = (b.category_slug || "").toLowerCase();
     return siteConfig.industryFilter.some((f) => cat.includes(f));
   });
 
@@ -134,7 +153,7 @@ export default async function OffersPage({
               placeholder="Tìm ưu đãi, tên dịch vụ, tên cơ sở..."
               className="w-full h-14 pl-6 pr-14 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-white placeholder:text-white/60 focus:outline-none focus:border-gold focus:bg-white/20 transition-all text-lg shadow-xl"
             />
-            {currentCategory && <input type="hidden" name="category" value={currentCategory} />}
+            {validCategory && <input type="hidden" name="category" value={validCategory} />}
             <button
               type="submit"
               className="absolute right-2 top-2 bottom-2 aspect-square bg-gold text-ink rounded-full flex items-center justify-center hover:scale-105 transition-transform"
@@ -154,9 +173,9 @@ export default async function OffersPage({
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Link
-              href={`/uu-dai${rawQ ? `?q=${encodeURIComponent(rawQ)}` : ""}`}
+              href={buildUrl({ category: null, page: 1 })}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all ${
-                !currentCategory 
+                !validCategory 
                   ? "bg-gold text-ink font-bold border-gold shadow-md" 
                   : "bg-white text-muted-foreground border-border hover:border-gold hover:text-gold"
               }`}
@@ -165,17 +184,16 @@ export default async function OffersPage({
             </Link>
             {CATEGORIES.map((cat) => {
               const Icon = cat.icon;
-              const isActive = currentCategory === cat.id;
-              // Nếu trang thuộc 1Beauty, chỉ hiện Spa và Salon, nếu 1Booking thì hiện hết (nếu có siteConfig phù hợp)
-              // siteConfig.industryFilter sẽ quyết định, nhưng ở đây filter frontend
+              const isActive = validCategory === cat.id;
+              // Ẩn chip nếu ngành này không thuộc industryFilter của domain hiện tại
               if (siteConfig.industryFilter && !siteConfig.industryFilter.includes(cat.id)) {
-                if (cat.id !== 'other') return null; // hide non-matching unless it's "other"
+                return null;
               }
 
               return (
                 <Link
                   key={cat.id}
-                  href={`/uu-dai?category=${cat.id}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}`}
+                  href={buildUrl({ category: cat.id, page: 1 })}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all ${
                     isActive
                       ? "bg-gold text-ink font-bold border-gold shadow-md"
@@ -244,7 +262,7 @@ export default async function OffersPage({
               <div className="mt-16 flex items-center justify-center gap-2">
                 {currentPage > 1 ? (
                   <Link
-                    href={`/uu-dai?page=${currentPage - 1}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}${currentCategory ? `&category=${currentCategory}` : ""}`}
+                    href={buildUrl({ page: currentPage - 1 })}
                     className="p-3 border rounded-full hover:bg-gold hover:text-ink transition-colors bg-white shadow-sm"
                   >
                     <ChevronLeft className="size-5" />
@@ -261,7 +279,7 @@ export default async function OffersPage({
 
                 {currentPage < totalPages ? (
                   <Link
-                    href={`/uu-dai?page=${currentPage + 1}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}${currentCategory ? `&category=${currentCategory}` : ""}`}
+                    href={buildUrl({ page: currentPage + 1 })}
                     className="p-3 border rounded-full hover:bg-gold hover:text-ink transition-colors bg-white shadow-sm"
                   >
                     <ChevronRight className="size-5" />
