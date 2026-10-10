@@ -315,8 +315,9 @@ export async function POST(req: Request) {
       let header = '';
 
       const host = req.headers.get('host') || '';
-      const platformStr = getSiteConfig(host).brand.toUpperCase();
-      const isBookingSite = host.includes('1booking');
+      const siteConfig = getSiteConfig(host);
+      const platformStr = siteConfig.brand.toUpperCase();
+      const isBookingSite = siteConfig.brand === '1Booking';
       
       const botToken = isBookingSite 
         ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN || '') 

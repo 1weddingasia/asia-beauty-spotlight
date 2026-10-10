@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/server';
 
+function resolveBotToken(reqUrl: string): string | undefined {
+  const urlObj = new URL(reqUrl);
+  const botType = urlObj.searchParams.get('bot');
+  return botType === '1booking'
+    ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN)
+    : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
+}
+
 // Telegram Webhook Handler
 export async function POST(req: Request) {
   try {
@@ -39,11 +47,7 @@ export async function POST(req: Request) {
               .eq('id', business.id);
 
             // 3. Send a confirmation message back to the user via Telegram
-            const urlObj = new URL(req.url);
-            const botType = urlObj.searchParams.get('bot');
-            const token = botType === '1booking' 
-              ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN) 
-              : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
+            const token = resolveBotToken(req.url);
 
             if (token && !updateError) {
               const url = `https://api.telegram.org/bot${token}/sendMessage`;
@@ -59,11 +63,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true, message: 'Linked successfully' });
           } else {
             // Business not found
-            const urlObj = new URL(req.url);
-            const botType = urlObj.searchParams.get('bot');
-            const token = botType === '1booking' 
-              ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN) 
-              : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
+            const token = resolveBotToken(req.url);
             
             if (token) {
               const url = `https://api.telegram.org/bot${token}/sendMessage`;
