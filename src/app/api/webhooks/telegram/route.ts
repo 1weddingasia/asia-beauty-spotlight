@@ -39,7 +39,12 @@ export async function POST(req: Request) {
               .eq('id', business.id);
 
             // 3. Send a confirmation message back to the user via Telegram
-            const token = process.env.TELEGRAM_BOT_TOKEN;
+            const urlObj = new URL(req.url);
+            const botType = urlObj.searchParams.get('bot');
+            const token = botType === '1booking' 
+              ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN) 
+              : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
+
             if (token && !updateError) {
               const url = `https://api.telegram.org/bot${token}/sendMessage`;
               const msg = `✅ Kích hoạt thành công!\n\nHệ thống đã kết nối Telegram của bạn với tiệm <b>${business.name}</b>.\nTừ giờ, khi có khách để lại SĐT hoặc chốt đơn trên Web, bạn sẽ nhận được thông báo trực tiếp tại đây!`;
@@ -54,7 +59,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true, message: 'Linked successfully' });
           } else {
             // Business not found
-            const token = process.env.TELEGRAM_BOT_TOKEN;
+            const urlObj = new URL(req.url);
+            const botType = urlObj.searchParams.get('bot');
+            const token = botType === '1booking' 
+              ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN) 
+              : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
+            
             if (token) {
               const url = `https://api.telegram.org/bot${token}/sendMessage`;
               await fetch(url, {

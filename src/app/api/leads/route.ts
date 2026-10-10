@@ -78,11 +78,10 @@ function escapeHtml(str: string): string {
 }
 
 // Fire and forget telegram alert (now returning promise to allow awaiting)
-function sendTelegramAsync(chatId: string, message: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (!token || !chatId) return Promise.resolve();
+function sendTelegramAsync(botToken: string, chatId: string, message: string) {
+  if (!botToken || !chatId) return Promise.resolve();
 
-  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
   return fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -317,6 +316,11 @@ export async function POST(req: Request) {
 
       const host = req.headers.get('host') || '';
       const platformStr = getSiteConfig(host).brand.toUpperCase();
+      const isBookingSite = host.includes('1booking');
+      
+      const botToken = isBookingSite 
+        ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN || '') 
+        : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN || '');
 
       let actionStr = 'LỊCH HẸN';
       if (isBookingDeal) {
@@ -354,14 +358,14 @@ export async function POST(req: Request) {
       const crossSellStr = cross_sell_items ? `\n🛒 Bán chéo: ${escapeHtml(cross_sell_items)}` : '';
       const bookingTimeStr = booking_time ? `\n🕒 Lịch hẹn: ${escapeHtml(booking_time)}` : '';
       const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n${isBookingDeal ? `📅 ${actionStr}` : '🎁 Gói'}: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
-      notifications.push(sendTelegramAsync(telegramChatId, msgForShop));
+      notifications.push(sendTelegramAsync(botToken, telegramChatId, msgForShop));
 
       // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Beauty để giám sát toàn mạng
       const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
       if (adminChatId && adminChatId !== telegramChatId) {
         const safeBusinessName = escapeHtml(business.name || 'Không rõ tiệm');
         const msgForAdmin = `<b>📊 [${platformStr} - TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | ${isBookingDeal ? `📅 ${actionStr}` : '🎁 Ưu đãi'}: ${safeDeal}\nMã: ${voucher_code}`;
-        notifications.push(sendTelegramAsync(adminChatId, msgForAdmin));
+        notifications.push(sendTelegramAsync(botToken, adminChatId, msgForAdmin));
       }
     }
 
