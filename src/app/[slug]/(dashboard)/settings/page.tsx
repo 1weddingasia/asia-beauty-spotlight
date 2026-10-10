@@ -24,11 +24,15 @@ export default function AccountSettingsPage() {
   const [telegramLinked, setTelegramLinked] = useState(false);
   const [telegramChatId, setTelegramChatId] = useState("");
   const [pageContent, setPageContent] = useState<any>({});
+  
+  const [currentEmail, setCurrentEmail] = useState("");
+  const [requestingEmail, setRequestingEmail] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       if (data.user) {
         setEmail(data.user.email || "");
+        setCurrentEmail(data.user.email || "");
         
         // Fetch business info for Telegram link
         const { data: biz } = await supabase
@@ -94,6 +98,34 @@ export default function AccountSettingsPage() {
     }
   };
 
+  const handleRequestEmailChange = async () => {
+    if (!email || email === currentEmail) return;
+    
+    setRequestingEmail(true);
+    try {
+      const res = await fetch('/api/auth/change-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          currentEmail, 
+          newEmail: email,
+          redirectTo: `${window.location.origin}/dashboard`
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error("Lỗi: " + (data.error || 'Không thể yêu cầu đổi email'));
+      } else {
+        toast.success("Đã gửi link xác nhận đến email mới! Vui lòng kiểm tra hộp thư.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Lỗi hệ thống");
+    } finally {
+      setRequestingEmail(false);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
@@ -113,8 +145,20 @@ export default function AccountSettingsPage() {
             <Label className="flex items-center gap-2">
               <Mail className="size-4" /> Địa chỉ Email
             </Label>
-            <Input value={email} disabled className="bg-muted" />
-            <p className="text-xs text-muted-foreground">Email là cố định. Vui lòng liên hệ Admin nếu muốn đổi.</p>
+            <div className="flex gap-2">
+              <Input 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                className="flex-1" 
+                placeholder="Nhập email mới"
+              />
+              {email !== currentEmail && (
+                <Button onClick={handleRequestEmailChange} disabled={requestingEmail}>
+                  {requestingEmail ? "Đang gửi..." : "Đổi Email"}
+                </Button>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">Để đổi email, bạn cần xác nhận link gửi về email mới.</p>
           </div>
 
           <div className="space-y-4 pt-4">

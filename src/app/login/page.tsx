@@ -103,12 +103,19 @@ function LoginContent() {
     
     setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/dashboard`,
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email,
+          redirectTo: `${window.location.origin}/dashboard`
+        })
       });
 
-      if (error) {
-        toast.error("Lỗi: " + error.message);
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error("Lỗi: " + (data.error || 'Không thể gửi yêu cầu'));
       } else {
         toast.success("Đã gửi link đặt lại mật khẩu! Vui lòng kiểm tra email.");
         setView("login");
