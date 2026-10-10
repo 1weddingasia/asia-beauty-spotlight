@@ -20,15 +20,17 @@ export function DigitalBusinessCard() {
     "MaisonDining.Asia"
   ];
 
-  const vCardData = `BEGIN:VCARD
-VERSION:3.0
-N:Lê;Tấn Lợi;;;
-FN:Lê Tấn Lợi
-ORG:1Booking & 1Beauty
-TITLE:Founder & CEO
-TEL;TYPE=CELL:0918731411
-${DOMAINS.map(d => `URL:https://${d.toLowerCase()}`).join('\n')}
-END:VCARD`;
+  const vCardData = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    "N:Lê;Tấn Lợi;;;",
+    "FN:Lê Tấn Lợi",
+    "ORG:1Booking & 1Beauty",
+    "TITLE:Founder & CEO",
+    "TEL;TYPE=CELL:0918731411",
+    ...DOMAINS.map(d => `URL:https://${d.toLowerCase()}`),
+    "END:VCARD"
+  ].join("\r\n");
 
   const downloadCardImage = async () => {
     if (!cardRef.current) return;
@@ -128,8 +130,8 @@ END:VCARD`;
                 <div className="bg-white/95 p-1.5 rounded-lg shadow-lg">
                   <QRCodeSVG 
                     value={vCardData} 
-                    size={52}
-                    level="M"
+                    size={68}
+                    level="L"
                     includeMargin={false}
                   />
                 </div>
