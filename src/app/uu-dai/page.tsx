@@ -1,5 +1,5 @@
 import { PageShell } from "@/components/site/Layout";
-import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight, Scissors, Utensils, Map, BookOpen, HeartPulse, MoreHorizontal, LayoutGrid, Camera, Activity, Gem, Home } from "lucide-react";
+import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight, UtensilsCrossed, Map, BookOpen, HeartPulse, MoreHorizontal, LayoutGrid, Camera, Activity, Gem, Home, ShoppingBag, Swords, Stethoscope, Car, Dumbbell, PawPrint, Wrench, BriefcaseBusiness } from "lucide-react";
 import Link from "next/link";
 import { createStaticClient } from "@/utils/supabase/server";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
@@ -43,19 +43,20 @@ export default async function OffersPage({
     
   const categories = dbCategories || [];
 
+  // Icon mapping strictly following the 1Booking.Asia home categories
   const iconMap: Record<string, any> = {
-    spa: Sparkles,
+    fashion: ShoppingBag,
+    sports: Swords,
+    health: Stethoscope,
+    dining: UtensilsCrossed,
+    auto: Car,
+    fitness: Dumbbell,
     beauty: Sparkles,
-    salon: Scissors,
-    dining: Utensils,
-    travel: Map,
-    education: BookOpen,
-    health: HeartPulse,
-    fitness: Activity,
     studio: Camera,
-    wedding: Gem,
-    realestate: Home,
-    booking: MoreHorizontal,
+    pet: PawPrint,
+    repair: Wrench,
+    travel: Home,
+    consulting: BriefcaseBusiness,
     other: MoreHorizontal
   };
 

@@ -3,23 +3,25 @@ require('dotenv').config({ path: '.env.local' });
 
 async function seedCategories() {
   const client = new Client({ connectionString: process.env.DIRECT_URL });
-  await client.connect();
-
-  const categories = [
-    { slug: 'beauty', name: 'Làm Đẹp & Spa', description: 'Spa, Thẩm mỹ viện, Chăm sóc da' },
-    { slug: 'salon', name: 'Salon Tóc & Nail', description: 'Cắt tóc, Làm móng, Nối mi' },
-    { slug: 'dining', name: 'Nhà hàng & Ẩm thực', description: 'Nhà hàng, Quán ăn, Cafe, Bar' },
-    { slug: 'travel', name: 'Du lịch & Khách sạn', description: 'Khách sạn, Resort, Homestay, Tour' },
-    { slug: 'education', name: 'Giáo dục & Đào tạo', description: 'Trung tâm ngoại ngữ, Kỹ năng mềm, Dạy nghề' },
-    { slug: 'health', name: 'Y tế & Sức khỏe', description: 'Phòng khám, Nha khoa, Chăm sóc sức khỏe' },
-    { slug: 'fitness', name: 'Thể hình & Yoga', description: 'Phòng Gym, Yoga, Pilates' },
-    { slug: 'studio', name: 'Chụp ảnh & Studio', description: 'Studio chụp ảnh cưới, Kỷ yếu, Sự kiện' },
-    { slug: 'wedding', name: 'Cưới hỏi & Sự kiện', description: 'Nhà hàng tiệc cưới, Trang trí tiệc cưới, Cho thuê đồ cưới' },
-    { slug: 'realestate', name: 'Bất động sản', description: 'Mua bán nhà đất, Cho thuê mặt bằng, Căn hộ' },
-    { slug: 'booking', name: 'Dịch vụ Đặt hẹn', description: 'Các dịch vụ đặt hẹn khác' }
-  ];
-
   try {
+    await client.connect();
+
+    const categories = [
+      { slug: 'fashion', name: 'Thời Trang & Phụ Kiện', description: 'Săn mã giảm giá, đặt giữ size quần áo ưu tiên hoặc đăng ký VIP.' },
+      { slug: 'sports', name: 'Sân Thể Thao Đa Năng', description: 'Đặt sân Bóng đá, Pickleball & Cầu Lông online tức thì.' },
+      { slug: 'health', name: 'Nha Khoa & Phòng Khám', description: 'Đặt hẹn khám chữa răng, chọn bác sĩ chuyên khoa.' },
+      { slug: 'dining', name: 'Nhà Hàng & Quán Ăn (F&B)', description: 'Đặt bàn tiệc trước giờ cao điểm, chọn trước set menu.' },
+      { slug: 'auto', name: 'Chăm Sóc & Độ Xe Ô Tô', description: 'Đặt lịch rửa xe chi tiết, dán phim cách nhiệt, phủ ceramic.' },
+      { slug: 'fitness', name: 'Thể Hình, Yoga & PT', description: 'Đăng ký buổi tập thử, chọn khung giờ 1:1 cùng huấn luyện viên.' },
+      { slug: 'beauty', name: 'Spa & Thẩm Mỹ Viện', description: 'Trưng bày liệu trình làm đẹp, săn voucher giảm giá giờ vàng.' },
+      { slug: 'studio', name: 'Studio Chụp Ảnh & Áo Cưới', description: 'Xem lookbook concept, đặt lịch thử váy cưới.' },
+      { slug: 'pet', name: 'Spa & Khách Sạn Thú Cưng', description: 'Đặt hẹn tắm tỉa lông, đưa đón thú cưng.' },
+      { slug: 'repair', name: 'Dịch Vụ Sửa Chữa Tại Nhà', description: 'Đặt thợ vệ sinh máy lạnh, sửa điện nước, giặt sofa tận nơi.' },
+      { slug: 'travel', name: 'Homestay & Du Lịch', description: 'Đặt phòng nghỉ dưỡng cuối tuần, thuê tour trải nghiệm.' },
+      { slug: 'consulting', name: 'Tư Vấn & Coaching 1:1', description: 'Đặt lịch tham vấn trực tuyến hoặc trực tiếp.' },
+      { slug: 'other', name: 'Dịch Vụ Khác', description: 'Các loại hình hình kinh doanh, dịch vụ khác.' }
+    ];
+
     for (const cat of categories) {
       await client.query(`
         INSERT INTO categories (slug, name, description)
@@ -28,14 +30,40 @@ async function seedCategories() {
       `, [cat.slug, cat.name, cat.description]);
       console.log(`Upserted category: ${cat.slug}`);
     }
+
+    // Update existing businesses that might have used old slugs
+    const legacyMap = {
+      'spa': 'beauty',
+      'salon': 'beauty',
+      'nha-hang': 'dining',
+      'homestay': 'travel',
+      'nha-khoa': 'health',
+      'the-hinh': 'fitness',
+      'thu-cung': 'pet',
+      'chup-anh-studio': 'studio',
+      'cham-soc-xe': 'auto',
+      'sua-chua-tai-nha': 'repair',
+      'tu-van': 'consulting',
+      'education': 'consulting',
+      'wedding': 'studio',
+      'realestate': 'other',
+      'booking': 'other',
+      'dich-vu': 'other'
+    };
+
+    for (const [oldSlug, newSlug] of Object.entries(legacyMap)) {
+      const res = await client.query(`UPDATE businesses SET category_slug = $1 WHERE category_slug = $2;`, [newSlug, oldSlug]);
+      if (res.rowCount > 0) {
+        console.log(`Migrated ${res.rowCount} businesses from '${oldSlug}' to '${newSlug}'`);
+      }
+    }
     
-    // Also, update existing businesses to use these valid slugs if possible
-    // like 'spa' -> 'beauty', 'other' -> 'booking'
-    await client.query(`UPDATE businesses SET category_slug = 'beauty' WHERE category_slug = 'spa';`);
-    await client.query(`UPDATE businesses SET category_slug = 'booking' WHERE category_slug = 'other' OR category_slug = 'dich-vu';`);
-    
+    // Xóa các category cũ không dùng nữa nếu cần (tùy chọn)
+    await client.query(`DELETE FROM categories WHERE slug NOT IN ('fashion', 'sports', 'health', 'dining', 'auto', 'fitness', 'beauty', 'studio', 'pet', 'repair', 'travel', 'consulting', 'other')`);
+
   } catch (error) {
     console.error('Error seeding categories:', error);
+    process.exit(1);
   } finally {
     await client.end();
   }
