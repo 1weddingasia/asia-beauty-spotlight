@@ -18,8 +18,14 @@ export async function POST(req: Request) {
     // Validate Redirect URL
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://1booking.asia';
     let safeRedirectTo = `${baseUrl}/dashboard`;
-    if (redirectTo && redirectTo.startsWith(baseUrl)) {
-      safeRedirectTo = redirectTo;
+    if (redirectTo) {
+      try {
+        if (new URL(redirectTo).origin === new URL(baseUrl).origin) {
+          safeRedirectTo = redirectTo;
+        }
+      } catch {
+        // invalid URL, keep the safe default
+      }
     }
 
     // 1. Generate recovery link using Supabase Admin

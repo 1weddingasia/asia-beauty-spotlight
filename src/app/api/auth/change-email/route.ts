@@ -18,7 +18,8 @@ export async function POST(req: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
-    if (!user || user.email !== currentEmail) {
+    if (!user || user.email?.toLowerCase() !== currentEmail.trim().toLowerCase()) {
+       console.error("Change Email API Error: Unauthorized or email mismatch");
        return NextResponse.json({ success: true, message: 'Đã gửi email xác nhận đến địa chỉ mới.' });
     }
 
@@ -27,8 +28,14 @@ export async function POST(req: Request) {
     // Validate Redirect URL
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://1booking.asia';
     let safeRedirectTo = `${baseUrl}/dashboard`;
-    if (redirectTo && redirectTo.startsWith(baseUrl)) {
-      safeRedirectTo = redirectTo;
+    if (redirectTo) {
+      try {
+        if (new URL(redirectTo).origin === new URL(baseUrl).origin) {
+          safeRedirectTo = redirectTo;
+        }
+      } catch {
+        // invalid URL, keep the safe default
+      }
     }
 
     // 1. Generate email change links
