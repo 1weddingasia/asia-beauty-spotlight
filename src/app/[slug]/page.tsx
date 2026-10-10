@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const ogImage = business.page_content?.banners?.[0] || galleryUrl || `https://${siteConfig.domain}/og-image.jpg`;
 
     return {
-      title: `Nhận Ưu Đãi Độc Quyền - ${business.name} | ${siteConfig.brand}`,
-      description: `Đăng ký nhận ngay mã giảm giá độc quyền tại ${business.name}. Số lượng có hạn!`,
+      title: `Nhận Ưu Đãi Đặc Biệt - ${business.name} | ${siteConfig.brand}`,
+      description: `Đăng ký nhận ngay mã giảm giá đặc biệt tại ${business.name}. Số lượng có hạn!`,
       openGraph: {
         images: [ogImage],
       },

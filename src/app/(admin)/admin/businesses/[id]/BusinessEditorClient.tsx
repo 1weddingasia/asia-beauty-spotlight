@@ -652,7 +652,7 @@ export default function BusinessEditorClient({
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">Mô tả chi tiết</Label>
-                      <Input value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)} placeholder="Quy trình 60 phút bao gồm..." />
+                      <Input value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)} placeholder="Chi tiết dịch vụ bao gồm..." />
                     </div>
                   </div>
                   <div className="flex flex-row md:flex-col gap-2 justify-start md:justify-center mt-2 md:mt-0">

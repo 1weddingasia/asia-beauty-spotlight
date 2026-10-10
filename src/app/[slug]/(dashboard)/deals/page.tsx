@@ -297,7 +297,7 @@ export default function DealsManagementPage() {
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs">Mô tả chi tiết</Label>
-                    <Input value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)} placeholder="Quy trình 60 phút bao gồm..." />
+                    <Input value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)} placeholder="Chi tiết dịch vụ bao gồm..." />
                   </div>
                   <div className="flex items-center gap-2 pt-1">
                     <Switch 

@@ -35,7 +35,7 @@ export const heroSlides = [
     kicker: "Clinic & Skincare",
     title: "Chuẩn mực mới cho trải nghiệm làm đẹp",
     description:
-      "Thông tin minh bạch, ưu đãi độc quyền và đánh giá thực tế từ cộng đồng yêu cái đẹp.",
+      "Thông tin minh bạch, ưu đãi đặc biệt và đánh giá thực tế từ cộng đồng.",
     cta: "Nhận ưu đãi hôm nay",
   },
 ];

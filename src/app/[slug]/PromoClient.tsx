@@ -322,7 +322,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           </div>
           <h2 className="text-3xl md:text-4xl font-black font-display text-ink flex flex-col md:flex-row items-center justify-center gap-3">
             <Tag className="size-8 md:size-10 text-gold" />
-            ƯU ĐÃI ĐỘC QUYỀN
+            ƯU ĐÃI ĐẶC BIỆT
           </h2>
           <p className="text-muted-foreground mt-4 text-base md:text-lg">
             Chọn một ưu đãi bên dưới và lưu lại để sử dụng khi đến tiệm.
