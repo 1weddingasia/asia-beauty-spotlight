@@ -254,7 +254,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                 </CarouselItem>
               ))
             ) : (
-              <CarouselItem className="relative h-[75vh] md:h-[90vh] w-full bg-gradient-to-br from-gold/30 via-black to-[#2A241C]" />
+              <CarouselItem className="relative h-[75vh] md:h-[90vh] w-full bg-gradient-to-br from-gold via-gold-soft to-gold" />
             )}
           </CarouselContent>
           {banners.length > 1 && (
