@@ -12,8 +12,12 @@ function extractPhone(text: string): string | null {
 }
 
 // Fire and forget telegram alert
-function sendTelegramAsync(chatId: string, message: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
+function sendTelegramAsync(chatId: string, message: string, host: string = '') {
+  const isBookingSite = host.toLowerCase().includes('1booking');
+  const token = isBookingSite
+    ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN)
+    : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
+    
   if (!token || !chatId) return;
 
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
@@ -109,7 +113,7 @@ QUY TẮC BẮT BUỘC:
         const telegramChatId = business.page_content?.telegram_chat_id || process.env.TELEGRAM_CHAT_ID;
         if (telegramChatId) {
           const msg = `🤖 [AI CHATBOT] CÓ KHÁCH ĐỂ LẠI SĐT!\n\nTiệm: ${business.name}\nSĐT: ${phoneInLastMsg}\nNội dung chat: "${lastUserMsg.content}"\n👉 Anh/Chị gọi ngay để chốt nhé!`;
-          sendTelegramAsync(telegramChatId, msg);
+          sendTelegramAsync(telegramChatId, msg, host);
         }
       }
     }
@@ -148,7 +152,7 @@ QUY TẮC BẮT BUỘC:
 
       if (telegramChatId && userPhoneFound) {
         const msg = `🔥 [${platformStr} AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${lastUserMsg?.content || ''}"\nAI đã phản hồi: "${reply}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
-        await sendTelegramAsync(telegramChatId, msg);
+        await sendTelegramAsync(telegramChatId, msg, host);
       }
     }
 

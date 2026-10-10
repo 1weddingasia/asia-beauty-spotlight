@@ -103,7 +103,7 @@ export default function DealsManagementPage() {
               title: content.featured_deal,
               original_price: "Liên hệ",
               promo_price: "Ưu đãi",
-              badge: `Độc Quyền ${siteConfig.brand}`,
+              badge: `Đặc Biệt ${siteConfig.brand}`,
               note: "",
               status: "active",
               valid_from: "",

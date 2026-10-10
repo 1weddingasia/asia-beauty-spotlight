@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Copy, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type DealInput = { id: string; title: string; original_price: string; promo_price: string; note: string; badge: string };
 type ServiceInput = { id: string; name: string; price: string; description: string; image_url: string };
@@ -28,6 +29,7 @@ export function QuickPromoBuilderDialog({ open, onOpenChange }: { open: boolean,
   const [shortDesc, setShortDesc] = useState("");
   const [facebook, setFacebook] = useState("");
   const [hours, setHours] = useState("");
+  const [industry, setIndustry] = useState("beauty");
   
   const [deals, setDeals] = useState<DealInput[]>([{ id: "deal-1", title: "", original_price: "", promo_price: "", note: "", badge: "HOT" }]);
   const [services, setServices] = useState<ServiceInput[]>([]);
@@ -54,7 +56,7 @@ export function QuickPromoBuilderDialog({ open, onOpenChange }: { open: boolean,
         body: JSON.stringify({
           email, password, name, slug, address, phone, logo_url: logoUrl, 
           banners: banners.filter(b => b.trim() !== ""),
-          short_description: shortDesc, facebook, hours,
+          short_description: shortDesc, facebook, hours, industry,
           deals: deals.filter(d => d.title.trim() !== "").map(d => ({ ...d, status: "active" })),
           services: services.filter(s => s.name.trim() !== "")
         })
@@ -76,7 +78,7 @@ export function QuickPromoBuilderDialog({ open, onOpenChange }: { open: boolean,
     setSuccessData(null);
     setEmail(""); setPassword(""); setName(""); setSlug(""); setAddress(""); setPhone("");
     setLogoUrl(""); setBanners(["", "", ""]);
-    setShortDesc(""); setFacebook(""); setHours("");
+    setShortDesc(""); setFacebook(""); setHours(""); setIndustry("beauty");
     setDeals([{ id: "deal-1", title: "", original_price: "", promo_price: "", note: "", badge: "HOT" }]);
     setServices([]);
   };
@@ -148,6 +150,21 @@ export function QuickPromoBuilderDialog({ open, onOpenChange }: { open: boolean,
                   <div className="space-y-1">
                     <label className="text-sm font-medium">Đường dẫn (Slug) *</label>
                     <Input required value={slug} onChange={e => setSlug(e.target.value)} placeholder="ngoc-spa" />
+                  </div>
+                  <div className="space-y-1 col-span-2">
+                    <label className="text-sm font-medium">Ngành nghề *</label>
+                    <Select value={industry} onValueChange={setIndustry}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn ngành nghề" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="beauty">Làm Đẹp / Spa / Nails / Hair</SelectItem>
+                        <SelectItem value="sport">Thể Thao (Pickleball, Bida...)</SelectItem>
+                        <SelectItem value="fnb">Nhà Hàng / Cafe</SelectItem>
+                        <SelectItem value="clinic">Phòng Khám / Nha Khoa</SelectItem>
+                        <SelectItem value="generic">Ngành Khác</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-1 col-span-2">
                     <label className="text-sm font-medium">Giới thiệu ngắn</label>

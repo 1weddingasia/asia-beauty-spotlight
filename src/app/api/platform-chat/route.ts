@@ -14,8 +14,12 @@ function extractPhone(text: string): string | null {
 }
 
 // Fire and forget telegram alert
-function sendTelegramAsync(chatId: string, message: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
+function sendTelegramAsync(chatId: string, message: string, host: string = '') {
+  const isBookingSite = host.toLowerCase().includes('1booking');
+  const token = isBookingSite
+    ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN)
+    : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
+    
   if (!token || !chatId) return;
 
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
@@ -133,7 +137,7 @@ QUY TẮC BẮT BUỘC:
         if (telegramChatId) {
           const msgRole = mode === 'b2c' ? 'NGƯỜI DÙNG' : 'CHỦ TIỆM';
           const msg = `🚀 [${platformName.toUpperCase()} LEAD] CÓ ${msgRole} ĐỂ LẠI SĐT TRÊN WEB!\n\nSĐT: ${lastMsgPhone}\nNội dung: "${lastUserMsg.content}"\n👉 CSKH gọi ngay nhé!`;
-          sendTelegramAsync(telegramChatId, msg);
+          sendTelegramAsync(telegramChatId, msg, host);
         }
     }
 

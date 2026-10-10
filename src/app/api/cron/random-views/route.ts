@@ -20,16 +20,25 @@ export async function GET(request: Request) {
     // Since we don't have RPC, we'll fetch IDs and update them in batches or individually
     const { data: businesses, error: fetchError } = await supabase
       .from('businesses')
-      .select('id, random_views');
+      .select('id, random_views, created_at');
 
     if (fetchError || !businesses) {
       return NextResponse.json({ error: 'Failed to fetch businesses' }, { status: 500 });
     }
 
     let updatedCount = 0;
+    const now = new Date();
     
     // Process in smaller batches if there are many businesses
     for (const business of businesses) {
+      // Skip businesses created in the last 24 hours
+      if (business.created_at) {
+        const createdAt = new Date(business.created_at);
+        const diffMs = now.getTime() - createdAt.getTime();
+        if (diffMs < 24 * 60 * 60 * 1000) {
+          continue; // skip recently created businesses
+        }
+      }
       const increment = Math.floor(Math.random() * 16) + 5; // Random number between 5 and 20
       const newRandomViews = (business.random_views || 0) + increment;
 

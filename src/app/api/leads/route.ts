@@ -170,7 +170,7 @@ export async function POST(req: Request) {
     // Fetch business to get name and telegram_chat_id
     const { data: business } = await supabase
       .from('businesses')
-      .select('name, category_slug, telegram_chat_id:page_content->>telegram_chat_id, zalo_owner_id:page_content->>zalo_owner_id')
+      .select('name, category_slug, telegram_chat_id:page_content->>telegram_chat_id, zalo_owner_id:page_content->>zalo_owner_id, industry:page_content->>industry')
       .eq('id', business_id)
       .single();
 
@@ -328,8 +328,11 @@ export async function POST(req: Request) {
         const actionNames: Record<string, string> = {
           'fashion': 'NHẬN TƯ VẤN',
           'sports': 'ĐẶT SÂN',
+          'sport': 'ĐẶT SÂN',
           'health': 'ĐẶT LỊCH KHÁM',
+          'clinic': 'ĐẶT LỊCH KHÁM',
           'dining': 'ĐẶT BÀN',
+          'fnb': 'ĐẶT BÀN',
           'auto': 'ĐẶT LỊCH DỊCH VỤ',
           'fitness': 'ĐĂNG KÝ TẬP',
           'beauty': 'ĐẶT LỊCH LÀM ĐẸP',
@@ -338,9 +341,11 @@ export async function POST(req: Request) {
           'repair': 'GỌI THỢ',
           'travel': 'ĐẶT PHÒNG/TOUR',
           'consulting': 'ĐẶT LỊCH TƯ VẤN',
+          'generic': 'LIÊN HỆ',
           'other': 'LIÊN HỆ'
         };
-        actionStr = actionNames[business.category_slug] || 'LỊCH HẸN';
+        const industryKey = business.industry || business.category_slug || 'other';
+        actionStr = actionNames[industryKey] || 'LỊCH HẸN';
 
         header = isVIP
           ? `🏆 [${platformStr}] ${actionStr} TỪ KHÁCH VIP (Lần ${visitNumber})`

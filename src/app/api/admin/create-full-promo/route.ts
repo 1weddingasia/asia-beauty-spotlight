@@ -17,7 +17,8 @@ export async function POST(req: Request) {
       services,
       short_description,
       facebook,
-      hours
+      hours,
+      industry
     } = body;
 
     if (!email || !password || !name || !slug) {
@@ -57,7 +58,8 @@ export async function POST(req: Request) {
       logo_url,
       banners: Array.isArray(banners) ? banners : [],
       deals: deals || [],
-      services: services || []
+      services: services || [],
+      industry: industry || 'beauty'
     };
 
     // Chuẩn bị socials

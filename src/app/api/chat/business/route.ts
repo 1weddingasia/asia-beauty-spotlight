@@ -11,8 +11,12 @@ function extractPhone(text: string): string | null {
   return match ? match[0] : null;
 }
 
-function sendTelegramAsync(chatId: string, message: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
+function sendTelegramAsync(chatId: string, message: string, host: string = '') {
+  const isBookingSite = host.toLowerCase().includes('1booking');
+  const token = isBookingSite
+    ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN)
+    : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
+    
   if (!token || !chatId) return Promise.resolve();
 
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
@@ -484,7 +488,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         const userPhoneFound = extractPhone(allUserTexts);
         if (telegramChatId && userPhoneFound) {
           const msg = `🔥 [${platformStr} AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${messages[messages.length - 1]?.content || ''}"\nAI đã phản hồi: "${replyText}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
-          await sendTelegramAsync(telegramChatId, msg);
+          await sendTelegramAsync(telegramChatId, msg, host);
         }
       }
 
@@ -515,7 +519,7 @@ Nếu người dùng muốn chỉnh sửa trang/đổi giá: Lịch sự yêu c�
         const userPhoneFound = extractPhone(allUserTexts);
         if (telegramChatId && userPhoneFound) {
           const msg = `🔥 [${platformStr} AI - CHỐT ĐƠN/ĐẶT LỊCH] 🔥\n\nTiệm: ${business.name}\nSĐT Khách: ${userPhoneFound}\nNội dung khách vừa nhắn: "${messages[messages.length - 1]?.content || ''}"\nAI đã phản hồi: "${replyText}"\n👉 Anh/Chị gọi điện xác nhận cho khách ngay nhé!`;
-          await sendTelegramAsync(telegramChatId, msg);
+          await sendTelegramAsync(telegramChatId, msg, host);
         }
       }
 

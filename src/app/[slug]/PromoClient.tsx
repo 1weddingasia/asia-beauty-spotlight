@@ -34,8 +34,11 @@ type Deal = {
 const INDUSTRY_CTAS: Record<string, { btnText: string, modalTitle: string, icon: LucideIcon }> = {
   'fashion': { btnText: 'Nhận Tư Vấn', modalTitle: 'Tư Vấn & Mua Sắm', icon: MessageCircle },
   'sports': { btnText: 'Đặt Sân Ngay', modalTitle: 'Đặt Sân & Đăng Ký', icon: Calendar },
+  'sport': { btnText: 'Đặt Sân Ngay', modalTitle: 'Đặt Sân & Đăng Ký', icon: Calendar },
   'health': { btnText: 'Đặt Lịch Khám', modalTitle: 'Đặt Lịch Khám', icon: Calendar },
+  'clinic': { btnText: 'Đặt Lịch Khám', modalTitle: 'Đặt Lịch Khám', icon: Calendar },
   'dining': { btnText: 'Đặt Bàn Ngay', modalTitle: 'Đặt Bàn & Giữ Chỗ', icon: Calendar },
+  'fnb': { btnText: 'Đặt Bàn Ngay', modalTitle: 'Đặt Bàn & Giữ Chỗ', icon: Calendar },
   'auto': { btnText: 'Đặt Lịch Dịch Vụ', modalTitle: 'Đặt Lịch Chăm Sóc Xe', icon: Calendar },
   'fitness': { btnText: 'Đăng Ký Tập', modalTitle: 'Đăng Ký & Đặt Lịch', icon: Calendar },
   'beauty': { btnText: 'Đặt Lịch Làm Đẹp', modalTitle: 'Đặt Lịch & Tư Vấn', icon: Sparkles },
@@ -44,13 +47,15 @@ const INDUSTRY_CTAS: Record<string, { btnText: string, modalTitle: string, icon:
   'repair': { btnText: 'Gọi Thợ Ngay', modalTitle: 'Yêu Cầu Dịch Vụ', icon: Clock },
   'travel': { btnText: 'Đặt Phòng / Tour', modalTitle: 'Đặt Phòng & Tour', icon: Globe },
   'consulting': { btnText: 'Đặt Lịch Tư Vấn', modalTitle: 'Tư Vấn 1:1', icon: MessageCircle },
+  'generic': { btnText: 'Liên Hệ Ngay', modalTitle: 'Liên Hệ Với Chúng Tôi', icon: MessageCircle },
   'other': { btnText: 'Liên Hệ Ngay', modalTitle: 'Liên Hệ Với Chúng Tôi', icon: MessageCircle }
 };
 
 export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string | null, avatar: string }) {
   const siteConfig = useSiteConfig();
   const b = business;
-  const ctaConfig = INDUSTRY_CTAS[b.category_slug] || INDUSTRY_CTAS['other'];
+  const industryKey = b.page_content?.industry || b.category_slug || 'other';
+  const ctaConfig = INDUSTRY_CTAS[industryKey] || INDUSTRY_CTAS['other'];
   const actionName = b.page_content?.action_name || ctaConfig.btnText;
   const modalTitle = ctaConfig.modalTitle;
   const actionNameUpper = actionName.toUpperCase();
@@ -282,7 +287,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             </div>
           )}
         </Carousel>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90 pointer-events-none z-10" />
+        <div className={`absolute inset-0 pointer-events-none z-10 ${banners.length > 0 ? 'bg-gradient-to-b from-black/20 via-black/50 to-black/90' : 'bg-gradient-to-b from-black/5 via-black/10 to-black/40'}`} />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-20">
           <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-3 flex items-center justify-center gap-2">
             {business.name}
