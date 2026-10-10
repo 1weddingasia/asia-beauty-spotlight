@@ -124,13 +124,18 @@ END:VCARD`;
                 <span className="text-gold/50 text-[9px] tracking-widest uppercase mb-1">Điện thoại</span>
                 <span className="text-white font-bold tracking-widest text-xs">0918 731 411</span>
               </div>
-              <div className="bg-white/95 p-1.5 rounded-lg shadow-lg">
-                <QRCodeSVG 
-                  value={vCardData} 
-                  size={52}
-                  level="M"
-                  includeMargin={false}
-                />
+              <div className="flex flex-col items-center">
+                <div className="bg-white/95 p-1.5 rounded-lg shadow-lg">
+                  <QRCodeSVG 
+                    value={vCardData} 
+                    size={52}
+                    level="M"
+                    includeMargin={false}
+                  />
+                </div>
+                <span className="text-[8px] font-medium tracking-wide text-gold/80 mt-1 uppercase text-center w-full">
+                  Quét lưu danh bạ
+                </span>
               </div>
             </div>
             
