@@ -32,6 +32,9 @@ export function DigitalBusinessCard() {
     "END:VCARD"
   ].join("\r\n");
 
+  // MECARD format is much shorter (less dense QR code) and perfectly recognized by Zalo, iOS, and Android cameras.
+  const qrCodeData = `MECARD:N:Lê,Tấn Lợi;TEL:0918731411;ORG:1Booking & 1Beauty;URL:https://1booking.asia;;`;
+
   const downloadCardImage = async () => {
     if (!cardRef.current) return;
     try {
@@ -129,7 +132,7 @@ export function DigitalBusinessCard() {
               <div className="flex flex-col items-center">
                 <div className="bg-white/95 p-1.5 rounded-lg shadow-lg">
                   <QRCodeSVG 
-                    value={vCardData} 
+                    value={qrCodeData} 
                     size={68}
                     level="L"
                     includeMargin={false}
