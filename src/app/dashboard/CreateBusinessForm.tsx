@@ -3,7 +3,11 @@
 import { useActionState, useState } from 'react';
 import { createBusinessAction } from './actions';
 
-export default function CreateBusinessForm() {
+export default function CreateBusinessForm({
+  categories = []
+}: {
+  categories?: { slug: string; name: string }[]
+}) {
   const [state, formAction, pending] = useActionState(createBusinessAction, null);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -97,13 +101,11 @@ export default function CreateBusinessForm() {
               className="w-full px-3 py-2 border border-border rounded-md bg-white text-foreground"
             >
               <option value="" disabled>-- Chọn ngành nghề --</option>
-              <option value="spa">Spa & Thẩm mỹ viện</option>
-              <option value="salon">Salon Tóc & Nail</option>
-              <option value="dining">Nhà hàng & Ẩm thực</option>
-              <option value="travel">Khách sạn & Lưu trú</option>
-              <option value="education">Giáo dục & Đào tạo</option>
-              <option value="health">Y tế & Sức khỏe</option>
-              <option value="other">Dịch vụ khác</option>
+              {categories.map((cat) => (
+                <option key={cat.slug} value={cat.slug}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>

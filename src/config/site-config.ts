@@ -41,7 +41,7 @@ const BEAUTY_CONFIG: SiteConfig = {
   exploreSubtitle:
     "Hàng trăm chương trình ưu đãi, giảm giá sốc từ các Spa & Thẩm mỹ viện uy tín trên 1Beauty.Asia.",
   exploreHeroTag: "Săn Deal Làm Đẹp",
-  industryFilter: ["spa", "salon", "nail", "tham-my", "lam-dep"],
+  industryFilter: ["beauty", "spa", "salon", "nail", "tham-my", "lam-dep", "studio", "health"],
   poweredBy: "1Beauty.Asia",
   metaTitleSuffix: "1Beauty.Asia",
 };

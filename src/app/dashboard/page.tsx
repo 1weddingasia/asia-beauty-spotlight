@@ -24,6 +24,12 @@ export default async function DashboardRedirect() {
     redirect(`/${businesses[0].slug}/dashboard`);
   }
 
+  // Fetch active categories to populate the dropdown
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("slug, name")
+    .order("name", { ascending: true });
+
   // If they don't have a business, we could redirect them to a creation page or error page
   // For now, redirect to homepage or let them know
   return (
@@ -36,7 +42,7 @@ export default async function DashboardRedirect() {
           <LogoutButton />
         </div>
         
-        <CreateBusinessForm />
+        <CreateBusinessForm categories={categories || []} />
       </div>
     </div>
   );

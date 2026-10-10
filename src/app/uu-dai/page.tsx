@@ -1,5 +1,5 @@
 import { PageShell } from "@/components/site/Layout";
-import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight, Scissors, Utensils, Map, BookOpen, HeartPulse, MoreHorizontal, LayoutGrid } from "lucide-react";
+import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight, Scissors, Utensils, Map, BookOpen, HeartPulse, MoreHorizontal, LayoutGrid, Camera, Activity, Gem, Home } from "lucide-react";
 import Link from "next/link";
 import { createStaticClient } from "@/utils/supabase/server";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
@@ -35,17 +35,31 @@ export default async function OffersPage({
   const currentCategory = params.category || "";
   const ITEMS_PER_PAGE = 9;
 
-  const CATEGORIES = [
-    { id: 'spa', name: 'Làm Đẹp & Spa', icon: Sparkles },
-    { id: 'salon', name: 'Tóc & Nail', icon: Scissors },
-    { id: 'dining', name: 'Nhà Hàng', icon: Utensils },
-    { id: 'travel', name: 'Du Lịch', icon: Map },
-    { id: 'education', name: 'Giáo Dục', icon: BookOpen },
-    { id: 'health', name: 'Y Tế', icon: HeartPulse },
-    { id: 'other', name: 'Dịch vụ khác', icon: MoreHorizontal }
-  ];
+  // Fetch categories from DB
+  const { data: dbCategories } = await supabase
+    .from("categories")
+    .select("slug, name")
+    .order("name", { ascending: true });
+    
+  const categories = dbCategories || [];
 
-  const validCategory = CATEGORIES.some(c => c.id === currentCategory) ? currentCategory : "";
+  const iconMap: Record<string, any> = {
+    spa: Sparkles,
+    beauty: Sparkles,
+    salon: Scissors,
+    dining: Utensils,
+    travel: Map,
+    education: BookOpen,
+    health: HeartPulse,
+    fitness: Activity,
+    studio: Camera,
+    wedding: Gem,
+    realestate: Home,
+    booking: MoreHorizontal,
+    other: MoreHorizontal
+  };
+
+  const validCategory = categories.some(c => c.slug === currentCategory) ? currentCategory : "";
 
   const buildUrl = (overrides: { page?: number; category?: string | null; q?: string }) => {
     const search = new URLSearchParams();
@@ -182,18 +196,18 @@ export default async function OffersPage({
             >
               <span>Tất cả</span>
             </Link>
-            {CATEGORIES.map((cat) => {
-              const Icon = cat.icon;
-              const isActive = validCategory === cat.id;
+            {categories.map((cat) => {
+              const Icon = iconMap[cat.slug] || MoreHorizontal;
+              const isActive = validCategory === cat.slug;
               // Ẩn chip nếu ngành này không thuộc industryFilter của domain hiện tại
-              if (siteConfig.industryFilter && !siteConfig.industryFilter.includes(cat.id)) {
+              if (siteConfig.industryFilter && !siteConfig.industryFilter.includes(cat.slug)) {
                 return null;
               }
 
               return (
                 <Link
-                  key={cat.id}
-                  href={buildUrl({ category: cat.id, page: 1 })}
+                  key={cat.slug}
+                  href={buildUrl({ category: cat.slug, page: 1 })}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all ${
                     isActive
                       ? "bg-gold text-ink font-bold border-gold shadow-md"
