@@ -1,5 +1,5 @@
 import { PageShell } from "@/components/site/Layout";
-import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight, Scissors, Utensils, Map, BookOpen, HeartPulse, MoreHorizontal, LayoutGrid } from "lucide-react";
 import Link from "next/link";
 import { createStaticClient } from "@/utils/supabase/server";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
@@ -22,7 +22,7 @@ export async function generateMetadata() {
 export default async function OffersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; page?: string; category?: string }>;
 }) {
   const host = (await headers()).get("host") || "";
   const siteConfig = getSiteConfig(host);
@@ -32,7 +32,18 @@ export default async function OffersPage({
   const rawQ = params.q || "";           // giữ nguyên chữ hoa/dấu để hiển thị
   const q = rawQ.toLowerCase();           // chỉ dùng lowercase để so sánh/filter
   const currentPage = parseInt(params.page || "1") || 1;
+  const currentCategory = params.category || "";
   const ITEMS_PER_PAGE = 9;
+
+  const CATEGORIES = [
+    { id: 'spa', name: 'Làm Đẹp & Spa', icon: Sparkles },
+    { id: 'salon', name: 'Tóc & Nail', icon: Scissors },
+    { id: 'dining', name: 'Nhà Hàng', icon: Utensils },
+    { id: 'travel', name: 'Du Lịch', icon: Map },
+    { id: 'education', name: 'Giáo Dục', icon: BookOpen },
+    { id: 'health', name: 'Y Tế', icon: HeartPulse },
+    { id: 'other', name: 'Dịch vụ khác', icon: MoreHorizontal }
+  ];
 
   // Lấy tất cả các doanh nghiệp đang hoạt động
   const { data: rawBusinesses, error } = await supabase
@@ -46,6 +57,10 @@ export default async function OffersPage({
   }
 
   const businesses = (rawBusinesses || []).filter((b: any) => {
+    // Nếu chọn category, lọc theo category đó trước
+    if (currentCategory && b.category_slug !== currentCategory) {
+      return false;
+    }
     if (!siteConfig.industryFilter) return true;
     const cat = (b.category_slug || "").toLowerCase();
     return siteConfig.industryFilter.some((f) => cat.includes(f));
@@ -100,7 +115,7 @@ export default async function OffersPage({
           <div className="absolute inset-0 bg-gold/50 mix-blend-multiply"></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[35vh]">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[40vh]">
           <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">
             {siteConfig.exploreHeroTag}
           </p>
@@ -119,6 +134,7 @@ export default async function OffersPage({
               placeholder="Tìm ưu đãi, tên dịch vụ, tên cơ sở..."
               className="w-full h-14 pl-6 pr-14 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-white placeholder:text-white/60 focus:outline-none focus:border-gold focus:bg-white/20 transition-all text-lg shadow-xl"
             />
+            {currentCategory && <input type="hidden" name="category" value={currentCategory} />}
             <button
               type="submit"
               className="absolute right-2 top-2 bottom-2 aspect-square bg-gold text-ink rounded-full flex items-center justify-center hover:scale-105 transition-transform"
@@ -129,7 +145,51 @@ export default async function OffersPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        {/* Lọc danh mục */}
+        <div className="mb-12">
+          <div className="flex items-center gap-2 mb-6">
+            <LayoutGrid className="size-5 text-gold" />
+            <h2 className="text-xl font-bold text-ink font-display">Lọc theo ngành nghề</h2>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href={`/uu-dai${rawQ ? `?q=${encodeURIComponent(rawQ)}` : ""}`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all ${
+                !currentCategory 
+                  ? "bg-gold text-ink font-bold border-gold shadow-md" 
+                  : "bg-white text-muted-foreground border-border hover:border-gold hover:text-gold"
+              }`}
+            >
+              <span>Tất cả</span>
+            </Link>
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = currentCategory === cat.id;
+              // Nếu trang thuộc 1Beauty, chỉ hiện Spa và Salon, nếu 1Booking thì hiện hết (nếu có siteConfig phù hợp)
+              // siteConfig.industryFilter sẽ quyết định, nhưng ở đây filter frontend
+              if (siteConfig.industryFilter && !siteConfig.industryFilter.includes(cat.id)) {
+                if (cat.id !== 'other') return null; // hide non-matching unless it's "other"
+              }
+
+              return (
+                <Link
+                  key={cat.id}
+                  href={`/uu-dai?category=${cat.id}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}`}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all ${
+                    isActive
+                      ? "bg-gold text-ink font-bold border-gold shadow-md"
+                      : "bg-white text-muted-foreground border-border hover:border-gold hover:text-gold"
+                  }`}
+                >
+                  <Icon className="size-4" />
+                  <span>{cat.name}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
         {paginatedOffers.length > 0 ? (
           <>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -184,30 +244,30 @@ export default async function OffersPage({
               <div className="mt-16 flex items-center justify-center gap-2">
                 {currentPage > 1 ? (
                   <Link
-                    href={`/uu-dai?page=${currentPage - 1}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}`}
-                    className="p-3 border rounded-full hover:bg-gold hover:text-ink transition-colors"
+                    href={`/uu-dai?page=${currentPage - 1}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}${currentCategory ? `&category=${currentCategory}` : ""}`}
+                    className="p-3 border rounded-full hover:bg-gold hover:text-ink transition-colors bg-white shadow-sm"
                   >
                     <ChevronLeft className="size-5" />
                   </Link>
                 ) : (
-                  <div className="p-3 border rounded-full opacity-50 cursor-not-allowed">
+                  <div className="p-3 border rounded-full opacity-50 cursor-not-allowed bg-white">
                     <ChevronLeft className="size-5" />
                   </div>
                 )}
 
-                <div className="px-6 py-2 rounded-full bg-muted font-medium">
+                <div className="px-6 py-2 rounded-full bg-white border font-medium shadow-sm">
                   Trang {currentPage} / {totalPages}
                 </div>
 
                 {currentPage < totalPages ? (
                   <Link
-                    href={`/uu-dai?page=${currentPage + 1}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}`}
-                    className="p-3 border rounded-full hover:bg-gold hover:text-ink transition-colors"
+                    href={`/uu-dai?page=${currentPage + 1}${rawQ ? `&q=${encodeURIComponent(rawQ)}` : ""}${currentCategory ? `&category=${currentCategory}` : ""}`}
+                    className="p-3 border rounded-full hover:bg-gold hover:text-ink transition-colors bg-white shadow-sm"
                   >
                     <ChevronRight className="size-5" />
                   </Link>
                 ) : (
-                  <div className="p-3 border rounded-full opacity-50 cursor-not-allowed">
+                  <div className="p-3 border rounded-full opacity-50 cursor-not-allowed bg-white">
                     <ChevronRight className="size-5" />
                   </div>
                 )}

@@ -16,9 +16,10 @@ export async function createBusinessAction(prevState: any, formData: FormData) {
   const rawSlug = formData.get("slug") as string;
   const address = formData.get("address") as string;
   const phone = formData.get("phone") as string;
+  const category_slug = formData.get("category_slug") as string;
 
-  if (!name || !rawSlug) {
-    return { error: "Vui lòng nhập tên và đường dẫn gian hàng" };
+  if (!name || !rawSlug || !category_slug) {
+    return { error: "Vui lòng nhập tên, đường dẫn và chọn ngành nghề gian hàng" };
   }
 
   // clean slug
@@ -37,6 +38,7 @@ export async function createBusinessAction(prevState: any, formData: FormData) {
          name,
          address,
          phone,
+         category_slug,
          owner_id: user.id,
          status: 'active'
        }).eq("id", existing.id);
@@ -50,6 +52,7 @@ export async function createBusinessAction(prevState: any, formData: FormData) {
       slug,
       address,
       phone,
+      category_slug,
       owner_id: user.id,
       status: 'active',
       page_content: {}

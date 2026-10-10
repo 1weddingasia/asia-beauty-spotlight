@@ -8,6 +8,7 @@ export default function CreateBusinessForm() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [isSlugEdited, setIsSlugEdited] = useState(false);
+  const [category, setCategory] = useState('');
 
   const generateSlug = (text: string) => {
     return text
@@ -84,6 +85,26 @@ export default function CreateBusinessForm() {
               className="w-full px-3 py-2 border border-border rounded-md"
               placeholder="Vd: 123 Đường ABC, Quận 1, TP.HCM"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Ngành nghề kinh doanh <span className="text-red-500">*</span></label>
+            <select
+              name="category_slug"
+              required
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-3 py-2 border border-border rounded-md bg-white text-foreground"
+            >
+              <option value="" disabled>-- Chọn ngành nghề --</option>
+              <option value="spa">Spa & Thẩm mỹ viện</option>
+              <option value="salon">Salon Tóc & Nail</option>
+              <option value="dining">Nhà hàng & Ẩm thực</option>
+              <option value="travel">Khách sạn & Lưu trú</option>
+              <option value="education">Giáo dục & Đào tạo</option>
+              <option value="health">Y tế & Sức khỏe</option>
+              <option value="other">Dịch vụ khác</option>
+            </select>
           </div>
         </div>
 
