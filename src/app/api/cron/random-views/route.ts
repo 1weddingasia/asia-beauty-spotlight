@@ -11,8 +11,8 @@ export async function GET(request: Request) {
     // Basic auth check to prevent abuse (you can pass ?key=YOUR_SECRET)
     const { searchParams } = new URL(request.url);
     const key = searchParams.get('key');
-    // For local testing or if no cron secret is set, we bypass, otherwise check
-    if (process.env.CRON_SECRET && key !== process.env.CRON_SECRET) {
+    // Require CRON_SECRET to be configured and matched
+    if (!process.env.CRON_SECRET || key !== process.env.CRON_SECRET) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

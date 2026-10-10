@@ -161,7 +161,7 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {/* Tổng lượt đăng ký */}
         <Link href={`/${business.slug}/customers`} className="rounded-xl border bg-card text-card-foreground shadow p-6 flex flex-col justify-between hover:border-gold/50 hover:bg-gold/5 transition group cursor-pointer">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
