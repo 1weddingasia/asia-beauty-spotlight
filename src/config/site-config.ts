@@ -18,6 +18,7 @@ export type SiteConfig = {
   logoText: string;
   logoDomain: string;
   logoImageUrl: string;    // Đường dẫn ảnh logo (/images/...); trống = dùng text fallback
+  ogImageUrl: string;      // Đường dẫn ảnh OpenGraph chia sẻ MXH (/images/...)
   description: string;
   exploreTitle: string;
   exploreSubtitle: string;
@@ -35,6 +36,7 @@ const BEAUTY_CONFIG: SiteConfig = {
   logoText: "1Beauty",
   logoDomain: ".Asia",
   logoImageUrl: "", // dùng text fallback; thêm path khi có file logo
+  ogImageUrl: "/images/og-1beauty.png",
   description:
     "Danh bạ chuyên ngành làm đẹp, kết nối khách hàng với các spa, thẩm mỹ viện, salon và học viện uy tín trên khắp Việt Nam.",
   exploreTitle: "Khám Phá Ưu Đãi Làm Đẹp",
@@ -52,6 +54,7 @@ const BOOKING_CONFIG: SiteConfig = {
   logoText: "1Booking",
   logoDomain: ".Asia",
   logoImageUrl: "", // dùng text fallback
+  ogImageUrl: "/images/og-1booking.png",
   description:
     "Nền tảng đặt hẹn đa ngành, kết nối khách hàng với các cơ sở dịch vụ uy tín trên khắp Việt Nam.",
   exploreTitle: "Khám Phá Dịch Vụ Đặt Lịch",

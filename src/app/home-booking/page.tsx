@@ -14,19 +14,22 @@ import { DigitalBusinessCard } from "@/components/DigitalBusinessCard";
 
 export const revalidate = 3600;
 
+const PAGE_TITLE = "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới";
+const PAGE_DESC =
+  "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.";
+const OG_IMAGE = "https://1booking.asia/images/og-1booking.png";
+
 export const metadata = {
-  title: "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới",
-  description:
-    "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
+  title: PAGE_TITLE,
+  description: PAGE_DESC,
   openGraph: {
-    title: "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới",
-    description:
-      "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
+    title: PAGE_TITLE,
+    description: PAGE_DESC,
     url: "https://1booking.asia",
     siteName: "1Booking.Asia",
     images: [
       {
-        url: "https://1booking.asia/images/og-1booking.png",
+        url: OG_IMAGE,
         width: 1200,
         height: 630,
         alt: "1Booking.Asia",
@@ -36,10 +39,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới",
-    description:
-      "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
-    images: ["https://1booking.asia/images/og-1booking.png"],
+    title: PAGE_TITLE,
+    description: PAGE_DESC,
+    images: [OG_IMAGE],
   },
 };
 

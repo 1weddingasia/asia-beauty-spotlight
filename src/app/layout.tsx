@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const SITE_DESCRIPTION = siteConfig.description;
   const SITE_TITLE = `${SITE_NAME} — ${siteConfig.metaTitleSuffix}`;
 
-  const ogImage = `${SITE_URL}/images/${siteConfig.brand.startsWith('1Booking') ? 'og-1booking.png' : 'og-1beauty.png'}`;
+  const ogImage = `${SITE_URL}${siteConfig.ogImageUrl}`;
 
   return {
     metadataBase: new URL(SITE_URL),

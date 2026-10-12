@@ -9,17 +9,22 @@ import { DigitalBusinessCard } from "@/components/DigitalBusinessCard";
 
 export const revalidate = 3600;
 
+const PAGE_TITLE = "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp";
+const PAGE_DESC =
+  "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.";
+const OG_IMAGE = "https://1beauty.asia/images/og-1beauty.png";
+
 export const metadata = {
-  title: "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp",
-  description: "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
+  title: PAGE_TITLE,
+  description: PAGE_DESC,
   openGraph: {
-    title: "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp",
-    description: "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
+    title: PAGE_TITLE,
+    description: PAGE_DESC,
     url: "https://1beauty.asia",
     siteName: "1Beauty.Asia",
     images: [
       {
-        url: "https://1beauty.asia/images/og-1beauty.png",
+        url: OG_IMAGE,
         width: 1200,
         height: 630,
         alt: "1Beauty.Asia",
@@ -29,9 +34,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp",
-    description: "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
-    images: ["https://1beauty.asia/images/og-1beauty.png"],
+    title: PAGE_TITLE,
+    description: PAGE_DESC,
+    images: [OG_IMAGE],
   },
 };
 
