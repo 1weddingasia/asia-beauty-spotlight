@@ -17,6 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const SITE_DESCRIPTION = siteConfig.description;
   const SITE_TITLE = `${SITE_NAME} — ${siteConfig.metaTitleSuffix}`;
 
+  const ogImage = `${SITE_URL}/images/${siteConfig.brand.startsWith('1Booking') ? 'og-1booking.png' : 'og-1beauty.png'}`;
+
   return {
     metadataBase: new URL(SITE_URL),
     title: {
@@ -49,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: SITE_DESCRIPTION,
       images: [
         {
-          url: `${SITE_URL}/og-image.jpg`,
+          url: ogImage,
           width: 1200,
           height: 630,
           alt: `${SITE_NAME}`,
@@ -60,7 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: SITE_TITLE,
       description: SITE_DESCRIPTION,
-      images: [`${SITE_URL}/og-image.jpg`],
+      images: [ogImage],
     },
   };
 }

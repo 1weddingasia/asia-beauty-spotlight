@@ -18,6 +18,29 @@ export const metadata = {
   title: "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới",
   description:
     "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
+  openGraph: {
+    title: "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới",
+    description:
+      "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
+    url: "https://1booking.asia",
+    siteName: "1Booking.Asia",
+    images: [
+      {
+        url: "https://1booking.asia/images/og-1booking.png",
+        width: 1200,
+        height: 630,
+        alt: "1Booking.Asia",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới",
+    description:
+      "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.",
+    images: ["https://1booking.asia/images/og-1booking.png"],
+  },
 };
 
 // icon được render trực tiếp trong card — không có emoji field thừa

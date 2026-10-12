@@ -12,6 +12,27 @@ export const revalidate = 3600;
 export const metadata = {
   title: "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp",
   description: "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
+  openGraph: {
+    title: "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp",
+    description: "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
+    url: "https://1beauty.asia",
+    siteName: "1Beauty.Asia",
+    images: [
+      {
+        url: "https://1beauty.asia/images/og-1beauty.png",
+        width: 1200,
+        height: 630,
+        alt: "1Beauty.Asia",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp",
+    description: "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.",
+    images: ["https://1beauty.asia/images/og-1beauty.png"],
+  },
 };
 
 export default async function HomePage() {
