@@ -23,23 +23,25 @@ export default async function B2CHomePage() {
   const supabase = createStaticClient();
 
   // Lấy categories thật
-  const { data: categories } = await supabase
+  const { data: categories, error: catErr } = await supabase
     .from("directory_categories")
     .select("id, name, slug, icon, description")
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true })
     .limit(20);
+  if (catErr) console.error("[homepage] categories error:", catErr.message);
 
   // Lấy locations thật
-  const { data: locations } = await supabase
+  const { data: locations, error: locErr } = await supabase
     .from("directory_locations")
     .select("id, name, slug")
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true })
     .limit(20);
+  if (locErr) console.error("[homepage] locations error:", locErr.message);
 
   // Lấy deals/businesses có ưu đãi — featured trước, có logo
-  const { data: featuredBusinesses } = await supabase
+  const { data: featuredBusinesses, error: bizErr } = await supabase
     .from("businesses")
     .select(`
       id, name, slug, status, is_featured, plan_tier,
@@ -51,12 +53,14 @@ export default async function B2CHomePage() {
     .order("is_featured", { ascending: false })
     .order("plan_tier", { ascending: false })
     .limit(24);
+  if (bizErr) console.error("[homepage] businesses error:", bizErr.message);
 
   // Đếm tổng số businesses
-  const { count: totalBusinesses } = await supabase
+  const { count: totalBusinesses, error: cntErr } = await supabase
     .from("businesses")
     .select("*", { count: "exact", head: true })
     .in("status", ["published", "active", "trial"]);
+  if (cntErr) console.error("[homepage] count error:", cntErr.message);
 
   // Format businesses cho client
   const businesses = (featuredBusinesses || []).map((b: any) => {
@@ -68,14 +72,14 @@ export default async function B2CHomePage() {
       .map((bl: any) => bl.directory_locations)
       .filter(Boolean);
 
-    // Lấy deals count an toàn
+    // Lấy deals count an toàn — dùng status "paused" nhất quán với PromoClient
     const dealsArr = Array.isArray(pc.deals)
       ? pc.deals
       : Array.isArray(pc.offers)
       ? pc.offers
       : [];
     const activeDeals = dealsArr.filter(
-      (d: any) => d && d.status !== "inactive"
+      (d: any) => d && d.status !== "paused"
     );
 
     // Lấy cover image
@@ -99,7 +103,6 @@ export default async function B2CHomePage() {
       address: pc.address || null,
       categories: cats,
       locations: locs,
-      deals: activeDeals,
       deals_count: activeDeals.length,
       top_deal: activeDeals[0] || null,
     };

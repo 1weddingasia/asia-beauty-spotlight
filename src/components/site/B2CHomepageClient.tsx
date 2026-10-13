@@ -17,6 +17,18 @@ import {
   Building2,
   TrendingUp,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+// ── Deal type (aligned with page_content.deals shape) ────────────────────────
+type Deal = {
+  title?: string;
+  badge?: string;
+  promo_price?: number | string;
+  original_price?: number | string;
+  discount_percent?: number;
+  status?: string;
+  note?: string;
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Category = { id: string; name: string; slug: string; icon?: string | null; description?: string | null };
@@ -33,9 +45,8 @@ type Business = {
   address: string | null;
   categories: Category[];
   locations: Location[];
-  deals: any[];
   deals_count: number;
-  top_deal: any | null;
+  top_deal: Deal | null;
 };
 
 // ─── Hero Slides ──────────────────────────────────────────────────────────────
@@ -70,10 +81,12 @@ const HERO_SLIDES = [
 ];
 
 // ─── Deal Badge ───────────────────────────────────────────────────────────────
-function getDealBadge(deal: any): string | null {
+// Aligned with actual deal shape: { title, badge, promo_price, original_price, status }
+function getDealBadge(deal: Deal | null): string | null {
   if (!deal) return null;
+  if (deal.badge) return deal.badge;
   if (deal.discount_percent) return `-${deal.discount_percent}%`;
-  if (deal.label) return deal.label;
+  if (deal.promo_price && deal.original_price) return "Giảm giá";
   if (deal.title && deal.title.length < 20) return deal.title;
   return "Ưu đãi";
 }
@@ -166,17 +179,25 @@ function SearchBar({
   categories: Category[];
   locations: Location[];
 }) {
+  const router = useRouter();
   const [keyword, setKeyword] = useState("");
   const [locationSlug, setLocationSlug] = useState("");
   const [categorySlug, setCategorySlug] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    // Location filter → route to /dia-diem/[slug] (uu-dai doesn’t support location param)
+    if (locationSlug && !keyword && !categorySlug) {
+      router.push(`/dia-diem/${locationSlug}`);
+      return;
+    }
     const params = new URLSearchParams();
     if (keyword) params.set("q", keyword);
-    if (locationSlug) params.set("location", locationSlug);
+    // Note: /uu-dai uses its own `categories` table; slug may differ from directory_categories
     if (categorySlug) params.set("category", categorySlug);
-    window.location.href = `/uu-dai?${params.toString()}`;
+    // Append location as info param — user will land on /uu-dai and can further filter
+    if (locationSlug) params.set("location", locationSlug);
+    router.push(`/uu-dai?${params.toString()}`);
   };
 
   return (
