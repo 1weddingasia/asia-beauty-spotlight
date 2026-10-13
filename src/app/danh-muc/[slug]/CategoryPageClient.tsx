@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Search, Tag, ChevronLeft, ChevronRight, Gift, Star } from "lucide-react";
+import { MapPin, Search, ChevronLeft, ChevronRight, Gift, Star } from "lucide-react";
 
 const PAGE_SIZE = 12;
 
@@ -128,7 +128,7 @@ export default function CategoryPageClient({
         (b.short_description || "").toLowerCase().includes(q) ||
         (b.tagline || "").toLowerCase().includes(q) ||
         (b.address || "").toLowerCase().includes(q) ||
-        (b.locations || []).some((l: any) => l.name.toLowerCase().includes(q))
+        (b.locations || []).some((l: any) => l?.name?.toLowerCase().includes(q))
     );
   }, [businesses, search]);
 

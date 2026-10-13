@@ -89,9 +89,8 @@ export default async function CategoryDetailPage({
       cover_image: coverImage,
       tagline: pc.tagline || null,
       locations,
-      deals_count: (pc.deals || pc.offers || []).filter(
-        (d: any) => d.status !== "inactive"
-      ).length,
+      deals_count: (Array.isArray(pc.deals) ? pc.deals : Array.isArray(pc.offers) ? pc.offers : [])
+        .filter((d: any) => d && d.status !== "inactive").length,
     };
   });
 

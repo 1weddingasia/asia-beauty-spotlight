@@ -48,7 +48,7 @@ export default async function CategoriesIndexPage() {
 
   const { data: categories } = await supabase
     .from("directory_categories")
-    .select("id, name, slug, description, icon, hero_image")
+    .select("id, name, slug, description, icon")
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 

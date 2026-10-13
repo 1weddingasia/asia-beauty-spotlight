@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Search, ChevronLeft, ChevronRight, Gift, Star, Tag } from "lucide-react";
+import { MapPin, Search, ChevronLeft, ChevronRight, Gift, Star } from "lucide-react";
 
 const PAGE_SIZE = 12;
 
