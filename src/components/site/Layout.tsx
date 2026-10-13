@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin } from "lucide-react";
+import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin, Building2 } from "lucide-react";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { getSiteConfig, type SiteConfig } from "@/config/site-config";
@@ -236,6 +236,18 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               Liên hệ
             </Link>
           </nav>
+          {/* Dành cho Doanh nghiệp button — desktop */}
+          <Link
+            href="/danh-cho-doanh-nghiep"
+            className={`flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 mr-2 ${
+              solid
+                ? "border-gold/50 text-gold hover:bg-gold/10"
+                : "border-white/40 text-white hover:bg-white/10"
+            }`}
+          >
+            <Building2 className="size-3.5" />
+            Doanh nghiệp
+          </Link>
 
           {authLoading ? (
             <div className="w-32 h-8 rounded-full bg-muted/20 animate-pulse" />
@@ -286,6 +298,9 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               </button>
               <Link href="/lien-he" onClick={() => setOpen(false)} className="block py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
                 📞 Liên hệ
+              </Link>
+              <Link href="/danh-cho-doanh-nghiep" onClick={() => setOpen(false)} className="flex items-center gap-2 py-2.5 px-3 text-sm rounded-lg border border-gold/40 text-gold hover:bg-gold/5 mt-2">
+                🏢 Dành cho Doanh nghiệp
               </Link>
             </nav>
           )}
@@ -437,6 +452,11 @@ export function SiteFooter() {
             <li>
               <Link href="/uu-dai" className="transition-colors hover:text-gold">
                 Khám phá Ưu đãi
+              </Link>
+            </li>
+            <li className="pt-2 border-t border-background/10 mt-2">
+              <Link href="/danh-cho-doanh-nghiep" className="flex items-center gap-1.5 text-gold font-semibold hover:underline">
+                🏢 Dành cho Doanh nghiệp
               </Link>
             </li>
           </ul>
