@@ -68,6 +68,14 @@ export default function BusinessEditorClient({
     chatbot_passcode: initialBusiness?.chatbot_passcode || "",
   });
 
+  // Danh mục và địa điểm được chọn cho doanh nghiệp này
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialBusiness?.categories_list?.map((c: any) => c.id) || []
+  );
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(
+    initialBusiness?.locations_list?.map((l: any) => l.id) || []
+  );
+
   const getInitialPageContent = () => {
     if (!initialBusiness) return {
       description: "", phone: "", email: "", website: "", zalo: "", facebook: "", instagram: "", tiktok: "", youtube: "", logo_url: "", hero_image: "", banners: ["", "", ""], gallery: [], services: [], offers: [], amenities: [], map_embed: "", booking_url: "", price_range: "", working_hours: [{ day: "Thứ 2", hours: "09:00 - 20:00" }, { day: "Thứ 3", hours: "09:00 - 20:00" }, { day: "Thứ 4", hours: "09:00 - 20:00" }, { day: "Thứ 5", hours: "09:00 - 20:00" }, { day: "Thứ 6", hours: "09:00 - 20:00" }, { day: "Thứ 7", hours: "09:00 - 21:00" }, { day: "Chủ nhật", hours: "09:00 - 21:00" }]
@@ -175,6 +183,17 @@ export default function BusinessEditorClient({
           }
           throw error;
         }
+        // Lưu categories và locations cho doanh nghiệp mới
+        if (selectedCategories.length > 0) {
+          await supabase.from('business_categories').insert(
+            selectedCategories.map(catId => ({ business_id: inserted.id, category_id: catId }))
+          );
+        }
+        if (selectedLocations.length > 0) {
+          await supabase.from('business_locations').insert(
+            selectedLocations.map(locId => ({ business_id: inserted.id, location_id: locId }))
+          );
+        }
         toast.success('Tạo doanh nghiệp thành công!');
         router.push(`/admin/businesses/${inserted.id}`);
       } else {
@@ -183,6 +202,20 @@ export default function BusinessEditorClient({
           .update(payload)
           .eq('id', business.id);
         if (error) throw error;
+        // Cập nhật categories: xóa cũ, thêm mới
+        await supabase.from('business_categories').delete().eq('business_id', business.id);
+        if (selectedCategories.length > 0) {
+          await supabase.from('business_categories').insert(
+            selectedCategories.map(catId => ({ business_id: business.id, category_id: catId }))
+          );
+        }
+        // Cập nhật locations: xóa cũ, thêm mới
+        await supabase.from('business_locations').delete().eq('business_id', business.id);
+        if (selectedLocations.length > 0) {
+          await supabase.from('business_locations').insert(
+            selectedLocations.map(locId => ({ business_id: business.id, location_id: locId }))
+          );
+        }
         await revalidatePagePath('/' + payload.slug);
         toast.success('Đã lưu thông tin doanh nghiệp');
       }
@@ -324,6 +357,60 @@ export default function BusinessEditorClient({
             )}
 
             <h3 className="font-semibold text-xl pt-2">Thông tin Cơ bản</h3>
+
+            {/* Danh Mục & Địa Điểm */}
+            {(categories.length > 0 || locations.length > 0) && (
+              <div className="grid md:grid-cols-2 gap-6 p-4 bg-muted/40 rounded-xl border border-gold/20">
+                {categories.length > 0 && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold flex items-center gap-2">📋 Danh Mục Ngành Nghề</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {categories.map((cat: any) => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => setSelectedCategories(prev =>
+                            prev.includes(cat.id) ? prev.filter(x => x !== cat.id) : [...prev, cat.id]
+                          )}
+                          className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${
+                            selectedCategories.includes(cat.id)
+                              ? 'bg-gold text-ink border-gold shadow-sm'
+                              : 'bg-background text-foreground border-border hover:border-gold/50'
+                          }`}
+                        >
+                          {selectedCategories.includes(cat.id) ? '✓ ' : ''}{cat.name}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Chọn một hoặc nhiều danh mục phù hợp</p>
+                  </div>
+                )}
+                {locations.length > 0 && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold flex items-center gap-2">📍 Địa Điểm Khu Vực</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {locations.map((loc: any) => (
+                        <button
+                          key={loc.id}
+                          type="button"
+                          onClick={() => setSelectedLocations(prev =>
+                            prev.includes(loc.id) ? prev.filter(x => x !== loc.id) : [...prev, loc.id]
+                          )}
+                          className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${
+                            selectedLocations.includes(loc.id)
+                              ? 'bg-gold text-ink border-gold shadow-sm'
+                              : 'bg-background text-foreground border-border hover:border-gold/50'
+                          }`}
+                        >
+                          {selectedLocations.includes(loc.id) ? '✓ ' : ''}📍 {loc.name}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Chọn khu vực hoạt động</p>
+                  </div>
+                )}
+              </div>
+            )}
             
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">

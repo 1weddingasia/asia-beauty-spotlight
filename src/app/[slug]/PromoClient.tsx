@@ -303,6 +303,31 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           <p className="text-champagne/90 text-sm md:text-lg flex items-center gap-2 mb-2 max-w-2xl text-center">
             <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}
           </p>
+          {/* Category & Location Tags */}
+          {((business.categories_list?.length > 0) || (business.locations_list?.length > 0)) && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+              {(business.categories_list || []).map((cat: any) => (
+                <Link
+                  key={cat.slug}
+                  href={`/danh-muc/${cat.slug}`}
+                  className="inline-flex items-center gap-1 bg-gold/20 border border-gold/40 text-gold text-xs font-semibold px-3 py-1 rounded-full hover:bg-gold/30 transition-colors backdrop-blur-sm"
+                >
+                  {cat.icon && <span>{cat.icon}</span>}
+                  {cat.name}
+                </Link>
+              ))}
+              {(business.locations_list || []).map((loc: any) => (
+                <Link
+                  key={loc.slug}
+                  href={`/dia-diem/${loc.slug}`}
+                  className="inline-flex items-center gap-1 bg-white/15 border border-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full hover:bg-white/25 transition-colors backdrop-blur-sm"
+                >
+                  <MapPin className="size-3" />
+                  {loc.name}
+                </Link>
+              ))}
+            </div>
+          )}
           <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-8">
             <button
               onClick={() => {

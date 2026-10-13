@@ -43,10 +43,24 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
   try {
     const { data } = await supabase
       .from('businesses')
-      .select('id, name, slug, category_slug, address, phone, description, status, page_content, short_description, email, website, socials, zalo, plan_tier, is_featured')
+      .select(`
+        id, name, slug, category_slug, address, phone, description, status, page_content,
+        short_description, email, website, socials, zalo, plan_tier, is_featured,
+        business_categories(directory_categories(id, name, slug, icon)),
+        business_locations(directory_locations(id, name, slug))
+      `)
       .eq('slug', slug)
       .single();
-    business = data;
+    // Format categories_list and locations_list from junction tables
+    if (data) {
+      business = {
+        ...data,
+        categories_list: (data as any).business_categories?.map((bc: any) => bc.directory_categories).filter(Boolean) || [],
+        locations_list: (data as any).business_locations?.map((bl: any) => bl.directory_locations).filter(Boolean) || [],
+      };
+    } else {
+      business = data;
+    }
   } catch (error) {
     business = null;
   }
