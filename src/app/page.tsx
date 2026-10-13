@@ -1,66 +1,96 @@
-import Link from "next/link";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { createStaticClient } from "@/utils/supabase/server";
+import { getSiteConfig } from "@/config/site-config";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import { B2CHomepageClient } from "@/components/site/B2CHomepageClient";
 
-export const revalidate = 900; // 15 phút
+// Dynamic — cần đọc header để phân biệt domain
+export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "1Booking.asia — Cổng Ưu Đãi Dịch Vụ Khu Phố",
-  description:
-    "Khám phá hàng ngàn ưu đãi làm đẹp, ẩm thực, sức khỏe & giải trí ngay trong khu phố bạn. Đặt lịch 1-chạm, nhận ưu đãi độc quyền.",
-  openGraph: {
-    title: "1Booking.asia — Cổng Ưu Đãi Khu Phố",
+export async function generateMetadata() {
+  const h = await headers();
+  const host = h.get("host") || "";
+  const config = getSiteConfig(host);
+
+  if (config.domain === "1beauty.asia") {
+    return {
+      title: "1Beauty.Asia — Danh Bạ Làm Đẹp Việt Nam",
+      description: config.description,
+    };
+  }
+
+  return {
+    title: "1Booking.Asia — Cổng Ưu Đãi Dịch Vụ Khu Phố",
     description:
-      "Khám phá hàng ngàn ưu đãi làm đẹp, ẩm thực, sức khỏe & giải trí ngay trong khu phố bạn.",
-    url: "https://1booking.asia",
-    siteName: "1Booking.asia",
-    type: "website",
-  },
-};
+      "Khám phá hàng ngàn ưu đãi làm đẹp, ẩm thực, sức khỏe & giải trí ngay trong khu phố bạn. Đặt lịch 1-chạm, nhận ưu đãi độc quyền.",
+    openGraph: {
+      title: "1Booking.Asia — Cổng Ưu Đãi Khu Phố",
+      description:
+        "Khám phá hàng ngàn ưu đãi làm đẹp, ẩm thực, sức khỏe & giải trí ngay trong khu phố bạn.",
+      url: "https://1booking.asia",
+      siteName: "1Booking.Asia",
+      type: "website",
+    },
+  };
+}
 
-export default async function B2CHomePage() {
+export default async function RootPage() {
+  const h = await headers();
+  const host = h.get("host") || "";
+  const config = getSiteConfig(host);
+
+  // 1Beauty.asia — chuyển về trang landing đúng cho domain này
+  if (config.domain === "1beauty.asia") {
+    redirect("/home-beauty");
+  }
+
+  // 1Booking.asia — trang chủ B2C mới
   const supabase = createStaticClient();
 
-  // Lấy categories thật
-  const { data: categories, error: catErr } = await supabase
-    .from("directory_categories")
-    .select("id, name, slug, icon, description")
-    .order("sort_order", { ascending: true })
-    .order("name", { ascending: true })
-    .limit(20);
-  if (catErr) console.error("[homepage] categories error:", catErr.message);
+  const [
+    { data: categories, error: catErr },
+    { data: locations, error: locErr },
+    { data: featuredBusinesses, error: bizErr },
+    { count: totalBusinesses, error: cntErr },
+  ] = await Promise.all([
+    supabase
+      .from("directory_categories")
+      .select("id, name, slug, icon, description")
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true })
+      .limit(20),
 
-  // Lấy locations thật
-  const { data: locations, error: locErr } = await supabase
-    .from("directory_locations")
-    .select("id, name, slug")
-    .order("sort_order", { ascending: true })
-    .order("name", { ascending: true })
-    .limit(20);
-  if (locErr) console.error("[homepage] locations error:", locErr.message);
+    supabase
+      .from("directory_locations")
+      .select("id, name, slug")
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true })
+      .limit(20),
 
-  // Lấy deals/businesses có ưu đãi — featured trước, có logo
-  const { data: featuredBusinesses, error: bizErr } = await supabase
-    .from("businesses")
-    .select(`
-      id, name, slug, status, is_featured, plan_tier,
-      business_categories(directory_categories(id, name, slug, icon)),
-      business_locations(directory_locations(id, name, slug)),
-      page_content
-    `)
-    .in("status", ["published", "active", "trial"])
-    .order("is_featured", { ascending: false })
-    .order("plan_tier", { ascending: false })
-    .limit(24);
-  if (bizErr) console.error("[homepage] businesses error:", bizErr.message);
+    supabase
+      .from("businesses")
+      .select(
+        `id, name, slug, status, is_featured, plan_tier,
+         business_categories(directory_categories(id, name, slug, icon)),
+         business_locations(directory_locations(id, name, slug)),
+         page_content`
+      )
+      .in("status", ["published", "active", "trial"])
+      .order("is_featured", { ascending: false })
+      .order("plan_tier", { ascending: false })
+      .limit(24),
 
-  // Đếm tổng số businesses
-  const { count: totalBusinesses, error: cntErr } = await supabase
-    .from("businesses")
-    .select("*", { count: "exact", head: true })
-    .in("status", ["published", "active", "trial"]);
-  if (cntErr) console.error("[homepage] count error:", cntErr.message);
+    supabase
+      .from("businesses")
+      .select("*", { count: "exact", head: true })
+      .in("status", ["published", "active", "trial"]),
+  ]);
+
+  if (catErr) console.error("[homepage] categories:", catErr.message);
+  if (locErr) console.error("[homepage] locations:", locErr.message);
+  if (bizErr) console.error("[homepage] businesses:", bizErr.message);
+  if (cntErr) console.error("[homepage] count:", cntErr.message);
 
   // Format businesses cho client
   const businesses = (featuredBusinesses || []).map((b: any) => {
@@ -72,17 +102,13 @@ export default async function B2CHomePage() {
       .map((bl: any) => bl.directory_locations)
       .filter(Boolean);
 
-    // Lấy deals count an toàn — dùng status "paused" nhất quán với PromoClient
     const dealsArr = Array.isArray(pc.deals)
       ? pc.deals
       : Array.isArray(pc.offers)
       ? pc.offers
       : [];
-    const activeDeals = dealsArr.filter(
-      (d: any) => d && d.status !== "paused"
-    );
+    const activeDeals = dealsArr.filter((d: any) => d && d.status !== "paused");
 
-    // Lấy cover image
     const coverImage =
       pc.cover_image ||
       (Array.isArray(pc.banners) && typeof pc.banners[0] === "string"
