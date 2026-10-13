@@ -52,26 +52,26 @@ type Business = {
 // --- Hero Slides ------------------------------------------------------------
 const HERO_SLIDES = [
   {
-    tag: "Cam Nang Tet 2026",
-    title: "Hang Ngan Voucher Lam Dep & Am Thuc",
-    subtitle: "Giam den 50% cho hang tram cua hang uy tin quanh ban",
-    cta: "Kham pha ngay",
+    tag: "🎊 Cẩm Nang Tết 2026",
+    title: "Hàng Ngàn Voucher Làm Đẹp & Ẩm Thực",
+    subtitle: "Giảm đến 50% cho hàng trăm cửa hàng uy tín quanh bạn",
+    cta: "Khám phá ngay",
     ctaHref: "/uu-dai",
     gradient: "from-rose-950 via-rose-900 to-amber-900",
   },
   {
-    tag: "Dat Lich 1-Cham",
-    title: "Nhan Uu Dai Doc Quyen Khong Can Thanh Toan Truoc",
-    subtitle: "De lai SDT, tiem se goi xac nhan — don gian va nhanh chong",
-    cta: "Xem uu dai",
+    tag: "⚡ Đặt Lịch 1-Chạm",
+    title: "Nhận Ưu Đãi Độc Quyền Không Cần Thanh Toán Trước",
+    subtitle: "Để lại SĐT, tiệm sẽ gọi xác nhận — đơn giản và nhanh chóng",
+    cta: "Xem ưu đãi",
     ctaHref: "/uu-dai",
     gradient: "from-slate-950 via-violet-950 to-indigo-900",
   },
   {
-    tag: "Uu Dai Quanh Ban",
-    title: "Ket Noi 500+ Thuong Hieu Uy Tin Gan Nha",
-    subtitle: "Kham pha uu dai theo quan/huyen — chon dung noi, dung gia",
-    cta: "Tim theo khu vuc",
+    tag: "📍 Ưu Đãi Quanh Bạn",
+    title: "Kết Nối 500+ Thương Hiệu Uy Tín Gần Nhà",
+    subtitle: "Khám phá ưu đãi theo quận/huyện — chọn đúng nơi, đúng giá",
+    cta: "Tìm theo khu vực",
     ctaHref: "/dia-diem",
     gradient: "from-emerald-950 via-teal-900 to-cyan-900",
   },
@@ -82,9 +82,9 @@ function getDealBadge(deal: Deal | null): string | null {
   if (!deal) return null;
   if (deal.badge) return deal.badge;
   if (deal.discount_percent) return `-${deal.discount_percent}%`;
-  if (deal.promo_price && deal.original_price) return "Giam gia";
+  if (deal.promo_price && deal.original_price) return "Giảm giá";
   if (deal.title && deal.title.length < 20) return deal.title;
-  return "Uu dai";
+  return "Ưu đãi";
 }
 
 // --- Hero Slider ------------------------------------------------------------
@@ -131,7 +131,7 @@ function HeroSlider() {
           </Link>
           <Link href="/danh-muc" className="inline-flex items-center gap-2 border border-white/30 text-white px-8 py-4 rounded-2xl text-base hover:bg-white/10 transition-colors">
             <Tag className="size-4" />
-            Xem theo danh muc
+            Xem theo danh mục
           </Link>
         </div>
       </div>
@@ -181,7 +181,7 @@ function SearchBar({ categories, locations }: { categories: Category[]; location
             type="text"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="Tim ten tiem, dich vu (nail, spa, cat toc...)"
+            placeholder="Tên tiệm, dịch vụ (nail, spa, cắt tóc...)"
             className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
           />
         </div>
@@ -189,7 +189,7 @@ function SearchBar({ categories, locations }: { categories: Category[]; location
         <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-xl md:w-44">
           <MapPin className="size-4 text-muted-foreground shrink-0" />
           <select value={locationSlug} onChange={(e) => setLocationSlug(e.target.value)} className="flex-1 bg-transparent text-sm text-foreground outline-none appearance-none cursor-pointer">
-            <option value="">Tat ca khu vuc</option>
+            <option value="">Tất cả khu vực</option>
             {locations.map((l) => (<option key={l.slug} value={l.slug}>{l.name}</option>))}
           </select>
           <ChevronDown className="size-3.5 text-muted-foreground shrink-0" />
@@ -198,7 +198,7 @@ function SearchBar({ categories, locations }: { categories: Category[]; location
         <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-xl md:w-44">
           <Tag className="size-4 text-muted-foreground shrink-0" />
           <select value={categorySlug} onChange={(e) => setCategorySlug(e.target.value)} className="flex-1 bg-transparent text-sm text-foreground outline-none appearance-none cursor-pointer">
-            <option value="">Tat ca nganh</option>
+            <option value="">Tất cả ngành</option>
             {categories.map((c) => (<option key={c.slug} value={c.slug}>{c.name}</option>))}
           </select>
           <ChevronDown className="size-3.5 text-muted-foreground shrink-0" />
@@ -206,7 +206,7 @@ function SearchBar({ categories, locations }: { categories: Category[]; location
 
         <button type="submit" className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-xl transition-all hover:scale-105 active:scale-95 text-sm whitespace-nowrap">
           <Search className="size-4" />
-          Tim Uu Dai
+          Tìm Ưu Đãi
         </button>
       </div>
     </form>
@@ -225,8 +225,8 @@ function CategoryGrid({ categories }: { categories: Category[] }) {
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-xs tracking-[0.25em] text-gold uppercase">Nganh nghe</p>
-            <h2 className="mt-1 text-xl md:text-2xl font-display text-ink font-semibold">Kham Pha Theo Danh Muc</h2>
+            <p className="text-xs tracking-[0.25em] text-gold uppercase">Ngành nghề</p>
+            <h2 className="mt-1 text-xl md:text-2xl font-display text-ink font-semibold">Khám Phá Theo Danh Mục</h2>
           </div>
           <div className="flex gap-2">
             <button onClick={() => scroll("left")} className="p-2 rounded-full border border-border hover:border-gold/50 hover:bg-gold/5 transition-colors"><ChevronLeft className="size-4" /></button>
@@ -236,7 +236,7 @@ function CategoryGrid({ categories }: { categories: Category[] }) {
         <div ref={scrollRef} className="flex gap-3 overflow-x-auto no-scrollbar pb-2" style={{ scrollSnapType: "x mandatory" }}>
           <Link href="/uu-dai" className="flex-shrink-0 flex flex-col items-center gap-2 w-24 md:w-28 group" style={{ scrollSnapAlign: "start" }}>
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 border-2 border-amber-200 flex items-center justify-center text-2xl group-hover:border-amber-400 group-hover:shadow-md transition-all">🎯</div>
-            <span className="text-xs text-center text-foreground font-medium line-clamp-2 leading-tight">Tat ca</span>
+            <span className="text-xs text-center text-foreground font-medium line-clamp-2 leading-tight">Tất cả</span>
           </Link>
           {categories.map((cat) => (
             <Link key={cat.slug} href={`/danh-muc/${cat.slug}`} className="flex-shrink-0 flex flex-col items-center gap-2 w-24 md:w-28 group" style={{ scrollSnapAlign: "start" }}>
@@ -277,8 +277,8 @@ function DealCard({ biz }: { biz: Business }) {
         <h3 className="font-semibold text-sm text-foreground line-clamp-1 group-hover:text-gold transition-colors">{biz.name}</h3>
         {biz.tagline && (<p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">{biz.tagline}</p>)}
         <div className="mt-auto pt-3 flex items-center justify-between">
-          {biz.deals_count > 0 && (<span className="flex items-center gap-1 text-xs text-muted-foreground"><Gift className="size-3.5 text-gold" />{biz.deals_count} uu dai</span>)}
-          <span className="ml-auto text-xs font-semibold text-gold group-hover:underline flex items-center gap-1">Lay ma <ArrowRight className="size-3" /></span>
+          {biz.deals_count > 0 && (<span className="flex items-center gap-1 text-xs text-muted-foreground"><Gift className="size-3.5 text-gold" />{biz.deals_count} ưu đãi</span>)}
+          <span className="ml-auto text-xs font-semibold text-gold group-hover:underline flex items-center gap-1">Lấy mã <ArrowRight className="size-3" /></span>
         </div>
       </div>
     </Link>
@@ -306,14 +306,14 @@ function DealsSection({ businesses, locations, categories }: { businesses: Busin
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 rounded-full bg-rose-50 border border-rose-200 px-4 py-1.5 text-xs font-bold text-rose-600 uppercase tracking-widest mb-4">
             <TrendingUp className="size-3.5" />
-            Deal Hot &mdash; Giam Den 50%
+            Deal Hot — Giảm Đến 50%
           </div>
-          <h2 className="font-display text-2xl md:text-3xl text-ink">Uu Dai Noi Bat Hom Nay</h2>
+          <h2 className="font-display text-2xl md:text-3xl text-ink">Ưu Đãi Nổi Bật Hôm Nay</h2>
         </div>
 
         {/* Category filter */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 mb-4">
-          <button onClick={() => setActiveCategory("all")} className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeCategory === "all" ? "bg-ink text-white" : "bg-muted text-muted-foreground hover:bg-muted/70"}`}>Tat ca</button>
+          <button onClick={() => setActiveCategory("all")} className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeCategory === "all" ? "bg-ink text-white" : "bg-muted text-muted-foreground hover:bg-muted/70"}`}>Tất cả</button>
           {categories.slice(0, 10).map((cat) => (
             <button key={cat.slug} onClick={() => setActiveCategory(cat.slug)} className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeCategory === cat.slug ? "bg-gold text-ink" : "bg-muted text-muted-foreground hover:bg-muted/70"}`}>
               {cat.icon && <span>{cat.icon}</span>}{cat.name}
@@ -323,14 +323,14 @@ function DealsSection({ businesses, locations, categories }: { businesses: Busin
 
         {/* Location tabs */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 border-b border-border">
-          <button onClick={() => setActiveLocation("all")} className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs transition-all ${activeLocation === "all" ? "bg-foreground text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}>Tat ca khu vuc</button>
+          <button onClick={() => setActiveLocation("all")} className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs transition-all ${activeLocation === "all" ? "bg-foreground text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}>📍 Tất cả khu vực</button>
           {locations.slice(0, 8).map((loc) => (
             <button key={loc.slug} onClick={() => setActiveLocation(loc.slug)} className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs transition-all whitespace-nowrap ${activeLocation === loc.slug ? "bg-foreground text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}>{loc.name}</button>
           ))}
         </div>
 
         {visible.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground"><div className="text-5xl mb-4">🔍</div><p>Chua co uu dai trong khu vuc nay</p></div>
+          <div className="text-center py-20 text-muted-foreground"><div className="text-5xl mb-4">🔍</div><p>Chưa có ưu đãi trong khu vực này</p></div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {visible.map((biz) => (<DealCard key={biz.id} biz={biz} />))}
@@ -340,9 +340,9 @@ function DealsSection({ businesses, locations, categories }: { businesses: Busin
         {filtered.length > 8 && (
           <div className="mt-10 text-center">
             {showAll ? (
-              <Link href="/uu-dai" className="inline-flex items-center gap-2 border border-border text-foreground px-8 py-3 rounded-full text-sm hover:border-gold hover:text-gold transition-colors">Xem tat ca uu dai <ArrowRight className="size-4" /></Link>
+              <Link href="/uu-dai" className="inline-flex items-center gap-2 border border-border text-foreground px-8 py-3 rounded-full text-sm hover:border-gold hover:text-gold transition-colors">Xem tất cả ưu đãi <ArrowRight className="size-4" /></Link>
             ) : (
-              <button onClick={() => setShowAll(true)} className="inline-flex items-center gap-2 bg-foreground text-background px-8 py-3 rounded-full text-sm font-semibold hover:bg-ink transition-colors">Xem them {filtered.length - 8} uu dai <ChevronDown className="size-4" /></button>
+              <button onClick={() => setShowAll(true)} className="inline-flex items-center gap-2 bg-foreground text-background px-8 py-3 rounded-full text-sm font-semibold hover:bg-ink transition-colors">Xem thêm {filtered.length - 8} ưu đãi <ChevronDown className="size-4" /></button>
             )}
           </div>
         )}
@@ -372,9 +372,9 @@ function LocationSection({ locations }: { locations: Location[] }) {
     <section className="py-16 bg-muted/40 border-y border-border">
       <div className="mx-auto max-w-6xl px-4">
         <div className="text-center mb-10">
-          <p className="text-xs tracking-[0.25em] text-gold uppercase mb-2">Tim theo vi tri</p>
-          <h2 className="font-display text-2xl md:text-3xl text-ink">Kham Pha Theo Khu Vuc</h2>
-          <p className="mt-3 text-muted-foreground text-sm max-w-xl mx-auto">Chon quan/huyen de kham pha ngay cac uu dai gan ban nhat</p>
+          <p className="text-xs tracking-[0.25em] text-gold uppercase mb-2">Tìm theo vị trí</p>
+          <h2 className="font-display text-2xl md:text-3xl text-ink">Khám Phá Theo Khu Vực</h2>
+          <p className="mt-3 text-muted-foreground text-sm max-w-xl mx-auto">Chọn quận/huyện để khám phá ngay các ưu đãi gần bạn nhất</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {locations.map((loc) => (
@@ -385,7 +385,7 @@ function LocationSection({ locations }: { locations: Location[] }) {
           ))}
           <Link href="/dia-diem" className="group flex items-center gap-3 p-4 bg-gold/5 rounded-xl border border-gold/30 hover:border-gold hover:shadow-md hover:-translate-y-0.5 transition-all">
             <span className="text-2xl">🗺️</span>
-            <span className="text-sm font-medium text-gold">Xem tat ca →</span>
+            <span className="text-sm font-medium text-gold">Xem tất cả →</span>
           </Link>
         </div>
       </div>
@@ -400,26 +400,30 @@ function B2BBanner() {
       <div className="mx-auto max-w-4xl px-6 text-center">
         <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 rounded-full px-4 py-1.5 text-xs font-bold text-gold uppercase tracking-widest mb-6">
           <Building2 className="size-3.5" />
-          Danh cho chu doanh nghiep
+          Dành cho chủ doanh nghiệp
         </div>
         <h2 className="font-display text-3xl md:text-4xl text-white leading-tight">
-          Ban la chu cua hang / dich vu tai dia phuong?
+          Bạn là chủ cửa hàng / dịch vụ tại địa phương?
         </h2>
         <p className="mt-5 text-white/70 text-base max-w-2xl mx-auto leading-relaxed">
-          Gia nhap <strong className="text-gold">Lien minh Uu dai 1Booking</strong> de tiep can hon{" "}
-          <strong className="text-white">5.000+ khach hang tiem nang</strong> ngay trong ban kinh 1km quanh quan cua ban. Chi phi chi tu 500.000d/nam.
+          Gia nhập <strong className="text-gold">Liên minh Ưu đãi 1Booking</strong> để tiếp cận hơn{" "}
+          <strong className="text-white">5.000+ khách hàng tiềm năng</strong> ngay trong bán kính 1km quanh quán của bạn. Chi phí chỉ từ 500.000đ/năm.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/danh-cho-doanh-nghiep" className="inline-flex items-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-base shadow-xl hover:bg-gold/90 hover:scale-105 transition-all">
             <Sparkles className="size-4" />
-            Dang ky mo gian hang uu dai
+            Đăng ký mở gian hàng ưu đãi
           </Link>
           <Link href="/lien-he" className="inline-flex items-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-base hover:bg-white/10 transition-colors">
-            Tu van mien phi
+            Tư vấn miễn phí
           </Link>
         </div>
         <div className="mt-12 grid grid-cols-3 gap-6 max-w-lg mx-auto">
-          {[{ n: "500+", label: "Thuong hieu" }, { n: "5.000+", label: "Khach hang" }, { n: "500K", label: "d/nam" }].map((s) => (
+          {[
+            { n: "500+", label: "Thương hiệu" },
+            { n: "5.000+", label: "Khách hàng" },
+            { n: "500K", label: "đ/năm" },
+          ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-2xl font-black text-gold">{s.n}</div>
               <div className="text-xs text-white/50 mt-1">{s.label}</div>
@@ -453,11 +457,11 @@ export function B2CHomepageClient({
           {totalBusinesses > 0 && (
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 inline-block animate-pulse" />
-              <strong className="text-foreground">{totalBusinesses}</strong> doanh nghiep dang hoat dong
+              <strong className="text-foreground">{totalBusinesses}</strong> doanh nghiệp đang hoạt động
             </span>
           )}
-          <span className="flex items-center gap-2"><span className="text-gold">✓</span> Dat lich khong can thanh toan truoc</span>
-          <span className="flex items-center gap-2"><span className="text-gold">✓</span> Uu dai doc quyen chi co tai 1Booking</span>
+          <span className="flex items-center gap-2"><span className="text-gold">✓</span> Đặt lịch không cần thanh toán trước</span>
+          <span className="flex items-center gap-2"><span className="text-gold">✓</span> Ưu đãi độc quyền chỉ có tại 1Booking</span>
         </div>
       </div>
 
