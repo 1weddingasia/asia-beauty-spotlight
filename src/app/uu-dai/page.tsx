@@ -1,4 +1,5 @@
 import { PageShell } from "@/components/site/Layout";
+import Image from "next/image";
 import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight, UtensilsCrossed, Map, BookOpen, HeartPulse, MoreHorizontal, LayoutGrid, Camera, Activity, Gem, Home, ShoppingBag, Swords, Stethoscope, Car, Dumbbell, PawPrint, Wrench, BriefcaseBusiness } from "lucide-react";
 import Link from "next/link";
 import { createStaticClient } from "@/utils/supabase/server";
@@ -136,41 +137,45 @@ export default async function OffersPage({
 
   return (
     <PageShell>
-      <section className="relative border-b border-border">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage:
-              'url("https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1920&q=80")',
-          }}
-        >
-          <div className="absolute inset-0 bg-ink/40"></div>
-          <div className="absolute inset-0 bg-gold/50 mix-blend-multiply"></div>
+      <section className="relative border-b border-border overflow-hidden bg-slate-950">
+        {/* Background Image with optimized Next.js Image and cinematic overlays */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={siteConfig.exploreHeroBgImage || "/images/hero-multisector-deals.jpg"}
+            alt={siteConfig.exploreTitle}
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-slate-950/70 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-black/55 to-black/65" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[40vh]">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase drop-shadow-sm">
-            {siteConfig.exploreHeroTag}
-          </p>
-          <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl text-white drop-shadow-md font-display">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 text-center md:py-32 lg:py-36 flex flex-col justify-center min-h-[42vh]">
+          <div className="inline-flex items-center gap-2 mx-auto rounded-full border border-gold/40 bg-gold/15 px-4 py-1.5 text-xs font-semibold tracking-widest text-gold uppercase backdrop-blur-md shadow-sm mb-4">
+            <Sparkles className="size-3.5 text-gold" />
+            <span>{siteConfig.exploreHeroTag}</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-bold tracking-tight drop-shadow-md font-display leading-[1.15]">
             {siteConfig.exploreTitle}
           </h1>
-          <p className="mt-6 text-lg text-gray-200 drop-shadow-md max-w-2xl mx-auto">
+          <p className="mt-4 text-base sm:text-lg md:text-xl text-white/85 drop-shadow max-w-3xl mx-auto leading-relaxed">
             {siteConfig.exploreSubtitle}
           </p>
 
-          <form action="/uu-dai" method="GET" className="mt-10 mx-auto w-full max-w-xl relative">
+          <form action="/uu-dai" method="GET" className="mt-8 mx-auto w-full max-w-xl relative">
             <input
               type="text"
               name="q"
               defaultValue={rawQ}
               placeholder="Tìm ưu đãi, tên dịch vụ, tên cơ sở..."
-              className="w-full h-14 pl-6 pr-14 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-white placeholder:text-white/60 focus:outline-none focus:border-gold focus:bg-white/20 transition-all text-lg shadow-xl"
+              className="w-full h-14 pl-6 pr-14 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-white placeholder:text-white/60 focus:outline-none focus:border-gold focus:bg-white/20 transition-all text-base md:text-lg shadow-xl"
             />
             {validCategory && <input type="hidden" name="category" value={validCategory} />}
             <button
               type="submit"
+              aria-label="Tìm kiếm"
               className="absolute right-2 top-2 bottom-2 aspect-square bg-gold text-ink rounded-full flex items-center justify-center hover:scale-105 transition-transform"
             >
               <Search className="size-5" />

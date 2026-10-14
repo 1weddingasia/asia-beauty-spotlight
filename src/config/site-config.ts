@@ -23,6 +23,7 @@ export type SiteConfig = {
   exploreTitle: string;
   exploreSubtitle: string;
   exploreHeroTag: string;
+  exploreHeroBgImage?: string;
   industryFilter: string[] | null;
   poweredBy: string;
   metaTitleSuffix: string;
@@ -43,6 +44,7 @@ const BEAUTY_CONFIG: SiteConfig = {
   exploreSubtitle:
     "Hàng trăm chương trình ưu đãi, giảm giá sốc từ các Spa & Thẩm mỹ viện uy tín trên 1Beauty.Asia.",
   exploreHeroTag: "Săn Deal Làm Đẹp",
+  exploreHeroBgImage: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1920&q=80",
   industryFilter: ["beauty", "spa", "salon", "nail", "tham-my", "lam-dep", "studio", "health"],
   poweredBy: "1Beauty.Asia",
   metaTitleSuffix: "1Beauty.Asia",
@@ -57,10 +59,11 @@ const BOOKING_CONFIG: SiteConfig = {
   ogImageUrl: "/images/og-1booking.png",
   description:
     "Nền tảng đặt hẹn đa ngành, kết nối khách hàng với các cơ sở dịch vụ uy tín trên khắp Việt Nam.",
-  exploreTitle: "Khám Phá Dịch Vụ Đặt Lịch",
+  exploreTitle: "Kho Ưu Đãi Độc Quyền Hơn 12+ Ngành Dịch Vụ",
   exploreSubtitle:
-    "Hàng trăm dịch vụ đa ngành đang chờ bạn — từ làm đẹp, y tế, tư vấn đến giải trí.",
-  exploreHeroTag: "Khám Phá Dịch Vụ",
+    "Săn hàng ngàn voucher giảm đến 50% từ 500+ thương hiệu uy tín: Làm đẹp, Ẩm thực, Thể thao, Nha khoa, Chăm sóc xe, Du lịch và Đời sống.",
+  exploreHeroTag: "Săn Deal Đa Ngành Toàn Quốc",
+  exploreHeroBgImage: "/images/hero-multisector-deals.jpg",
   industryFilter: null, // null = hiển thị TẤT CẢ ngành
   poweredBy: "1Booking.Asia",
   metaTitleSuffix: "1Booking.Asia",
