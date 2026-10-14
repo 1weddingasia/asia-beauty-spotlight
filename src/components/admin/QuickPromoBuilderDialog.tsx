@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Copy, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, Copy, CheckCircle2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -91,7 +91,7 @@ export function QuickPromoBuilderDialog({ open, onOpenChange }: { open: boolean,
       <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b bg-muted/30">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            🚀 Trình Tạo Trang Ưu Đãi (Dành cho Khách Hàng)
+            <Sparkles className="size-5 text-gold inline-block" /> Trình Tạo Trang Ưu Đãi (Dành cho Khách Hàng)
           </DialogTitle>
           <DialogDescription>
             Tạo tài khoản thật và trang ưu đãi đồng bộ với Database. Bạn có thể copy mẫu này cho nhiều khách.

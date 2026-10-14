@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin, Building2 } from "lucide-react";
+import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin, Building2, Home, Gift, LayoutGrid, Phone } from "lucide-react";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { getSiteConfig, type SiteConfig } from "@/config/site-config";
@@ -276,31 +276,41 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
         <div className="border-t border-border bg-background px-4 py-3 md:hidden">
           {mobileMenuSection === "main" && (
             <nav className="space-y-1">
-              <Link href="/" onClick={() => setOpen(false)} className="block py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
-                🏠 Trang chủ
+              <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
+                <Home className="size-4 text-muted-foreground" />
+                <span>Trang chủ</span>
               </Link>
-              <Link href="/uu-dai" onClick={() => setOpen(false)} className="block py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
-                🎁 Khám phá Ưu đãi
+              <Link href="/uu-dai" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
+                <Gift className="size-4 text-amber-500" />
+                <span>Khám phá Ưu đãi</span>
               </Link>
               <button
                 onClick={() => setMobileMenuSection("categories")}
                 className="w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-lg hover:bg-muted"
               >
-                <span>📋 Danh Mục Ngành</span>
+                <span className="flex items-center gap-2.5">
+                  <LayoutGrid className="size-4 text-muted-foreground" />
+                  <span>Danh Mục Ngành</span>
+                </span>
                 <ChevronDown className="size-4" />
               </button>
               <button
                 onClick={() => setMobileMenuSection("locations")}
                 className="w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-lg hover:bg-muted"
               >
-                <span>📍 Địa Điểm</span>
+                <span className="flex items-center gap-2.5">
+                  <MapPin className="size-4 text-muted-foreground" />
+                  <span>Địa Điểm</span>
+                </span>
                 <ChevronDown className="size-4" />
               </button>
-              <Link href="/lien-he" onClick={() => setOpen(false)} className="block py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
-                📞 Liên hệ
+              <Link href="/lien-he" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
+                <Phone className="size-4 text-muted-foreground" />
+                <span>Liên hệ</span>
               </Link>
-              <Link href="/danh-cho-doanh-nghiep" onClick={() => setOpen(false)} className="flex items-center gap-2 py-2.5 px-3 text-sm rounded-lg border border-gold/40 text-gold hover:bg-gold/5 mt-2">
-                🏢 Dành cho Doanh nghiệp
+              <Link href="/danh-cho-doanh-nghiep" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg border border-gold/40 text-gold hover:bg-gold/5 mt-2">
+                <Building2 className="size-4" />
+                <span>Dành cho Doanh nghiệp</span>
               </Link>
             </nav>
           )}
@@ -346,9 +356,10 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
                   key={loc.slug}
                   href={`/dia-diem/${loc.slug}`}
                   onClick={() => setOpen(false)}
-                  className="block py-2.5 px-3 text-sm rounded-lg hover:bg-muted"
+                  className="flex items-center gap-2 py-2.5 px-3 text-sm rounded-lg hover:bg-muted"
                 >
-                  📍 {loc.name}
+                  <MapPin className="size-3.5 text-muted-foreground" />
+                  <span>{loc.name}</span>
                 </Link>
               ))}
             </div>
@@ -421,8 +432,9 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-2 text-sm">
             {navData.locations.slice(0, 6).map((loc) => (
               <li key={loc.slug}>
-                <Link href={`/dia-diem/${loc.slug}`} className="transition-colors hover:text-gold">
-                  📍 {loc.name}
+                <Link href={`/dia-diem/${loc.slug}`} className="inline-flex items-center gap-1.5 transition-colors hover:text-gold">
+                  <MapPin className="size-3 text-gold/60" />
+                  <span>{loc.name}</span>
                 </Link>
               </li>
             ))}
@@ -455,8 +467,9 @@ export function SiteFooter() {
               </Link>
             </li>
             <li className="pt-2 border-t border-background/10 mt-2">
-              <Link href="/danh-cho-doanh-nghiep" className="flex items-center gap-1.5 text-gold font-semibold hover:underline">
-                🏢 Dành cho Doanh nghiệp
+              <Link href="/danh-cho-doanh-nghiep" className="flex items-center gap-2 text-gold font-semibold hover:underline">
+                <Building2 className="size-4 shrink-0" />
+                <span>Dành cho Doanh nghiệp</span>
               </Link>
             </li>
           </ul>

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Download, Phone, CheckCircle, X, History, Users, CalendarDays, Ticket } from "lucide-react";
+import { Download, Phone, CheckCircle, X, History, Users, CalendarDays, Ticket, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useSiteConfig } from "@/components/site/Layout";
@@ -383,8 +383,8 @@ export default function LeadsPage() {
                       )}
                       <p className="text-xs text-muted-foreground mb-1">{format(new Date(v.created_at), 'HH:mm dd/MM/yyyy')}</p>
                       {v.cross_sell_items && (
-                        <p className="text-xs text-purple-600 font-medium truncate" title={v.cross_sell_items}>
-                          🛒 {v.cross_sell_items}
+                        <p className="text-xs text-purple-600 font-medium truncate flex items-center gap-1" title={v.cross_sell_items}>
+                          <ShoppingBag className="size-3.5 shrink-0" /> <span>{v.cross_sell_items}</span>
                         </p>
                       )}
                       {v.notes && (

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, Plus, Trash2, Copy, Link as LinkIcon, Lock, MapPin, CheckSquare, Square, ChevronLeft } from "lucide-react";
+import { Save, Plus, Trash2, Copy, Link as LinkIcon, Lock, MapPin, CheckSquare, Square, ChevronLeft, LayoutGrid, Check } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { ImageUpload } from "@/components/ui/image-upload";
@@ -363,7 +363,7 @@ export default function BusinessEditorClient({
               <div className="grid md:grid-cols-2 gap-6 p-4 bg-muted/40 rounded-xl border border-gold/20">
                 {categories.length > 0 && (
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold flex items-center gap-2">📋 Danh Mục Ngành Nghề</Label>
+                    <Label className="text-sm font-semibold flex items-center gap-2"><LayoutGrid className="size-4 text-gold" /> Danh Mục Ngành Nghề</Label>
                     <div className="flex flex-wrap gap-2">
                       {categories.map((cat: any) => (
                         <button
@@ -378,7 +378,7 @@ export default function BusinessEditorClient({
                               : 'bg-background text-foreground border-border hover:border-gold/50'
                           }`}
                         >
-                          {selectedCategories.includes(cat.id) ? '✓ ' : ''}{cat.name}
+                          {selectedCategories.includes(cat.id) && <Check className="size-3" />}{cat.name}
                         </button>
                       ))}
                     </div>
@@ -387,7 +387,7 @@ export default function BusinessEditorClient({
                 )}
                 {locations.length > 0 && (
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold flex items-center gap-2">📍 Địa Điểm Khu Vực</Label>
+                    <Label className="text-sm font-semibold flex items-center gap-2"><MapPin className="size-4 text-gold" /> Địa Điểm Khu Vực</Label>
                     <div className="flex flex-wrap gap-2">
                       {locations.map((loc: any) => (
                         <button
@@ -402,7 +402,7 @@ export default function BusinessEditorClient({
                               : 'bg-background text-foreground border-border hover:border-gold/50'
                           }`}
                         >
-                          {selectedLocations.includes(loc.id) ? '✓ ' : ''}📍 {loc.name}
+                          {selectedLocations.includes(loc.id) && <Check className="size-3" />}{loc.name}
                         </button>
                       ))}
                     </div>

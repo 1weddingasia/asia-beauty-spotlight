@@ -4,24 +4,9 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Search, ChevronLeft, ChevronRight, Gift, Star } from "lucide-react";
+import { CategoryIcon } from "@/components/ui/category-icon";
 
 const PAGE_SIZE = 12;
-
-const CATEGORY_ICONS: Record<string, string> = {
-  beauty: "💅", spa: "🧖", salon: "✂️", nail: "💅", health: "🏥",
-  clinic: "🏥", dining: "🍽️", fnb: "🍜", fitness: "💪", sport: "⚽",
-  sports: "⚽", auto: "🚗", pet: "🐾", studio: "📸", travel: "✈️",
-  consulting: "💼", repair: "🔧", fashion: "👗", education: "📚",
-};
-
-function getCategoryIcon(icon?: string | null, slug?: string): string {
-  if (icon) return icon;
-  const key = (slug || "").toLowerCase();
-  for (const [k, v] of Object.entries(CATEGORY_ICONS)) {
-    if (key.includes(k)) return v;
-  }
-  return "🏪";
-}
 
 function BusinessCard({ biz }: { biz: any }) {
   const [imgError, setImgError] = useState(false);
@@ -51,7 +36,9 @@ function BusinessCard({ biz }: { biz: any }) {
                 }}
               />
             ) : (
-              <span className="text-5xl opacity-60">🏪</span>
+              <div className="w-16 h-16 rounded-xl bg-gold/10 flex items-center justify-center text-gold/60">
+                <CategoryIcon slug={biz.category_slug} className="size-8" />
+              </div>
             )}
           </div>
         )}
@@ -97,9 +84,15 @@ function BusinessCard({ biz }: { biz: any }) {
 
         <Link
           href={`/${biz.slug}`}
-          className="mt-auto block text-center bg-gold text-ink font-bold text-sm py-2.5 rounded-xl hover:bg-gold/90 active:scale-95 transition-all"
+          className="mt-auto flex items-center justify-center gap-1.5 text-center bg-gold text-ink font-bold text-sm py-2.5 rounded-xl hover:bg-gold/90 active:scale-95 transition-all"
         >
-          {biz.deals_count > 0 ? "🎁 Nhận Ưu Đãi" : "Xem Chi Tiết"}
+          {biz.deals_count > 0 ? (
+            <>
+              <Gift className="size-4" /> Nhận Ưu Đãi
+            </>
+          ) : (
+            "Xem Chi Tiết"
+          )}
         </Link>
       </div>
     </div>
@@ -115,8 +108,6 @@ export default function CategoryPageClient({
 }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-
-  const icon = getCategoryIcon(category.icon, category.slug);
 
   // Filter by search
   const filtered = useMemo(() => {
@@ -161,7 +152,9 @@ export default function CategoryPageClient({
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/60 to-ink/90" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 py-20 md:py-36 text-center">
-          <div className="text-6xl mb-6 drop-shadow-lg">{icon}</div>
+          <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold shadow-2xl backdrop-blur-sm">
+            <CategoryIcon slug={category.slug} name={category.name} className="size-10" />
+          </div>
           <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4">
             Danh Mục Ngành Nghề
           </p>
@@ -215,7 +208,7 @@ export default function CategoryPageClient({
 
           {paginated.length === 0 ? (
             <div className="text-center py-20 bg-card rounded-2xl border">
-              <p className="text-4xl mb-4">🔍</p>
+              <Search className="size-12 mx-auto mb-4 text-muted-foreground/40" />
               <h3 className="text-xl font-semibold">
                 {search ? "Không tìm thấy kết quả" : "Chưa có doanh nghiệp"}
               </h3>

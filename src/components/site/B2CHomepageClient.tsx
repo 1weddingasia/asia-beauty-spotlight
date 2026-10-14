@@ -16,8 +16,13 @@ import {
   Tag,
   Building2,
   TrendingUp,
+  LayoutGrid,
+  Compass,
+  CheckCircle2,
+  Zap,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { CategoryIcon, LocationIcon } from "@/components/ui/category-icon";
 
 // -- Deal type (aligned with page_content.deals shape) ------------------------
 type Deal = {
@@ -52,7 +57,7 @@ type Business = {
 // --- Hero Slides ------------------------------------------------------------
 const HERO_SLIDES = [
   {
-    tag: "🎊 Cẩm Nang Tết 2026",
+    tag: "Cẩm Nang Ưu Đãi 2026",
     title: "Hàng Ngàn Voucher Làm Đẹp & Ẩm Thực",
     subtitle: "Giảm đến 50% cho hàng trăm cửa hàng uy tín quanh bạn",
     cta: "Khám phá ngay",
@@ -60,7 +65,7 @@ const HERO_SLIDES = [
     gradient: "from-rose-950 via-rose-900 to-amber-900",
   },
   {
-    tag: "⚡ Đặt Lịch 1-Chạm",
+    tag: "Đặt Lịch 1-Chạm",
     title: "Nhận Ưu Đãi Độc Quyền Không Cần Thanh Toán Trước",
     subtitle: "Để lại SĐT, tiệm sẽ gọi xác nhận — đơn giản và nhanh chóng",
     cta: "Xem ưu đãi",
@@ -68,7 +73,7 @@ const HERO_SLIDES = [
     gradient: "from-slate-950 via-violet-950 to-indigo-900",
   },
   {
-    tag: "📍 Ưu Đãi Quanh Bạn",
+    tag: "Ưu Đãi Quanh Bạn",
     title: "Kết Nối 500+ Thương Hiệu Uy Tín Gần Nhà",
     subtitle: "Khám phá ưu đãi theo quận/huyện — chọn đúng nơi, đúng giá",
     cta: "Tìm theo khu vực",
@@ -235,13 +240,15 @@ function CategoryGrid({ categories }: { categories: Category[] }) {
         </div>
         <div ref={scrollRef} className="flex gap-3 overflow-x-auto no-scrollbar pb-2" style={{ scrollSnapType: "x mandatory" }}>
           <Link href="/uu-dai" className="flex-shrink-0 flex flex-col items-center gap-2 w-24 md:w-28 group" style={{ scrollSnapAlign: "start" }}>
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 border-2 border-amber-200 flex items-center justify-center text-2xl group-hover:border-amber-400 group-hover:shadow-md transition-all">🎯</div>
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 border-2 border-amber-200 flex items-center justify-center text-amber-700 group-hover:border-amber-400 group-hover:shadow-md transition-all">
+              <LayoutGrid className="size-7 md:size-8" />
+            </div>
             <span className="text-xs text-center text-foreground font-medium line-clamp-2 leading-tight">Tất cả</span>
           </Link>
           {categories.map((cat) => (
             <Link key={cat.slug} href={`/danh-muc/${cat.slug}`} className="flex-shrink-0 flex flex-col items-center gap-2 w-24 md:w-28 group" style={{ scrollSnapAlign: "start" }}>
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-champagne to-background border border-border flex items-center justify-center text-2xl group-hover:border-gold/50 group-hover:shadow-md group-hover:-translate-y-0.5 transition-all">
-                {cat.icon || "🏪"}
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-champagne to-background border border-border flex items-center justify-center text-gold group-hover:border-gold/50 group-hover:shadow-md group-hover:-translate-y-0.5 transition-all">
+                <CategoryIcon slug={cat.slug} name={cat.name} className="size-7 md:size-8" />
               </div>
               <span className="text-xs text-center text-foreground font-medium line-clamp-2 leading-tight">{cat.name}</span>
             </Link>
@@ -258,7 +265,6 @@ function DealCard({ biz }: { biz: Business }) {
   const badge = getDealBadge(biz.top_deal);
   const locationName = biz.locations[0]?.name || null;
   const catName = biz.categories[0]?.name || null;
-  const catIcon = biz.categories[0]?.icon || "🏪";
 
   return (
     <Link href={`/${biz.slug}`} className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-gold/40 hover:-translate-y-0.5 transition-all duration-300">
@@ -266,7 +272,9 @@ function DealCard({ biz }: { biz: Business }) {
         {biz.cover_image && !imgError ? (
           <Image src={biz.cover_image} alt={biz.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" onError={() => setImgError(true)} />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-champagne to-gold-soft flex items-center justify-center text-5xl">{catIcon}</div>
+          <div className="absolute inset-0 bg-gradient-to-br from-champagne to-gold-soft flex items-center justify-center text-gold/60">
+            <CategoryIcon slug={biz.categories[0]?.slug} name={biz.categories[0]?.name} className="size-16" />
+          </div>
         )}
         {badge && (<div className="absolute top-3 left-3 bg-rose-500 text-white text-[11px] font-black px-2.5 py-1 rounded-lg shadow-lg">{badge}</div>)}
         {biz.is_featured && (<div className="absolute top-3 right-3 bg-gold text-ink text-[10px] font-black px-2 py-0.5 rounded-md flex items-center gap-1"><Star className="size-2.5" /> HOT</div>)}
@@ -316,21 +324,31 @@ function DealsSection({ businesses, locations, categories }: { businesses: Busin
           <button onClick={() => setActiveCategory("all")} className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeCategory === "all" ? "bg-ink text-white" : "bg-muted text-muted-foreground hover:bg-muted/70"}`}>Tất cả</button>
           {categories.slice(0, 10).map((cat) => (
             <button key={cat.slug} onClick={() => setActiveCategory(cat.slug)} className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeCategory === cat.slug ? "bg-gold text-ink" : "bg-muted text-muted-foreground hover:bg-muted/70"}`}>
-              {cat.icon && <span>{cat.icon}</span>}{cat.name}
+              <CategoryIcon slug={cat.slug} name={cat.name} className="size-3.5 shrink-0" />
+              <span>{cat.name}</span>
             </button>
           ))}
         </div>
 
         {/* Location tabs */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 border-b border-border">
-          <button onClick={() => setActiveLocation("all")} className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs transition-all ${activeLocation === "all" ? "bg-foreground text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}>📍 Tất cả khu vực</button>
+          <button onClick={() => setActiveLocation("all")} className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs transition-all ${activeLocation === "all" ? "bg-foreground text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}>
+            <MapPin className="size-3 shrink-0" />
+            <span>Tất cả khu vực</span>
+          </button>
           {locations.slice(0, 8).map((loc) => (
-            <button key={loc.slug} onClick={() => setActiveLocation(loc.slug)} className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs transition-all whitespace-nowrap ${activeLocation === loc.slug ? "bg-foreground text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}>{loc.name}</button>
+            <button key={loc.slug} onClick={() => setActiveLocation(loc.slug)} className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs transition-all whitespace-nowrap ${activeLocation === loc.slug ? "bg-foreground text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}>
+              <LocationIcon slug={loc.slug} name={loc.name} className="size-3 shrink-0" />
+              <span>{loc.name}</span>
+            </button>
           ))}
         </div>
 
         {visible.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground"><div className="text-5xl mb-4">🔍</div><p>Chưa có ưu đãi trong khu vực này</p></div>
+          <div className="text-center py-20 text-muted-foreground">
+            <Search className="size-12 mx-auto mb-4 text-muted-foreground/40" />
+            <p>Chưa có ưu đãi trong khu vực này</p>
+          </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {visible.map((biz) => (<DealCard key={biz.id} biz={biz} />))}
@@ -353,21 +371,6 @@ function DealsSection({ businesses, locations, categories }: { businesses: Busin
 
 // --- Location Section -------------------------------------------------------
 function LocationSection({ locations }: { locations: Location[] }) {
-  const LOCATION_EMOJIS: Record<string, string> = {
-    "ho-chi-minh": "🏙️", tphcm: "🏙️", saigon: "🏙️",
-    "ha-noi": "🏛️", hanoi: "🏛️", "da-nang": "🌊",
-    "can-tho": "🌾", hue: "🏯", "nha-trang": "🏖️",
-    "da-lat": "🌸", "quan-1": "1️⃣", "quan-3": "3️⃣",
-    "phu-nhuan": "🌺", "binh-thanh": "🏘️", "thu-duc": "🏗️",
-  };
-  const getEmoji = (slug: string) => {
-    const lower = slug.toLowerCase();
-    for (const [k, v] of Object.entries(LOCATION_EMOJIS)) {
-      if (lower.includes(k)) return v;
-    }
-    return "📍";
-  };
-
   return (
     <section className="py-16 bg-muted/40 border-y border-border">
       <div className="mx-auto max-w-6xl px-4">
@@ -379,12 +382,16 @@ function LocationSection({ locations }: { locations: Location[] }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {locations.map((loc) => (
             <Link key={loc.slug} href={`/dia-diem/${loc.slug}`} className="group flex items-center gap-3 p-4 bg-background rounded-xl border border-border hover:border-gold/50 hover:shadow-md hover:-translate-y-0.5 transition-all">
-              <span className="text-2xl">{getEmoji(loc.slug)}</span>
+              <div className="size-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-ink transition-colors">
+                <LocationIcon slug={loc.slug} name={loc.name} className="size-5" />
+              </div>
               <span className="text-sm font-medium text-foreground group-hover:text-gold transition-colors line-clamp-1">{loc.name}</span>
             </Link>
           ))}
           <Link href="/dia-diem" className="group flex items-center gap-3 p-4 bg-gold/5 rounded-xl border border-gold/30 hover:border-gold hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <span className="text-2xl">🗺️</span>
+            <div className="size-10 rounded-lg bg-gold/20 flex items-center justify-center text-gold">
+              <Compass className="size-5" />
+            </div>
             <span className="text-sm font-medium text-gold">Xem tất cả →</span>
           </Link>
         </div>
@@ -460,8 +467,8 @@ export function B2CHomepageClient({
               <strong className="text-foreground">{totalBusinesses}</strong> doanh nghiệp đang hoạt động
             </span>
           )}
-          <span className="flex items-center gap-2"><span className="text-gold">✓</span> Đặt lịch không cần thanh toán trước</span>
-          <span className="flex items-center gap-2"><span className="text-gold">✓</span> Ưu đãi độc quyền chỉ có tại 1Booking</span>
+          <span className="flex items-center gap-2"><CheckCircle2 className="size-4 text-gold shrink-0" /> Đặt lịch không cần thanh toán trước</span>
+          <span className="flex items-center gap-2"><CheckCircle2 className="size-4 text-gold shrink-0" /> Ưu đãi độc quyền chỉ có tại 1Booking</span>
         </div>
       </div>
 

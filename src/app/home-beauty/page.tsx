@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle, Zap, Star, Users, Bot } from "lucide-react";
+import { ArrowRight, Bell, QrCode, Smartphone, Sparkles, CheckCircle, Zap, Star, Users, Bot, Phone, MessageCircle } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
@@ -102,7 +102,8 @@ export default async function HomePage() {
               href={CONTACT_ZALO} target="_blank"
               className="inline-flex items-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
             >
-              📞 Liên hệ kích hoạt
+              <Phone className="size-4" />
+              <span>Liên hệ kích hoạt</span>
             </Link>
           </div>
 
@@ -183,7 +184,7 @@ export default async function HomePage() {
                 <div className="mb-4">{f.icon}</div>
                 <h3 className="font-display text-lg text-ink mb-3">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4">{f.desc}</p>
-                <p className="text-xs font-bold text-gold">✓ {f.highlight}</p>
+                <p className="text-xs font-bold text-gold flex items-center gap-1.5"><CheckCircle className="size-3.5 shrink-0" /> {f.highlight}</p>
               </div>
             ))}
           </div>
@@ -255,7 +256,8 @@ export default async function HomePage() {
                 href={CONTACT_ZALO} target="_blank"
                 className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg shadow-lg hover:bg-gold/90 hover:scale-105 transition-all"
               >
-                ⚡ Kích Hoạt Cổng Ngay
+                <Zap className="size-4" />
+                <span>Kích Hoạt Cổng Ngay</span>
               </Link>
               <Link
                 href="/luxury-spa-demo"
@@ -285,7 +287,8 @@ export default async function HomePage() {
               href={CONTACT_ZALO} target="_blank"
               className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg hover:bg-gold/90 transition-all hover:scale-105"
             >
-              📞 Nhắn Zalo Ngay
+              <MessageCircle className="size-4" />
+              <span>Nhắn Zalo Ngay</span>
             </Link>
             <Link
               href="/uu-dai"

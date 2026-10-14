@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Download, Phone, CheckCircle, X, History, Users, CalendarDays, Ticket } from "lucide-react";
+import { Download, Phone, CheckCircle, X, History, Users, CalendarDays, Ticket, Calendar, Gift, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useSiteConfig } from "@/components/site/Layout";
@@ -356,15 +356,15 @@ export default function LeadsPage() {
           </button>
           <button 
             onClick={() => setFilterType('booking')} 
-            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${filterType === 'booking' ? 'bg-white shadow-sm text-ink' : 'text-muted-foreground hover:text-ink'}`}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1.5 ${filterType === 'booking' ? 'bg-white shadow-sm text-ink' : 'text-muted-foreground hover:text-ink'}`}
           >
-            📅 Đặt lịch
+            <Calendar className="size-3.5" /> Đặt lịch
           </button>
           <button 
             onClick={() => setFilterType('offer')} 
-            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${filterType === 'offer' ? 'bg-white shadow-sm text-ink' : 'text-muted-foreground hover:text-ink'}`}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1.5 ${filterType === 'offer' ? 'bg-white shadow-sm text-ink' : 'text-muted-foreground hover:text-ink'}`}
           >
-            🎁 Ưu đãi
+            <Gift className="size-3.5" /> Ưu đãi
           </button>
         </div>
 
@@ -456,7 +456,7 @@ export default function LeadsPage() {
                                 </div>
                                 {lead.cross_sell_items && (
                                   <div className="text-xs text-purple-700 bg-purple-50 border border-purple-100 font-medium px-2.5 py-1 rounded-md flex items-center gap-1">
-                                    🛒 {lead.cross_sell_items}
+                                    <ShoppingBag className="size-3.5 shrink-0" /> <span>{lead.cross_sell_items}</span>
                                   </div>
                                 )}
                               </div>
@@ -577,8 +577,8 @@ export default function LeadsPage() {
                       )}
                       <p className="text-xs text-muted-foreground mb-1">{format(new Date(v.created_at), 'HH:mm dd/MM/yyyy')}</p>
                       {v.cross_sell_items && (
-                        <p className="text-xs text-purple-600 font-medium truncate" title={v.cross_sell_items}>
-                          🛒 {v.cross_sell_items}
+                        <p className="text-xs text-purple-600 font-medium truncate flex items-center gap-1" title={v.cross_sell_items}>
+                          <ShoppingBag className="size-3.5 shrink-0" /> <span>{v.cross_sell_items}</span>
                         </p>
                       )}
                       {v.notes && (

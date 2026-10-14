@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Zap, RefreshCw, CheckCircle2, XCircle, Loader2, Info } from "lucide-react";
+import { Zap, RefreshCw, CheckCircle2, XCircle, Loader2, Info, Layers } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type LogEntry = {
@@ -121,8 +121,8 @@ export default function AiImportPage() {
 
       <Tabs defaultValue="bulk" className="space-y-4">
         <TabsList className="grid grid-cols-2 w-full max-w-sm">
-          <TabsTrigger value="bulk">🚀 Hàng loạt (Bulk)</TabsTrigger>
-          <TabsTrigger value="supplement">🔄 Bổ sung</TabsTrigger>
+          <TabsTrigger value="bulk" className="flex items-center gap-1.5"><Layers className="size-4" /> Hàng loạt (Bulk)</TabsTrigger>
+          <TabsTrigger value="supplement" className="flex items-center gap-1.5"><RefreshCw className="size-4" /> Bổ sung</TabsTrigger>
         </TabsList>
 
         {/* ── TAB 1: BULK ────────────────────────────────────── */}

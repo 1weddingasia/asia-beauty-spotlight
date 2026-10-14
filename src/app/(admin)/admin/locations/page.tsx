@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, X, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
+import { Plus, X, Trash2, ArrowLeft, ExternalLink, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
@@ -155,7 +155,9 @@ export default function DirectoryLocationsClient() {
             ) : (
               locations.map((loc) => (
                 <TableRow key={loc.id}>
-                  <TableCell className="font-medium">📍 {loc.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <span className="inline-flex items-center gap-1.5"><MapPin className="size-3.5 text-muted-foreground" /> {loc.name}</span>
+                  </TableCell>
                   <TableCell className="text-muted-foreground text-xs font-mono">{loc.slug}</TableCell>
                   <TableCell className="text-sm text-muted-foreground max-w-[160px] truncate">{loc.description || "—"}</TableCell>
                   <TableCell>

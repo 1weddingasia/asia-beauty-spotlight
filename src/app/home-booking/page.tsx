@@ -3,7 +3,7 @@ import {
   ArrowRight, Bell, Smartphone, Sparkles, CheckCircle,
   Zap, Star, Users, Bot, Calendar,
   Stethoscope, UtensilsCrossed, Car, Dumbbell, Camera, PawPrint,
-  Wrench, Home, BriefcaseBusiness, MessageSquare, FileSpreadsheet, BadgeCheck, Swords, ShoppingBag
+  Wrench, Home, BriefcaseBusiness, MessageSquare, FileSpreadsheet, BadgeCheck, Swords, ShoppingBag, Tag
 } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site/Layout";
 import { HeroSlider } from "@/components/site/HeroSlider";
@@ -98,7 +98,7 @@ export default async function HomeBookingPage() {
         <div className="relative mx-auto max-w-5xl px-6 text-center z-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-gold uppercase mb-8">
             <Zap className="size-3" />
-            🚀 Nền Tảng Đặt Lịch 1-Chạm &amp; Trợ Lý Lễ Tân AI Thế Hệ Mới
+            Nền Tảng Đặt Lịch 1-Chạm &amp; Trợ Lý Lễ Tân AI Thế Hệ Mới
           </div>
 
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight">
@@ -126,7 +126,8 @@ export default async function HomeBookingPage() {
               href="#bang-gia"
               className="inline-flex items-center gap-2 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg hover:bg-white/10 transition-colors"
             >
-              📋 Xem Bảng Giá &amp; Ưu Đãi
+              <Tag className="size-4" />
+              Xem Bảng Giá &amp; Ưu Đãi
             </Link>
           </div>
 
@@ -204,7 +205,7 @@ export default async function HomeBookingPage() {
                 <div className="mb-5">{f.icon}</div>
                 <h3 className="font-display text-xl text-ink mb-3">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-5">{f.desc}</p>
-                <p className="text-xs font-bold text-gold">✓ {f.highlight}</p>
+                <p className="text-xs font-bold text-gold flex items-center gap-1.5"><CheckCircle className="size-3.5 shrink-0" /> {f.highlight}</p>
               </div>
             ))}
           </div>
@@ -286,7 +287,7 @@ export default async function HomeBookingPage() {
 
             {/* Visual mockup */}
             <div className="rounded-3xl border border-gold-soft bg-champagne p-6 space-y-3">
-              <p className="text-xs font-bold text-gold uppercase tracking-widest mb-4">📋 Sổ Lịch Hẹn Hôm Nay</p>
+              <p className="text-xs font-bold text-gold uppercase tracking-widest mb-4 flex items-center gap-1.5"><Calendar className="size-3.5" /> Sổ Lịch Hẹn Hôm Nay</p>
               {[
                 { name: "Nguyễn Thị Lan", service: "Cắt tóc + Nhuộm", time: "09:00", status: "Đã tiếp nhận", color: "text-green-600 bg-green-50" },
                 { name: "Trần Minh Khoa", service: "Massage thư giãn 60ph", time: "10:30", status: "Chờ xác nhận", color: "text-yellow-600 bg-yellow-50" },
@@ -376,8 +377,9 @@ export default async function HomeBookingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href={CONTACT_ZALO} target="_blank" className="block text-center bg-gold text-ink font-bold px-6 py-3 rounded-xl hover:bg-gold/90 hover:scale-105 transition-all shadow-lg">
-                ⚡ Kích Hoạt Gói VIP Ngay
+              <Link href={CONTACT_ZALO} target="_blank" className="flex items-center justify-center gap-2 text-center bg-gold text-ink font-bold px-6 py-3 rounded-xl hover:bg-gold/90 hover:scale-105 transition-all shadow-lg">
+                <Zap className="size-4" />
+                <span>Kích Hoạt Gói VIP Ngay</span>
               </Link>
             </div>
           </div>
@@ -403,12 +405,17 @@ export default async function HomeBookingPage() {
               target="_blank"
               className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl text-lg hover:bg-gold/90 transition-all hover:scale-105 shadow-xl"
             >
-              📲 Nhận Trang Đặt Lịch Chuẩn Tên Tiệm Chỉ Trong 5 Phút
+              <Smartphone className="size-5" />
+              <span>Nhận Trang Đặt Lịch Chuẩn Tên Tiệm Chỉ Trong 5 Phút</span>
             </Link>
           </div>
-          <p className="mt-6 text-white/40 text-sm">
-            ⚡ Triển khai trong 5 phút · 🛡️ Không cần cài app · 📱 Tương thích 100% điện thoại
-          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-white/50 text-sm">
+            <span className="inline-flex items-center gap-1.5"><Zap className="size-3.5 text-gold" /> Triển khai trong 5 phút</span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1.5"><Sparkles className="size-3.5 text-gold" /> Không cần cài app</span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1.5"><Smartphone className="size-3.5 text-gold" /> Tương thích 100% điện thoại</span>
+          </div>
         </div>
       </section>
 

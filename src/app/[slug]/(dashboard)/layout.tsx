@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Sparkles, LayoutDashboard, Store, Ticket, Users, Settings } from "lucide-react";
+import { LogOut, Sparkles, LayoutDashboard, Store, Ticket, Users, Settings, AlertTriangle } from "lucide-react";
 import SidebarNav from "./SidebarNav";
 import MobileBottomNav from "./MobileBottomNav";
 import { Button } from "@/components/ui/button";
@@ -99,8 +99,8 @@ export default async function BusinessDashboardLayout({
               if (bizStatus === 'suspended') {
                 return (
                   <div className="rounded-xl bg-gradient-to-br from-red-500/20 to-red-500/5 p-4 border border-red-500/30">
-                    <h4 className="font-bold text-sm mb-1 flex items-center gap-1 text-red-700">
-                      🚨 Trang đang bị tạm ngưng
+                    <h4 className="font-bold text-sm mb-1 flex items-center gap-1.5 text-red-700">
+                      <AlertTriangle className="size-4 shrink-0" /> Trang đang bị tạm ngưng
                     </h4>
                     <p className="text-xs text-red-700/80 mb-3">
                       Vui lòng liên hệ {siteConfig.brand} để gia hạn và kích hoạt lại.

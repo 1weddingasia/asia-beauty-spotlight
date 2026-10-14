@@ -9,6 +9,7 @@ import { Plus, X, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
+import { CategoryIcon } from "@/components/ui/category-icon";
 
 export default function DirectoryCategoriesClient() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -158,7 +159,7 @@ export default function DirectoryCategoriesClient() {
             ) : (
               categories.map((c) => (
                 <TableRow key={c.id}>
-                  <TableCell className="text-2xl">{c.icon || "🏪"}</TableCell>
+                  <TableCell className="w-12"><CategoryIcon slug={c.slug} name={c.name} className="size-6 text-gold" /></TableCell>
                   <TableCell className="font-medium">{c.name}</TableCell>
                   <TableCell className="text-muted-foreground text-xs font-mono">{c.slug}</TableCell>
                   <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{c.description || "—"}</TableCell>

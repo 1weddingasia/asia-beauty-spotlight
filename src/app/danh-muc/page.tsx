@@ -1,5 +1,7 @@
 import { createStaticClient } from "@/utils/supabase/server";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
+import { CategoryIcon } from "@/components/ui/category-icon";
+import { LayoutGrid } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -9,39 +11,6 @@ export const metadata: Metadata = {
   title: "Danh Mục Ngành Nghề",
   description: "Khám phá các doanh nghiệp theo từng ngành nghề: làm đẹp, y tế, nhà hàng, thể thao và nhiều hơn nữa.",
 };
-
-// Icon defaults theo ngành
-const CATEGORY_ICONS: Record<string, string> = {
-  beauty: "💅",
-  spa: "🧖",
-  salon: "✂️",
-  nail: "💅",
-  health: "🏥",
-  clinic: "🏥",
-  dining: "🍽️",
-  fnb: "🍜",
-  fitness: "💪",
-  sport: "⚽",
-  sports: "⚽",
-  auto: "🚗",
-  pet: "🐾",
-  studio: "📸",
-  travel: "✈️",
-  consulting: "💼",
-  repair: "🔧",
-  fashion: "👗",
-  education: "📚",
-  entertainment: "🎭",
-};
-
-function getCategoryIcon(icon?: string | null, slug?: string): string {
-  if (icon) return icon;
-  const key = (slug || "").toLowerCase();
-  for (const [k, v] of Object.entries(CATEGORY_ICONS)) {
-    if (key.includes(k)) return v;
-  }
-  return "🏪";
-}
 
 export default async function CategoriesIndexPage() {
   const supabase = createStaticClient();
@@ -69,7 +38,8 @@ export default async function CategoriesIndexPage() {
       <main className="flex-grow pt-16">
         {/* Hero Section */}
         <section className="relative bg-ink overflow-hidden">
-          <div className="absolute inset-0 opacity-20"
+          <div
+            className="absolute inset-0 opacity-20"
             style={{
               backgroundImage: `url("https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=1920&q=80")`,
               backgroundSize: "cover",
@@ -95,7 +65,7 @@ export default async function CategoriesIndexPage() {
           <div className="mx-auto max-w-6xl">
             {!categories || categories.length === 0 ? (
               <div className="text-center py-20 bg-card rounded-2xl border">
-                <p className="text-4xl mb-4">📋</p>
+                <LayoutGrid className="size-12 mx-auto mb-4 text-muted-foreground/40" />
                 <h3 className="text-xl font-semibold">Chưa có danh mục nào</h3>
                 <p className="text-muted-foreground mt-2">Admin đang cập nhật danh mục. Vui lòng quay lại sau.</p>
               </div>
@@ -103,7 +73,6 @@ export default async function CategoriesIndexPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {categories.map((cat) => {
                   const count = countMap[cat.id] || 0;
-                  const icon = getCategoryIcon(cat.icon, cat.slug);
                   return (
                     <Link
                       key={cat.id}
@@ -113,7 +82,9 @@ export default async function CategoriesIndexPage() {
                       {/* Background subtle gradient on hover */}
                       <div className="absolute inset-0 bg-gradient-to-br from-gold/0 to-gold/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
                       <div className="relative z-10">
-                        <div className="text-5xl mb-4">{icon}</div>
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gold/10 to-amber-500/10 border border-gold/20 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-ink group-hover:scale-110 transition-all duration-300">
+                          <CategoryIcon slug={cat.slug} name={cat.name} className="size-8" />
+                        </div>
                         <h2 className="font-bold text-lg text-foreground group-hover:text-gold transition-colors leading-tight">
                           {cat.name}
                         </h2>

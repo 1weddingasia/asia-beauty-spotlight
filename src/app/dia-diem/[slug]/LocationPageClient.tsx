@@ -3,41 +3,10 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Search, ChevronLeft, ChevronRight, Gift, Star } from "lucide-react";
+import { MapPin, Search, ChevronLeft, ChevronRight, Gift, Star, Store } from "lucide-react";
+import { LocationIcon, CategoryIcon } from "@/components/ui/category-icon";
 
 const PAGE_SIZE = 12;
-
-const LOCATION_EMOJIS: Record<string, string> = {
-  "ho-chi-minh": "🏙️", tphcm: "🏙️", saigon: "🏙️",
-  "ha-noi": "🏛️", hanoi: "🏛️",
-  "da-nang": "🌊", danang: "🌊",
-  "can-tho": "🌾", hue: "🏯",
-  "nha-trang": "🏖️", "da-lat": "🌸",
-  "vung-tau": "⛵", "bien-hoa": "🏭",
-};
-
-function getLocationEmoji(slug: string): string {
-  const key = slug.toLowerCase();
-  for (const [k, v] of Object.entries(LOCATION_EMOJIS)) {
-    if (key.includes(k)) return v;
-  }
-  return "📍";
-}
-
-const CATEGORY_ICONS: Record<string, string> = {
-  beauty: "💅", spa: "🧖", salon: "✂️", nail: "💅", health: "🏥",
-  clinic: "🏥", dining: "🍽️", fnb: "🍜", fitness: "💪", sport: "⚽",
-  auto: "🚗", pet: "🐾", studio: "📸", travel: "✈️", consulting: "💼",
-};
-
-function getCategoryIcon(icon?: string | null, slug?: string): string {
-  if (icon) return icon;
-  const key = (slug || "").toLowerCase();
-  for (const [k, v] of Object.entries(CATEGORY_ICONS)) {
-    if (key.includes(k)) return v;
-  }
-  return "🏪";
-}
 
 function BusinessCard({ biz }: { biz: any }) {
   const [imgError, setImgError] = useState(false);
@@ -65,7 +34,9 @@ function BusinessCard({ biz }: { biz: any }) {
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
               />
             ) : (
-              <span className="text-5xl opacity-60">🏪</span>
+              <div className="w-16 h-16 rounded-xl bg-gold/10 flex items-center justify-center text-gold/60">
+                <Store className="size-8" />
+              </div>
             )}
           </div>
         )}
@@ -97,7 +68,7 @@ function BusinessCard({ biz }: { biz: any }) {
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1 text-[10px] text-gold bg-gold/10 border border-gold/20 px-2 py-0.5 rounded-full hover:bg-gold/20 transition-colors"
               >
-                <span>{getCategoryIcon(cat.icon, cat.slug)}</span>
+                <CategoryIcon slug={cat.slug} name={cat.name} className="size-3" />
                 {cat.name}
               </Link>
             ))}
@@ -124,9 +95,15 @@ function BusinessCard({ biz }: { biz: any }) {
 
         <Link
           href={`/${biz.slug}`}
-          className="mt-auto block text-center bg-gold text-ink font-bold text-sm py-2.5 rounded-xl hover:bg-gold/90 active:scale-95 transition-all"
+          className="mt-auto flex items-center justify-center gap-1.5 text-center bg-gold text-ink font-bold text-sm py-2.5 rounded-xl hover:bg-gold/90 active:scale-95 transition-all"
         >
-          {biz.deals_count > 0 ? "🎁 Nhận Ưu Đãi" : "Xem Chi Tiết"}
+          {biz.deals_count > 0 ? (
+            <>
+              <Gift className="size-4" /> Nhận Ưu Đãi
+            </>
+          ) : (
+            "Xem Chi Tiết"
+          )}
         </Link>
       </div>
     </div>
@@ -142,8 +119,6 @@ export default function LocationPageClient({
 }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-
-  const emoji = getLocationEmoji(location.slug);
 
   // Default hero backgrounds by location
   const DEFAULT_HERO_IMAGES: Record<string, string> = {
@@ -196,7 +171,9 @@ export default function LocationPageClient({
         <div className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/55 to-ink/85" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 py-20 md:py-36 text-center">
-          <div className="text-6xl mb-6 drop-shadow-lg">{emoji}</div>
+          <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold shadow-2xl backdrop-blur-sm">
+            <LocationIcon slug={location.slug} name={location.name} className="size-10" />
+          </div>
           <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4">Khu Vực</p>
           <h1 className="text-4xl md:text-6xl font-display text-white font-bold mb-4 leading-tight">
             Dịch Vụ Tại
@@ -249,7 +226,7 @@ export default function LocationPageClient({
 
           {paginated.length === 0 ? (
             <div className="text-center py-20 bg-card rounded-2xl border">
-              <p className="text-4xl mb-4">{search ? "🔍" : "📍"}</p>
+              <Search className="size-12 mx-auto mb-4 text-muted-foreground/40" />
               <h3 className="text-xl font-semibold">
                 {search ? "Không tìm thấy kết quả" : "Chưa có doanh nghiệp"}
               </h3>

@@ -22,7 +22,7 @@ const items = [
   { title: "Tổng quan", url: "/admin", icon: LayoutDashboard },
   { title: "Doanh nghiệp", url: "/admin/businesses", icon: Store },
   { title: "Quản lý Leads B2B", url: "/admin/leads", icon: TrendingUp },
-  { title: "⚡ AI Importer", url: "/admin/ai-import", icon: Zap },
+  { title: "AI Importer", url: "/admin/ai-import", icon: Zap },
   { title: "Danh mục Ngành", url: "/admin/categories", icon: List },
   { title: "Khu vực / Địa điểm", url: "/admin/locations", icon: MapPin },
   { title: "Gói thành viên", url: "/admin/plans", icon: Package },

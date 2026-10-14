@@ -293,7 +293,7 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
               <ol className="list-decimal list-inside space-y-1">
                 <li>Vào {business.slug ? <Link href={`/${business.slug}`} target="_blank" className="text-gold hover:underline">Trang Cửa Hàng</Link> : <span className="text-gold">Trang Cửa Hàng</span>} của bạn.</li>
                 <li>Mở khung Chatbot ở góc phải bên dưới.</li>
-                <li>Nhập Passcode vào khung chat (hoặc bấm nút "🔑 Vào Quản Trị").</li>
+                <li>Nhập Passcode vào khung chat (hoặc bấm nút "Vào Quản Trị").</li>
                 <li>Chatbot sẽ chuyển sang chế độ Admin.</li>
               </ol>
             </div>

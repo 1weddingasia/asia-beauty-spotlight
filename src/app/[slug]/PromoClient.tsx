@@ -734,7 +734,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
         let dialogTitle = "";
         if (voucher) {
-          dialogTitle = isBooking ? "🎉 Đã gửi yêu cầu thành công!" : "🎉 Đăng ký thành công!";
+          dialogTitle = isBooking ? "Đã gửi yêu cầu thành công!" : "Đăng ký thành công!";
         } else {
           dialogTitle = isBooking ? `Thông tin ${actionName}` : "Điền thông tin nhận ưu đãi";
         }
@@ -847,7 +847,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               ) : (
                 <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
                   <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã gửi yêu cầu! 🎉" : "Đã nhận ưu đãi! 🎉"}</h3>
+                  <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã gửi yêu cầu thành công!" : "Đã nhận ưu đãi thành công!"}</h3>
                   {/* Success message based on type */}
                   {!isBooking ? (
                     <>

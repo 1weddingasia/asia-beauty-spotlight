@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createStaticClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { getSiteConfig } from "@/config/site-config";
+import { Wrench, Phone } from "lucide-react";
 import PromoClient from "./PromoClient";
 
 export const revalidate = 60; // Cache trang 60 giây để tăng tốc độ tải cực nhanh
@@ -77,7 +78,9 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center bg-white rounded-3xl shadow-xl p-10 border border-slate-100">
-          <div className="text-6xl mb-6">🛠️</div>
+          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shadow-sm">
+            <Wrench className="size-8" />
+          </div>
           <h1 className="text-2xl font-black text-slate-800 mb-3">{business.name}</h1>
           <p className="text-slate-500 mb-6 leading-relaxed">
             Chương trình ưu đãi của tiệm đang tạm thời bảo trì.<br />
@@ -88,7 +91,8 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
               href={`tel:${hotline.replace(/\D/g, '')}`}
               className="inline-flex items-center gap-2 bg-gold text-ink font-bold px-8 py-4 rounded-2xl shadow-lg hover:scale-105 transition-transform text-lg"
             >
-              📞 {hotline}
+              <Phone className="size-5" />
+              <span>{hotline}</span>
             </a>
           )}
           <p className="mt-8 text-xs text-slate-400">Powered by {siteConfig.brand}</p>

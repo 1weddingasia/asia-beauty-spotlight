@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Eye, Upload, Link as LinkIcon, Sparkles, ToggleLeft, Clock } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, Upload, Link as LinkIcon, Sparkles, ToggleLeft, Clock, Ban, CheckCircle2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
@@ -177,15 +177,15 @@ export default function BusinessesClient({ initialBusinesses }: { initialBusines
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                         (b.status === 'published' || b.status === 'active') ? 'bg-green-100 text-green-800' : 
                         b.status === 'trial' ? 'bg-blue-100 text-blue-800' :
                         b.status === 'suspended' ? 'bg-red-100 text-red-700' :
                         'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {b.status === 'trial' ? '🕑 Thử nghiệm' 
-                          : b.status === 'suspended' ? '🚫 Tạm ngưng'
-                          : (b.status === 'published' || b.status === 'active') ? '✅ Hoạt động'
+                        {b.status === 'trial' ? <><Clock className="size-3" /> Thử nghiệm</>
+                          : b.status === 'suspended' ? <><Ban className="size-3" /> Tạm ngưng</>
+                          : (b.status === 'published' || b.status === 'active') ? <><CheckCircle2 className="size-3" /> Hoạt động</>
                           : b.status}
                       </span>
                       {b.is_featured && (

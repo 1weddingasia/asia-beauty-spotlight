@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { 
   ArrowRight, Bot, PieChart, BellRing, 
-  MessageSquareLock, ShieldCheck, Database, Smartphone, CheckCircle2 
+  MessageSquareLock, ShieldCheck, Database, Smartphone, CheckCircle2, Sparkles 
 } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
@@ -26,7 +26,8 @@ export default function GioiThieuBookingPage() {
 
         <div className="container relative z-10 mx-auto max-w-5xl px-6 text-center">
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold tracking-[0.1em] text-gold uppercase">
-            💡 Câu Chuyện & Sứ Mệnh 1Booking.Asia
+            <Sparkles className="size-3.5" />
+            <span>Câu Chuyện & Sứ Mệnh 1Booking.Asia</span>
           </span>
           <h1 className="font-display text-4xl font-bold leading-[1.2] tracking-tight text-white md:text-6xl">
             Nền Tảng Đặt Lịch Hẹn Đa Ngành & <br className="hidden md:block" />
@@ -95,8 +96,9 @@ export default function GioiThieuBookingPage() {
           </div>
           
           <div className="mt-12 text-center">
-            <p className="inline-flex items-center gap-3 bg-gold/10 text-ink font-bold px-8 py-4 rounded-full text-lg">
-              👉 1Booking.Asia ra đời để chấm dứt toàn bộ những lãng phí đó.
+            <p className="inline-flex items-center gap-2 bg-gold/10 text-ink font-bold px-8 py-4 rounded-full text-lg">
+              <CheckCircle2 className="size-5 text-gold shrink-0" />
+              <span>1Booking.Asia ra đời để chấm dứt toàn bộ những lãng phí đó.</span>
             </p>
           </div>
         </div>

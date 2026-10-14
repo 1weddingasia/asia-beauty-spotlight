@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot } from "lucide-react";
+import { MessageCircle, X, Send, Bot, Tag, Plus, ImageIcon, Camera, Phone, Lock, FileText, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
@@ -180,24 +180,25 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
             {adminToken && (
               <div className="p-3 pb-0">
                 <div className="text-[11px] text-green-600 font-medium mb-2 flex items-center justify-between">
-                  <span>🛡️ Chế độ Quản trị</span>
+                  <span className="flex items-center gap-1"><ShieldCheck className="size-3.5 text-green-600" /> Chế độ Quản trị</span>
                   <span className="text-muted-foreground font-normal">Tự động khoá sau 2h</span>
                 </div>
-                <p className="text-[10px] text-muted-foreground mb-2 leading-tight">
-                  💡 <b>Mẹo:</b> Để thay hình (Logo, Banner, Dịch vụ...), hãy copy 1 đường link ảnh (từ Facebook, Zalo, Web...) và dán vào chat: "Đổi banner thành link: ..."
+                <p className="text-[10px] text-muted-foreground mb-2 leading-tight flex items-start gap-1">
+                  <Sparkles className="size-3 text-gold shrink-0 mt-0.5" />
+                  <span><b>Mẹo:</b> Để thay hình (Logo, Banner, Dịch vụ...), hãy copy 1 đường link ảnh (từ Facebook, Zalo, Web...) và dán vào chat: "Đổi banner thành link: ..."</span>
                 </p>
                 <div className="flex flex-wrap gap-1.5 pb-2 border-b border-muted/30">
-                  <button type="button" onClick={() => setInput("Sửa giá dịch vụ: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">💰 Đổi giá</button>
-                  <button type="button" onClick={() => setInput("Thêm dịch vụ mới: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">➕ Thêm DV</button>
-                  <button type="button" onClick={() => setInput("Thay logo thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">🖼️ Thay Logo</button>
-                  <button type="button" onClick={() => setInput("Thay banner thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">🖼️ Thay Banner</button>
-                  <button type="button" onClick={() => setInput("Đổi ảnh dịch vụ ... thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">📷 Ảnh Dịch vụ</button>
-                  <button type="button" onClick={() => setInput("Đổi ảnh ưu đãi ... thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">📷 Ảnh Ưu đãi</button>
-                  <button type="button" onClick={() => setInput("Cập nhật thông tin liên hệ: SĐT ..., Địa chỉ ...")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">📞 Đổi Liên hệ</button>
-                  <button type="button" onClick={() => setInput("Đổi mã bảo mật của tôi thành: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">🔐 Đổi Pass</button>
-                  <button type="button" onClick={() => setInput("Cập nhật Tagline/Slogan thành: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">📝 Đổi Tagline</button>
-                  <button type="button" onClick={() => setInput("Cập nhật Câu chuyện giới thiệu thành: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">📖 Đổi Giới thiệu</button>
-                  <button type="button" onClick={() => setInput("Cho tôi xin link đăng nhập trang quản trị")} className="text-[11px] px-2.5 py-1 bg-rose-50/50 text-rose-700 rounded-full border border-rose-200 hover:bg-rose-100 transition whitespace-nowrap">🔑 Vào Quản Trị</button>
+                  <button type="button" onClick={() => setInput("Sửa giá dịch vụ: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><Tag className="size-3" /> Đổi giá</button>
+                  <button type="button" onClick={() => setInput("Thêm dịch vụ mới: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><Plus className="size-3" /> Thêm DV</button>
+                  <button type="button" onClick={() => setInput("Thay logo thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><ImageIcon className="size-3" /> Thay Logo</button>
+                  <button type="button" onClick={() => setInput("Thay banner thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><ImageIcon className="size-3" /> Thay Banner</button>
+                  <button type="button" onClick={() => setInput("Đổi ảnh dịch vụ ... thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><Camera className="size-3" /> Ảnh Dịch vụ</button>
+                  <button type="button" onClick={() => setInput("Đổi ảnh ưu đãi ... thành link: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><Camera className="size-3" /> Ảnh Ưu đãi</button>
+                  <button type="button" onClick={() => setInput("Cập nhật thông tin liên hệ: SĐT ..., Địa chỉ ...")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><Phone className="size-3" /> Đổi Liên hệ</button>
+                  <button type="button" onClick={() => setInput("Đổi mã bảo mật của tôi thành: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><Lock className="size-3" /> Đổi Pass</button>
+                  <button type="button" onClick={() => setInput("Cập nhật Tagline/Slogan thành: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><FileText className="size-3" /> Đổi Tagline</button>
+                  <button type="button" onClick={() => setInput("Cập nhật Câu chuyện giới thiệu thành: ")} className="text-[11px] px-2.5 py-1 bg-green-50/50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap inline-flex items-center gap-1"><FileText className="size-3" /> Đổi Giới thiệu</button>
+                  <button type="button" onClick={() => setInput("Cho tôi xin link đăng nhập trang quản trị")} className="text-[11px] px-2.5 py-1 bg-rose-50/50 text-rose-700 rounded-full border border-rose-200 hover:bg-rose-100 transition whitespace-nowrap inline-flex items-center gap-1"><KeyRound className="size-3" /> Vào Quản Trị</button>
                 </div>
               </div>
             )}

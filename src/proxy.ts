@@ -11,11 +11,12 @@ import { updateSession } from '@/utils/supabase/middleware'
  */
 
 // ── Multi-domain home routing config ─────────────────────────────────────────
-// Thêm domain mới vào đây mà không cần sửa logic bên dưới
+// Domain 1beauty.asia sẽ rewrite ngầm về /home-beauty.
+// Domain 1booking.asia & localhost giữ nguyên '/' để nạp trang B2C mới (src/app/page.tsx).
+// Trang booking B2B cũ đã được chuyển sang '/danh-cho-doanh-nghiep'.
 const DOMAIN_HOME_MAP: Record<string, string> = {
   '1beauty.asia': '/home-beauty',
 };
-const DEFAULT_HOME = '/home-booking'; // fallback: 1booking.asia, localhost, ...
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function proxy(request: NextRequest) {
@@ -25,8 +26,8 @@ export async function proxy(request: NextRequest) {
   // ── Multi-domain home routing ─────────────────────────────────────────────
   // Chỉ can thiệp đúng trang chủ "/"
   if (pathname === '/') {
-    // Tìm target page dựa theo hostname (exact match hoặc subdomain)
-    let targetHome = DEFAULT_HOME;
+    // Nếu là domain 1beauty.asia -> rewrite sang /home-beauty
+    let targetHome: string | null = null;
     for (const [domain, home] of Object.entries(DOMAIN_HOME_MAP)) {
       if (hostname === domain || hostname.endsWith(`.${domain}`)) {
         targetHome = home;
@@ -34,19 +35,24 @@ export async function proxy(request: NextRequest) {
       }
     }
 
-    // Refresh Supabase session trước, lấy response có Set-Cookie headers
-    const sessionResponse = await updateSession(request);
+    if (targetHome) {
+      // Refresh Supabase session trước, lấy response có Set-Cookie headers
+      const sessionResponse = await updateSession(request);
 
-    // Tạo rewrite response (URL thanh địa chỉ giữ nguyên domain)
-    const rewriteResponse = NextResponse.rewrite(new URL(targetHome, request.url));
+      // Tạo rewrite response (URL thanh địa chỉ giữ nguyên domain)
+      const rewriteResponse = NextResponse.rewrite(new URL(targetHome, request.url));
 
-    // Copy toàn bộ Set-Cookie từ sessionResponse sang rewriteResponse
-    // để session không bị expire/re-refresh liên tục
-    sessionResponse.cookies.getAll().forEach((cookie) => {
-      rewriteResponse.cookies.set(cookie);
-    });
+      // Copy toàn bộ Set-Cookie từ sessionResponse sang rewriteResponse
+      // để session không bị expire/re-refresh liên tục
+      sessionResponse.cookies.getAll().forEach((cookie) => {
+        rewriteResponse.cookies.set(cookie);
+      });
 
-    return rewriteResponse;
+      return rewriteResponse;
+    }
+
+    // Với 1booking.asia và localhost: giữ nguyên "/" để src/app/page.tsx (trang B2C mới) xử lý
+    return await updateSession(request);
   }
 
   // ── Route trang phụ riêng cho từng domain ────────────────────────────────

@@ -1,5 +1,7 @@
 import { createStaticClient } from "@/utils/supabase/server";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
+import { LocationIcon } from "@/components/ui/category-icon";
+import { MapPin } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -29,32 +31,6 @@ export default async function LocationsIndexPage() {
   (bizCounts || []).forEach((bl: any) => {
     countMap[bl.location_id] = (countMap[bl.location_id] || 0) + 1;
   });
-
-  // Map tên tỉnh/thành → emoji cờ/biểu tượng vùng
-  const LOCATION_EMOJIS: Record<string, string> = {
-    "ho-chi-minh": "🏙️",
-    "tphcm": "🏙️",
-    "saigon": "🏙️",
-    "ha-noi": "🏛️",
-    "hanoi": "🏛️",
-    "da-nang": "🌊",
-    "danang": "🌊",
-    "can-tho": "🌾",
-    "hue": "🏯",
-    "nha-trang": "🏖️",
-    "da-lat": "🌸",
-    "vung-tau": "⛵",
-    "bien-hoa": "🏭",
-    "binh-duong": "🏗️",
-  };
-
-  function getLocationEmoji(slug: string): string {
-    const key = slug.toLowerCase();
-    for (const [k, v] of Object.entries(LOCATION_EMOJIS)) {
-      if (key.includes(k)) return v;
-    }
-    return "📍";
-  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -89,7 +65,7 @@ export default async function LocationsIndexPage() {
           <div className="mx-auto max-w-6xl">
             {!locations || locations.length === 0 ? (
               <div className="text-center py-20 bg-card rounded-2xl border">
-                <p className="text-4xl mb-4">📍</p>
+                <MapPin className="size-12 mx-auto mb-4 text-muted-foreground/40" />
                 <h3 className="text-xl font-semibold">Chưa có địa điểm nào</h3>
                 <p className="text-muted-foreground mt-2">Admin đang cập nhật. Vui lòng quay lại sau.</p>
               </div>
@@ -97,7 +73,6 @@ export default async function LocationsIndexPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {locations.map((loc) => {
                   const count = countMap[loc.id] || 0;
-                  const emoji = getLocationEmoji(loc.slug);
                   return (
                     <Link
                       key={loc.id}
@@ -122,7 +97,9 @@ export default async function LocationsIndexPage() {
                         </div>
                       ) : (
                         <div className="p-6 text-center">
-                          <div className="text-5xl mb-4">{emoji}</div>
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gold/10 to-amber-500/10 border border-gold/20 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-ink group-hover:scale-110 transition-all duration-300">
+                            <LocationIcon slug={loc.slug} name={loc.name} className="size-8" />
+                          </div>
                           <h2 className="font-bold text-lg text-foreground group-hover:text-gold transition-colors">
                             {loc.name}
                           </h2>

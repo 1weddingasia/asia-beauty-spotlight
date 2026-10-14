@@ -1,4 +1,4 @@
-import { Store, Bell, Users, TrendingUp, AlertTriangle, ExternalLink, Bot } from "lucide-react";
+import { Store, Bell, Users, TrendingUp, AlertTriangle, ExternalLink, Bot, Trophy } from "lucide-react";
 import { createAdminClient } from "@/utils/supabase/server";
 import Link from "next/link";
 
@@ -133,7 +133,7 @@ export default async function AdminDashboardPage() {
       {/* Top tiệm 7 ngày qua */}
       {topBiz.length > 0 && (
         <div className="rounded-xl border bg-card shadow p-6">
-          <h3 className="font-bold text-lg mb-1">🏆 Top Tiệm Nhiều Đơn Nhất (7 ngày qua)</h3>
+          <h3 className="font-bold text-lg mb-1 flex items-center gap-2"><Trophy className="size-5 text-gold" /> Top Tiệm Nhiều Đơn Nhất (7 ngày qua)</h3>
           <p className="text-xs text-muted-foreground mb-4">Tiệm chạy hiệu quả — ưu tiên hỗ trợ và gia hạn sớm.</p>
           <div className="space-y-3">
             {topBiz.map((biz, idx) => (
