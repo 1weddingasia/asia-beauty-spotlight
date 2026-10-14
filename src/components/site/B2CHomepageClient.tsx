@@ -63,6 +63,7 @@ const HERO_SLIDES = [
     cta: "Khám phá ngay",
     ctaHref: "/uu-dai",
     gradient: "from-rose-950 via-rose-900 to-amber-900",
+    image: "/images/hero/hero-slide-1.jpg",
   },
   {
     tag: "Đặt Lịch 1-Chạm",
@@ -71,6 +72,7 @@ const HERO_SLIDES = [
     cta: "Xem ưu đãi",
     ctaHref: "/uu-dai",
     gradient: "from-slate-950 via-violet-950 to-indigo-900",
+    image: "/images/hero/hero-slide-2.jpg",
   },
   {
     tag: "Ưu Đãi Quanh Bạn",
@@ -79,6 +81,7 @@ const HERO_SLIDES = [
     cta: "Tìm theo khu vực",
     ctaHref: "/dia-diem",
     gradient: "from-emerald-950 via-teal-900 to-cyan-900",
+    image: "/images/hero/hero-slide-3.jpg",
   },
 ];
 
@@ -112,45 +115,71 @@ function HeroSlider() {
   const slide = HERO_SLIDES[current];
 
   return (
-    <div className={`relative min-h-[72vh] md:min-h-[80vh] bg-gradient-to-br ${slide.gradient} flex items-center transition-all duration-700`}>
+    <div className="relative min-h-[72vh] md:min-h-[80vh] flex items-center overflow-hidden bg-slate-950">
+      {/* Background Images with smooth cinematic crossfade */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-white/5 blur-3xl" />
+        {HERO_SLIDES.map((s, idx) => (
+          <div
+            key={idx}
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+              idx === current ? "opacity-100 scale-100" : "opacity-0 scale-105"
+            }`}
+          >
+            <Image
+              src={s.image}
+              alt={s.title}
+              fill
+              priority={idx === 0}
+              className="object-cover"
+              sizes="100vw"
+            />
+            {/* Themed gradient overlay */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-75 mix-blend-multiply`} />
+            {/* Dark vignette overlay for contrast and legibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-black/55 to-black/65" />
+          </div>
+        ))}
+      </div>
+
+      {/* Decorative ambient glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-gold/10 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full bg-white/5 blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center pt-28 pb-48 md:pt-36 md:pb-52">
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase mb-6 text-white backdrop-blur-sm">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase mb-6 text-white backdrop-blur-md shadow-sm">
           {slide.tag}
         </div>
-        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight">
+        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight drop-shadow-md">
           {slide.title}
         </h1>
-        <p className="mt-5 text-base md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+        <p className="mt-5 text-base md:text-xl text-white/85 max-w-2xl mx-auto leading-relaxed drop-shadow-sm font-normal">
           {slide.subtitle}
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href={slide.ctaHref} className="inline-flex items-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-2xl text-base shadow-xl hover:scale-105 transition-all">
-            <Sparkles className="size-4" />
+          <Link href={slide.ctaHref} className="inline-flex items-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-2xl text-base shadow-2xl hover:scale-105 active:scale-95 transition-all">
+            <Sparkles className="size-4 text-amber-500" />
             {slide.cta}
             <ArrowRight className="size-4" />
           </Link>
-          <Link href="/danh-muc" className="inline-flex items-center gap-2 border border-white/30 text-white px-8 py-4 rounded-2xl text-base hover:bg-white/10 transition-colors">
+          <Link href="/danh-muc" className="inline-flex items-center gap-2 border border-white/30 text-white font-medium px-8 py-4 rounded-2xl text-base hover:bg-white/15 backdrop-blur-sm transition-colors">
             <Tag className="size-4" />
             Xem theo danh mục
           </Link>
         </div>
       </div>
 
-      <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors">
+      <button onClick={prev} aria-label="Slide trước" className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-md transition-colors border border-white/10 shadow-lg">
         <ChevronLeft className="size-5" />
       </button>
-      <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors">
+      <button onClick={next} aria-label="Slide tiếp theo" className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-md transition-colors border border-white/10 shadow-lg">
         <ChevronRight className="size-5" />
       </button>
 
       <div className="absolute bottom-36 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {HERO_SLIDES.map((_, i) => (
-          <button key={i} onClick={() => { setCurrent(i); resetTimer(); }} className={`h-1.5 rounded-full transition-all ${i === current ? "w-8 bg-white" : "w-2 bg-white/40"}`} />
+          <button key={i} onClick={() => { setCurrent(i); resetTimer(); }} aria-label={`Chuyển đến slide ${i + 1}`} className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? "w-8 bg-white shadow" : "w-2 bg-white/40 hover:bg-white/70"}`} />
         ))}
       </div>
     </div>
