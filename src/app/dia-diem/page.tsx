@@ -1,6 +1,7 @@
 import { createStaticClient } from "@/utils/supabase/server";
 import { SiteHeader, SiteFooter } from "@/components/site/Layout";
 import { LocationIcon } from "@/components/ui/category-icon";
+import { getLocationHeroImage } from "@/lib/location-images";
 import { MapPin } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -11,16 +12,6 @@ export const metadata: Metadata = {
   title: "Khám Phá Theo Địa Điểm",
   description:
     "Tìm kiếm doanh nghiệp, dịch vụ và ưu đãi gần bạn theo từng khu vực: TP.HCM, Hà Nội, Đà Nẵng và nhiều tỉnh thành khác.",
-};
-
-const DEFAULT_LOCATION_IMAGES: Record<string, string> = {
-  "nha-trang": "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1920&q=80",
-  "da-lat": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1920&q=80",
-  "quan-1": "https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?auto=format&fit=crop&w=1920&q=80",
-  "ho-chi-minh": "https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=1920&q=80",
-  "ha-noi": "https://images.unsplash.com/photo-1555921015-5532091f6026?auto=format&fit=crop&w=1920&q=80",
-  "da-nang": "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1920&q=80",
-  "toan-quoc": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1920&q=80",
 };
 
 export default async function LocationsIndexPage() {
@@ -83,10 +74,7 @@ export default async function LocationsIndexPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {locations.map((loc) => {
                   const count = countMap[loc.id] || 0;
-                  const locImage = loc.hero_image ||
-                    Object.entries(DEFAULT_LOCATION_IMAGES).find(([k]) =>
-                      loc.slug.toLowerCase().includes(k)
-                    )?.[1] || null;
+                  const locImage = getLocationHeroImage(loc.slug, loc.hero_image);
 
                   return (
                     <Link

@@ -16,15 +16,6 @@ import {
   Theater,
   Store,
   MapPin,
-  Building2,
-  Landmark,
-  Waves,
-  Sun,
-  Mountain,
-  Compass,
-  Sailboat,
-  Factory,
-  HardHat,
   LucideProps,
 } from "lucide-react";
 
