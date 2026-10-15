@@ -2,15 +2,18 @@ export const SHARED_LOCATION_HERO_IMAGE = "/images/hero/shared-location-hero.jpg
 export const SHARED_CATEGORY_HERO_IMAGE = "/images/hero/shared-category-hero.jpg";
 export const HANOI_AUTUMN_IMAGE = "/images/locations/hanoi-autumn-hoguom.jpg";
 export const NHATRANG_BEACH_IMAGE = "/images/locations/nhatrang-beach.jpg";
+export const HOCHIMINH_SKYLINE_IMAGE = "/images/locations/ho-chi-minh-saigon.jpg";
 
 export const DEFAULT_LOCATION_IMAGES: Record<string, string> = {
   "ha-noi": HANOI_AUTUMN_IMAGE,
   "hanoi": HANOI_AUTUMN_IMAGE,
   "nha-trang": NHATRANG_BEACH_IMAGE,
+  "ho-chi-minh": HOCHIMINH_SKYLINE_IMAGE,
+  "tphcm": HOCHIMINH_SKYLINE_IMAGE,
+  "saigon": HOCHIMINH_SKYLINE_IMAGE,
+  "quan-1-hcm": HOCHIMINH_SKYLINE_IMAGE,
+  "quan-1": HOCHIMINH_SKYLINE_IMAGE,
   "da-lat": SHARED_LOCATION_HERO_IMAGE,
-  "quan-1-hcm": SHARED_LOCATION_HERO_IMAGE,
-  "quan-1": SHARED_LOCATION_HERO_IMAGE,
-  "ho-chi-minh": SHARED_LOCATION_HERO_IMAGE,
   "da-nang": SHARED_LOCATION_HERO_IMAGE,
   "toan-quoc": SHARED_LOCATION_HERO_IMAGE,
 };
@@ -23,6 +26,9 @@ export function getLocationHeroImage(slug?: string | null, customHero?: string |
   }
   if (cleanSlug === "nha-trang") {
     return NHATRANG_BEACH_IMAGE;
+  }
+  if (cleanSlug === "ho-chi-minh" || cleanSlug === "tphcm" || cleanSlug === "saigon" || cleanSlug === "quan-1-hcm" || cleanSlug === "quan-1") {
+    return HOCHIMINH_SKYLINE_IMAGE;
   }
   if (customHero && typeof customHero === "string" && customHero.trim() && customHero !== SHARED_LOCATION_HERO_IMAGE) {
     return customHero;
@@ -37,6 +43,9 @@ export function getLocationCardImage(slug?: string | null, customHero?: string |
   }
   if (cleanSlug === "nha-trang") {
     return NHATRANG_BEACH_IMAGE;
+  }
+  if (cleanSlug === "ho-chi-minh" || cleanSlug === "tphcm" || cleanSlug === "saigon" || cleanSlug === "quan-1-hcm" || cleanSlug === "quan-1") {
+    return HOCHIMINH_SKYLINE_IMAGE;
   }
   return customHero || DEFAULT_LOCATION_IMAGES[cleanSlug] || SHARED_LOCATION_HERO_IMAGE;
 }
