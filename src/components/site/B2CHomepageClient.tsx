@@ -101,18 +101,19 @@ function HeroSlider() {
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const currentRef = useRef(0);
+  currentRef.current = current;
+
   const goTo = (nextIdx: number) => {
-    setPrevIndex(current);
+    setPrevIndex(currentRef.current);
     setCurrent(nextIdx);
   };
 
   const resetTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setCurrent((c) => {
-        setPrevIndex(c);
-        return (c + 1) % HERO_SLIDES.length;
-      });
+      setPrevIndex(currentRef.current);
+      setCurrent((c) => (c + 1) % HERO_SLIDES.length);
     }, 6000);
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 const slides = [
@@ -13,12 +13,13 @@ export function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
 
+  const currentRef = useRef(0);
+  currentRef.current = current;
+
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent((prev) => {
-        setPrevIndex(prev);
-        return (prev + 1) % slides.length;
-      });
+      setPrevIndex(currentRef.current);
+      setCurrent((c) => (c + 1) % slides.length);
     }, 5500);
     return () => clearInterval(timer);
   }, []);
@@ -32,9 +33,9 @@ export function HeroSlider() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-slate-950">
       {/* Lớp phủ sáng hơn để thấy rõ ảnh nền sang trọng, text vẫn dễ đọc */}
-      <div className="absolute inset-0 bg-ink/35 z-10" />
+      <div className="absolute inset-0 bg-ink/35 z-20 pointer-events-none" />
       <div
-        className="absolute inset-0 z-10"
+        className="absolute inset-0 z-20 pointer-events-none"
         style={{
           background: "linear-gradient(180deg, oklch(0.22 0.015 60 / 0) 30%, oklch(0.14 0.012 60 / 0.75) 100%)",
         }}
