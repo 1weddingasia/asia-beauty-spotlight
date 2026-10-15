@@ -98,11 +98,22 @@ function getDealBadge(deal: Deal | null): string | null {
 // --- Hero Slider ------------------------------------------------------------
 function HeroSlider() {
   const [current, setCurrent] = useState(0);
+  const [prevIndex, setPrevIndex] = useState<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const goTo = (nextIdx: number) => {
+    setPrevIndex(current);
+    setCurrent(nextIdx);
+  };
 
   const resetTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => setCurrent((c) => (c + 1) % HERO_SLIDES.length), 5000);
+    timerRef.current = setInterval(() => {
+      setCurrent((c) => {
+        setPrevIndex(c);
+        return (c + 1) % HERO_SLIDES.length;
+      });
+    }, 6000);
   };
 
   useEffect(() => {
@@ -110,35 +121,56 @@ function HeroSlider() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, []);
 
-  const prev = () => { setCurrent((c) => (c - 1 + HERO_SLIDES.length) % HERO_SLIDES.length); resetTimer(); };
-  const next = () => { setCurrent((c) => (c + 1) % HERO_SLIDES.length); resetTimer(); };
+  useEffect(() => {
+    if (prevIndex === null) return;
+    const t = setTimeout(() => setPrevIndex(null), 1050);
+    return () => clearTimeout(t);
+  }, [prevIndex]);
+
+  const prev = () => {
+    goTo((current - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+    resetTimer();
+  };
+  const next = () => {
+    goTo((current + 1) % HERO_SLIDES.length);
+    resetTimer();
+  };
   const slide = HERO_SLIDES[current];
 
   return (
     <div className="relative min-h-[72vh] md:min-h-[80vh] flex items-center overflow-hidden bg-slate-950">
       {/* Background Images with smooth cinematic crossfade */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {HERO_SLIDES.map((s, idx) => (
-          <div
-            key={idx}
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-              idx === current ? "opacity-100 scale-100" : "opacity-0 scale-105"
-            }`}
-          >
-            <Image
-              src={s.image}
-              alt={s.title}
-              fill
-              priority={idx === 0}
-              className="object-cover"
-              sizes="100vw"
-            />
-            {/* Themed gradient overlay */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-75 mix-blend-multiply`} />
-            {/* Dark vignette overlay for contrast and legibility */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-black/55 to-black/65" />
-          </div>
-        ))}
+        {HERO_SLIDES.map((s, idx) => {
+          const isActive = idx === current;
+          const isPrev = idx === prevIndex;
+          return (
+            <div
+              key={idx}
+              style={{ willChange: "opacity" }}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                isActive
+                  ? "opacity-100 z-10"
+                  : isPrev
+                  ? "opacity-100 z-0"
+                  : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              <Image
+                src={s.image}
+                alt={s.title}
+                fill
+                priority
+                className="object-cover"
+                sizes="100vw"
+              />
+              {/* Themed gradient overlay nhẹ nhàng tinh tế (opacity 20%) */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-20 mix-blend-multiply`} />
+              {/* Gradient nền vừa đủ để đọc text rõ ràng mà ảnh vẫn sáng đẹp */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/30" />
+            </div>
+          );
+        })}
       </div>
 
       {/* Decorative ambient glow */}
@@ -179,7 +211,7 @@ function HeroSlider() {
 
       <div className="absolute bottom-36 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {HERO_SLIDES.map((_, i) => (
-          <button key={i} onClick={() => { setCurrent(i); resetTimer(); }} aria-label={`Chuyển đến slide ${i + 1}`} className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? "w-8 bg-white shadow" : "w-2 bg-white/40 hover:bg-white/70"}`} />
+          <button key={i} onClick={() => { goTo(i); resetTimer(); }} aria-label={`Chuyển đến slide ${i + 1}`} className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? "w-8 bg-white shadow" : "w-2 bg-white/40 hover:bg-white/70"}`} />
         ))}
       </div>
     </div>

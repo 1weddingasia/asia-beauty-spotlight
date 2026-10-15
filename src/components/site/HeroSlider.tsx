@@ -11,36 +11,57 @@ const slides = [
 
 export function HeroSlider() {
   const [current, setCurrent] = useState(0);
+  const [prevIndex, setPrevIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 4000);
+      setCurrent((prev) => {
+        setPrevIndex(prev);
+        return (prev + 1) % slides.length;
+      });
+    }, 5500);
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (prevIndex === null) return;
+    const t = setTimeout(() => setPrevIndex(null), 1050);
+    return () => clearTimeout(t);
+  }, [prevIndex]);
+
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden">
-      {/* Lớp phủ đen để chữ dễ đọc */}
-      <div className="absolute inset-0 bg-ink/75 md:bg-ink/60 z-10 mix-blend-multiply" />
+    <div className="absolute inset-0 z-0 overflow-hidden bg-slate-950">
+      {/* Lớp phủ sáng hơn để thấy rõ ảnh nền sang trọng, text vẫn dễ đọc */}
+      <div className="absolute inset-0 bg-ink/35 z-10" />
+      <div
+        className="absolute inset-0 z-10"
+        style={{
+          background: "linear-gradient(180deg, oklch(0.22 0.015 60 / 0) 30%, oklch(0.14 0.012 60 / 0.75) 100%)",
+        }}
+      />
       
-      {slides.map((slide, index) => (
-        <div
-          key={slide.url}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            index === current ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <Image
-            src={slide.url}
-            alt={slide.alt}
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority={index === 0}
-          />
-        </div>
-      ))}
+      {slides.map((slide, index) => {
+        const isActive = index === current;
+        const isPrev = index === prevIndex;
+        return (
+          <div
+            key={slide.url}
+            style={{ willChange: "opacity" }}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              isActive ? "opacity-100 z-10" : isPrev ? "opacity-100 z-0" : "opacity-0 z-0"
+            }`}
+          >
+            <Image
+              src={slide.url}
+              alt={slide.alt}
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

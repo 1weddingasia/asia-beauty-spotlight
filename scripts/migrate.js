@@ -8,7 +8,8 @@ async function runMigrations() {
     // Try process.env.DATABASE_URL first, fallback to the hardcoded one if not found
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString) {
-        throw new Error('DATABASE_URL is not set. Configure it in .env.local before running migrations.');
+        console.log('⚠️ DATABASE_URL is not set. Skipping migrations.');
+        return;
     }
     
     const client = new Client({ connectionString });
