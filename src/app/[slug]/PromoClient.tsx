@@ -272,8 +272,34 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
           <CarouselContent className="h-full">
             {banners.length > 0 ? (
               banners.map((img: string, idx: number) => (
-                <CarouselItem key={idx} className="relative h-[75vh] md:h-[90vh] w-full bg-black/90">
-                  <Image src={img} alt={`${business.name} - slide ${idx + 1}`} fill sizes="100vw" quality={75} className="object-cover" priority={idx === 0} />
+                <CarouselItem key={idx} className="relative h-[75vh] md:h-[90vh] w-full bg-slate-950 overflow-hidden flex items-center justify-center">
+                  {/* Lớp 1 (Mobile): Ambient Glow Backdrop lấp đầy 75vh bằng sắc thái chính của banner */}
+                  <div className="absolute inset-0 block md:hidden pointer-events-none overflow-hidden">
+                    <Image
+                      src={img}
+                      alt=""
+                      fill
+                      sizes="100vw"
+                      quality={40}
+                      className="object-cover blur-2xl scale-125 opacity-60"
+                      aria-hidden="true"
+                    />
+                    <div className="absolute inset-0 bg-slate-950/30" />
+                  </div>
+
+                  {/* Lớp 2: Ảnh Banner Chính
+                      - Mobile: object-contain hiển thị trọn vẹn 100% chiều ngang banner không bị tràn cắt mất góc
+                      - Desktop: object-cover tràn viền điện ảnh 90vh
+                  */}
+                  <Image
+                    src={img}
+                    alt={`${business.name} - slide ${idx + 1}`}
+                    fill
+                    sizes="100vw"
+                    quality={85}
+                    className="object-contain md:object-cover drop-shadow-2xl transition-transform duration-700"
+                    priority={idx === 0}
+                  />
                 </CarouselItem>
               ))
             ) : (
@@ -287,7 +313,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
             </div>
           )}
         </Carousel>
-        <div className={`absolute inset-0 pointer-events-none z-10 ${banners.length > 0 ? 'bg-gradient-to-b from-black/20 via-black/50 to-black/90' : 'bg-gradient-to-b from-black/5 via-black/10 to-black/40'}`} />
+        <div className={`absolute inset-0 pointer-events-none z-10 ${banners.length > 0 ? 'bg-gradient-to-b from-black/20 via-black/35 to-black/85' : 'bg-gradient-to-b from-black/5 via-black/10 to-black/40'}`} />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-20">
           <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-3 flex items-center justify-center gap-2">
             {business.name}

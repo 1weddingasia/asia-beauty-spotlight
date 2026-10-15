@@ -21,13 +21,13 @@ export async function generateMetadata() {
   }
 
   return {
-    title: "1Booking.Asia — Cổng Ưu Đãi Dịch Vụ Khu Phố",
+    title: "1Booking.Asia — Cẩm Nang Ưu Đãi Dịch Vụ",
     description:
-      "Khám phá hàng ngàn ưu đãi làm đẹp, ẩm thực, sức khỏe & giải trí ngay trong khu phố bạn. Đặt lịch 1-chạm, nhận ưu đãi độc quyền.",
+      "Khám phá cẩm nang hàng ngàn ưu đãi làm đẹp, ẩm thực, sức khỏe & đời sống từ các thương hiệu uy tín. Đặt lịch 1-chạm, nhận ưu đãi độc quyền.",
     openGraph: {
-      title: "1Booking.Asia — Cổng Ưu Đãi Khu Phố",
+      title: "1Booking.Asia — Cẩm Nang Ưu Đãi",
       description:
-        "Khám phá hàng ngàn ưu đãi làm đẹp, ẩm thực, sức khỏe & giải trí ngay trong khu phố bạn.",
+        "Khám phá cẩm nang hàng ngàn ưu đãi làm đẹp, ẩm thực, sức khỏe & đời sống từ các thương hiệu uy tín.",
       url: "https://1booking.asia",
       siteName: "1Booking.Asia",
       type: "website",
