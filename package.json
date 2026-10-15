@@ -9,7 +9,8 @@
     "lint": "eslint",
     "postbuild": "next-sitemap",
     "prepare": "husky",
-    "db:migrate": "node scripts/migrate.js"
+    "db:migrate": "node scripts/migrate.js",
+    "db:sync-standby": "node scripts/sync_to_standby.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
