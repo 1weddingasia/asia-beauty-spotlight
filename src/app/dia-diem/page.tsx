@@ -13,6 +13,16 @@ export const metadata: Metadata = {
     "Tìm kiếm doanh nghiệp, dịch vụ và ưu đãi gần bạn theo từng khu vực: TP.HCM, Hà Nội, Đà Nẵng và nhiều tỉnh thành khác.",
 };
 
+const DEFAULT_LOCATION_IMAGES: Record<string, string> = {
+  "nha-trang": "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1920&q=80",
+  "da-lat": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1920&q=80",
+  "quan-1": "https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?auto=format&fit=crop&w=1920&q=80",
+  "ho-chi-minh": "https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=1920&q=80",
+  "ha-noi": "https://images.unsplash.com/photo-1555921015-5532091f6026?auto=format&fit=crop&w=1920&q=80",
+  "da-nang": "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1920&q=80",
+  "toan-quoc": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1920&q=80",
+};
+
 export default async function LocationsIndexPage() {
   const supabase = createStaticClient();
 
@@ -39,12 +49,12 @@ export default async function LocationsIndexPage() {
         {/* Hero */}
         <section className="relative bg-ink overflow-hidden">
           <div
-            className="absolute inset-0 opacity-25 bg-cover bg-center"
+            className="absolute inset-0 opacity-35 bg-cover bg-center"
             style={{
-              backgroundImage: `url("https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1920&q=80")`,
+              backgroundImage: `url("https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=1920&q=80")`,
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-ink/50 to-ink/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink/35 via-ink/40 to-ink/80" />
           <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 md:py-32 text-center">
             <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4">
               Khám Phá
@@ -73,17 +83,22 @@ export default async function LocationsIndexPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {locations.map((loc) => {
                   const count = countMap[loc.id] || 0;
+                  const locImage = loc.hero_image ||
+                    Object.entries(DEFAULT_LOCATION_IMAGES).find(([k]) =>
+                      loc.slug.toLowerCase().includes(k)
+                    )?.[1] || null;
+
                   return (
                     <Link
                       key={loc.id}
                       href={`/dia-diem/${loc.slug}`}
                       className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-gold/50 transition-all duration-300 hover:-translate-y-1"
                     >
-                      {/* Background image if available */}
-                      {loc.hero_image ? (
+                      {/* Background image */}
+                      {locImage ? (
                         <div className="aspect-video relative">
                           <img
-                            src={loc.hero_image}
+                            src={locImage}
                             alt={loc.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />

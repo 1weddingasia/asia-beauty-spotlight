@@ -122,16 +122,20 @@ export default function LocationPageClient({
 
   // Default hero backgrounds by location
   const DEFAULT_HERO_IMAGES: Record<string, string> = {
+    "nha-trang": "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1920&q=80",
+    "da-lat": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1920&q=80",
+    "quan-1": "https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?auto=format&fit=crop&w=1920&q=80",
     "ho-chi-minh": "https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=1920&q=80",
     "ha-noi": "https://images.unsplash.com/photo-1555921015-5532091f6026?auto=format&fit=crop&w=1920&q=80",
     "da-nang": "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1920&q=80",
+    "toan-quoc": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1920&q=80",
   };
 
   const heroBgUrl = location.hero_image ||
     Object.entries(DEFAULT_HERO_IMAGES).find(([k]) =>
       location.slug.toLowerCase().includes(k)
     )?.[1] ||
-    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1920&q=80";
+    "https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=1920&q=80";
 
   // Filter
   const filtered = useMemo(() => {
@@ -168,7 +172,7 @@ export default function LocationPageClient({
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url("${heroBgUrl}")` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/55 to-ink/85" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/35 to-ink/75" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 py-20 md:py-36 text-center">
           <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold shadow-2xl backdrop-blur-sm">

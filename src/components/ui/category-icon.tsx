@@ -126,51 +126,5 @@ interface LocationIconProps extends Omit<LucideProps, "name"> {
 }
 
 export function LocationIcon({ slug = "", name = "", className = "size-4", ...props }: LocationIconProps) {
-  const key = `${slug || ""} ${name || ""}`.toLowerCase();
-
-  // TP. Hồ Chí Minh
-  if (key.includes("ho-chi-minh") || key.includes("tphcm") || key.includes("saigon") || key.includes("hcm")) {
-    return <Building2 className={className} {...props} />;
-  }
-
-  // Hà Nội
-  if (key.includes("ha-noi") || key.includes("hanoi")) {
-    return <Landmark className={className} {...props} />;
-  }
-
-  // Đà Nẵng / Biển
-  if (key.includes("da-nang") || key.includes("danang") || key.includes("quy-nhon")) {
-    return <Waves className={className} {...props} />;
-  }
-
-  // Nha Trang / Vũng Tàu / Phan Thiết
-  if (key.includes("nha-trang") || key.includes("phan-thiet")) {
-    return <Sun className={className} {...props} />;
-  }
-
-  if (key.includes("vung-tau")) {
-    return <Sailboat className={className} {...props} />;
-  }
-
-  // Đà Lạt / Tây Nguyên / Núi
-  if (key.includes("da-lat") || key.includes("dalat") || key.includes("sapa") || key.includes("gia-lai")) {
-    return <Mountain className={className} {...props} />;
-  }
-
-  // Bình Dương / Đồng Nai / KCN
-  if (key.includes("binh-duong") || key.includes("thu-duc")) {
-    return <HardHat className={className} {...props} />;
-  }
-
-  if (key.includes("bien-hoa") || key.includes("dong-nai")) {
-    return <Factory className={className} {...props} />;
-  }
-
-  // Toàn quốc
-  if (key.includes("toan-quoc")) {
-    return <Compass className={className} {...props} />;
-  }
-
-  // Mặc định
   return <MapPin className={className} {...props} />;
 }
