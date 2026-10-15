@@ -4,6 +4,7 @@ export const HANOI_AUTUMN_IMAGE = "/images/locations/hanoi-autumn-hoguom.jpg";
 export const NHATRANG_BEACH_IMAGE = "/images/locations/nhatrang-beach.jpg";
 export const HOCHIMINH_SKYLINE_IMAGE = "/images/locations/ho-chi-minh-saigon.jpg";
 export const DANANG_DRAGON_BRIDGE_IMAGE = "/images/locations/danang-dragon-bridge.jpg";
+export const DALAT_XUAN_HUONG_IMAGE = "/images/locations/dalat-xuan-huong.jpg";
 
 export const DEFAULT_LOCATION_IMAGES: Record<string, string> = {
   "ha-noi": HANOI_AUTUMN_IMAGE,
@@ -16,7 +17,8 @@ export const DEFAULT_LOCATION_IMAGES: Record<string, string> = {
   "quan-1": HOCHIMINH_SKYLINE_IMAGE,
   "da-nang": DANANG_DRAGON_BRIDGE_IMAGE,
   "danang": DANANG_DRAGON_BRIDGE_IMAGE,
-  "da-lat": SHARED_LOCATION_HERO_IMAGE,
+  "da-lat": DALAT_XUAN_HUONG_IMAGE,
+  "dalat": DALAT_XUAN_HUONG_IMAGE,
   "toan-quoc": SHARED_LOCATION_HERO_IMAGE,
 };
 
@@ -34,6 +36,9 @@ export function getLocationHeroImage(slug?: string | null, customHero?: string |
   }
   if (cleanSlug === "da-nang" || cleanSlug === "danang") {
     return DANANG_DRAGON_BRIDGE_IMAGE;
+  }
+  if (cleanSlug === "da-lat" || cleanSlug === "dalat") {
+    return DALAT_XUAN_HUONG_IMAGE;
   }
   if (customHero && typeof customHero === "string" && customHero.trim() && customHero !== SHARED_LOCATION_HERO_IMAGE) {
     return customHero;
@@ -54,6 +59,9 @@ export function getLocationCardImage(slug?: string | null, customHero?: string |
   }
   if (cleanSlug === "da-nang" || cleanSlug === "danang") {
     return DANANG_DRAGON_BRIDGE_IMAGE;
+  }
+  if (cleanSlug === "da-lat" || cleanSlug === "dalat") {
+    return DALAT_XUAN_HUONG_IMAGE;
   }
   return customHero || DEFAULT_LOCATION_IMAGES[cleanSlug] || SHARED_LOCATION_HERO_IMAGE;
 }
