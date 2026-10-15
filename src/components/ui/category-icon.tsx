@@ -43,11 +43,25 @@ interface CategoryIconProps extends Omit<LucideProps, "name"> {
   name?: string | null;
 }
 
+// Helper kiểm tra từ/cụm từ an toàn cho tiếng Việt (tránh lỗi của \b trong JS RegExp với ký tự có dấu)
+function hasWordOrPhrase(target: string, phrases: string[]): boolean {
+  if (!target) return false;
+  return phrases.some((phrase) => {
+    // Cụm từ có khoảng cách hoặc dấu nối: kiểm tra substring an toàn
+    if (phrase.includes(" ") || phrase.includes("-")) {
+      return target.includes(phrase);
+    }
+    // Từ đơn: kiểm tra biên giới từ có hỗ trợ dải ký tự tiếng Việt Unicode
+    const regex = new RegExp(`(^|[^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ])${phrase}([^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]|$)`, "i");
+    return regex.test(target);
+  });
+}
+
 export function CategoryIcon({ slug = "", name = "", className = "size-6", ...props }: CategoryIconProps) {
   const cleanSlug = (slug || "").toLowerCase().trim();
   const cleanName = (name || "").toLowerCase().trim();
 
-  // 1. Phân loại chuẩn xác theo slug (tránh nhầm lẫn từ khoá)
+  // 1. Phân loại chuẩn xác theo slug
   if (cleanSlug.includes("nha-khoa") || cleanSlug.includes("dental") || cleanSlug.includes("implant")) {
     return <ToothIcon className={className} {...props} />;
   }
@@ -60,7 +74,7 @@ export function CategoryIcon({ slug = "", name = "", className = "size-6", ...pr
     return <Flower2 className={className} {...props} />;
   }
 
-  if (cleanSlug.includes("nail") || cleanSlug.includes("mi") || cleanSlug.includes("eyelash")) {
+  if (cleanSlug.includes("nail") || cleanSlug.includes("noi-mi") || cleanSlug.includes("uon-mi") || cleanSlug.includes("eyelash") || /(^|-)mi(-|$)/.test(cleanSlug)) {
     return <Sparkles className={className} {...props} />;
   }
 
@@ -100,7 +114,7 @@ export function CategoryIcon({ slug = "", name = "", className = "size-6", ...pr
     return <Plane className={className} {...props} />;
   }
 
-  if (cleanSlug.includes("o-to") || cleanSlug.includes("xe-may") || cleanSlug.includes("auto") || cleanSlug.includes("car")) {
+  if (cleanSlug.includes("o-to") || cleanSlug.includes("xe-may") || cleanSlug.includes("auto") || cleanSlug.includes("car-") || cleanSlug.includes("-car") || cleanSlug === "car") {
     return <Car className={className} {...props} />;
   }
 
@@ -108,48 +122,51 @@ export function CategoryIcon({ slug = "", name = "", className = "size-6", ...pr
     return <Theater className={className} {...props} />;
   }
 
-  // 2. Fallback theo tên tiếng Việt (dùng regex từ nguyên vẹn, không để dính chữ như "thời trang" dính "răng")
-  if (/\b(răng|nha khoa|implant|niềng răng)\b/i.test(cleanName)) {
+  // 2. Fallback theo tên tiếng Việt (dùng bộ nhận diện chuẩn Unicode không dính từ chéo)
+  if (hasWordOrPhrase(cleanName, ["răng", "nha khoa", "implant", "niềng răng", "dental"])) {
     return <ToothIcon className={className} {...props} />;
   }
-  if (/\b(thời trang|mua sắm|quần áo|phụ kiện)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["thời trang", "mua sắm", "quần áo", "phụ kiện", "fashion", "boutique", "shop"])) {
     return <ShoppingBag className={className} {...props} />;
   }
-  if (/\b(spa|massage|thư giãn|trị liệu body)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["spa", "massage", "thư giãn", "body", "trị liệu"])) {
     return <Flower2 className={className} {...props} />;
   }
-  if (/\b(nail|móng|nối mi|uốn mi)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["nail", "móng", "nối mi", "uốn mi", "eyelash"])) {
     return <Sparkles className={className} {...props} />;
   }
-  if (/\b(tóc|salon|barber|cắt tóc)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["tóc", "salon", "barber", "cắt tóc", "uốn duỗi", "nhuộm"])) {
     return <Scissors className={className} {...props} />;
   }
-  if (/\b(clinic|thẩm mỹ|tiêm|filler|laser|y tế|bác sĩ)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["clinic", "thẩm mỹ", "tiêm", "filler", "laser", "y tế", "bác sĩ"])) {
     return <Stethoscope className={className} {...props} />;
   }
-  if (/\b(nhà hàng|ẩm thực|quán ăn|cafe|cà phê|ăn uống)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["nhà hàng", "ẩm thực", "quán ăn", "cafe", "cà phê", "ăn uống", "dining"])) {
     return <UtensilsCrossed className={className} {...props} />;
   }
-  if (/\b(gym|fitness|thể thao|yoga|bơi lội)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["gym", "fitness", "thể thao", "yoga", "bơi lội", "pilates"])) {
     return <Dumbbell className={className} {...props} />;
   }
-  if (/\b(sửa chữa|bảo trì|điện nước)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["sửa chữa", "bảo trì", "điện nước", "cứu hộ"])) {
     return <Wrench className={className} {...props} />;
   }
-  if (/\b(giáo dục|đào tạo|tư vấn|học nghề)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["giáo dục", "đào tạo", "tư vấn", "học nghề", "dạy nghề"])) {
     return <GraduationCap className={className} {...props} />;
   }
-  if (/\b(thú cưng|chó|mèo|pet)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["thú cưng", "chó", "mèo", "pet"])) {
     return <PawPrint className={className} {...props} />;
   }
-  if (/\b(studio|chụp ảnh|áo cưới|nhiếp ảnh)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["studio", "chụp ảnh", "áo cưới", "nhiếp ảnh"])) {
     return <Camera className={className} {...props} />;
   }
-  if (/\b(du lịch|lưu trú|khách sạn|homestay)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["du lịch", "lưu trú", "khách sạn", "homestay", "resort"])) {
     return <Plane className={className} {...props} />;
   }
-  if (/\b(ô tô|xe máy|rửa xe|detailing)\b/i.test(cleanName)) {
+  if (hasWordOrPhrase(cleanName, ["ô tô", "xe máy", "rửa xe", "detailing"])) {
     return <Car className={className} {...props} />;
+  }
+  if (hasWordOrPhrase(cleanName, ["giải trí", "nghệ thuật", "rạp chiếu phim", "sân khấu", "entertainment"])) {
+    return <Theater className={className} {...props} />;
   }
 
   return <Store className={className} {...props} />;
