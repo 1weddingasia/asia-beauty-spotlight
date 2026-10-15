@@ -6,7 +6,9 @@ export async function POST(request: NextRequest) {
 
   // Auth check — only admin
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user || user.user_metadata?.role !== 'admin') {
+    return NextResponse.json({ error: "Unauthorized: Admin access required" }, { status: 401 });
+  }
 
   const { url, mode, businessId, category, location } = await request.json();
   if (!url) return NextResponse.json({ error: "Thiếu URL" }, { status: 400 });

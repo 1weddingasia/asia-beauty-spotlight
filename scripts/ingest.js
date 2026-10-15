@@ -4,8 +4,8 @@ const { createClient } = require('@supabase/supabase-js');
 const readline = require('readline');
 
 const supabase = createClient(
-  'https://ejlltaigohemjagfzxxh.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbGx0YWlnb2hlbWphZ2Z6eHhoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTgwNzE0NiwiZXhwIjoyMTA1MzgzMTQ2fQ.R_Q4p01oU5gg9GUpn3TL2SPt7L2brq2kqwy6SnR9row'
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || 'sk-xxxxxx';

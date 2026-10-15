@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
 
 function sendTelegramAsync(chatId: string, message: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -14,6 +15,12 @@ function sendTelegramAsync(chatId: string, message: string) {
 
 export async function POST(req: Request) {
   try {
+    const authClient = await createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    if (!user || user.user_metadata?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized: Admin access required' }, { status: 401 });
+    }
+
     const { message } = await req.json();
     
     if (!message) {

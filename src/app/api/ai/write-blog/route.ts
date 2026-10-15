@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { createClient } from '@/utils/supabase/server';
 
 export async function POST(req: Request) {
   try {
+    const authClient = await createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    if (!user || user.user_metadata?.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized: Admin access required' }, { status: 401 });
+    }
+
     const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
     const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
     
