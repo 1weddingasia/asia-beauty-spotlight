@@ -35,64 +35,71 @@ async function syncToStandby() {
     process.exit(1);
   }
 
+  // Safety check: Ensure primary and standby are two DIFFERENT databases!
+  if (primaryDb.trim() === standbyDb.trim()) {
+    console.error('🚨 CẢNH BÁO NGUY HIỂM: DATABASE_URL và STANDBY_DATABASE_URL trùng nhau! Huỷ đồng bộ ngay lập tức để bảo vệ dữ liệu.');
+    process.exit(1);
+  }
+
   const primaryClient = new Client({ connectionString: primaryDb, ssl: { rejectUnauthorized: false } });
   const standbyClient = new Client({ connectionString: standbyDb, ssl: { rejectUnauthorized: false } });
 
-  await primaryClient.connect();
-  await standbyClient.connect();
-  console.log('✅ Đã kết nối thành công 2 Database.');
+  try {
+    await primaryClient.connect();
+    await standbyClient.connect();
+    console.log('✅ Đã kết nối thành công 2 Database độc lập.');
 
-  const tables = [
-    'categories',
-    'locations',
-    'directory_categories',
-    'directory_locations',
-    'plans',
-    'memberships',
-    'businesses',
-    'business_members',
-    'business_categories',
-    'business_locations',
-    'business_customers',
-    'business_leads',
-    'business_services',
-    'business_hours',
-    'business_media',
-    'business_events',
-    'business_claims',
-    'business_revisions',
-    'contact_requests',
-    'blog_categories',
-    'blogs',
-    'post_categories',
-    'posts',
-    'profiles',
-    'payments',
-    'transactions',
-    'site_settings',
-    'ai_jobs',
-    'ai_sources',
-    '_schema_migrations'
-  ];
+    const tables = [
+      'categories',
+      'locations',
+      'directory_categories',
+      'directory_locations',
+      'plans',
+      'memberships',
+      'businesses',
+      'business_members',
+      'business_categories',
+      'business_locations',
+      'business_customers',
+      'business_leads',
+      'business_services',
+      'business_hours',
+      'business_media',
+      'business_events',
+      'business_claims',
+      'business_revisions',
+      'contact_requests',
+      'blog_categories',
+      'blogs',
+      'post_categories',
+      'posts',
+      'profiles',
+      'payments',
+      'transactions',
+      'site_settings',
+      'ai_jobs',
+      'ai_sources',
+      '_schema_migrations'
+    ];
 
-  for (const tableName of tables) {
-    try {
-      const countRes = await primaryClient.query(`SELECT COUNT(*) FROM public."${tableName}";`);
-      const totalRows = parseInt(countRes.rows[0].count, 10);
-      if (totalRows === 0) continue;
+    let hasErrors = false;
 
-      const dataRes = await primaryClient.query(`SELECT * FROM public."${tableName}";`);
-      const rows = dataRes.rows;
-      const columns = Object.keys(rows[0]);
-      const colList = columns.map(c => `"${c}"`).join(', ');
+    for (const tableName of tables) {
+      try {
+        const countRes = await primaryClient.query(`SELECT COUNT(*) FROM public."${tableName}";`);
+        const totalRows = parseInt(countRes.rows[0].count, 10);
+        if (totalRows === 0) continue;
 
-      await standbyClient.query(`ALTER TABLE public."${tableName}" DISABLE TRIGGER ALL;`);
-      await standbyClient.query(`TRUNCATE TABLE public."${tableName}" CASCADE;`);
+        const dataRes = await primaryClient.query(`SELECT * FROM public."${tableName}";`);
+        const rows = dataRes.rows;
+        const columns = Object.keys(rows[0]);
+        const colList = columns.map(c => `"${c}"`).join(', ');
 
-      const batchSize = 50;
-      for (let i = 0; i < rows.length; i += batchSize) {
-        const batch = rows.slice(i, i + batchSize);
-        for (const row of batch) {
+        await standbyClient.query('BEGIN');
+        await standbyClient.query(`ALTER TABLE public."${tableName}" DISABLE TRIGGER ALL;`);
+        await standbyClient.query(`TRUNCATE TABLE public."${tableName}" CASCADE;`);
+
+        for (const row of rows) {
           const values = columns.map(c => row[c]);
           const placeholders = columns.map((_, idx) => `$${idx + 1}`).join(', ');
           await standbyClient.query(
@@ -100,21 +107,30 @@ async function syncToStandby() {
             values
           );
         }
+
+        await standbyClient.query(`ALTER TABLE public."${tableName}" ENABLE TRIGGER ALL;`);
+        await standbyClient.query('COMMIT');
+        console.log(` ✅ Đồng bộ: ${tableName} (${totalRows} dòng)`);
+      } catch (err) {
+        await standbyClient.query('ROLLBACK').catch(() => {});
+        console.error(` ❌ Lỗi bảng ${tableName}:`, err.message);
+        hasErrors = true;
       }
-
-      await standbyClient.query(`ALTER TABLE public."${tableName}" ENABLE TRIGGER ALL;`);
-      console.log(` ✅ Đồng bộ: ${tableName} (${totalRows} dòng)`);
-    } catch (err) {
-      console.log(` ⚠️ Bảng ${tableName}: ${err.message}`);
     }
-  }
 
-  await primaryClient.end();
-  await standbyClient.end();
-  console.log('🎉 Đồng bộ định kỳ hoàn tất thành công!');
+    if (hasErrors) {
+      console.error('\n⚠️ Một số bảng gặp lỗi trong quá trình đồng bộ!');
+      process.exit(1);
+    } else {
+      console.log('\n🎉 Đồng bộ định kỳ hoàn tất thành công 100%!');
+    }
+  } finally {
+    await primaryClient.end().catch(() => {});
+    await standbyClient.end().catch(() => {});
+  }
 }
 
 syncToStandby().catch(err => {
-  console.error('❌ Lỗi:', err.message);
+  console.error('❌ Lỗi ngoại lệ:', err);
   process.exit(1);
 });
