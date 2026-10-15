@@ -20,7 +20,7 @@ export default async function BlogIndexPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader solid />
-      <main className="flex-grow pt-16 pb-16">
+      <main className="flex-grow pb-16">
         <section className="relative border-b border-border mb-12">
           {/* Background Image */}
           <div 

@@ -97,7 +97,7 @@ export default async function CategoryDetailPage({
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader solid />
-      <main className="flex-grow pt-16">
+      <main className="flex-grow">
         <CategoryPageClient
           category={category}
           businesses={formattedBusinesses}

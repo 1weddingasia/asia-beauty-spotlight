@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Search, ChevronLeft, ChevronRight, Gift, Star } from "lucide-react";
 import { CategoryIcon } from "@/components/ui/category-icon";
+import { getCategoryHeroImage } from "@/lib/location-images";
 
 const PAGE_SIZE = 12;
 
@@ -136,10 +137,8 @@ export default function CategoryPageClient({
     setPage(1);
   };
 
-  // Hero background
-  const heroBg = category.hero_image
-    ? `url("${category.hero_image}")`
-    : `url("https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=1920&q=80")`;
+  // Hero background đồng bộ chuẩn sang trọng
+  const heroBg = `url("${getCategoryHeroImage(category.slug, category.hero_image)}")`;
 
   return (
     <>

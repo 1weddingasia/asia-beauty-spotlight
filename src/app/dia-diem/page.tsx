@@ -36,13 +36,13 @@ export default async function LocationsIndexPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader solid />
-      <main className="flex-grow pt-16">
+      <main className="flex-grow">
         {/* Hero */}
         <section className="relative bg-ink overflow-hidden">
           <div
-            className="absolute inset-0 opacity-35 bg-cover bg-center"
+            className="absolute inset-0 opacity-60 bg-cover bg-center"
             style={{
-              backgroundImage: `url("https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=1920&q=80")`,
+              backgroundImage: `url("/images/hero/shared-location-hero.jpg")`,
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/15 to-ink/65" />

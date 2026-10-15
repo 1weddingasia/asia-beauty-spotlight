@@ -35,13 +35,13 @@ export default async function CategoriesIndexPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader solid />
-      <main className="flex-grow pt-16">
+      <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative bg-ink overflow-hidden">
           <div
             className="absolute inset-0 opacity-60"
             style={{
-              backgroundImage: `url("https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=1920&q=80")`,
+              backgroundImage: `url("/images/hero/shared-category-hero.jpg")`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
