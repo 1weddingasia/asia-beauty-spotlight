@@ -39,14 +39,14 @@ export default async function CategoriesIndexPage() {
         {/* Hero Section */}
         <section className="relative bg-ink overflow-hidden">
           <div
-            className="absolute inset-0 opacity-20"
+            className="absolute inset-0 opacity-60"
             style={{
               backgroundImage: `url("https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=1920&q=80")`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-ink/60 to-ink/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-ink/20 to-ink/75" />
           <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 md:py-32 text-center">
             <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4">Khám Phá</p>
             <h1 className="text-4xl md:text-6xl font-display text-white font-bold mb-6 leading-tight">

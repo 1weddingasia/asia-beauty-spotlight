@@ -165,10 +165,10 @@ function HeroSlider() {
                 className="object-cover"
                 sizes="100vw"
               />
-              {/* Themed gradient overlay nhẹ nhàng tinh tế (opacity 20%) */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-20 mix-blend-multiply`} />
-              {/* Gradient nền vừa đủ để đọc text rõ ràng mà ảnh vẫn sáng đẹp */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/30" />
+              {/* Themed gradient overlay nhẹ nhàng tinh tế */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-15`} />
+              {/* Gradient nền trong trẻo để đọc text rõ ràng mà ảnh vẫn sáng đẹp */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-black/20" />
             </div>
           );
         })}

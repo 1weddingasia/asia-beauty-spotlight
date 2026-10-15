@@ -32,12 +32,12 @@ export function HeroSlider() {
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-slate-950">
-      {/* Lớp phủ sáng hơn để thấy rõ ảnh nền sang trọng, text vẫn dễ đọc */}
-      <div className="absolute inset-0 bg-ink/35 z-20 pointer-events-none" />
+      {/* Lớp phủ sáng trong trẻo để thấy rõ ảnh nền sang trọng, text vẫn dễ đọc */}
+      <div className="absolute inset-0 bg-ink/20 z-20 pointer-events-none" />
       <div
         className="absolute inset-0 z-20 pointer-events-none"
         style={{
-          background: "linear-gradient(180deg, oklch(0.22 0.015 60 / 0) 30%, oklch(0.14 0.012 60 / 0.75) 100%)",
+          background: "linear-gradient(180deg, oklch(0.22 0.015 60 / 0) 30%, oklch(0.14 0.012 60 / 0.55) 100%)",
         }}
       />
       

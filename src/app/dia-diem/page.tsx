@@ -45,7 +45,7 @@ export default async function LocationsIndexPage() {
               backgroundImage: `url("https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=1920&q=80")`,
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-ink/35 via-ink/40 to-ink/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/15 to-ink/65" />
           <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 md:py-32 text-center">
             <p className="text-xs tracking-[0.3em] text-gold uppercase mb-4">
               Khám Phá

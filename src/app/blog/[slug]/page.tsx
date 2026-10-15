@@ -44,7 +44,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
             className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url("${blog.cover_image || 'https://images.pexels.com/photos/398532/pexels-photo-398532.jpeg?auto=compress&cs=tinysrgb&w=1920'}")` }}
           >
-            <div className="absolute inset-0 bg-ink/70 backdrop-blur-[2px]"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/65" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[40vh]">

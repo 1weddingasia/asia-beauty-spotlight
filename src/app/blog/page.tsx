@@ -27,8 +27,7 @@ export default async function BlogIndexPage() {
             className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1920&q=80")' }}
           >
-            <div className="absolute inset-0 bg-ink/40"></div>
-            <div className="absolute inset-0 bg-gold/50 mix-blend-multiply"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/15 to-black/60" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-36 lg:py-40 flex flex-col justify-center min-h-[35vh]">

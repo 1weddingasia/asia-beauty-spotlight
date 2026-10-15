@@ -138,7 +138,7 @@ export default async function OffersPage({
   return (
     <PageShell>
       <section className="relative border-b border-border overflow-hidden bg-slate-950">
-        {/* Background Image with optimized Next.js Image and cinematic overlays */}
+        {/* Background Image with optimized Next.js Image and luminous overlays */}
         <div className="absolute inset-0 z-0">
           <Image
             src={siteConfig.exploreHeroBgImage || "/images/hero-multisector-deals.jpg"}
@@ -148,8 +148,9 @@ export default async function OffersPage({
             className="object-cover object-center"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-slate-950/70 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-black/55 to-black/65" />
+          {/* Lớp phủ sáng, trong trẻo, giữ hình ảnh nổi bật và chữ tương phản tốt */}
+          <div className="absolute inset-0 bg-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-black/30" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 text-center md:py-32 lg:py-36 flex flex-col justify-center min-h-[42vh]">

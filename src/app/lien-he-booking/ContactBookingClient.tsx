@@ -36,8 +36,9 @@ export default function ContactBookingClient() {
 
   return (
     <PageShell>
-      <section className="relative border-b border-border bg-ink">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center bg-no-repeat opacity-20 mix-blend-luminosity"></div>
+      <section className="relative border-b border-border bg-ink overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center bg-no-repeat opacity-45"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-ink/20 to-ink/75"></div>
         
         <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 text-center md:py-32 lg:py-36">
           <p className="text-xs font-bold tracking-[0.3em] text-gold uppercase mb-4">Kết nối cùng chuyên gia</p>

@@ -149,7 +149,7 @@ export default function CategoryPageClient({
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: heroBg }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/60 to-ink/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-ink/20 to-ink/70" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 py-20 md:py-36 text-center">
           <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold shadow-2xl backdrop-blur-sm">
