@@ -27,7 +27,7 @@ async function syncToStandby() {
   const primaryEnv = parseEnv(path.join(__dirname, '../.env.local'));
   const standbyEnv = parseEnv(path.join(__dirname, '../.env.backup'));
 
-  const primaryDb = process.env.DATABASE_URL || primaryEnv.DATABASE_URL;
+  const primaryDb = process.env.PRIMARY_DATABASE_URL || process.env.DATABASE_URL || primaryEnv.DATABASE_URL;
   const standbyDb = process.env.STANDBY_DATABASE_URL || standbyEnv.STANDBY_DATABASE_URL;
 
   if (!primaryDb || !standbyDb) {
