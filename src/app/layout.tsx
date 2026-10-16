@@ -84,6 +84,9 @@ const playfairDisplay = Playfair_Display({
   display: 'swap',
 });
 
+import { Suspense } from 'react';
+import { NavigationProgressBar } from '@/components/ui/NavigationProgressBar';
+
 export default function RootLayout({
   children,
 }: {
@@ -92,6 +95,9 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning className={`${beVietnamPro.variable} ${playfairDisplay.variable}`}>
       <body suppressHydrationWarning>
+        <Suspense fallback={null}>
+          <NavigationProgressBar />
+        </Suspense>
         {children}
         <Toaster />
         <Analytics />

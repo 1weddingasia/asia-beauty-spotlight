@@ -129,13 +129,14 @@ QUY TẮC BẮT BUỘC:
           ...messages
         ],
         temperature: 0.6,
+        max_tokens: 300,
       },
       {
         headers: {
           "Authorization": `Bearer ${DEEPSEEK_API_KEY}`,
           "Content-Type": "application/json"
         },
-        timeout: 60000
+        timeout: 20000
       }
     );
 

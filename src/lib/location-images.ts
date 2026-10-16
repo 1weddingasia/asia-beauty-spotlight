@@ -66,7 +66,26 @@ export function getLocationCardImage(slug?: string | null, customHero?: string |
   return customHero || DEFAULT_LOCATION_IMAGES[cleanSlug] || SHARED_LOCATION_HERO_IMAGE;
 }
 
+export const DEFAULT_CATEGORY_IMAGES: Record<string, string> = {
+  "clinic-tham-my": "/images/categories/clinic-tham-my.jpg",
+  "nails-mi": "/images/categories/nails-mi.jpg",
+  "nha-khoa": "/images/categories/nha-khoa.jpg",
+  "salon-toc": "/images/categories/salon-toc.jpg",
+  "spa-thu-gian": "/images/categories/spa-thu-gian.jpg",
+  "nha-hang-am-thuc": "/images/categories/nha-hang-am-thuc.jpg",
+  "fitness-the-thao": "/images/categories/fitness-the-thao.jpg",
+  "thoi-trang-mua-sam": "/images/categories/thoi-trang-mua-sam.jpg",
+  "dich-vu-sua-chua": "/images/categories/dich-vu-sua-chua.jpg",
+  "tu-van-giao-duc": "/images/categories/tu-van-giao-duc.jpg",
+  "thu-cung": "/images/categories/thu-cung.jpg",
+  "studio-chup-anh": "/images/categories/studio-chup-anh.jpg",
+};
+
 export function getCategoryHeroImage(slug?: string | null, customHero?: string | null): string {
-  // Đồng bộ 1 hình nền sang trọng chuẩn chung cho tất cả các danh mục ngành nghề
-  return SHARED_CATEGORY_HERO_IMAGE;
+  const cleanSlug = (slug || "").toLowerCase().trim();
+  if (customHero && typeof customHero === "string" && customHero.trim() && customHero !== SHARED_CATEGORY_HERO_IMAGE) {
+    return customHero;
+  }
+  return DEFAULT_CATEGORY_IMAGES[cleanSlug] || customHero || SHARED_CATEGORY_HERO_IMAGE;
 }
+

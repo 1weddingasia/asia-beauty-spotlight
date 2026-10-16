@@ -123,9 +123,13 @@ export function ChatWidget({ businessId, businessName, slug }: { businessId: str
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-[90px] md:bottom-6 right-4 md:right-6 z-[45] bg-gold text-ink p-4 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2 animate-bounce"
+          aria-label="Mở trợ lý trò chuyện"
+          className="fixed bottom-[90px] md:bottom-6 right-4 md:right-6 z-[45] bg-gold text-ink p-4 rounded-full shadow-xl hover:scale-105 active:scale-90 active:opacity-90 transition-all flex items-center gap-2 select-none touch-manipulation cursor-pointer border border-amber-300/40 shadow-gold/30"
         >
-          <MessageCircle className="size-6" />
+          <span className="relative flex items-center justify-center">
+            <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-ink/40 opacity-75" />
+            <MessageCircle className="size-6 relative" />
+          </span>
           <span className="font-bold hidden md:inline">Trợ lý 24/7</span>
         </button>
       )}
