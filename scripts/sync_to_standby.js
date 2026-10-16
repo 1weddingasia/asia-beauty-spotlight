@@ -21,14 +21,30 @@ function parseEnv(filePath) {
   return env;
 }
 
+function sanitizeDbUrl(raw) {
+  if (!raw) return '';
+  let str = String(raw).trim();
+  if (str.includes('=')) {
+    const eqIdx = str.indexOf('=');
+    const prefix = str.substring(0, eqIdx).trim();
+    if (/^[A-Z0-9_]+$/i.test(prefix)) {
+      str = str.substring(eqIdx + 1).trim();
+    }
+  }
+  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+    str = str.slice(1, -1).trim();
+  }
+  return str;
+}
+
 async function syncToStandby() {
   console.log('--- ĐỒNG BỘ DỮ LIỆU SANG SUPABASE DỰ PHÒNG (STANDBY) ---');
 
   const primaryEnv = parseEnv(path.join(__dirname, '../.env.local'));
   const standbyEnv = parseEnv(path.join(__dirname, '../.env.backup'));
 
-  const primaryDb = process.env.PRIMARY_DATABASE_URL || process.env.DATABASE_URL || primaryEnv.DATABASE_URL;
-  const standbyDb = process.env.STANDBY_DATABASE_URL || standbyEnv.STANDBY_DATABASE_URL;
+  const primaryDb = sanitizeDbUrl(process.env.PRIMARY_DATABASE_URL || process.env.DATABASE_URL || primaryEnv.DATABASE_URL);
+  const standbyDb = sanitizeDbUrl(process.env.STANDBY_DATABASE_URL || standbyEnv.STANDBY_DATABASE_URL);
 
   if (!primaryDb || !standbyDb) {
     console.error('❌ Thiếu cấu hình DATABASE_URL (.env.local) hoặc STANDBY_DATABASE_URL (.env.backup)');
