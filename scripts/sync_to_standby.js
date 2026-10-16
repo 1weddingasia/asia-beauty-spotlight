@@ -98,6 +98,9 @@ async function syncToStandby() {
       '_schema_migrations'
     ];
 
+    // Set session_replication_role to replica to allow truncates and bulk inserts without trigger/FK errors
+    await standbyClient.query("SET session_replication_role = 'replica';");
+
     let hasErrors = false;
 
     for (const tableName of tables) {
@@ -112,7 +115,6 @@ async function syncToStandby() {
         const colList = columns.map(c => `"${c}"`).join(', ');
 
         await standbyClient.query('BEGIN');
-        await standbyClient.query(`ALTER TABLE public."${tableName}" DISABLE TRIGGER ALL;`);
         await standbyClient.query(`TRUNCATE TABLE public."${tableName}" CASCADE;`);
 
         for (const row of rows) {
@@ -124,7 +126,6 @@ async function syncToStandby() {
           );
         }
 
-        await standbyClient.query(`ALTER TABLE public."${tableName}" ENABLE TRIGGER ALL;`);
         await standbyClient.query('COMMIT');
         console.log(` ✅ Đồng bộ: ${tableName} (${totalRows} dòng)`);
       } catch (err) {
@@ -134,6 +135,10 @@ async function syncToStandby() {
       }
     }
 
+    // Restore replication role and reload PostgREST schema cache
+    await standbyClient.query("SET session_replication_role = 'origin';").catch(() => {});
+    await standbyClient.query("NOTIFY pgrst, 'reload schema';").catch(() => {});
+
     if (hasErrors) {
       console.error('\n⚠️ Một số bảng gặp lỗi trong quá trình đồng bộ!');
       process.exit(1);
@@ -141,6 +146,7 @@ async function syncToStandby() {
       console.log('\n🎉 Đồng bộ định kỳ hoàn tất thành công 100%!');
     }
   } finally {
+    await standbyClient.query("SET session_replication_role = 'origin';").catch(() => {});
     await primaryClient.end().catch(() => {});
     await standbyClient.end().catch(() => {});
   }
