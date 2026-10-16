@@ -86,6 +86,6 @@ export function getCategoryHeroImage(slug?: string | null, customHero?: string |
   if (customHero && typeof customHero === "string" && customHero.trim() && customHero !== SHARED_CATEGORY_HERO_IMAGE) {
     return customHero;
   }
-  return DEFAULT_CATEGORY_IMAGES[cleanSlug] || customHero || SHARED_CATEGORY_HERO_IMAGE;
+  return DEFAULT_CATEGORY_IMAGES[cleanSlug] || SHARED_CATEGORY_HERO_IMAGE;
 }
 

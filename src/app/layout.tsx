@@ -1,11 +1,27 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import { BackToTop } from '@/components/site/BackToTop';
 import { Toaster } from '@/components/ui/sonner';
-
+import { GlobalPromoFAB } from '@/components/admin/GlobalPromoFAB';
+import { NavigationProgressBar } from '@/components/ui/NavigationProgressBar';
 import { headers } from 'next/headers';
 import { getSiteConfig } from '@/config/site-config';
+import { Be_Vietnam_Pro, Playfair_Display } from 'next/font/google';
+
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ['vietnamese', 'latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-sans-next',
+  display: 'swap',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['vietnamese', 'latin'],
+  variable: '--font-display-next',
+  display: 'swap',
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
@@ -66,26 +82,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
   };
 }
-
-import { GlobalPromoFAB } from '@/components/admin/GlobalPromoFAB';
-
-import { Be_Vietnam_Pro, Playfair_Display } from 'next/font/google';
-
-const beVietnamPro = Be_Vietnam_Pro({
-  subsets: ['vietnamese', 'latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-sans-next',
-  display: 'swap',
-});
-
-const playfairDisplay = Playfair_Display({
-  subsets: ['vietnamese', 'latin'],
-  variable: '--font-display-next',
-  display: 'swap',
-});
-
-import { Suspense } from 'react';
-import { NavigationProgressBar } from '@/components/ui/NavigationProgressBar';
 
 export default function RootLayout({
   children,

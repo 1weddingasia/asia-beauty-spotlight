@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 export function NavigationProgressBar() {
@@ -8,10 +8,14 @@ export function NavigationProgressBar() {
   const searchParams = useSearchParams();
   const [isNavigating, setIsNavigating] = useState(false);
   const [progress, setProgress] = useState(0);
+  const bumpTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const safetyTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Reset when route change completes
   useEffect(() => {
     if (isNavigating) {
+      if (bumpTimerRef.current) clearTimeout(bumpTimerRef.current);
+      if (safetyTimerRef.current) clearTimeout(safetyTimerRef.current);
       setProgress(100);
       const timer = setTimeout(() => {
         setIsNavigating(false);
@@ -41,23 +45,36 @@ export function NavigationProgressBar() {
         !e.shiftKey &&
         !e.altKey
       ) {
-        // If clicking the exact current full URL with hash, skip
+        // If clicking hash or exact current URL, skip
         const currentUrl = window.location.pathname + window.location.search;
-        if (href === currentUrl || href === window.location.pathname) {
+        if (href === currentUrl || href === window.location.pathname || href.startsWith("#")) {
           return;
         }
+
+        if (bumpTimerRef.current) clearTimeout(bumpTimerRef.current);
+        if (safetyTimerRef.current) clearTimeout(safetyTimerRef.current);
 
         setIsNavigating(true);
         setProgress(30);
 
-        setTimeout(() => {
+        bumpTimerRef.current = setTimeout(() => {
           setProgress((prev) => (prev < 80 ? 75 : prev));
         }, 150);
+
+        // Safety fallback: if navigation fails or aborts, reset after 4s
+        safetyTimerRef.current = setTimeout(() => {
+          setIsNavigating(false);
+          setProgress(0);
+        }, 4000);
       }
     };
 
     document.addEventListener("click", handleClick, { capture: true });
-    return () => document.removeEventListener("click", handleClick, { capture: true });
+    return () => {
+      document.removeEventListener("click", handleClick, { capture: true });
+      if (bumpTimerRef.current) clearTimeout(bumpTimerRef.current);
+      if (safetyTimerRef.current) clearTimeout(safetyTimerRef.current);
+    };
   }, []);
 
   if (!isNavigating && progress === 0) return null;
