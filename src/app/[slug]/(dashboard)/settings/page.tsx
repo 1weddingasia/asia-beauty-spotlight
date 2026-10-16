@@ -71,6 +71,9 @@ export default function AccountSettingsPage() {
         setPassword("");
         setConfirmPassword("");
         updatedSomething = true;
+        
+        // Trigger security notification via Resend in the background
+        fetch('/api/auth/notify-password-changed', { method: 'POST' }).catch(() => {});
       }
       
       if (businessId && telegramChatId !== (pageContent.telegram_chat_id || "")) {
