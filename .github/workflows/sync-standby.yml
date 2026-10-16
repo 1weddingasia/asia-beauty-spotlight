@@ -1,0 +1,29 @@
+name: Automated Standby Database Sync
+
+on:
+  schedule:
+    # Chạy tự động mỗi ngày lúc 19:00 UTC (tức 02:00 sáng giờ Việt Nam)
+    - cron: '0 19 * * *'
+  workflow_dispatch: # Cho phép bấm nút "Run workflow" thủ công trên GitHub bất cứ lúc nào
+
+jobs:
+  sync-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Execute Replication to Standby
+        env:
+          DATABASE_URL: ${{ secrets.PRIMARY_DATABASE_URL }}
+          STANDBY_DATABASE_URL: ${{ secrets.STANDBY_DATABASE_URL }}
+        run: node scripts/sync_to_standby.js
