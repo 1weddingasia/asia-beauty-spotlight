@@ -32,39 +32,13 @@ export default function MapView({
     // ⚠️ BẮT BUỘC: Kinh độ đứng trước, Vĩ độ đứng sau (GeoJSON standard)
     const initialCenter: [number, number] = [106.682, 10.768];
 
-    // Cấu hình CartoDB Dark Raster Tiles: Ổn định 100%, tải siêu nhẹ, không lỗi CORS / WebGL worker
-    const cartoDarkStyle: any = {
-      version: 8,
-      sources: {
-        'carto-dark': {
-          type: 'raster',
-          tiles: [
-            'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-            'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-            'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-            'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-          ],
-          tileSize: 256,
-          attribution: '&copy; OpenStreetMap &copy; CARTO',
-        },
-      },
-      layers: [
-        {
-          id: 'carto-dark-layer',
-          type: 'raster',
-          source: 'carto-dark',
-          minzoom: 0,
-          maxzoom: 20,
-        },
-      ],
-    };
-
+    // Nguồn bản đồ OpenFreeMap Dark: Miễn phí 100%, không cần API key, sạch bóng watermark, hiển thị trọn vẹn đường phố Sài Gòn
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style: cartoDarkStyle,
-      center: initialCenter,
-      zoom: 13.5,
-      pitch: 45, // Góc nhìn 2.5D nghiêng nhẹ nhàng sang trọng
+      style: 'https://tiles.openfreemap.org/styles/dark',
+      center: [106.67, 10.77], // [lng, lat] TP.HCM
+      zoom: 13,
+      pitch: 60, // Góc nhìn 2.5D sang trọng
       bearing: -15,
       attributionControl: false,
     });
@@ -73,33 +47,33 @@ export default function MapView({
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
 
     map.on('load', () => {
-      // Bật hiệu ứng 3D buildings (fill-extrusion) nếu style hỗ trợ
+      // Bật hiệu ứng 3D buildings nếu source openmaptiles có sẵn
       const layers = map.getStyle().layers;
       const labelLayerId = layers?.find(
         (l: any) => l.type === 'symbol' && l.layout && 'text-field' in l.layout
       )?.id;
 
-      if (!map.getLayer('3d-buildings') && map.getSource('carto')) {
+      if (!map.getLayer('3d-buildings') && map.getSource('openmaptiles')) {
         try {
           map.addLayer(
             {
               id: '3d-buildings',
-              source: 'carto',
+              source: 'openmaptiles',
               'source-layer': 'building',
               filter: ['==', 'extrude', 'true'],
               type: 'fill-extrusion',
               minzoom: 14,
               paint: {
-                'fill-extrusion-color': '#1f2937',
+                'fill-extrusion-color': '#1a2234',
                 'fill-extrusion-height': ['get', 'height'],
                 'fill-extrusion-base': ['get', 'min_height'],
-                'fill-extrusion-opacity': 0.6,
+                'fill-extrusion-opacity': 0.5,
               },
             },
             labelLayerId
           );
         } catch {
-          // Fallback an toàn nếu carto vector layer không có building
+          // Fallback an toàn
         }
       }
     });
