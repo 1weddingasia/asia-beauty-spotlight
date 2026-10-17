@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Store, Ticket, Users, Settings, CalendarDays } from "lucide-react";
+import { LayoutDashboard, Store, Ticket, Users, Settings, CalendarDays, Sparkles } from "lucide-react";
 
 export default function SidebarNav({ slug }: { slug: string }) {
   const pathname = usePathname();
@@ -11,6 +11,7 @@ export default function SidebarNav({ slug }: { slug: string }) {
     { href: `/${slug}/dashboard`, label: "Tổng quan", icon: LayoutDashboard },
     { href: `/${slug}/leads`, label: "Booking & Nhận ưu đãi", icon: CalendarDays },
     { href: `/${slug}/deals`, label: "Ưu đãi & Dịch vụ", icon: Ticket },
+    { href: `/${slug}/profile?tab=party`, label: "Nhận Tiệc Tất Niên 🎉", icon: Sparkles },
     { href: `/${slug}/customers`, label: "Danh bạ Khách hàng", icon: Users },
     { href: `/${slug}/profile`, label: "Chỉnh sửa Gian hàng", icon: Store },
     { href: `/${slug}/settings`, label: "Cài đặt Tài khoản", icon: Settings },

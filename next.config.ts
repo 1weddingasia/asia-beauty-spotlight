@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.me" },
     ],
   },
+  transpilePackages: ['maplibre-gl'],
 };
 
 export default nextConfig;

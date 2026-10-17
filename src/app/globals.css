@@ -204,3 +204,28 @@
     letter-spacing: -0.02em;
   }
 }
+
+/* ══════════════════════════════════════════════════════
+ * PHỐ TIỆC TẤT NIÊN (Route: /tat-nien) STYLES
+ * ══════════════════════════════════════════════════════ */
+
+@keyframes vip-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.7), 0 0 24px rgba(217, 119, 6, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(251, 191, 36, 1), 0 0 40px rgba(245, 158, 11, 0.75);
+    transform: scale(1.06);
+  }
+}
+
+.vip-pin-glow {
+  animation: vip-pulse-glow 2.2s infinite ease-in-out;
+}
+
+/* Tối ưu MapLibre marker z-index & smooth rendering */
+.maplibregl-marker {
+  cursor: pointer;
+  will-change: transform;
+}

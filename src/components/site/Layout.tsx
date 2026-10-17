@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin, Building2, Home, Gift, LayoutGrid, Phone } from "lucide-react";
+import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin, Building2, Home, Gift, LayoutGrid, Phone, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { getSiteConfig, type SiteConfig } from "@/config/site-config";
@@ -213,6 +213,13 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
             >
               Ưu đãi
             </Link>
+            <Link
+              href="/tat-nien"
+              className="text-xs tracking-[0.18em] uppercase font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1 transition-colors"
+            >
+              <Sparkles className="size-3.5" />
+              <span>Phố Tiệc</span>
+            </Link>
             {/* Danh Mục dropdown */}
             <NavDropdown
               label="Danh Mục"
@@ -283,6 +290,10 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               <Link href="/uu-dai" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
                 <Gift className="size-4 text-amber-500" />
                 <span>Khám phá Ưu đãi</span>
+              </Link>
+              <Link href="/tat-nien" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
+                <Sparkles className="size-4 text-amber-500" />
+                <span>Phố Tiệc Tất Niên 🎉</span>
               </Link>
               <button
                 onClick={() => setMobileMenuSection("categories")}
