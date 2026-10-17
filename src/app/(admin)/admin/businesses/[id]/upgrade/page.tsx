@@ -18,8 +18,8 @@ export default function UpgradePage({ params }: { params: Promise<{ id: string }
   const [checking, setChecking] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const UPGRADE_AMOUNT = 399000;
-  const BANK_ACC = "0918731411";
+  const UPGRADE_AMOUNT = 500000;
+  const BANK_ACC = "00003554020";
   const BANK_NAME = "TPBank";
   
   // We can only generate the transfer content once we have the business slug

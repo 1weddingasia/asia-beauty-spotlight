@@ -122,13 +122,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true, message: 'Transfer amount too small for upgrade' });
       }
 
-      let business = null;
+      let business: any = null;
 
       // 1. Tìm Business ID bằng slug hoặc phone
       if (targetSlug) {
         const { data, error } = await supabase
           .from('businesses')
-          .select('id, name')
+          .select('id, name, slug, phone, email, owner_id')
           .eq('slug', targetSlug)
           .maybeSingle();
         if (error) console.error("Error finding business by slug:", error);
@@ -138,7 +138,7 @@ export async function POST(request: Request) {
       if (!business && targetPhone) {
         const { data, error } = await supabase
           .from('businesses')
-          .select('id, name')
+          .select('id, name, slug, phone, email, owner_id')
           .eq('phone', targetPhone)
           .maybeSingle();
         if (error) console.error("Error finding business by phone:", error);
@@ -146,10 +146,10 @@ export async function POST(request: Request) {
       }
 
       if (business) {
-        // 2. Lấy ID của gói VIP (ví dụ gói có tên 'VIP' hoặc gói có giá > 0 đầu tiên)
+        // 2. Lấy thông tin của gói VIP (ví dụ gói có tên 'VIP' hoặc 'Premium')
         const { data: plan } = await supabase
           .from('plans')
-          .select('id')
+          .select('id, name, features, price_yearly')
           .eq('is_active', true)
           .ilike('name', '%Premium%')
           .limit(1)
@@ -157,6 +157,7 @@ export async function POST(request: Request) {
 
         if (plan) {
           // 3. Tạo membership mới (1 năm)
+          const startsAt = new Date();
           const expiresAt = new Date();
           expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 năm
 
@@ -164,7 +165,7 @@ export async function POST(request: Request) {
             business_id: business.id,
             plan_id: plan.id,
             status: 'active',
-            starts_at: new Date().toISOString(),
+            starts_at: startsAt.toISOString(),
             expires_at: expiresAt.toISOString(),
           });
 
@@ -173,7 +174,50 @@ export async function POST(request: Request) {
             .update({ is_featured: true, plan_id: plan.id, plan_tier: 'premium' })
             .eq('id', business.id);
 
+          // 5. Cập nhật trạng thái transaction
+          await supabase.from('transactions')
+            .update({ processed: true, user_id: business.owner_id })
+            .eq('transaction_id', payload.id.toString());
+
           console.log(`Successfully upgraded business ${business.name} to VIP via SePay transaction ${payload.id}`);
+
+          // 6. Gửi email xác nhận thanh toán & kích hoạt gói thành viên qua Resend (hi@1booking.asia)
+          try {
+            let targetRecipientEmail = business.email;
+            if (!targetRecipientEmail && business.owner_id) {
+              const { data: ownerUser } = await supabase.auth.admin.getUserById(business.owner_id);
+              if (ownerUser?.user?.email) {
+                targetRecipientEmail = ownerUser.user.email;
+              }
+            }
+
+            if (targetRecipientEmail) {
+              const { sendPaymentConfirmationEmail } = await import('@/lib/payment-email');
+              const emailResult = await sendPaymentConfirmationEmail({
+                recipientEmail: targetRecipientEmail,
+                recipientName: business.name || 'Quý Đối Tác',
+                businessName: business.name || 'Gian hàng đối tác',
+                businessSlug: business.slug,
+                planName: plan.name || 'Gói Thành Viên Doanh Nghiệp VIP (1 Năm)',
+                planTier: 'premium',
+                amount: payload.transferAmount,
+                transactionCode: payload.code || `SP-${payload.id}`,
+                paymentDate: payload.transactionDate ? new Date(payload.transactionDate) : new Date(),
+                paymentMethod: 'Quét mã VietQR Ngân Hàng (24/7)',
+                accountNumber: payload.accountNumber ? `${payload.accountNumber} (${payload.gateway || 'TPBank'})` : '00003554020 - TPBank',
+                startsAt: startsAt,
+                expiresAt: expiresAt,
+                features: Array.isArray(plan.features) && plan.features.length > 0 
+                  ? plan.features 
+                  : undefined,
+              });
+              console.log(`[SePay Webhook] Payment confirmation email dispatched to ${targetRecipientEmail}:`, emailResult);
+            } else {
+              console.warn(`[SePay Webhook] Business ${business.name} (id: ${business.id}) has no email or owner email found. Skipping email dispatch.`);
+            }
+          } catch (emailErr) {
+            console.error('[SePay Webhook] Error sending payment confirmation email:', emailErr);
+          }
         }
       }
     }
