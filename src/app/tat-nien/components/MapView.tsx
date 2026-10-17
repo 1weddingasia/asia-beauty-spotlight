@@ -7,6 +7,17 @@ import * as maplibregl from 'maplibre-gl';
 import { PartyVenue } from '@/types/party';
 import { createPinElement } from './VenuePin';
 
+// ❗ KHẮC PHỤC TRIỆT ĐỂ BẪY WEBPACK / NEXT.JS:
+// Next.js chunks làm sai đường dẫn worker (404), dẫn đến lỗi "Worker failed to load".
+// Bắt buộc trỏ thẳng về file worker tĩnh nội bộ được lưu tại /maplibre-gl-worker.mjs
+if (typeof window !== 'undefined') {
+  try {
+    maplibregl.setWorkerUrl('/maplibre-gl-worker.mjs');
+  } catch (err) {
+    console.warn('[MapView] Lỗi khởi tạo workerUrl:', err);
+  }
+}
+
 interface MapViewProps {
   venues: PartyVenue[];
   filteredVenueIds: Set<string>;
@@ -27,10 +38,6 @@ export default function MapView({
   // 1. Khởi tạo MapLibre một lần duy nhất
   useEffect(() => {
     if (!mapContainer.current) return;
-
-    // Default center: Hồ Chí Minh [lng, lat]
-    // ⚠️ BẮT BUỘC: Kinh độ đứng trước, Vĩ độ đứng sau (GeoJSON standard)
-    const initialCenter: [number, number] = [106.682, 10.768];
 
     // Nguồn bản đồ OpenFreeMap Dark: Miễn phí 100%, không cần API key, sạch bóng watermark, hiển thị trọn vẹn đường phố Sài Gòn
     const map = new maplibregl.Map({
