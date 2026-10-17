@@ -27,7 +27,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized: Admin permission required' }, { status: 401 });
     }
 
-    const body = await req.json();
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: 'Body JSON không hợp lệ' }, { status: 400 });
+    }
+
     const {
       recipientEmail,
       recipientName,

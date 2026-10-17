@@ -397,10 +397,12 @@ export async function sendPaymentConfirmationEmail(payload: PaymentEmailPayload)
     const subject = `[Xác nhận thanh toán] Kích hoạt thành công ${payload.planName} - ${payload.businessName}`;
     const htmlContent = generatePaymentConfirmationHtml(payload);
 
-    console.log(`[sendPaymentConfirmationEmail] Sending receipt to ${toAddress} from ${fromAddress}...`);
+    const maskedEmail = toAddress.replace(/^(.)(.*)(@.*)$/, (_, a, b, c) => `${a}***${c}`);
+    console.log(`[sendPaymentConfirmationEmail] Sending receipt to ${maskedEmail} from ${fromAddress}...`);
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
+      signal: AbortSignal.timeout(10000),
       headers: {
         'Authorization': `Bearer ${resendKey}`,
         'Content-Type': 'application/json',
