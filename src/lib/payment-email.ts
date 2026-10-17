@@ -1,7 +1,8 @@
 /**
- * 1Booking.Asia & 1Beauty.Asia
+ * 1Booking.Asia
  * Dịch vụ tạo và gửi Email Xác Nhận Thanh Toán & Kích Hoạt Gói Thành Viên
  * Gửi tự động qua Resend API từ hi@1booking.asia
+ * Tối ưu hóa để vào thẳng Hộp Thư Chính (Inbox), tuyệt đối không bị lọc Spam
  */
 
 export interface PaymentEmailPayload {
@@ -61,14 +62,26 @@ function formatDate(dateInput?: string | Date): string {
 }
 
 /**
- * Tạo nội dung HTML Email Xác nhận thanh toán sang trọng, chuẩn Responsive
+ * Danh sách quyền lợi mặc định chuẩn cho đối tác (không ghi quá đà Top 1, giữ mực thước chuyên nghiệp)
  */
-export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): string {
+export const DEFAULT_PLAN_FEATURES = [
+  'Huy hiệu Tích Xanh Đối Tác Xác Thực (Verified Partner)',
+  'Ưu tiên hiển thị nổi bật trong danh mục ngành & tìm kiếm địa phương',
+  'Mở khóa Đăng ảnh, Album & Bảng giá dịch vụ không giới hạn',
+  'Tích hợp Hotline bấm gọi trực tiếp & Nút liên kết Zalo/Facebook',
+  'Tặng kèm Chatbot AI tư vấn và chốt lịch tự động cho khách hàng 24/7',
+  'Báo cáo thống kê lượt xem, cuộc gọi và tương tác khách hàng theo thời gian thực'
+];
+
+/**
+ * Tạo nội dung Plain-Text để gửi kèm HTML (bắt buộc để giảm điểm SpamAssassin và vào Inbox Yahoo/Gmail)
+ */
+export function generatePaymentConfirmationPlainText(payload: PaymentEmailPayload): string {
   const {
     recipientName = 'Quý Đối Tác',
     businessName,
     businessSlug,
-    planName = 'Gói Thành Viên Doanh Nghiệp VIP (1 Năm)',
+    planName = 'Gói Thành Viên Doanh Nghiệp (1 Năm)',
     amount = 500000,
     transactionCode,
     paymentDate = new Date(),
@@ -76,14 +89,63 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
     accountNumber = '00003554020 - TPBank',
     startsAt = new Date(),
     expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-    features = [
-      'Huy hiệu Tích Xanh Đối Tác Xác Thực (Verified Partner)',
-      'Ưu tiên Top 1 hiển thị danh mục ngành & địa phương',
-      'Mở khóa Đăng ảnh, Album & Bảng giá dịch vụ không giới hạn',
-      'Tích hợp Hotline bấm gọi trực tiếp & Nút liên kết Zalo/Facebook',
-      'Tặng kèm Chatbot AI tư vấn và chốt lịch tự động cho khách hàng 24/7',
-      'Báo cáo thống kê lượt xem, cuộc gọi và tương tác khách hàng theo thời gian thực'
-    ],
+    features = DEFAULT_PLAN_FEATURES,
+  } = payload;
+
+  const storeUrl = businessSlug ? `https://1booking.asia/${businessSlug}` : 'https://1booking.asia';
+  const dashboardUrl = businessSlug ? `https://1booking.asia/${businessSlug}/dashboard` : 'https://1booking.asia';
+
+  return `
+1BOOKING.ASIA - XÁC NHẬN THANH TOÁN THÀNH CÔNG
+
+Kính gửi ${recipientName},
+
+Hệ thống 1Booking.Asia trân trọng thông báo chúng tôi đã nhận được thanh toán của Quý khách cho gian hàng ${businessName} qua phương thức quét mã VietQR tự động. Gói thành viên của Quý khách đã được kích hoạt thành công trên toàn hệ thống!
+
+--- CHI TIẾT BIÊN NHẬN THANH TOÁN ---
+• Mã giao dịch: #${transactionCode}
+• Thời gian: ${formatDateTime(paymentDate)}
+• Phương thức: ${paymentMethod}
+• Tài khoản nhận: ${accountNumber}
+• Trạng thái: Đã xác nhận thành công
+• Tổng số tiền: ${formatVND(amount)}
+
+--- THÔNG TIN GÓI THÀNH VIÊN ---
+• Gói dịch vụ: ${planName}
+• Thời hạn: Từ ${formatDate(startsAt)} đến ${formatDate(expiresAt)} (12 tháng)
+• Các quyền lợi đối tác đã kích hoạt:
+${features.map(f => `  + ${f}`).join('\n')}
+
+--- TRUY CẬP VÀ QUẢN LÝ ---
+• Xem trang gian hàng của bạn: ${storeUrl}
+• Vào bảng điều khiển quản trị shop: ${dashboardUrl}
+
+Nếu Quý khách cần hỗ trợ thêm thông tin hoặc hỗ trợ thiết lập gian hàng, vui lòng liên hệ với chúng tôi qua email: hi@1booking.asia.
+
+Trân trọng,
+Ban Quản Trị 1Booking.Asia
+Email: hi@1booking.asia
+Website: https://1booking.asia
+`.trim();
+}
+
+/**
+ * Tạo nội dung HTML Email Xác nhận thanh toán sang trọng, chuẩn Responsive, không dùng ảnh lỗi
+ */
+export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): string {
+  const {
+    recipientName = 'Quý Đối Tác',
+    businessName,
+    businessSlug,
+    planName = 'Gói Thành Viên Doanh Nghiệp (1 Năm)',
+    amount = 500000,
+    transactionCode,
+    paymentDate = new Date(),
+    paymentMethod = 'Quét mã VietQR Ngân Hàng (24/7)',
+    accountNumber = '00003554020 - TPBank',
+    startsAt = new Date(),
+    expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    features = DEFAULT_PLAN_FEATURES,
   } = payload;
 
   const formattedAmount = formatVND(amount);
@@ -91,21 +153,23 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
   const formattedStartDate = formatDate(startsAt);
   const formattedExpiryDate = formatDate(expiresAt);
   
+  // Đường dẫn chính là đường dẫn trực tiếp về trang gian hàng của họ
+  const storeUrl = businessSlug 
+    ? `https://1booking.asia/${businessSlug}` 
+    : 'https://1booking.asia';
+
   const dashboardUrl = businessSlug 
     ? `https://1booking.asia/${businessSlug}/dashboard` 
-    : 'https://1booking.asia';
-  const publicStoreUrl = businessSlug 
-    ? `https://1booking.asia/${businessSlug}` 
     : 'https://1booking.asia';
 
   const featureItemsHtml = features
     .map(
       (feat) => `
         <tr>
-          <td style="padding: 6px 0; vertical-align: top; width: 24px;">
+          <td style="padding: 7px 0; vertical-align: top; width: 22px;">
             <span style="display: inline-block; width: 18px; height: 18px; background-color: #D4AF37; color: #111827; border-radius: 50%; text-align: center; font-size: 11px; line-height: 18px; font-weight: bold;">✓</span>
           </td>
-          <td style="padding: 6px 0 6px 8px; color: #334155; font-size: 14px; line-height: 1.5;">
+          <td style="padding: 7px 0 7px 8px; color: #334155; font-size: 14px; line-height: 1.5;">
             ${feat}
           </td>
         </tr>
@@ -119,7 +183,9 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biên lai xác nhận thanh toán - 1Booking.Asia</title>
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Xác nhận thanh toán - 1Booking.Asia</title>
   <style>
     body {
       margin: 0;
@@ -138,13 +204,14 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
         border-radius: 0 !important;
       }
       .content-padding {
-        padding: 20px 16px !important;
+        padding: 24px 18px !important;
       }
       .receipt-row td {
         display: block !important;
         width: 100% !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
+        text-align: left !important;
       }
       .btn-cta {
         display: block !important;
@@ -157,27 +224,27 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
 <body style="margin: 0; padding: 24px 0; background-color: #f1f5f9;">
   <center>
     <!-- MAIN CONTAINER -->
-    <table class="container" role="presentation" width="600" cellpadding="0" cellspacing="0" style="width: 600px; max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04); margin: 0 auto; text-align: left;">
+    <table class="container" role="presentation" width="600" cellpadding="0" cellspacing="0" style="width: 600px; max-width: 600px; background-color: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); margin: 0 auto; text-align: left; border: 1px solid #e2e8f0;">
       
       <!-- TOP GOLD ACCENT LINE -->
       <tr>
-        <td style="height: 5px; background: linear-gradient(90deg, #996515 0%, #D4AF37 50%, #F3E5AB 80%, #D4AF37 100%);"></td>
+        <td style="height: 4px; background: linear-gradient(90deg, #996515 0%, #D4AF37 50%, #F3E5AB 80%, #D4AF37 100%);"></td>
       </tr>
 
-      <!-- BRAND HEADER (DARK SLATE & GOLD) -->
+      <!-- BRAND HEADER: SỬ DỤNG CHỮ THƯƠNG HIỆU THUẦN TÚY (FONT PLAYFAIR DISPLAY + GOLD) -->
+      <!-- Tuyệt đối không dùng ảnh raster lỗi hay nền ô ca-rô checkerboard -->
       <tr>
-        <td style="background-color: #0b0f19; padding: 32px 32px 28px 32px; text-align: center; border-bottom: 1px solid #1e293b;">
+        <td style="background-color: #0b0f19; padding: 28px 24px; text-align: center; border-bottom: 1px solid #1e293b;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td align="center">
                 <a href="https://1booking.asia" target="_blank" style="text-decoration: none; display: inline-block;">
-                  <img src="https://1booking.asia/images/logo-1booking.png" alt="1Booking.Asia" width="180" style="max-width: 180px; height: auto; display: block; margin: 0 auto 12px auto;" onerror="this.style.display='none'" />
-                  <div style="font-size: 22px; font-weight: 800; letter-spacing: 2px; color: #D4AF37; text-transform: uppercase; font-family: 'Playfair Display', Georgia, serif;">
-                    1BOOKING<span style="color: #ffffff;">.ASIA</span>
+                  <div style="font-family: 'Playfair Display', Georgia, serif; font-size: 32px; font-weight: 800; letter-spacing: 1px; line-height: 1.2;">
+                    <span style="color: #ffffff;">1Booking</span><span style="color: #D4AF37;">.Asia</span>
                   </div>
                 </a>
-                <div style="font-size: 11px; letter-spacing: 3px; color: #94a3b8; text-transform: uppercase; margin-top: 6px; font-weight: 500;">
-                  PREMIUM DIRECTORY &amp; SMART BOOKING ECOSYSTEM
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 3px; color: #94a3b8; text-transform: uppercase; margin-top: 6px;">
+                  HỆ SINH THÁI ĐẶT LỊCH &amp; DANH BẠ SỐ CAO CẤP
                 </div>
               </td>
             </tr>
@@ -185,17 +252,17 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
         </td>
       </tr>
 
-      <!-- SUCCESS STATUS BANNER -->
+      <!-- SUCCESS STATUS BANNER (XANH NGỌC LỤC BẢO SANG TRỌNG) -->
       <tr>
-        <td style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); padding: 20px 32px; text-align: center; border-bottom: 2px solid #D4AF37;">
+        <td style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); padding: 18px 28px; text-align: center; border-bottom: 2px solid #D4AF37;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td align="center">
-                <span style="display: inline-block; background-color: #10b981; color: #ffffff; width: 28px; height: 28px; border-radius: 50%; font-size: 16px; line-height: 28px; font-weight: bold; margin-bottom: 8px;">✓</span>
-                <div style="font-size: 18px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase;">
-                  XÁC NHẬN ĐÃ NHẬN THANH TOÁN THÀNH CÔNG
+                <div style="display: inline-block; width: 26px; height: 26px; border-radius: 50%; background-color: #10b981; color: #ffffff; font-size: 15px; line-height: 26px; font-weight: bold; margin-bottom: 6px;">✓</div>
+                <div style="font-size: 17px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">
+                  Xác Nhận Đã Nhận Thanh Toán Thành Công
                 </div>
-                <div style="font-size: 13px; color: #a7f3d0; margin-top: 4px;">
+                <div style="font-size: 13px; color: #a7f3d0; margin-top: 2px;">
                   Biên lai điện tử &amp; Kích hoạt gói thành viên đối tác
                 </div>
               </td>
@@ -206,65 +273,65 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
 
       <!-- BODY CONTENT -->
       <tr>
-        <td class="content-padding" style="padding: 32px 32px 24px 32px;">
+        <td class="content-padding" style="padding: 28px 30px 24px 30px;">
           
           <!-- GREETING -->
-          <p style="font-size: 15px; line-height: 1.6; color: #334155; margin: 0 0 16px 0;">
+          <p style="font-size: 15px; line-height: 1.6; color: #334155; margin: 0 0 14px 0;">
             Kính gửi <strong>${recipientName}</strong>,
           </p>
-          <p style="font-size: 15px; line-height: 1.6; color: #334155; margin: 0 0 24px 0;">
-            Hệ thống <strong>1Booking.Asia &amp; 1Beauty.Asia</strong> trân trọng thông báo chúng tôi đã nhận được thanh toán của Quý khách cho gian hàng <strong style="color: #0f172a; text-decoration: underline;">${businessName}</strong> qua phương thức quét mã QR tự động. Gói thành viên của Quý khách đã được kích hoạt thành công trên toàn hệ thống!
+          <p style="font-size: 15px; line-height: 1.6; color: #334155; margin: 0 0 22px 0;">
+            Hệ thống <strong>1Booking.Asia</strong> trân trọng thông báo chúng tôi đã nhận được thanh toán của Quý khách cho gian hàng <strong style="color: #0f172a; text-decoration: underline;">${businessName}</strong> qua phương thức quét mã VietQR tự động. Gói thành viên của Quý khách đã được kích hoạt thành công trên toàn hệ thống!
           </p>
 
           <!-- RECEIPT SUMMARY BOX -->
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 24px; overflow: hidden;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 22px; overflow: hidden;">
             <tr>
-              <td style="padding: 16px 20px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
-                <div style="font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #64748b; text-transform: uppercase;">
-                  CHI TIẾT BIÊN NHẬN THANH TOÁN (RECEIPT)
+              <td style="padding: 14px 18px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: #475569; text-transform: uppercase;">
+                  Chi Tiết Biên Nhận Thanh Toán
                 </div>
               </td>
             </tr>
             <tr>
-              <td style="padding: 16px 20px;">
+              <td style="padding: 16px 18px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr class="receipt-row">
-                    <td style="padding: 8px 0; font-size: 14px; color: #64748b; width: 45%;">Mã giao dịch:</td>
-                    <td style="padding: 8px 0; font-size: 14px; font-weight: 700; color: #0f172a; font-family: monospace;" align="right">
+                    <td style="padding: 7px 0; font-size: 14px; color: #64748b; width: 45%;">Mã giao dịch:</td>
+                    <td style="padding: 7px 0; font-size: 14px; font-weight: 700; color: #0f172a; font-family: monospace;" align="right">
                       #${transactionCode}
                     </td>
                   </tr>
                   <tr class="receipt-row">
-                    <td style="padding: 8px 0; font-size: 14px; color: #64748b; border-top: 1px dashed #e2e8f0;">Thời gian giao dịch:</td>
-                    <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: #0f172a; border-top: 1px dashed #e2e8f0;" align="right">
+                    <td style="padding: 7px 0; font-size: 14px; color: #64748b; border-top: 1px dashed #e2e8f0;">Thời gian:</td>
+                    <td style="padding: 7px 0; font-size: 14px; font-weight: 600; color: #0f172a; border-top: 1px dashed #e2e8f0;" align="right">
                       ${formattedPaymentDate}
                     </td>
                   </tr>
                   <tr class="receipt-row">
-                    <td style="padding: 8px 0; font-size: 14px; color: #64748b; border-top: 1px dashed #e2e8f0;">Phương thức:</td>
-                    <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: #0f172a; border-top: 1px dashed #e2e8f0;" align="right">
+                    <td style="padding: 7px 0; font-size: 14px; color: #64748b; border-top: 1px dashed #e2e8f0;">Phương thức:</td>
+                    <td style="padding: 7px 0; font-size: 14px; font-weight: 600; color: #0f172a; border-top: 1px dashed #e2e8f0;" align="right">
                       ${paymentMethod}
                     </td>
                   </tr>
                   <tr class="receipt-row">
-                    <td style="padding: 8px 0; font-size: 14px; color: #64748b; border-top: 1px dashed #e2e8f0;">Tài khoản nhận:</td>
-                    <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: #0f172a; border-top: 1px dashed #e2e8f0;" align="right">
+                    <td style="padding: 7px 0; font-size: 14px; color: #64748b; border-top: 1px dashed #e2e8f0;">Tài khoản nhận:</td>
+                    <td style="padding: 7px 0; font-size: 14px; font-weight: 600; color: #0f172a; border-top: 1px dashed #e2e8f0;" align="right">
                       ${accountNumber}
                     </td>
                   </tr>
                   <tr class="receipt-row">
-                    <td style="padding: 8px 0; font-size: 14px; color: #64748b; border-top: 1px dashed #e2e8f0;">Trạng thái ghi nhận:</td>
-                    <td style="padding: 8px 0; border-top: 1px dashed #e2e8f0;" align="right">
-                      <span style="display: inline-block; background-color: #dcfce7; color: #15803d; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; border: 1px solid #bbf7d0;">
-                        ● ĐÃ XÁC NHẬN 100%
+                    <td style="padding: 7px 0; font-size: 14px; color: #64748b; border-top: 1px dashed #e2e8f0;">Trạng thái ghi nhận:</td>
+                    <td style="padding: 7px 0; border-top: 1px dashed #e2e8f0;" align="right">
+                      <span style="display: inline-block; background-color: #dcfce7; color: #15803d; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 20px; border: 1px solid #bbf7d0;">
+                        ✓ Đã xác nhận thành công
                       </span>
                     </td>
                   </tr>
                   <tr class="receipt-row">
-                    <td style="padding: 12px 0 4px 0; font-size: 15px; font-weight: 700; color: #0f172a; border-top: 2px solid #e2e8f0;">
+                    <td style="padding: 10px 0 2px 0; font-size: 15px; font-weight: 700; color: #0f172a; border-top: 2px solid #e2e8f0;">
                       Tổng số tiền:
                     </td>
-                    <td style="padding: 12px 0 4px 0; font-size: 20px; font-weight: 800; color: #b45309; border-top: 2px solid #e2e8f0;" align="right">
+                    <td style="padding: 10px 0 2px 0; font-size: 19px; font-weight: 800; color: #b45309; border-top: 2px solid #e2e8f0;" align="right">
                       ${formattedAmount}
                     </td>
                   </tr>
@@ -274,22 +341,22 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
           </table>
 
           <!-- MEMBERSHIP PLAN CARD -->
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #fffdfa; border: 2px solid #D4AF37; border-radius: 12px; margin-bottom: 28px; overflow: hidden; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.1);">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #fffdfa; border: 2px solid #D4AF37; border-radius: 10px; margin-bottom: 24px; overflow: hidden;">
             <tr>
-              <td style="padding: 16px 20px; background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a;">
+              <td style="padding: 14px 18px; background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
                     <td>
-                      <span style="font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #92400e; text-transform: uppercase; background-color: #fef08a; padding: 2px 8px; border-radius: 4px; border: 1px solid #fcd34d;">
-                        GÓI DỊCH VỤ ĐỐI TÁC
+                      <span style="font-size: 11px; font-weight: 800; letter-spacing: 1px; color: #92400e; text-transform: uppercase; background-color: #fef08a; padding: 2px 8px; border-radius: 4px; border: 1px solid #fcd34d;">
+                        Gói Dịch Vụ Đối Tác
                       </span>
-                      <div style="font-size: 18px; font-weight: 800; color: #78350f; margin-top: 6px;">
+                      <div style="font-size: 17px; font-weight: 800; color: #78350f; margin-top: 5px;">
                         ${planName}
                       </div>
                     </td>
                     <td align="right" style="vertical-align: middle;">
-                      <span style="display: inline-block; background-color: #15803d; color: #ffffff; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px;">
-                        KÍCH HOẠT
+                      <span style="display: inline-block; background-color: #15803d; color: #ffffff; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 14px;">
+                        Đã kích hoạt
                       </span>
                     </td>
                   </tr>
@@ -297,22 +364,22 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
               </td>
             </tr>
             <tr>
-              <td style="padding: 20px;">
+              <td style="padding: 18px;">
                 <!-- DATES -->
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px; background-color: #ffffff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 12px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14px; background-color: #ffffff; border: 1px solid #f1f5f9; border-radius: 6px; padding: 10px;">
                   <tr>
-                    <td style="padding: 4px 8px; font-size: 13px; color: #64748b;">
+                    <td style="padding: 2px 6px; font-size: 13px; color: #64748b;">
                       Ngày kích hoạt: <strong style="color: #0f172a;">${formattedStartDate}</strong>
                     </td>
-                    <td style="padding: 4px 8px; font-size: 13px; color: #64748b;" align="right">
+                    <td style="padding: 2px 6px; font-size: 13px; color: #64748b;" align="right">
                       Hiệu lực đến: <strong style="color: #b45309;">${formattedExpiryDate}</strong>
                     </td>
                   </tr>
                 </table>
 
                 <!-- PRIVILEGES LIST -->
-                <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.5px; color: #0f172a; text-transform: uppercase; margin-bottom: 10px;">
-                  ĐẶC QUYỀN ĐỐI TÁC ĐÃ ĐƯỢC MỞ KHÓA:
+                <div style="font-size: 12.5px; font-weight: 700; letter-spacing: 0.5px; color: #0f172a; text-transform: uppercase; margin-bottom: 8px;">
+                  Quyền lợi gói thành viên đã kích hoạt:
                 </div>
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   ${featureItemsHtml}
@@ -321,16 +388,16 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
             </tr>
           </table>
 
-          <!-- CALL TO ACTION BUTTON -->
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+          <!-- PRIMARY CALL TO ACTION: TRUY CẬP TRỰC TIẾP TRANG GIAN HÀNG CỦA HỌ -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 22px;">
             <tr>
               <td align="center">
-                <a href="${dashboardUrl}" target="_blank" class="btn-cta" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color: #0b0f19; font-size: 15px; font-weight: 800; text-decoration: none; padding: 15px 36px; border-radius: 30px; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">
-                  TRUY CẬP TRANG QUẢN TRỊ SHOP →
+                <a href="${storeUrl}" target="_blank" class="btn-cta" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color: #0b0f19; font-size: 15px; font-weight: 800; text-decoration: none; padding: 14px 34px; border-radius: 25px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);">
+                  Xem Trang Gian Hàng Của Bạn →
                 </a>
-                <div style="margin-top: 12px;">
-                  <a href="${publicStoreUrl}" target="_blank" style="font-size: 13px; color: #64748b; text-decoration: underline;">
-                    Xem trang gian hàng trên sàn 1Booking.Asia
+                <div style="margin-top: 10px;">
+                  <a href="${dashboardUrl}" target="_blank" style="font-size: 13px; color: #64748b; text-decoration: underline;">
+                    Vào bảng điều khiển quản trị shop
                   </a>
                 </div>
               </td>
@@ -338,28 +405,25 @@ export function generatePaymentConfirmationHtml(payload: PaymentEmailPayload): s
           </table>
 
           <!-- SUPPORT & NOTICE -->
-          <div style="background-color: #f8fafc; border-left: 3px solid #D4AF37; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 8px;">
+          <div style="background-color: #f8fafc; border-left: 3px solid #D4AF37; padding: 12px 14px; border-radius: 0 6px 6px 0; margin-bottom: 4px;">
             <p style="font-size: 13px; line-height: 1.5; color: #475569; margin: 0;">
-              <strong>Hỗ trợ kỹ thuật &amp; Thiết lập gian hàng:</strong> Nếu Quý khách cần cập nhật bảng giá dịch vụ, thêm chi nhánh hoặc tùy biến giao diện, vui lòng liên hệ trực tiếp với chúng tôi qua email <a href="mailto:hi@1booking.asia" style="color: #b45309; font-weight: bold; text-decoration: none;">hi@1booking.asia</a> để được chuyên viên hỗ trợ ưu tiên 24/7.
+              <strong>Hỗ trợ kỹ thuật &amp; Thiết lập gian hàng:</strong> Nếu Quý khách cần cập nhật bảng giá dịch vụ, thêm hình ảnh hay tùy biến giao diện, đội ngũ chuyên viên của 1Booking.Asia luôn sẵn sàng hỗ trợ qua email <a href="mailto:hi@1booking.asia" style="color: #b45309; font-weight: bold; text-decoration: none;">hi@1booking.asia</a>.
             </p>
           </div>
 
         </td>
       </tr>
 
-      <!-- FOOTER (DARK & PRESTIGIOUS) -->
+      <!-- FOOTER -->
       <tr>
-        <td style="background-color: #0b0f19; padding: 28px 32px; border-top: 1px solid #1e293b; color: #94a3b8; font-size: 12px; line-height: 1.6; text-align: center;">
-          <div style="font-weight: 700; color: #e2e8f0; font-size: 13px; margin-bottom: 6px;">
-            1BOOKING.ASIA — NỀN TẢNG KẾT NỐI VÀ ĐẶT LỊCH THÔNG MINH
+        <td style="background-color: #0b0f19; padding: 24px 24px; border-top: 1px solid #1e293b; color: #94a3b8; font-size: 12px; line-height: 1.6; text-align: center;">
+          <div style="font-weight: 700; color: #e2e8f0; font-size: 13px; margin-bottom: 4px;">
+            1BOOKING.ASIA — NỀN TẢNG ĐẶT LỊCH VÀ DANH BẠ SỐ THÔNG MINH
           </div>
-          <div style="color: #64748b; margin-bottom: 12px;">
-            Hệ sinh thái liên kết: 1Booking.Asia &bull; 1Beauty.Asia
-          </div>
-          <div style="border-top: 1px solid #1e293b; padding-top: 12px; margin-top: 12px; color: #64748b; font-size: 11px;">
-            Email liên hệ chính thức: <a href="mailto:hi@1booking.asia" style="color: #D4AF37; text-decoration: none;">hi@1booking.asia</a><br>
-            Bạn nhận được email này vì đã thực hiện giao dịch thanh toán trên nền tảng 1Booking.Asia.<br>
-            &copy; 2026 1Booking.Asia. All rights reserved.
+          <div style="border-top: 1px solid #1e293b; padding-top: 10px; margin-top: 10px; color: #64748b; font-size: 11px;">
+            Email hỗ trợ chính thức: <a href="mailto:hi@1booking.asia" style="color: #D4AF37; text-decoration: none;">hi@1booking.asia</a><br>
+            Bạn nhận được email này vì đã thực hiện thanh toán trên hệ thống 1Booking.Asia.<br>
+            &copy; 2026 1Booking.Asia. Mọi quyền được bảo lưu.
           </div>
         </td>
       </tr>
@@ -386,7 +450,8 @@ export async function sendPaymentConfirmationEmail(payload: PaymentEmailPayload)
       return { success: false, error: 'Chưa cấu hình RESEND_API_KEY' };
     }
 
-    const fromAddress = process.env.RESEND_FROM || '1Booking.Asia - 1Beauty.Asia <hi@1booking.asia>';
+    // Dùng đúng 1Booking.Asia <hi@1booking.asia> để tránh spam filter heuristics
+    const fromAddress = '1Booking.Asia <hi@1booking.asia>';
     const toAddress = payload.recipientEmail;
 
     if (!toAddress || !toAddress.includes('@')) {
@@ -394,10 +459,12 @@ export async function sendPaymentConfirmationEmail(payload: PaymentEmailPayload)
       return { success: false, error: 'Địa chỉ email người nhận không hợp lệ' };
     }
 
-    const subject = `[Xác nhận thanh toán] Kích hoạt thành công ${payload.planName} - ${payload.businessName}`;
+    // Tiêu đề ngắn gọn, tự nhiên, không dùng dấu ngoặc vuông [] hay ALL CAPS
+    const subject = `Xác nhận thanh toán và kích hoạt gói thành viên - ${payload.businessName}`;
     const htmlContent = generatePaymentConfirmationHtml(payload);
+    const plainTextContent = generatePaymentConfirmationPlainText(payload);
 
-    const maskedEmail = toAddress.replace(/^(.)(.*)(@.*)$/, (_, a, b, c) => `${a}***${c}`);
+    const maskedEmail = toAddress.replace(/^(.)[^@]*(@.*)$/, '$1***$2');
     console.log(`[sendPaymentConfirmationEmail] Sending receipt to ${maskedEmail} from ${fromAddress}...`);
 
     const res = await fetch('https://api.resend.com/emails', {
@@ -412,10 +479,14 @@ export async function sendPaymentConfirmationEmail(payload: PaymentEmailPayload)
         to: [toAddress],
         subject: subject,
         html: htmlContent,
+        text: plainTextContent, // Multipart MIME (HTML + Text) giúp vượt qua bộ lọc Spam của Yahoo & Google
+        headers: {
+          'X-Entity-Ref-ID': payload.transactionCode,
+        },
       }),
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
       console.error('[sendPaymentConfirmationEmail] Resend API error response:', data);

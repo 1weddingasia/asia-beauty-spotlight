@@ -20,7 +20,7 @@ export async function POST() {
     }
 
     const safeEmail = escapeHtml(user.email);
-    const fromStr = process.env.RESEND_FROM || '1Booking.Asia - 1Beauty.Asia <hi@1booking.asia>';
+    const fromStr = process.env.RESEND_FROM || '1Booking.Asia <hi@1booking.asia>';
     const changeTime = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 
     const htmlContent = `

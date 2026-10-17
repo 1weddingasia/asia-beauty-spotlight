@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
     const safeEmail = escapeHtml(email);
     const safeActionLink = escapeHtml(actionLink);
-    const fromStr = process.env.RESEND_FROM || '1Booking.Asia - 1Beauty.Asia <hi@1booking.asia>';
+    const fromStr = process.env.RESEND_FROM || '1Booking.Asia <hi@1booking.asia>';
 
     const htmlContent = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
