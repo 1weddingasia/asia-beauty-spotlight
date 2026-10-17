@@ -32,12 +32,39 @@ export default function MapView({
     // ⚠️ BẮT BUỘC: Kinh độ đứng trước, Vĩ độ đứng sau (GeoJSON standard)
     const initialCenter: [number, number] = [106.682, 10.768];
 
+    // Cấu hình CartoDB Dark Raster Tiles: Ổn định 100%, tải siêu nhẹ, không lỗi CORS / WebGL worker
+    const cartoDarkStyle: any = {
+      version: 8,
+      sources: {
+        'carto-dark': {
+          type: 'raster',
+          tiles: [
+            'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+            'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+            'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+            'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+          ],
+          tileSize: 256,
+          attribution: '&copy; OpenStreetMap &copy; CARTO',
+        },
+      },
+      layers: [
+        {
+          id: 'carto-dark-layer',
+          type: 'raster',
+          source: 'carto-dark',
+          minzoom: 0,
+          maxzoom: 20,
+        },
+      ],
+    };
+
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+      style: cartoDarkStyle,
       center: initialCenter,
       zoom: 13.5,
-      pitch: 60, // Góc nhìn 2.5D
+      pitch: 45, // Góc nhìn 2.5D nghiêng nhẹ nhàng sang trọng
       bearing: -15,
       attributionControl: false,
     });
