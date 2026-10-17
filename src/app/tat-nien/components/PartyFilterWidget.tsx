@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
-import { PartyFilterState, PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS } from '@/types/party';
+import { PartyFilterState, PARTY_SPACES, PARTY_CUISINES } from '@/types/party';
 import { SlidersHorizontal, Sparkles, Send, CheckCircle2, RotateCcw } from 'lucide-react';
 
 interface PartyFilterWidgetProps {
@@ -84,7 +84,6 @@ export default function PartyFilterWidget({
 
       if (res.ok) {
         setIsSentSuccess(true);
-        setTimeout(() => setIsSentSuccess(false), 8000);
       }
     } catch (err) {
       console.error('Lỗi gửi yêu cầu tiệc:', err);
@@ -92,6 +91,13 @@ export default function PartyFilterWidget({
       setIsSubmitting(false);
     }
   };
+
+  // Tự động tắt thông báo gửi thành công sau 6s có cleanup
+  React.useEffect(() => {
+    if (!isSentSuccess) return;
+    const timer = setTimeout(() => setIsSentSuccess(false), 6000);
+    return () => clearTimeout(timer);
+  }, [isSentSuccess]);
 
   const hasActiveFilter =
     filter.guests > 0 ||
@@ -170,10 +176,10 @@ export default function PartyFilterWidget({
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {[
                   { label: 'Tất cả', val: 0 },
-                  { label: '15-30 khách', val: 20 },
-                  { label: '30-50 khách', val: 40 },
-                  { label: '50-100 khách', val: 60 },
-                  { label: '100+ khách', val: 120 },
+                  { label: '≥ 20 khách', val: 20 },
+                  { label: '≥ 40 khách', val: 40 },
+                  { label: '≥ 60 khách', val: 60 },
+                  { label: '≥ 100 khách', val: 100 },
                 ].map((item, idx) => (
                   <button
                     key={idx}
@@ -320,7 +326,7 @@ export default function PartyFilterWidget({
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs shadow-lg shadow-amber-950 transition-all flex items-center justify-center gap-1.5 active:scale-98 disabled:opacity-50"
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs shadow-lg shadow-amber-950 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] disabled:opacity-50"
                     >
                       {isSubmitting ? (
                         <span>Đang gửi thông tin...</span>

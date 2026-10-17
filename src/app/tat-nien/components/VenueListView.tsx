@@ -138,7 +138,7 @@ export default function VenueListView({ venues, onSelectOnMap }: VenueListViewPr
 
                 <Link
                   href={`/${venue.slug}`}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-xs font-extrabold shadow-md transition-all active:scale-98 text-center"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-xs font-extrabold shadow-md transition-all active:scale-[0.98] text-center"
                 >
                   <span>Xem Menu & Đặt Bàn</span>
                   <ExternalLink className="w-3.5 h-3.5" />

@@ -245,7 +245,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
             <Link
               href={`/${venue.slug}`}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-black text-sm font-extrabold shadow-lg shadow-amber-900/40 transition-all active:scale-98"
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-black text-sm font-extrabold shadow-lg shadow-amber-900/40 transition-all active:scale-[0.98]"
             >
               <span>Xem Menu & Đặt Bàn</span>
               <ExternalLink className="w-4 h-4" />
