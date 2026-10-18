@@ -102,8 +102,8 @@ export const PARTY_PERKS = [
 ] as const;
 
 export const DEFAULT_PARTY_PROFILE_VALUES = {
-  min_guests: 15,
-  max_guests: 150,
+  min_guests: 10,
+  max_guests: 200,
   num_vip_rooms: 0,
   price_min: 250000,
   price_max: 600000,

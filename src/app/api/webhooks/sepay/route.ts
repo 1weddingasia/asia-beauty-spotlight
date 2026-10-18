@@ -187,7 +187,7 @@ export async function POST(request: Request) {
               // Kiểm tra xem đã có party profile chưa để tránh ghi đè dữ liệu chủ quán đã tự cấu hình
               const { data: existingParty } = await supabase
                 .from('business_party_profiles')
-                .select('business_id, min_guests, max_guests, price_min, price_max, party_deal_highlight')
+                .select('business_id, min_guests, max_guests, num_vip_rooms, price_min, price_max, party_deal_highlight, is_vip')
                 .eq('business_id', business.id)
                 .maybeSingle();
 
@@ -195,6 +195,7 @@ export async function POST(request: Request) {
                 business_id: business.id,
                 min_guests: existingParty?.min_guests ?? DEFAULT_PARTY_PROFILE_VALUES.min_guests,
                 max_guests: existingParty?.max_guests ?? DEFAULT_PARTY_PROFILE_VALUES.max_guests,
+                num_vip_rooms: existingParty?.num_vip_rooms ?? DEFAULT_PARTY_PROFILE_VALUES.num_vip_rooms,
                 price_min: existingParty?.price_min ?? DEFAULT_PARTY_PROFILE_VALUES.price_min,
                 price_max: existingParty?.price_max ?? DEFAULT_PARTY_PROFILE_VALUES.price_max,
                 is_vip: Boolean(existingParty?.is_vip || isVipParty),

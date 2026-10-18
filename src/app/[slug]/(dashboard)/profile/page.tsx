@@ -278,11 +278,11 @@ export default function BusinessProfilePage() {
           .from("business_party_profiles")
           .upsert({
             business_id: business.id,
-            min_guests: Number(partyProfile.min_guests) || DEFAULT_PARTY_PROFILE_VALUES.min_guests,
-            max_guests: Number(partyProfile.max_guests) || DEFAULT_PARTY_PROFILE_VALUES.max_guests,
-            num_vip_rooms: Number(partyProfile.num_vip_rooms) || DEFAULT_PARTY_PROFILE_VALUES.num_vip_rooms,
-            price_min: Number(partyProfile.price_min) || DEFAULT_PARTY_PROFILE_VALUES.price_min,
-            price_max: Number(partyProfile.price_max) || DEFAULT_PARTY_PROFILE_VALUES.price_max,
+            min_guests: Number.isFinite(Number(partyProfile.min_guests)) && Number(partyProfile.min_guests) > 0 ? Number(partyProfile.min_guests) : DEFAULT_PARTY_PROFILE_VALUES.min_guests,
+            max_guests: Number.isFinite(Number(partyProfile.max_guests)) && Number(partyProfile.max_guests) > 0 ? Number(partyProfile.max_guests) : DEFAULT_PARTY_PROFILE_VALUES.max_guests,
+            num_vip_rooms: Number.isFinite(Number(partyProfile.num_vip_rooms)) ? Number(partyProfile.num_vip_rooms) : DEFAULT_PARTY_PROFILE_VALUES.num_vip_rooms,
+            price_min: Number.isFinite(Number(partyProfile.price_min)) && Number(partyProfile.price_min) > 0 ? Number(partyProfile.price_min) : DEFAULT_PARTY_PROFILE_VALUES.price_min,
+            price_max: Number.isFinite(Number(partyProfile.price_max)) && Number(partyProfile.price_max) > 0 ? Number(partyProfile.price_max) : DEFAULT_PARTY_PROFILE_VALUES.price_max,
             spaces_and_amenities: partyProfile.spaces_and_amenities || [],
             cuisines: partyProfile.cuisines || [],
             party_perks: partyProfile.party_perks || [],
