@@ -115,7 +115,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
           customer_name: bookingName.trim(),
           customer_phone: cleanPhone,
           deal_name: `Yêu Cầu Đặt Tiệc Tất Niên (${guestsCount} khách)`,
-          booking_time: partyDateStr || null,
+          booking_time: partyDateStr || 'Khảo sát ngày tiệc',
           cross_sell_items: bookingNotes.trim() ? `Yêu cầu tiệc: ${bookingNotes.trim().slice(0, 450)}` : `Khảo sát tiệc tất niên từ Phố Tiệc 2026`,
         }),
       });
@@ -382,8 +382,16 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                         type="number"
                         min={1}
                         max={venue.max_guests || 1000}
-                        value={bookingGuests}
-                        onChange={(e) => setBookingGuests(Math.max(1, Number(e.target.value) || venue.min_guests || 20))}
+                        value={bookingGuests || ''}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          setBookingGuests(raw === '' ? ('' as any) : Number(raw));
+                        }}
+                        onBlur={() => {
+                          if (!bookingGuests || Number(bookingGuests) < 1) {
+                            setBookingGuests(venue.min_guests || 20);
+                          }
+                        }}
                         className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition-colors"
                       />
                     </div>
