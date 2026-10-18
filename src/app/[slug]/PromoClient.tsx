@@ -69,13 +69,12 @@ export default function PromoClient({
 }) {
   const siteConfig = useSiteConfig();
   const b = business;
-  const isPartyMode = Boolean(partyProfile?.is_active || (partyProfile && isFnBCategory(b.category_slug)));
   const industryKey = b.page_content?.industry || b.category_slug || 'other';
   const ctaConfig = INDUSTRY_CTAS[industryKey] || INDUSTRY_CTAS['other'];
-  const actionName = isPartyMode ? 'Đặt Bàn Tiệc' : (b.page_content?.action_name || ctaConfig.btnText);
-  const modalTitle = isPartyMode ? 'Đặt Bàn Tiệc & Giữ Chỗ VIP' : ctaConfig.modalTitle;
+  const actionName = b.page_content?.action_name || ctaConfig.btnText;
+  const modalTitle = ctaConfig.modalTitle;
   const actionNameUpper = actionName.toUpperCase();
-  const ActionIcon = isPartyMode ? CalendarCheck : ctaConfig.icon;
+  const ActionIcon = ctaConfig.icon;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -342,11 +341,7 @@ export default function PromoClient({
   const partyMenus = Array.isArray(partyProfile?.set_menus) ? partyProfile.set_menus : [];
 
   return (
-    <div className={`min-h-screen relative transition-colors duration-300 ${isPartyMode ? 'pb-32 bg-[#0B0F17] text-zinc-100 selection:bg-amber-500 selection:text-black' : 'pb-24 md:pb-16 bg-[#FCFAF5] text-ink'}`}>
-      {/* Ambient Radial Glow cho chế độ Midnight Slate sang trọng */}
-      {isPartyMode && (
-        <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(217,119,6,0.12),rgba(0,0,0,0))] -z-10" />
-      )}
+    <div className="min-h-screen relative transition-colors duration-300 pb-24 md:pb-16 bg-[#FCFAF5] text-ink">
       <SiteHeader solid={false} />
 
       {/* Premium Hero Section */}
@@ -469,191 +464,36 @@ export default function PromoClient({
         </div>
       </div>
       <div id="deals-section" className="max-w-5xl mx-auto px-4 py-8 md:py-12 -mt-16 md:-mt-24 relative z-10">
-        {/* 🌟 KHỐI ĐẶC QUYỀN TIỆC TẤT NIÊN (DÀNH CHO F&B / PARTY VENUE) */}
-        {isPartyMode && partyProfile && (
-          <div className="mb-10 bg-gradient-to-b from-zinc-900/95 via-slate-900/90 to-zinc-950/95 rounded-3xl p-6 md:p-10 border border-amber-500/40 shadow-2xl shadow-amber-950/40 text-left relative overflow-hidden backdrop-blur-xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-            {/* VIP Party Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-zinc-800/80 pb-6">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-700 text-black text-xs font-black uppercase tracking-wider shadow-md">
-                    🎉 Sảnh Tiệc Tất Niên & Year-End Party VIP
-                  </span>
-                  {partyProfile.is_vip && (
-                    <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold">
-                      VIP Venue
-                    </span>
-                  )}
+        {/* 🌟 BANNER ĐẶC BIỆT KẾT NỐI SANG TRANG ĐẶT TIỆC RIÊNG (KHI QUÁN CÓ KÍCH HOẠT TIỆC) */}
+        {partyProfile && partyProfile.is_active && (
+          <div className="mb-10 bg-gradient-to-r from-amber-50 via-white to-amber-100/70 rounded-3xl p-6 md:p-8 border border-gold/40 shadow-xl shadow-gold/10 text-left relative overflow-hidden backdrop-blur-xl">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+              <div className="space-y-2 max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-900 text-xs font-bold tracking-wide">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>🎉 SẢNH TIỆC TẤT NIÊN & YEAR-END PARTY 2026</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-                  Hồ Sơ & Đặc Quyền Đặt Tiệc Tại {business.name}
-                </h2>
+                <h3 className="text-xl sm:text-2xl font-black text-ink tracking-tight font-display">
+                  {partyProfile.party_deal_highlight || `${business.name} Nhận Đặt Tiệc & Sự Kiện Cuối Năm`}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Quán có trang sảnh tiệc riêng phong cách Midnight Neon với sức chứa <strong>{partyProfile.min_guests} - {partyProfile.max_guests} khách</strong>
+                  {partyProfile.num_vip_rooms > 0 ? `, gồm ${partyProfile.num_vip_rooms} phòng VIP riêng tư` : ''}. Đầy đủ thực đơn set menu & ưu đãi đoàn tiệc.
+                </p>
               </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedDeal({
-                    id: 'party-booking',
-                    title: partyProfile.party_deal_highlight || 'Đặt Tiệc Tất Niên & Giữ Chỗ VIP',
-                    original_price: '',
-                    promo_price: '',
-                    valid_until: ''
-                  });
-                  setVoucher('');
-                  setIsDialogOpen(true);
-                }}
-                className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-black text-sm shadow-xl shadow-amber-950/60 transition-all hover:scale-105 active:scale-95 shrink-0"
+              <Link
+                href={`/${business.slug}/tiec`}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-gold to-gold-soft hover:brightness-110 text-ink font-black text-sm shadow-lg shadow-gold/30 hover:scale-105 active:scale-95 transition-all shrink-0"
               >
-                <CalendarCheck className="w-4 h-4 text-black" />
-                <span>Nhận Báo Giá & Giữ Sảnh Ngay</span>
-              </button>
+                <span>Khám Phá Sảnh Tiệc</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
             </div>
-
-            {/* Ưu đãi độc quyền banner */}
-            {partyProfile.party_deal_highlight && (
-              <div className="bg-gradient-to-r from-amber-950/90 via-rose-950/80 to-amber-950/90 border border-amber-500/50 rounded-2xl p-4 md:p-5 flex items-center gap-3.5 mb-6 shadow-inner">
-                <span className="text-2xl md:text-3xl shrink-0">🎁</span>
-                <div>
-                  <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">Ưu đãi tiệc tất niên độc quyền</p>
-                  <p className="text-base md:text-lg font-black text-amber-50 mt-0.5">{partyProfile.party_deal_highlight}</p>
-                </div>
-              </div>
-            )}
-
-            {/* 3 Thước đo quan trọng nhất */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
-              <div className="bg-zinc-950/70 border border-zinc-800 rounded-2xl p-4 flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-                  <Users className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-xs text-zinc-300 font-medium">Sức chứa tiệc</p>
-                  <p className="text-lg md:text-xl font-black text-white">
-                    {partyProfile.min_guests} - {partyProfile.max_guests} <span className="text-xs font-normal text-zinc-300">khách</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-zinc-950/70 border border-zinc-800 rounded-2xl p-4 flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
-                  <Wine className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-xs text-zinc-300 font-medium">Mức giá tiệc bình quân</p>
-                  <p className="text-lg md:text-xl font-black text-amber-300 font-mono">
-                    {formatPrice(partyProfile.price_min)} - {formatPrice(partyProfile.price_max)}<span className="text-xs font-normal text-zinc-300 font-sans">/người</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-zinc-950/70 border border-zinc-800 rounded-2xl p-4 flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-                  <DoorClosed className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-xs text-zinc-300 font-medium">Phòng VIP riêng tư</p>
-                  <p className="text-lg md:text-xl font-black text-emerald-400 font-mono">
-                    {partyProfile.num_vip_rooms > 0 ? `${partyProfile.num_vip_rooms} phòng riêng` : 'Sảnh chung rộng rãi'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Tiện ích & đặc quyền */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              {partySpaces.length > 0 && (
-                <div className="bg-zinc-950/50 p-4 rounded-2xl border border-zinc-800">
-                  <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2.5">Không gian & Tiện ích sảnh tiệc</p>
-                  <div className="flex flex-wrap gap-2">
-                    {partySpaces.map(spId => {
-                      const sp = PARTY_SPACES.find(item => item.id === spId);
-                      return (
-                        <span key={spId} className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700/80 text-amber-50 text-xs font-medium flex items-center gap-1.5">
-                          ✨ {sp?.label || spId}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {partyPerks.length > 0 && (
-                <div className="bg-zinc-950/50 p-4 rounded-2xl border border-zinc-800">
-                  <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2.5">Đặc quyền hỗ trợ đoàn tiệc</p>
-                  <div className="flex flex-wrap gap-2">
-                    {partyPerks.map(pId => {
-                      const p = PARTY_PERKS.find(item => item.id === pId);
-                      return (
-                        <span key={pId} className="px-3 py-1.5 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 text-xs font-medium flex items-center gap-1.5">
-                          🎁 {p?.label || pId}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Thực đơn Set Menu tiệc nếu có */}
-            {partyMenus.length > 0 && (
-              <div className="mt-6 pt-6 border-t border-zinc-800">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
-                    <Utensils className="w-5 h-5 text-amber-400" />
-                    Thực Đơn Tiệc Mẫu (Set Menu Tham Khảo)
-                  </h3>
-                  <span className="text-xs text-zinc-300">Giá rõ ràng, chuẩn vị</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {partyMenus.map((menu, mIdx) => (
-                    <div key={mIdx} className="bg-zinc-950/80 border border-amber-500/20 rounded-2xl p-4 flex flex-col justify-between hover:border-amber-500/40 transition-colors">
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <h4 className="text-sm font-bold text-amber-50">{menu.name}</h4>
-                          <span className="text-sm font-black text-amber-300 font-mono">
-                            {menu.price?.toLocaleString('vi-VN')} đ
-                          </span>
-                        </div>
-                        <p className="text-xs text-zinc-300 mb-2">Quy mô bàn: {menu.pax} người/bàn</p>
-                        {menu.dishes && menu.dishes.length > 0 && (
-                          <p className="text-xs text-amber-100/90 leading-relaxed italic bg-zinc-900/60 p-2.5 rounded-xl border border-zinc-800/80">
-                            {menu.dishes.join(' • ')}
-                          </p>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedDeal({
-                            id: 'party-booking',
-                            title: `Đặt Set ${menu.name} (${menu.price?.toLocaleString('vi-VN')}đ)`,
-                            original_price: '',
-                            promo_price: '',
-                            valid_until: ''
-                          });
-                          setVoucher('');
-                          setIsDialogOpen(true);
-                        }}
-                        className="mt-3 w-full py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold transition-colors"
-                      >
-                        Chọn Set Này & Nhận Ưu Đãi
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
-        <div className={`text-center mb-8 md:mb-10 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl max-w-3xl mx-auto flex flex-col items-center justify-center ${
-          isPartyMode
-            ? 'bg-gradient-to-b from-zinc-900/90 to-slate-900/90 border border-amber-500/40 shadow-amber-950/30'
-            : 'bg-gradient-to-b from-white to-champagne/40 border border-gold/30 shadow-gold/5'
-        }`}>
+        <div className="text-center mb-8 md:mb-10 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl max-w-3xl mx-auto flex flex-col items-center justify-center bg-gradient-to-b from-white to-champagne/40 border border-gold/30 shadow-gold/5">
           <div className="mb-6 md:mb-8 w-full flex justify-center">
             <img 
               src={avatar} 
@@ -661,13 +501,11 @@ export default function PromoClient({
               className="max-h-20 md:max-h-28 max-w-[90%] md:max-w-[300px] w-auto h-auto object-contain drop-shadow-md" 
             />
           </div>
-          <h2 className={`text-3xl md:text-4xl font-black font-display flex flex-col md:flex-row items-center justify-center gap-3 ${
-            isPartyMode ? 'text-white' : 'text-ink'
-          }`}>
+          <h2 className="text-3xl md:text-4xl font-black font-display flex flex-col md:flex-row items-center justify-center gap-3 text-ink">
             <Tag className="size-8 md:size-10 text-gold" />
             ƯU ĐÃI ĐẶC BIỆT
           </h2>
-          <p className={`mt-4 text-base md:text-lg ${isPartyMode ? 'text-amber-100/90' : 'text-muted-foreground'}`}>
+          <p className="mt-4 text-base md:text-lg text-muted-foreground">
             Chọn một ưu đãi bên dưới và lưu lại để sử dụng khi đến tiệm.
           </p>
         </div>
@@ -717,17 +555,13 @@ export default function PromoClient({
                   }}
                   className={`group rounded-3xl p-1.5 relative overflow-hidden transition-all duration-500 flex flex-col h-full border ${isDisabled
                       ? 'opacity-60 grayscale cursor-not-allowed border-gray-200'
-                      : (isPartyMode
-                          ? 'bg-zinc-900/90 shadow-xl shadow-amber-950/20 hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-amber-500/30'
-                          : 'bg-white shadow-xl shadow-gold/10 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-gold/20')
+                      : 'bg-white shadow-xl shadow-gold/10 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-gold/20'
                     }`}
                 >
                   <div className={`rounded-[1.4rem] border p-5 md:p-8 flex flex-col h-full relative ${
                     isDisabled
                       ? 'bg-gray-50 border-gray-200'
-                      : (isPartyMode
-                          ? 'border-amber-500/30 bg-gradient-to-br from-zinc-900 via-slate-900 to-zinc-950 text-zinc-100'
-                          : 'border-gold/30 bg-gradient-to-br from-white to-champagne/50')
+                      : 'border-gold/30 bg-gradient-to-br from-white to-champagne/50'
                   }`}>
                     {isExpired ? (
                       <div className="absolute top-4 right-4 bg-gray-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
@@ -743,19 +577,19 @@ export default function PromoClient({
                       </div>
                     ) : null}
 
-                    <h3 className={`text-xl md:text-2xl font-bold font-display pr-20 leading-tight mb-3 ${isPartyMode ? 'text-white' : 'text-ink'}`}>
+                    <h3 className="text-xl md:text-2xl font-bold font-display pr-20 leading-tight mb-3 text-ink">
                       {deal.title}
                     </h3>
 
                     {deal.note && (
-                      <p className={`text-sm mb-4 p-4 rounded-2xl border shadow-sm ${!deal.terms ? 'grow' : ''} ${isPartyMode ? 'text-amber-50/90 bg-zinc-950/60 border-amber-500/20' : 'text-muted-foreground bg-champagne/30 border-gold/20'}`}>
-                        <span className={`font-semibold ${isPartyMode ? 'text-amber-400' : 'text-ink'}`}>Mô tả:</span> {deal.note}
+                      <p className={`text-sm mb-4 p-4 rounded-2xl border shadow-sm text-muted-foreground bg-champagne/30 border-gold/20 ${!deal.terms ? 'grow' : ''}`}>
+                        <span className="font-semibold text-ink">Mô tả:</span> {deal.note}
                       </p>
                     )}
 
                     {deal.terms && (
-                      <div className={`text-xs mb-4 p-3 rounded-xl border border-dashed grow ${isPartyMode ? 'text-zinc-300 border-zinc-700 bg-zinc-950/40' : 'text-muted-foreground border-gray-200 bg-white/50'}`}>
-                        <span className={`font-semibold block mb-1 ${isPartyMode ? 'text-amber-300' : 'text-ink'}`}>Điều kiện áp dụng:</span>
+                      <div className="text-xs mb-4 p-3 rounded-xl border border-dashed grow text-muted-foreground border-gray-200 bg-white/50">
+                        <span className="font-semibold block mb-1 text-ink">Điều kiện áp dụng:</span>
                         <p className="whitespace-pre-wrap">{deal.terms}</p>
                       </div>
                     )}
@@ -764,9 +598,7 @@ export default function PromoClient({
 
                     {(deal.valid_from || deal.valid_until) && (
                       <div className={`flex flex-col gap-1 text-xs md:text-sm font-semibold py-1.5 px-3 rounded-lg w-fit mb-4 ${
-                        isDisabled
-                          ? 'bg-gray-200 text-gray-600'
-                          : (isPartyMode ? 'bg-amber-950/50 text-amber-300 border border-amber-500/30' : 'bg-red-50 text-red-600')
+                        isDisabled ? 'bg-gray-200 text-gray-600' : 'bg-red-50 text-red-600'
                       }`}>
                         {deal.valid_from && (
                           <div className="flex items-center gap-2">
@@ -783,12 +615,12 @@ export default function PromoClient({
                       </div>
                     )}
 
-                    <div className={`flex flex-col xl:flex-row xl:items-end justify-between gap-4 mt-auto pt-6 border-t ${isPartyMode ? 'border-amber-500/30' : 'border-gold/20'}`}>
+                    <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mt-auto pt-6 border-t border-gold/20">
                       <div>
                         <div className="text-sm font-medium text-muted-foreground line-through mb-1">
                           {formatPrice(deal.original_price)}
                         </div>
-                        <div className={`text-3xl font-black leading-none ${isPartyMode ? 'text-amber-300 font-mono tracking-tight' : 'text-red-600'}`}>
+                        <div className="text-3xl font-black leading-none text-red-600">
                           {formatPrice(deal.promo_price)}
                         </div>
                       </div>
@@ -800,11 +632,7 @@ export default function PromoClient({
                           setVoucher("");
                           setIsDialogOpen(true);
                         }}
-                        className={`w-full xl:w-auto font-bold shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border ${
-                          isPartyMode
-                            ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black border-amber-400 hover:brightness-110 shadow-amber-950/50'
-                            : 'bg-gradient-to-r from-gold to-gold-soft text-ink border-gold/50 hover:brightness-110'
-                        }`}
+                        className="w-full xl:w-auto font-bold shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border bg-gradient-to-r from-gold to-gold-soft text-ink border-gold/50 hover:brightness-110"
                       >
                         Nhận và Lưu Ưu Đãi
                       </Button>
@@ -1394,89 +1222,27 @@ export default function PromoClient({
         </p>
       </div>
 
-      {/* 🌟 NÚT BẤM DÍNH ĐÁY MÀN HÌNH (FIXED BOTTOM CTA - 10/10) */}
-      {isPartyMode ? (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/98 border-t border-amber-500/40 backdrop-blur-md p-3 shadow-2xl flex items-center justify-center">
-          <div className="max-w-5xl w-full flex items-center gap-2 sm:gap-3">
-            {/* 1. Nút Gửi Zalo / Tham khảo */}
-            <button
-              type="button"
-              onClick={handleShareZalo}
-              className={`flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
-                copiedShare
-                  ? 'bg-emerald-950/70 border-emerald-500 text-emerald-300'
-                  : 'bg-blue-950/60 hover:bg-blue-900/70 border-blue-500/50 text-blue-200'
-              }`}
-              title="Chia sẻ vào nhóm Zalo để mọi người cùng xem và bình chọn quán"
-            >
-              {copiedShare ? (
-                <>
-                  <Check className="w-4 h-4 text-emerald-400" />
-                  <span className="hidden sm:inline">Đã chép link!</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="w-4 h-4 text-blue-400" />
-                  <span>Gửi Zalo</span>
-                </>
-              )}
-            </button>
-
-            {/* 2. Nút Vàng Neon Dính Đáy: Nhận Ưu Đãi & Đặt Bàn Ngay */}
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedDeal({
-                  id: 'party-booking',
-                  title: partyProfile?.party_deal_highlight || 'Nhận Ưu Đãi & Đặt Bàn Tiệc VIP',
-                  original_price: '',
-                  promo_price: '',
-                  valid_until: ''
-                });
-                setVoucher('');
-                setIsDialogOpen(true);
-              }}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black text-xs sm:text-sm font-black shadow-lg shadow-amber-950/70 transition-all active:scale-[0.98]"
-            >
-              <CalendarCheck className="w-4 h-4 text-black" />
-              <span>🎉 Nhận Ưu Đãi & Đặt Bàn Ngay</span>
-            </button>
-
-            {/* 3. Nút Gọi Hotline Nhanh */}
-            {hotlineDigits && (
-              <a
-                href={`tel:${hotlineDigits}`}
-                className="flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-emerald-400 text-xs font-bold transition-all shrink-0 active:scale-95"
-                title="Gọi hotline quán"
-              >
-                <Phone className="w-4 h-4 text-emerald-400" />
-                <span className="hidden sm:inline">{hotline}</span>
-              </a>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-3 flex gap-3 md:hidden">
-          <button
-            onClick={() => {
-              document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 transition-all duration-200 active:scale-95 active:opacity-90 hover:bg-gold hover:text-white"
-          >
-            <span className="flex items-center justify-center gap-2"><Gift className="size-4" /> Nhận Ưu Đãi</span>
-          </button>
-          <button
-            onClick={() => {
-              setBookingService("");
-              setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
-              setIsDialogOpen(true);
-            }}
-            className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg active:scale-95 active:opacity-90 hover:bg-gold"
-          >
-            <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> {actionName} Ngay</span>
-          </button>
-        </div>
-      )}
+      {/* 🌟 NÚT BẤM DÍNH ĐÁY MÀN HÌNH (FIXED BOTTOM CTA CHO MOBILE) */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-3 flex gap-3 md:hidden">
+        <button
+          onClick={() => {
+            document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 transition-all duration-200 active:scale-95 active:opacity-90 hover:bg-gold hover:text-white"
+        >
+          <span className="flex items-center justify-center gap-2"><Gift className="size-4" /> Nhận Ưu Đãi</span>
+        </button>
+        <button
+          onClick={() => {
+            setBookingService("");
+            setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
+            setIsDialogOpen(true);
+          }}
+          className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg active:scale-95 active:opacity-90 hover:bg-gold"
+        >
+          <span className="flex items-center justify-center gap-2"><ActionIcon className="size-4" /> {actionName} Ngay</span>
+        </button>
+      </div>
 
       <SiteFooter />
     </div>

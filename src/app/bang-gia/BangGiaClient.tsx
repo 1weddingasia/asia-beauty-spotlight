@@ -116,8 +116,12 @@ const PLANS: PricingPlan[] = [
   },
 ];
 
-export default function BangGiaClient() {
-  const [activeTab, setActiveTab] = useState<'fnb' | 'general'>('fnb');
+interface BangGiaClientProps {
+  initialPlans?: any[];
+}
+
+export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps) {
+  const [activeTab, setActiveTab] = useState<'all' | 'general' | 'fnb'>('all');
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
 
   // Form thanh toán QR
@@ -129,16 +133,57 @@ export default function BangGiaClient() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
 
+  // Dynamic mapping từ bảng plans thật trong database Supabase
+  const dynamicPlans: PricingPlan[] = initialPlans.length > 0
+    ? initialPlans.map((p) => {
+        const isParty = p.name.toLowerCase().includes('tiệc');
+        return {
+          id: p.id,
+          name: p.name,
+          tagline:
+            p.description ||
+            (isParty
+              ? 'Kích hoạt Trang Sảnh Tiệc riêng biệt phong cách xanh dương tối, ghim phát sáng trên Bản Đồ Phố Tiệc 2026'
+              : 'Gian hàng số chuẩn sang trọng toàn nền tảng, hiển thị quanh năm, đăng deal ưu đãi & đón khách đa ngành'),
+          price: Number(p.price_yearly) || (isParty ? 500000 : 1500000),
+          period: '/ năm',
+          badge: isParty ? 'MÙA TIỆC TẤT NIÊN 2026 🔥' : 'GÓI CỐT LÕI QUANH NĂM ⭐',
+          isPopular: !isParty,
+          category: isParty ? 'fnb' : 'general',
+          features:
+            Array.isArray(p.features) && p.features.length > 0
+              ? p.features
+              : isParty
+              ? [
+                  'Kích hoạt Trang Sảnh Tiệc Chuyên Biệt phong cách Xanh Dương Tối (/slug/tiec)',
+                  'Ghim phát sáng Neon trên Bản Đồ Phố Tiệc Tất Niên 2026',
+                  'Đăng tải thực đơn set menu 10 người, sức chứa & phòng VIP',
+                  'Nổ chuông Telegram tức thì ngay khi có khách công ty đặt tiệc',
+                  'Tích hợp nút Đặt Bàn Tiệc & Giữ Chỗ VIP 1-chạm kết nối trực tiếp',
+                  'Hỗ trợ chăm sóc gian hàng mùa tiệc 24/7',
+                ]
+              : [
+                  'Trang Gian Hàng Số Chuyên Nghiệp (1booking.asia/slug)',
+                  'Giao diện chuẩn sang trọng toàn nền tảng (Spa, Salon, Phòng khám, Dịch vụ...)',
+                  'Đăng tải không giới hạn ưu đãi & deal giảm giá quanh năm',
+                  'Hệ thống tiếp nhận lịch hẹn & thông báo khách hàng tức thì',
+                  'Tối ưu SEO Google địa phương & danh bạ dịch vụ',
+                  'Hỗ trợ kỹ thuật và chăm sóc gian hàng cả năm',
+                ],
+          ctaText: isParty ? 'Kích Hoạt Trang Đặt Tiệc' : 'Đăng Ký Trang Ưu Đãi',
+        };
+      })
+    : PLANS;
+
   // Thông tin ngân hàng SePay
   const BANK_ACC = '00003554020';
   const BANK_NAME = 'TPBank';
   const BANK_OWNER = '1BOOKING.ASIA';
 
+  const planTag = selectedPlan?.name.toLowerCase().includes('tiệc') ? 'TIEC' : 'UDAI';
   const transferCode = phone
-    ? `TIEC ${phone.replace(/\D/g, '')}`
-    : selectedPlan?.id.includes('vip')
-    ? 'VIP TIEC'
-    : 'TIEC 1BOOKING';
+    ? `${planTag} ${phone.replace(/\D/g, '')}`
+    : `${planTag} 1BOOKING`;
 
   const qrUrl = selectedPlan
     ? `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${selectedPlan.price}&des=${encodeURIComponent(
@@ -200,41 +245,42 @@ export default function BangGiaClient() {
     }
   };
 
-  const visiblePlans = PLANS.filter((p) => p.category === activeTab);
+  const visiblePlans = activeTab === 'all'
+    ? dynamicPlans
+    : dynamicPlans.filter((p) => p.category === activeTab);
 
   return (
     <div className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto select-none">
       {/* 1. Header & Hero */}
       <div className="text-center max-w-3xl mx-auto mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold mb-4">
-          <Sparkles className="w-3.5 h-3.5" /> BẢNG GIÁ DỊCH VỤ & GÓI HỘI VIÊN CHÍNH THỨC
+          <Sparkles className="w-3.5 h-3.5" /> BẢNG GIÁ 2 GÓI HỘI VIÊN CHÍNH THỨC
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-          Đón Sóng Khách Tiệc & Doanh Thu{' '}
+          Kích Hoạt Trang Thương Hiệu &{' '}
           <span className="bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500 bg-clip-text text-transparent">
-            Mùa Lễ Hội 2026
+            Sảnh Tiệc 2026
           </span>
         </h1>
         <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
-          Đưa nhà hàng lên <strong>Bản Đồ Phố Tiệc Tất Niên</strong> hoặc nâng cấp thương hiệu đa
-          ngành. Thanh toán tự động 24/7 qua mã QR VietQR ngân hàng, kích hoạt ngay sau 30 giây.
+          Đăng ký <strong>Gói Trang Ưu Đãi (1.5tr/năm)</strong> theo phong cách chuẩn toàn nền tảng hoặc kích hoạt <strong>Gói Trang Đặt Tiệc (500k/năm)</strong> phong cách xanh dương tối. Quản trị trực tiếp từ hệ thống, thanh toán VietQR tự động kích hoạt 24/7.
         </p>
       </div>
 
       {/* 2. Switcher Category */}
       <div className="flex justify-center mb-12">
-        <div className="p-1.5 bg-zinc-900/90 border border-zinc-800 rounded-2xl flex items-center gap-1.5 shadow-xl">
+        <div className="p-1.5 bg-zinc-900/90 border border-zinc-800 rounded-2xl flex flex-wrap items-center justify-center gap-1.5 shadow-xl">
           <button
             type="button"
-            onClick={() => setActiveTab('fnb')}
+            onClick={() => setActiveTab('all')}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              activeTab === 'fnb'
+              activeTab === 'all'
                 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg shadow-amber-950 font-extrabold'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            <Utensils className="w-4 h-4" />
-            <span>🍷 Phố Tiệc Tất Niên (F&B / Nhà Hàng)</span>
+            <Sparkles className="w-4 h-4" />
+            <span>Tất Cả 2 Gói Chính Thức</span>
           </button>
           <button
             type="button"
@@ -246,7 +292,19 @@ export default function BangGiaClient() {
             }`}
           >
             <Building2 className="w-4 h-4" />
-            <span>💼 Doanh Nghiệp Đa Ngành</span>
+            <span>💼 Gói Trang Ưu Đãi (1.5tr/năm)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('fnb')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              activeTab === 'fnb'
+                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg shadow-amber-950 font-extrabold'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <Utensils className="w-4 h-4" />
+            <span>🍷 Gói Trang Đặt Tiệc (500k/năm)</span>
           </button>
         </div>
       </div>

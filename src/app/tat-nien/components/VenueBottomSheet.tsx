@@ -60,7 +60,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   const handleShareZalo = async () => {
     if (!venue) return;
-    const shareUrl = `https://1booking.asia/${venue.slug}`;
+    const shareUrl = `https://1booking.asia/${venue.slug}/tiec`;
     const shareText = `📋 [THÔNG TIN THAM KHẢO TIỆC TẤT NIÊN 2026]\n🏛️ Nhà hàng: ${venue.name}\n📍 Địa chỉ: ${venue.address || 'TP.HCM'}\n👥 Sức chứa: ${venue.min_guests} - ${venue.max_guests} khách${venue.num_vip_rooms ? ` (${venue.num_vip_rooms} phòng VIP)` : ''}\n💰 Ngân sách tham khảo: Từ ${venue.price_min?.toLocaleString('vi-VN')} đ/người\n🎁 Ưu đãi tiệc: ${venue.party_deal_highlight || 'Tặng bia, âm thanh & backdrop'}\n👉 Xem chi tiết sảnh tiệc & menu để bình chọn: ${shareUrl}\n(Gửi nhóm công ty / phòng ban tham khảo & bình chọn)`;
 
     try {
@@ -586,12 +586,12 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
             {/* 3. Nút Xem Menu & Chi tiết quán trên trang thật */}
             <Link
-              href={`/${venue.slug}`}
+              href={`/${venue.slug}/tiec`}
               onClick={onClose}
               className="flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
-              title="Xem trang chi tiết nhà hàng trên 1Booking.Asia"
+              title="Xem trang chi tiết sảnh tiệc của nhà hàng"
             >
-              <span className="hidden sm:inline">Chi Tiết Quán</span>
+              <span className="hidden sm:inline">Chi Tiết Sảnh Tiệc</span>
               <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
             </Link>
           </div>
