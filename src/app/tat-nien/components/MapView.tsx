@@ -23,6 +23,9 @@ interface MapViewProps {
   filteredVenueIds: Set<string>;
   selectedVenue: PartyVenue | null;
   onSelectVenue: (venue: PartyVenue) => void;
+  userLocation?: { lat: number; lng: number } | null;
+  flyToCenter?: [number, number] | null;
+  initialCenter?: [number, number] | null;
 }
 
 export default function MapView({
@@ -30,21 +33,30 @@ export default function MapView({
   filteredVenueIds,
   selectedVenue,
   onSelectVenue,
+  userLocation,
+  flyToCenter,
+  initialCenter,
 }: MapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<{ [id: string]: maplibregl.Marker }>({});
+  const userMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   // 1. Khởi tạo MapLibre một lần duy nhất
   useEffect(() => {
     if (!mapContainer.current) return;
 
+    const startCenter: [number, number] =
+      initialCenter ||
+      flyToCenter ||
+      (userLocation ? [userLocation.lng, userLocation.lat] : [106.67, 10.77]);
+
     // Nguồn bản đồ OpenFreeMap Dark: Miễn phí 100%, không cần API key, sạch bóng watermark, hiển thị trọn vẹn đường phố Sài Gòn
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: 'https://tiles.openfreemap.org/styles/dark',
-      center: [106.67, 10.77], // [lng, lat] TP.HCM
-      zoom: 13,
+      center: startCenter, // [lng, lat]
+      zoom: initialCenter || userLocation ? 14.5 : 13,
       pitch: 60, // Góc nhìn 2.5D sang trọng
       bearing: -15,
       attributionControl: false,
@@ -207,6 +219,54 @@ export default function MapView({
       });
     }
   }, [selectedVenue]);
+
+  // 4. Khi flyToCenter thay đổi (chọn Quận / Huyện)
+  useEffect(() => {
+    if (!flyToCenter || !mapRef.current) return;
+    mapRef.current.flyTo({
+      center: flyToCenter,
+      zoom: 14.5,
+      pitch: 55,
+      duration: 1000,
+      essential: true,
+    });
+  }, [flyToCenter]);
+
+  // 5. Khi userLocation thay đổi ("📍 Gần tôi")
+  useEffect(() => {
+    if (!userLocation || !mapRef.current) {
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove();
+        userMarkerRef.current = null;
+      }
+      return;
+    }
+
+    if (userMarkerRef.current) {
+      userMarkerRef.current.remove();
+    }
+
+    const userEl = document.createElement('div');
+    userEl.className = 'relative flex items-center justify-center pointer-events-none';
+    userEl.innerHTML = `
+      <div class="w-8 h-8 rounded-full bg-blue-500/30 animate-ping absolute"></div>
+      <div class="w-5 h-5 rounded-full bg-blue-500 border-2 border-white shadow-xl shadow-blue-500/80 relative z-10 flex items-center justify-center text-[10px]">📍</div>
+    `;
+
+    const userMarker = new maplibregl.Marker({ element: userEl })
+      .setLngLat([userLocation.lng, userLocation.lat])
+      .addTo(mapRef.current);
+
+    userMarkerRef.current = userMarker;
+
+    mapRef.current.flyTo({
+      center: [userLocation.lng, userLocation.lat],
+      zoom: 15,
+      pitch: 50,
+      duration: 1100,
+      essential: true,
+    });
+  }, [userLocation]);
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-slate-950">

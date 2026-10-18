@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { getSiteConfig } from "@/config/site-config";
 import { Wrench, Phone } from "lucide-react";
 import PromoClient from "./PromoClient";
+import { BusinessPartyProfile } from "@/types/party";
 
 export const revalidate = 60; // Cache trang 60 giây để tăng tốc độ tải cực nhanh
 
@@ -101,6 +102,25 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
     );
   }
 
+  // Lấy thêm hồ sơ tiệc tất niên (chỉ lấy khi quán đã kích hoạt tiệc F&B)
+  let partyProfile: BusinessPartyProfile | null = null;
+  try {
+    const { data: pData, error: pErr } = await supabase
+      .from('business_party_profiles')
+      .select('*')
+      .eq('business_id', business.id)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (pErr) {
+      console.error('[PromoPage] Lỗi lấy party profile:', pErr);
+    }
+    partyProfile = (pData as BusinessPartyProfile | null) ?? null;
+  } catch (err) {
+    console.error('[PromoPage] Ngoại lệ lấy party profile:', err);
+    partyProfile = null;
+  }
+
   // Lấy ảnh bìa hoặc avatar làm background an toàn
   const firstGalleryItem = business.page_content?.gallery?.[0];
   const galleryUrl = typeof firstGalleryItem === 'string' ? firstGalleryItem : firstGalleryItem?.url;
@@ -109,6 +129,7 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
   const avatar = business.page_content?.logo_url || `https://placehold.co/100x100/gold/white?text=${encodeURIComponent(fallbackLetter)}`;
 
   return (
-    <PromoClient business={business} bannerImg={bannerImg} avatar={avatar} />
+    <PromoClient business={business} bannerImg={bannerImg} avatar={avatar} partyProfile={partyProfile} />
   );
 }
+

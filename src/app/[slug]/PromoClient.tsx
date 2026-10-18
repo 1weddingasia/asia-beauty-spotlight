@@ -1,18 +1,23 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles, ChevronLeft, ChevronRight, X, BadgeCheck, Gift, Calendar, Eye, type LucideIcon } from "lucide-react";
+import {
+  MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles,
+  ChevronLeft, ChevronRight, X, BadgeCheck, Gift, Calendar, Eye, Users, Wine,
+  DoorClosed, Share2, Check, ExternalLink, CalendarCheck, Utensils, type LucideIcon
+} from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SiteHeader, SiteFooter, useSiteConfig } from "@/components/site/Layout";
+import { PARTY_SPACES, PARTY_PERKS, type BusinessPartyProfile, isFnBCategory } from "@/types/party";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -51,15 +56,26 @@ const INDUSTRY_CTAS: Record<string, { btnText: string, modalTitle: string, icon:
   'other': { btnText: 'Liên Hệ Ngay', modalTitle: 'Liên Hệ Với Chúng Tôi', icon: MessageCircle }
 };
 
-export default function PromoClient({ business, bannerImg, avatar }: { business: any, bannerImg: string | null, avatar: string }) {
+export default function PromoClient({
+  business,
+  bannerImg,
+  avatar,
+  partyProfile,
+}: {
+  business: any;
+  bannerImg: string | null;
+  avatar: string;
+  partyProfile?: BusinessPartyProfile | null;
+}) {
   const siteConfig = useSiteConfig();
   const b = business;
+  const isPartyMode = Boolean(partyProfile?.is_active || (partyProfile && isFnBCategory(b.category_slug)));
   const industryKey = b.page_content?.industry || b.category_slug || 'other';
   const ctaConfig = INDUSTRY_CTAS[industryKey] || INDUSTRY_CTAS['other'];
-  const actionName = b.page_content?.action_name || ctaConfig.btnText;
-  const modalTitle = ctaConfig.modalTitle;
+  const actionName = isPartyMode ? 'Đặt Bàn Tiệc' : (b.page_content?.action_name || ctaConfig.btnText);
+  const modalTitle = isPartyMode ? 'Đặt Bàn Tiệc & Giữ Chỗ VIP' : ctaConfig.modalTitle;
   const actionNameUpper = actionName.toUpperCase();
-  const ActionIcon = ctaConfig.icon;
+  const ActionIcon = isPartyMode ? CalendarCheck : ctaConfig.icon;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -75,6 +91,34 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
   // Booking fields
   const [bookingTime, setBookingTime] = useState("");
   const [bookingService, setBookingService] = useState("");
+  const [partyGuests, setPartyGuests] = useState("20");
+  const [partyNotes, setPartyNotes] = useState("");
+  const [copiedShare, setCopiedShare] = useState(false);
+  const shareTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (shareTimerRef.current) {
+        clearTimeout(shareTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleShareZalo = async () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : `https://1booking.asia/${business.slug}`;
+    const text = `🎉 Tham khảo tiệc Tất Niên tại ${business.name}!\n📍 Địa chỉ: ${business.address || ''}\n🎁 Ưu đãi: ${partyProfile?.party_deal_highlight || 'Nhiều ưu đãi tiệc hấp dẫn'}\n👉 Xem chi tiết & thực đơn tại: ${shareUrl}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      if (shareTimerRef.current) {
+        clearTimeout(shareTimerRef.current);
+      }
+      setCopiedShare(true);
+      toast.success("Đã sao chép thông tin tiệc & đường dẫn!");
+      shareTimerRef.current = setTimeout(() => setCopiedShare(false), 3000);
+    } catch {
+      toast.error("Không thể tự động sao chép. Hãy chia sẻ đường dẫn trên trình duyệt.");
+    }
+  };
 
   const [interceptType, setInterceptType] = useState<'hotline' | 'zalo' | null>(null);
   const [interceptPhone, setInterceptPhone] = useState("");
@@ -162,10 +206,21 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
       return;
     }
 
+    const isPartyBooking = selectedDeal.id === 'party-booking';
+    const isBooking = selectedDeal.id === 'booking' || isPartyBooking;
+
+    if (isPartyBooking) {
+      const parsedGuests = parseInt(partyGuests, 10);
+      if (isNaN(parsedGuests) || parsedGuests <= 0) {
+        toast.error("Vui lòng nhập số lượng khách dự kiến hợp lệ (lớn hơn 0)");
+        return;
+      }
+    }
+
     // Kiểm tra xem đã lưu ưu đãi này chưa
     const dealKey = `${business.id}_${selectedDeal.id}_${cleanPhone}`;
     // Nếu là chế độ Booking, không cần lưu mảng savedDeals chặn duplicate
-    if (selectedDeal.id !== 'booking') {
+    if (!isBooking) {
       if (savedDeals.includes(dealKey)) {
         toast.error("Bạn đã nhận ưu đãi này rồi. Vui lòng chọn ưu đãi khác.");
         return;
@@ -174,18 +229,36 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
     setLoading(true);
     try {
-      const actualDealName = selectedDeal.id === 'booking' ? (bookingService || selectedDeal.title) : selectedDeal.title;
-      const bTime = selectedDeal.id === 'booking' ? bookingTime : null;
+      let actualDealName = selectedDeal.title;
+      if (isPartyBooking) {
+        actualDealName = `[TIỆC TẤT NIÊN] ${selectedDeal.title}`;
+      } else if (selectedDeal.id === 'booking') {
+        actualDealName = bookingService || selectedDeal.title;
+      }
+
+      let bTime: string | null = null;
+      if (isPartyBooking) {
+        bTime = bookingTime?.trim()
+          ? `${bookingTime.trim()} • Quy mô: ${partyGuests} khách`
+          : `Quy mô: ${partyGuests} khách`;
+      } else if (selectedDeal.id === 'booking') {
+        bTime = bookingTime?.trim() || null;
+      }
+
+      const crossSellStr = (isPartyBooking
+        ? (partyNotes || selectedCrossSells.join(", "))
+        : selectedCrossSells.join(", ")
+      ).slice(0, 450);
 
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           business_id: business.id,
-          customer_name: name,
-          customer_phone: phone,
+          customer_name: name || 'Khách đặt tiệc',
+          customer_phone: cleanPhone,
           deal_name: actualDealName,
-          cross_sell_items: selectedCrossSells.join(", "),
+          cross_sell_items: crossSellStr || null,
           booking_time: bTime
         })
       });
@@ -198,10 +271,10 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         toast.error("Không nhận được mã ưu đãi. Vui lòng thử lại.");
       } else {
         setVoucher(data.voucher_code);
-        toast.success("Lưu ưu đãi thành công!");
+        toast.success(isPartyBooking ? "Đã gửi yêu cầu đặt tiệc thành công! Quán sẽ gọi xác nhận trong 5 phút." : "Lưu ưu đãi thành công!");
 
         // Lưu vào localStorage nếu không phải booking
-        if (selectedDeal.id !== 'booking') {
+        if (!isBooking) {
           const updatedSavedDeals = [...savedDeals, dealKey];
           setSavedDeals(updatedSavedDeals);
           localStorage.setItem(`saved_deals_${siteConfig.domain}`, JSON.stringify(updatedSavedDeals));
@@ -262,8 +335,16 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
     ? business.page_content.banners
     : bannerImg ? [bannerImg] : [];
 
+  const partySpaces = partyProfile?.spaces_and_amenities ?? [];
+  const partyPerks = partyProfile?.party_perks ?? [];
+  const partyMenus = partyProfile?.set_menus ?? [];
+
   return (
-    <div className="min-h-screen bg-[#FCFAF5] pb-20 md:pb-0 relative">
+    <div className={`min-h-screen pb-24 md:pb-16 relative transition-colors duration-300 ${isPartyMode ? 'bg-[#0B0F17] text-zinc-100 selection:bg-amber-500 selection:text-black' : 'bg-[#FCFAF5] text-ink'}`}>
+      {/* Ambient Radial Glow cho chế độ Midnight Slate sang trọng */}
+      {isPartyMode && (
+        <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(217,119,6,0.12),rgba(0,0,0,0))] -z-10" />
+      )}
       <SiteHeader solid={false} />
 
       {/* Premium Hero Section */}
@@ -386,7 +467,191 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         </div>
       </div>
       <div id="deals-section" className="max-w-5xl mx-auto px-4 py-8 md:py-12 -mt-16 md:-mt-24 relative z-10">
-        <div className="text-center mb-8 md:mb-10 bg-gradient-to-b from-white to-champagne/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl shadow-gold/5 border border-gold/30 max-w-3xl mx-auto flex flex-col items-center justify-center">
+        {/* 🌟 KHỐI ĐẶC QUYỀN TIỆC TẤT NIÊN (DÀNH CHO F&B / PARTY VENUE) */}
+        {isPartyMode && partyProfile && (
+          <div className="mb-10 bg-gradient-to-b from-zinc-900/95 via-slate-900/90 to-zinc-950/95 rounded-3xl p-6 md:p-10 border border-amber-500/40 shadow-2xl shadow-amber-950/40 text-left relative overflow-hidden backdrop-blur-xl">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            {/* VIP Party Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-zinc-800/80 pb-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-700 text-black text-xs font-black uppercase tracking-wider shadow-md">
+                    🎉 Sảnh Tiệc Tất Niên & Year-End Party VIP
+                  </span>
+                  {partyProfile.is_vip && (
+                    <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold">
+                      VIP Venue
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                  Hồ Sơ & Đặc Quyền Đặt Tiệc Tại {business.name}
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDeal({
+                    id: 'party-booking',
+                    title: partyProfile.party_deal_highlight || 'Đặt Tiệc Tất Niên & Giữ Chỗ VIP',
+                    original_price: '',
+                    promo_price: '',
+                    valid_until: ''
+                  });
+                  setVoucher('');
+                  setIsDialogOpen(true);
+                }}
+                className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-black text-sm shadow-xl shadow-amber-950/60 transition-all hover:scale-105 active:scale-95 shrink-0"
+              >
+                <CalendarCheck className="w-4 h-4 text-black" />
+                <span>Nhận Báo Giá & Giữ Sảnh Ngay</span>
+              </button>
+            </div>
+
+            {/* Ưu đãi độc quyền banner */}
+            {partyProfile.party_deal_highlight && (
+              <div className="bg-gradient-to-r from-amber-950/90 via-rose-950/80 to-amber-950/90 border border-amber-500/50 rounded-2xl p-4 md:p-5 flex items-center gap-3.5 mb-6 shadow-inner">
+                <span className="text-2xl md:text-3xl shrink-0">🎁</span>
+                <div>
+                  <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">Ưu đãi tiệc tất niên độc quyền</p>
+                  <p className="text-base md:text-lg font-black text-amber-50 mt-0.5">{partyProfile.party_deal_highlight}</p>
+                </div>
+              </div>
+            )}
+
+            {/* 3 Thước đo quan trọng nhất */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
+              <div className="bg-zinc-950/70 border border-zinc-800 rounded-2xl p-4 flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                  <Users className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs text-zinc-300 font-medium">Sức chứa tiệc</p>
+                  <p className="text-lg md:text-xl font-black text-white">
+                    {partyProfile.min_guests} - {partyProfile.max_guests} <span className="text-xs font-normal text-zinc-300">khách</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-zinc-950/70 border border-zinc-800 rounded-2xl p-4 flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                  <Wine className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs text-zinc-300 font-medium">Mức giá tiệc bình quân</p>
+                  <p className="text-lg md:text-xl font-black text-amber-300 font-mono">
+                    {formatPrice(partyProfile.price_min)} - {formatPrice(partyProfile.price_max)}<span className="text-xs font-normal text-zinc-300 font-sans">/người</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-zinc-950/70 border border-zinc-800 rounded-2xl p-4 flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                  <DoorClosed className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs text-zinc-300 font-medium">Phòng VIP riêng tư</p>
+                  <p className="text-lg md:text-xl font-black text-emerald-400 font-mono">
+                    {partyProfile.num_vip_rooms > 0 ? `${partyProfile.num_vip_rooms} phòng riêng` : 'Sảnh chung rộng rãi'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Tiện ích & đặc quyền */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              {partySpaces.length > 0 && (
+                <div className="bg-zinc-950/50 p-4 rounded-2xl border border-zinc-800">
+                  <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2.5">Không gian & Tiện ích sảnh tiệc</p>
+                  <div className="flex flex-wrap gap-2">
+                    {partySpaces.map(spId => {
+                      const sp = PARTY_SPACES.find(item => item.id === spId);
+                      return (
+                        <span key={spId} className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700/80 text-amber-50 text-xs font-medium flex items-center gap-1.5">
+                          ✨ {sp?.label || spId}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {partyPerks.length > 0 && (
+                <div className="bg-zinc-950/50 p-4 rounded-2xl border border-zinc-800">
+                  <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2.5">Đặc quyền hỗ trợ đoàn tiệc</p>
+                  <div className="flex flex-wrap gap-2">
+                    {partyPerks.map(pId => {
+                      const p = PARTY_PERKS.find(item => item.id === pId);
+                      return (
+                        <span key={pId} className="px-3 py-1.5 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 text-xs font-medium flex items-center gap-1.5">
+                          🎁 {p?.label || pId}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Thực đơn Set Menu tiệc nếu có */}
+            {partyMenus.length > 0 && (
+              <div className="mt-6 pt-6 border-t border-zinc-800">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                    <Utensils className="w-5 h-5 text-amber-400" />
+                    Thực Đơn Tiệc Mẫu (Set Menu Tham Khảo)
+                  </h3>
+                  <span className="text-xs text-zinc-300">Giá rõ ràng, chuẩn vị</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {partyMenus.map((menu, mIdx) => (
+                    <div key={mIdx} className="bg-zinc-950/80 border border-amber-500/20 rounded-2xl p-4 flex flex-col justify-between hover:border-amber-500/40 transition-colors">
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <h4 className="text-sm font-bold text-amber-50">{menu.name}</h4>
+                          <span className="text-sm font-black text-amber-300 font-mono">
+                            {menu.price?.toLocaleString('vi-VN')} đ
+                          </span>
+                        </div>
+                        <p className="text-xs text-zinc-300 mb-2">Quy mô bàn: {menu.pax} người/bàn</p>
+                        {menu.dishes && menu.dishes.length > 0 && (
+                          <p className="text-xs text-amber-100/90 leading-relaxed italic bg-zinc-900/60 p-2.5 rounded-xl border border-zinc-800/80">
+                            {menu.dishes.join(' • ')}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedDeal({
+                            id: 'party-booking',
+                            title: `Đặt Set ${menu.name} (${menu.price?.toLocaleString('vi-VN')}đ)`,
+                            original_price: '',
+                            promo_price: '',
+                            valid_until: ''
+                          });
+                          setVoucher('');
+                          setIsDialogOpen(true);
+                        }}
+                        className="mt-3 w-full py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold transition-colors"
+                      >
+                        Chọn Set Này & Nhận Ưu Đãi
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`text-center mb-8 md:mb-10 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl max-w-3xl mx-auto flex flex-col items-center justify-center ${
+          isPartyMode
+            ? 'bg-gradient-to-b from-zinc-900/90 to-slate-900/90 border border-amber-500/40 shadow-amber-950/30'
+            : 'bg-gradient-to-b from-white to-champagne/40 border border-gold/30 shadow-gold/5'
+        }`}>
           <div className="mb-6 md:mb-8 w-full flex justify-center">
             <img 
               src={avatar} 
@@ -394,11 +659,13 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               className="max-h-20 md:max-h-28 max-w-[90%] md:max-w-[300px] w-auto h-auto object-contain drop-shadow-md" 
             />
           </div>
-          <h2 className="text-3xl md:text-4xl font-black font-display text-ink flex flex-col md:flex-row items-center justify-center gap-3">
+          <h2 className={`text-3xl md:text-4xl font-black font-display flex flex-col md:flex-row items-center justify-center gap-3 ${
+            isPartyMode ? 'text-white' : 'text-ink'
+          }`}>
             <Tag className="size-8 md:size-10 text-gold" />
             ƯU ĐÃI ĐẶC BIỆT
           </h2>
-          <p className="text-muted-foreground mt-4 text-base md:text-lg">
+          <p className={`mt-4 text-base md:text-lg ${isPartyMode ? 'text-amber-100/90' : 'text-muted-foreground'}`}>
             Chọn một ưu đãi bên dưới và lưu lại để sử dụng khi đến tiệm.
           </p>
         </div>
@@ -446,13 +713,20 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     setVoucher("");
                     setIsDialogOpen(true);
                   }}
-                  className={`group rounded-3xl bg-white p-1.5 relative overflow-hidden transition-all duration-500 flex flex-col h-full border ${isDisabled
+                  className={`group rounded-3xl p-1.5 relative overflow-hidden transition-all duration-500 flex flex-col h-full border ${isDisabled
                       ? 'opacity-60 grayscale cursor-not-allowed border-gray-200'
-                      : 'shadow-xl shadow-gold/10 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-gold/20'
+                      : (isPartyMode
+                          ? 'bg-zinc-900/90 shadow-xl shadow-amber-950/20 hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-amber-500/30'
+                          : 'bg-white shadow-xl shadow-gold/10 hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-2 hover:scale-[1.03] cursor-pointer border-gold/20')
                     }`}
                 >
-                  <div className={`rounded-[1.4rem] border p-5 md:p-8 flex flex-col h-full relative ${isDisabled ? 'bg-gray-50 border-gray-200' : 'border-gold/30 bg-gradient-to-br from-white to-champagne/50'
-                    }`}>
+                  <div className={`rounded-[1.4rem] border p-5 md:p-8 flex flex-col h-full relative ${
+                    isDisabled
+                      ? 'bg-gray-50 border-gray-200'
+                      : (isPartyMode
+                          ? 'border-amber-500/30 bg-gradient-to-br from-zinc-900 via-slate-900 to-zinc-950 text-zinc-100'
+                          : 'border-gold/30 bg-gradient-to-br from-white to-champagne/50')
+                  }`}>
                     {isExpired ? (
                       <div className="absolute top-4 right-4 bg-gray-500 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-md">
                         Đã kết thúc
@@ -467,19 +741,19 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                       </div>
                     ) : null}
 
-                    <h3 className="text-xl md:text-2xl font-bold font-display text-ink pr-20 leading-tight mb-3">
+                    <h3 className={`text-xl md:text-2xl font-bold font-display pr-20 leading-tight mb-3 ${isPartyMode ? 'text-white' : 'text-ink'}`}>
                       {deal.title}
                     </h3>
 
                     {deal.note && (
-                      <p className={`text-sm text-muted-foreground mb-4 bg-champagne/30 p-4 rounded-2xl border border-gold/20 shadow-sm ${!deal.terms ? 'grow' : ''}`}>
-                        <span className="font-semibold text-ink">Mô tả:</span> {deal.note}
+                      <p className={`text-sm mb-4 p-4 rounded-2xl border shadow-sm ${!deal.terms ? 'grow' : ''} ${isPartyMode ? 'text-amber-50/90 bg-zinc-950/60 border-amber-500/20' : 'text-muted-foreground bg-champagne/30 border-gold/20'}`}>
+                        <span className={`font-semibold ${isPartyMode ? 'text-amber-400' : 'text-ink'}`}>Mô tả:</span> {deal.note}
                       </p>
                     )}
 
                     {deal.terms && (
-                      <div className="text-xs text-muted-foreground mb-4 p-3 rounded-xl border border-dashed border-gray-200 bg-white/50 grow">
-                        <span className="font-semibold text-ink block mb-1">Điều kiện áp dụng:</span>
+                      <div className={`text-xs mb-4 p-3 rounded-xl border border-dashed grow ${isPartyMode ? 'text-zinc-300 border-zinc-700 bg-zinc-950/40' : 'text-muted-foreground border-gray-200 bg-white/50'}`}>
+                        <span className={`font-semibold block mb-1 ${isPartyMode ? 'text-amber-300' : 'text-ink'}`}>Điều kiện áp dụng:</span>
                         <p className="whitespace-pre-wrap">{deal.terms}</p>
                       </div>
                     )}
@@ -487,8 +761,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     {(!deal.note && !deal.terms) && <div className="grow" />}
 
                     {(deal.valid_from || deal.valid_until) && (
-                      <div className={`flex flex-col gap-1 text-xs md:text-sm font-semibold py-1.5 px-3 rounded-lg w-fit mb-4 ${isDisabled ? 'bg-gray-200 text-gray-600' : 'bg-red-50 text-red-600'
-                        }`}>
+                      <div className={`flex flex-col gap-1 text-xs md:text-sm font-semibold py-1.5 px-3 rounded-lg w-fit mb-4 ${
+                        isDisabled
+                          ? 'bg-gray-200 text-gray-600'
+                          : (isPartyMode ? 'bg-amber-950/50 text-amber-300 border border-amber-500/30' : 'bg-red-50 text-red-600')
+                      }`}>
                         {deal.valid_from && (
                           <div className="flex items-center gap-2">
                             <Clock className="size-3.5" />
@@ -504,12 +781,12 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                       </div>
                     )}
 
-                    <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mt-auto pt-6 border-t border-gold/20">
+                    <div className={`flex flex-col xl:flex-row xl:items-end justify-between gap-4 mt-auto pt-6 border-t ${isPartyMode ? 'border-amber-500/30' : 'border-gold/20'}`}>
                       <div>
                         <div className="text-sm font-medium text-muted-foreground line-through mb-1">
                           {formatPrice(deal.original_price)}
                         </div>
-                        <div className="text-3xl font-black text-red-600 leading-none">
+                        <div className={`text-3xl font-black leading-none ${isPartyMode ? 'text-amber-300 font-mono tracking-tight' : 'text-red-600'}`}>
                           {formatPrice(deal.promo_price)}
                         </div>
                       </div>
@@ -521,7 +798,11 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                           setVoucher("");
                           setIsDialogOpen(true);
                         }}
-                        className="w-full xl:w-auto bg-gradient-to-r from-gold to-gold-soft text-ink font-bold hover:brightness-110 shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border border-gold/50"
+                        className={`w-full xl:w-auto font-bold shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border ${
+                          isPartyMode
+                            ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black border-amber-400 hover:brightness-110 shadow-amber-950/50'
+                            : 'bg-gradient-to-r from-gold to-gold-soft text-ink border-gold/50 hover:brightness-110'
+                        }`}
                       >
                         Nhận và Lưu Ưu Đãi
                       </Button>
@@ -756,13 +1037,42 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
 
       {/* Modal / Dialog Form Nhận Mã */}
       {(() => {
-        const isBooking = selectedDeal?.id === 'booking';
+        const isPartyBooking = selectedDeal?.id === 'party-booking';
+        const isBooking = selectedDeal?.id === 'booking' || isPartyBooking;
 
-        let dialogTitle = "";
+        let dialogTitle = "Điền thông tin nhận ưu đãi";
         if (voucher) {
-          dialogTitle = isBooking ? "Đã gửi yêu cầu thành công!" : "Đăng ký thành công!";
+          if (isPartyBooking) {
+            dialogTitle = "Đã gửi yêu cầu đặt tiệc thành công! 🎉";
+          } else if (isBooking) {
+            dialogTitle = "Đã gửi yêu cầu thành công!";
+          } else {
+            dialogTitle = "Đăng ký thành công!";
+          }
         } else {
-          dialogTitle = isBooking ? `Thông tin ${actionName}` : "Điền thông tin nhận ưu đãi";
+          if (isPartyBooking) {
+            dialogTitle = `Đặt Tiệc Tất Niên — ${business.name}`;
+          } else if (isBooking) {
+            dialogTitle = `Thông tin ${actionName}`;
+          } else {
+            dialogTitle = "Điền thông tin nhận ưu đãi";
+          }
+        }
+
+        let submitButtonLabel = "NHẬN ƯU ĐÃI";
+        if (loading) {
+          submitButtonLabel = "Đang gửi...";
+        } else if (isPartyBooking) {
+          submitButtonLabel = "GỬI YÊU CẦU ĐẶT TIỆC (BẢO LƯU ƯU ĐÃI)";
+        } else if (isBooking) {
+          submitButtonLabel = `XÁC NHẬN ${actionNameUpper}`;
+        }
+
+        let successHeading = "Đã nhận ưu đãi thành công!";
+        if (isPartyBooking) {
+          successHeading = "Đã Gửi Yêu Cầu Đặt Tiệc Thành Công! 🎉";
+        } else if (isBooking) {
+          successHeading = "Đã gửi yêu cầu thành công!";
         }
 
         return (
@@ -774,40 +1084,105 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
               setVoucher("");
               setSelectedDeal(null);
               setSelectedCrossSells([]);
+              setPartyGuests("20");
+              setPartyNotes("");
+              setBookingTime("");
+              setBookingService("");
             }
           }}>
-            <DialogContent className="sm:max-w-md rounded-2xl">
+            <DialogContent className={`sm:max-w-md rounded-2xl ${isPartyBooking ? 'bg-zinc-950 border border-amber-500/40 text-zinc-100' : ''}`}>
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold text-center text-ink leading-tight">
+                <DialogTitle className={`text-xl font-bold text-center leading-tight ${isPartyBooking ? 'text-white' : 'text-ink'}`}>
                   {dialogTitle}
                 </DialogTitle>
                 <DialogDescription className="text-center">
-                  {!voucher && <span className="font-semibold text-gold mt-2 block">{selectedDeal?.title}</span>}
+                  {!voucher && (
+                    <span className={`font-semibold mt-2 block ${isPartyBooking ? 'text-amber-400' : 'text-gold'}`}>
+                      {selectedDeal?.title}
+                    </span>
+                  )}
+                  {isPartyBooking && !voucher && (
+                    <span className="text-xs text-zinc-400 mt-1 block">
+                      Đại diện nhà hàng sẽ nhận thông báo qua Telegram và liên hệ lại ngay
+                    </span>
+                  )}
                 </DialogDescription>
               </DialogHeader>
 
               {!voucher ? (
-                <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+                <form onSubmit={handleSubmit} className="space-y-3.5 mt-2 text-left">
                   <div>
+                    <label className={`block text-xs font-semibold mb-1 ${isPartyBooking ? 'text-zinc-300' : 'text-ink'}`}>
+                      Họ & Tên người liên hệ / đại diện công ty <span className="text-rose-500">*</span>
+                    </label>
                     <Input
-                      placeholder="Họ và tên của bạn (Tùy chọn)"
+                      required
+                      placeholder="VD: Anh Minh / Chị Linh"
                       value={name}
                       onChange={e => setName(e.target.value)}
-                      className="h-12 bg-muted/50 rounded-xl"
+                      className={`h-11 rounded-xl ${isPartyBooking ? 'bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500' : 'bg-muted/50'}`}
                     />
                   </div>
                   <div>
+                    <label className={`block text-xs font-semibold mb-1 ${isPartyBooking ? 'text-zinc-300' : 'text-ink'}`}>
+                      Số điện thoại Zalo nhận xác nhận <span className="text-rose-500">*</span>
+                    </label>
                     <Input
                       type="tel"
                       required
-                      placeholder="Số điện thoại Zalo (*)"
+                      placeholder="VD: 0901234567"
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
-                      className="h-12 bg-muted/50 font-medium rounded-xl"
+                      className={`h-11 rounded-xl font-medium ${isPartyBooking ? 'bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500' : 'bg-muted/50'}`}
                     />
                   </div>
 
-                  {isBooking && (
+                  {/* Trường riêng cho Party Booking */}
+                  {isPartyBooking ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                            Quy mô dự kiến <span className="text-rose-500">*</span>
+                          </label>
+                          <Input
+                            type="number"
+                            min={1}
+                            max={5000}
+                            inputMode="numeric"
+                            required
+                            placeholder="VD: 25"
+                            value={partyGuests}
+                            onChange={e => setPartyGuests(e.target.value)}
+                            className="h-11 rounded-xl bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500 text-sm font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                            Thời gian tiệc
+                          </label>
+                          <Input
+                            placeholder="VD: 18:30 ngày 25/12"
+                            value={bookingTime}
+                            onChange={e => setBookingTime(e.target.value)}
+                            className="h-11 rounded-xl bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500 text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                          Yêu cầu đặc biệt (Phòng VIP, Karaoke, menu...)
+                        </label>
+                        <Input
+                          placeholder="VD: Cần phòng VIP riêng có dàn Karaoke, tư vấn set menu 350k"
+                          value={partyNotes}
+                          onChange={e => setPartyNotes(e.target.value)}
+                          className="h-11 rounded-xl bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500 text-sm"
+                        />
+                      </div>
+                    </>
+                  ) : isBooking ? (
                     <>
                       <div className="mb-3">
                         <input
@@ -831,7 +1206,7 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                         </select>
                       </div>
                     </>
-                  )}
+                  ) : null}
 
                   {!isBooking && crossSells.length > 0 && (
                     <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4 mt-2">
@@ -866,16 +1241,45 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     </div>
                   )}
 
-                  <Button type="submit" className="w-full h-12 text-lg font-bold bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20 rounded-xl mt-4" disabled={loading}>
-                    {loading ? "Đang gửi..." : (isBooking ? `XÁC NHẬN ${actionNameUpper}` : "NHẬN ƯU ĐÃI")}
+                  <Button
+                    type="submit"
+                    className={`w-full h-12 text-base font-bold rounded-xl mt-3 ${
+                      isPartyBooking
+                        ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black hover:brightness-110 shadow-lg shadow-amber-950/60'
+                        : 'bg-gold text-ink hover:bg-gold/90 shadow-lg shadow-gold/20'
+                    }`}
+                    disabled={loading}
+                  >
+                    {submitButtonLabel}
                   </Button>
                 </form>
               ) : (
                 <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
-                  <CheckCircle2 className="size-16 text-green-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold text-ink mb-1">{isBooking ? "Đã gửi yêu cầu thành công!" : "Đã nhận ưu đãi thành công!"}</h3>
-                  {/* Success message based on type */}
-                  {!isBooking ? (
+                  <CheckCircle2 className="size-16 text-emerald-500 mx-auto mb-4" />
+                  <h3 className={`text-lg font-bold mb-1 ${isPartyBooking ? 'text-white' : 'text-ink'}`}>
+                    {successHeading}
+                  </h3>
+
+                  {isPartyBooking ? (
+                    <div className="space-y-3 mt-3 text-left">
+                      <p className="text-xs text-zinc-300 leading-relaxed text-center">
+                        Thông tin của bạn đã được chuyển thẳng tới Telegram của <span className="text-amber-300 font-bold">{business.name}</span> và ban quản trị 1Booking.Asia.
+                      </p>
+
+                      <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 space-y-1.5">
+                        <div>🏛️ Nhà hàng: <span className="text-white font-semibold">{business.name}</span></div>
+                        <div>👤 Người liên hệ: <span className="text-white font-semibold">{name || 'Khách đặt tiệc'}</span> ({phone})</div>
+                        <div>👥 Quy mô tiệc: <span className="text-amber-300 font-semibold">{partyGuests} khách</span></div>
+                        {bookingTime && <div>🕒 Thời gian: <span className="text-zinc-200">{bookingTime}</span></div>}
+                        <div>🎁 Ưu đãi: <span className="text-emerald-400 font-semibold">{selectedDeal?.title}</span></div>
+                        {partyNotes && <div>📝 Yêu cầu: <span className="text-zinc-300 italic">{partyNotes}</span></div>}
+                      </div>
+
+                      <p className="text-[11px] text-zinc-400 text-center">
+                        Quán sẽ chủ động gọi lại theo số <span className="text-amber-300 font-mono font-bold">{phone}</span> trong ít phút để tư vấn thực đơn và giữ sảnh tiệc đẹp nhất!
+                      </p>
+                    </div>
+                  ) : !isBooking ? (
                     <>
                       <p className="text-sm text-muted-foreground mb-5">Bạn chỉ cần đọc <strong>số điện thoại</strong> cho lễ tân khi đến tiệm.</p>
 
@@ -890,17 +1294,18 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
                     <p className="text-sm text-muted-foreground mb-5">Cảm ơn bạn. Chúng tôi sẽ sớm liên hệ qua số điện thoại <strong>{phone}</strong> để xác nhận với bạn nhé!</p>
                   )}
 
-                  {/* Gói đã chọn */}
-                  <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
-                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Sản phẩm/dịch vụ đã chọn" : "Gói ưu đãi"}</p>
-                    <p className="text-sm font-bold text-ink leading-snug">{isBooking ? (bookingService || selectedDeal?.title) : selectedDeal?.title}</p>
-                  </div>
+                  {!isPartyBooking && (
+                    <div className="rounded-xl border border-border bg-white px-4 py-3 mb-5 text-left">
+                      <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">{isBooking ? "Sản phẩm/dịch vụ đã chọn" : "Gói ưu đãi"}</p>
+                      <p className="text-sm font-bold text-ink leading-snug">{isBooking ? (bookingService || selectedDeal?.title) : selectedDeal?.title}</p>
+                    </div>
+                  )}
 
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 mt-4">
                     {hotlineDigits ? (
-                      <Button asChild className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl">
+                      <Button asChild className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl">
                         <Link href={`tel:${hotlineDigits}`}>
-                          <Phone className="mr-2 size-5" /> Liên hệ qua Hotline
+                          <Phone className="mr-2 size-5" /> Gọi Hotline Quán Xác Nhận Ngay
                         </Link>
                       </Button>
                     ) : (
@@ -987,27 +1392,89 @@ export default function PromoClient({ business, bannerImg, avatar }: { business:
         </p>
       </div>
 
-      {/* Sticky Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-3 flex gap-3 md:hidden">
-        <button
-          onClick={() => {
-            document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
-          }}
-          className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 transition-all duration-200 active:scale-95 active:opacity-90 hover:bg-gold hover:text-white"
-        >
-          <span className="flex items-center justify-center gap-2"><Gift className="size-4" /> Nhận Ưu Đãi</span>
-        </button>
-        <button
-          onClick={() => {
-            setBookingService("");
-            setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
-            setIsDialogOpen(true);
-          }}
-          className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg active:scale-95 active:opacity-90 hover:bg-gold"
-        >
-          <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> {actionName} Ngay</span>
-        </button>
-      </div>
+      {/* 🌟 NÚT BẤM DÍNH ĐÁY MÀN HÌNH (FIXED BOTTOM CTA - 10/10) */}
+      {isPartyMode ? (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/98 border-t border-amber-500/40 backdrop-blur-md p-3 shadow-2xl flex items-center justify-center">
+          <div className="max-w-5xl w-full flex items-center gap-2 sm:gap-3">
+            {/* 1. Nút Gửi Zalo / Tham khảo */}
+            <button
+              type="button"
+              onClick={handleShareZalo}
+              className={`flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
+                copiedShare
+                  ? 'bg-emerald-950/70 border-emerald-500 text-emerald-300'
+                  : 'bg-blue-950/60 hover:bg-blue-900/70 border-blue-500/50 text-blue-200'
+              }`}
+              title="Chia sẻ vào nhóm Zalo để mọi người cùng xem và bình chọn quán"
+            >
+              {copiedShare ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span className="hidden sm:inline">Đã chép link!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-4 h-4 text-blue-400" />
+                  <span>Gửi Zalo</span>
+                </>
+              )}
+            </button>
+
+            {/* 2. Nút Vàng Neon Dính Đáy: Nhận Ưu Đãi & Đặt Bàn Ngay */}
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedDeal({
+                  id: 'party-booking',
+                  title: partyProfile?.party_deal_highlight || 'Nhận Ưu Đãi & Đặt Bàn Tiệc VIP',
+                  original_price: '',
+                  promo_price: '',
+                  valid_until: ''
+                });
+                setVoucher('');
+                setIsDialogOpen(true);
+              }}
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black text-xs sm:text-sm font-black shadow-lg shadow-amber-950/70 transition-all active:scale-[0.98]"
+            >
+              <CalendarCheck className="w-4 h-4 text-black" />
+              <span>🎉 Nhận Ưu Đãi & Đặt Bàn Ngay</span>
+            </button>
+
+            {/* 3. Nút Gọi Hotline Nhanh */}
+            {hotlineDigits && (
+              <a
+                href={`tel:${hotlineDigits}`}
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-emerald-400 text-xs font-bold transition-all shrink-0 active:scale-95"
+                title="Gọi hotline quán"
+              >
+                <Phone className="w-4 h-4 text-emerald-400" />
+                <span className="hidden sm:inline">{hotline}</span>
+              </a>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-3 flex gap-3 md:hidden">
+          <button
+            onClick={() => {
+              document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 transition-all duration-200 active:scale-95 active:opacity-90 hover:bg-gold hover:text-white"
+          >
+            <span className="flex items-center justify-center gap-2"><Gift className="size-4" /> Nhận Ưu Đãi</span>
+          </button>
+          <button
+            onClick={() => {
+              setBookingService("");
+              setSelectedDeal({ id: 'booking', title: actionName, original_price: '', promo_price: '', valid_until: '' });
+              setIsDialogOpen(true);
+            }}
+            className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg active:scale-95 active:opacity-90 hover:bg-gold"
+          >
+            <span className="flex items-center justify-center gap-2"><Calendar className="size-4" /> {actionName} Ngay</span>
+          </button>
+        </div>
+      )}
 
       <SiteFooter />
     </div>

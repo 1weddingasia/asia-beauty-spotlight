@@ -162,14 +162,14 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   return (
     <Drawer open={!!venue} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="bg-zinc-950 border-t border-amber-500/30 text-zinc-100 max-h-[85dvh] rounded-t-3xl overflow-hidden shadow-2xl">
+      <DrawerContent className="bg-zinc-950/98 border-t border-amber-500/30 text-zinc-100 max-h-[88dvh] rounded-t-3xl overflow-hidden shadow-2xl flex flex-col backdrop-blur-xl">
         {/* 
           ⚠️ BẮT BUỘC THEO CHỈ DẪN KỸ THUẬT:
           onTouchMove e.stopPropagation() để việc vuốt xem menu trong Drawer không làm trượt bản đồ MapLibre bên dưới
         */}
         <div
           onTouchMove={(e) => e.stopPropagation()}
-          className="overflow-y-auto px-4 pb-8 pt-2 scrollbar-thin scrollbar-thumb-zinc-800"
+          className="flex-1 overflow-y-auto px-4 pb-8 pt-2 scrollbar-thin scrollbar-thumb-zinc-800"
         >
           {/* Header Info */}
           <div className="relative rounded-2xl overflow-hidden mb-4 border border-zinc-800 bg-zinc-900 aspect-[16/9] max-h-48 sm:max-h-56">
@@ -521,7 +521,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
               {/* Set menus */}
               {venue.set_menus && venue.set_menus.length > 0 && (
-                <div className="mb-5 text-left">
+                <div className="mb-2 text-left">
                   <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
                     Gợi ý Set Menu Tiệc
                   </div>
@@ -532,10 +532,10 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                         className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs"
                       >
                         <div>
-                          <span className="font-bold text-white">{m.name}</span>
+                          <span className="font-bold text-white text-xs sm:text-sm">{m.name}</span>
                           <span className="text-zinc-400 ml-2">({m.pax} người/bàn)</span>
                         </div>
-                        <span className="font-bold text-amber-400">
+                        <span className="font-bold text-amber-300 font-mono text-xs sm:text-sm">
                           {m.price?.toLocaleString('vi-VN')} đ
                         </span>
                       </div>
@@ -543,55 +543,58 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                   </div>
                 </div>
               )}
-
-              {/* CTA Actions Bar: Bỏ nút gọi quán, thay bằng Nút Liên Hệ Đặt Tiệc */}
-              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-2 border-t border-zinc-800">
-                {/* 1. Nút Gửi nhóm Zalo / Bình chọn */}
-                <button
-                  type="button"
-                  onClick={handleShareZalo}
-                  className={`flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
-                    copiedShare
-                      ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
-                      : 'bg-blue-950/50 hover:bg-blue-900/60 border-blue-500/50 text-blue-200'
-                  }`}
-                  title="Chia sẻ thông tin tham khảo vào nhóm Zalo để cùng xem và bình chọn"
-                >
-                  {copiedShare ? (
-                    <>
-                      <Check className="w-4 h-4 text-emerald-400" />
-                      <span>Đã sao chép!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Share2 className="w-4 h-4 text-blue-400" />
-                      <span>Gửi Zalo</span>
-                    </>
-                  )}
-                </button>
-
-                {/* 2. Nút Liên Hệ Đặt Tiệc (Bấm vào bung form đặt tiệc & bắn Telegram) */}
-                <button
-                  type="button"
-                  onClick={() => setShowBookingForm(true)}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-950/50 transition-all active:scale-[0.98]"
-                >
-                  <CalendarCheck className="w-4 h-4 text-emerald-200" />
-                  <span>Liên Hệ Đặt Tiệc</span>
-                </button>
-
-                {/* 3. Nút Xem Menu & Chi tiết quán trên trang thật */}
-                <Link
-                  href={`/${venue.slug}`}
-                  className="flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
-                >
-                  <span>Chi Tiết Quán</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
-                </Link>
-              </div>
             </>
           )}
         </div>
+
+        {/* 🌟 NÚT BẤM DÍNH ĐÁY MÀN HÌNH (FIXED BOTTOM CTA) */}
+        {!showBookingForm && (
+          <div className="shrink-0 p-3 bg-zinc-950/98 border-t border-amber-500/30 backdrop-blur-md flex items-center gap-2 z-20">
+            {/* 1. Nút Gửi nhóm Zalo / Bình chọn */}
+            <button
+              type="button"
+              onClick={handleShareZalo}
+              className={`flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-3.5 sm:py-3 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
+                copiedShare
+                  ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
+                  : 'bg-blue-950/50 hover:bg-blue-900/60 border-blue-500/50 text-blue-200'
+              }`}
+              title="Chia sẻ thông tin tham khảo vào nhóm Zalo để cùng xem và bình chọn"
+            >
+              {copiedShare ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span className="hidden sm:inline">Đã chép!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-4 h-4 text-blue-400" />
+                  <span>Gửi Zalo</span>
+                </>
+              )}
+            </button>
+
+            {/* 2. Nút Vàng Neon Dính Đáy: Nhận Ưu Đãi & Đặt Tiệc Ngay */}
+            <button
+              type="button"
+              onClick={() => setShowBookingForm(true)}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black text-xs sm:text-sm font-black shadow-lg shadow-amber-950/50 transition-all active:scale-[0.98]"
+            >
+              <CalendarCheck className="w-4 h-4 text-black" />
+              <span>🎉 Nhận Ưu Đãi & Đặt Tiệc</span>
+            </button>
+
+            {/* 3. Nút Xem Menu & Chi tiết quán trên trang thật */}
+            <Link
+              href={`/${venue.slug}`}
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
+              title="Xem trang chi tiết nhà hàng trên 1Booking.Asia"
+            >
+              <span className="hidden sm:inline">Chi Tiết Quán</span>
+              <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
+            </Link>
+          </div>
+        )}
       </DrawerContent>
     </Drawer>
   );

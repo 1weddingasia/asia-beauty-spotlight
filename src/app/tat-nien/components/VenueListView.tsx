@@ -8,9 +8,28 @@ import { MapPin, Users, Wine, Sparkles, ExternalLink, Map as MapIcon } from 'luc
 interface VenueListViewProps {
   venues: PartyVenue[];
   onSelectOnMap: (venue: PartyVenue) => void;
+  userLocation?: { lat: number; lng: number } | null;
 }
 
-export default function VenueListView({ venues, onSelectOnMap }: VenueListViewProps) {
+function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+export default function VenueListView({
+  venues,
+  onSelectOnMap,
+  userLocation,
+}: VenueListViewProps) {
   if (venues.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
@@ -40,6 +59,15 @@ export default function VenueListView({ venues, onSelectOnMap }: VenueListViewPr
 
         const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
 
+        const coords = venue.map_coordinates;
+        const distance =
+          userLocation &&
+          coords &&
+          typeof coords.lat === 'number' &&
+          typeof coords.lng === 'number'
+            ? getDistanceKm(userLocation.lat, userLocation.lng, coords.lat, coords.lng)
+            : null;
+
         return (
           <div
             key={venue.id}
@@ -59,16 +87,24 @@ export default function VenueListView({ venues, onSelectOnMap }: VenueListViewPr
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
-              {/* VIP Badge */}
-              <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                {venue.is_vip && (
-                  <span className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-700 text-black font-extrabold text-[10px] px-2.5 py-0.5 rounded-full shadow-md vip-pin-glow">
-                    <Sparkles className="w-3 h-3" /> VIP VENUE
-                  </span>
-                )}
-                {venue.num_vip_rooms > 0 && (
-                  <span className="bg-zinc-950/80 text-amber-300 border border-amber-500/30 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-md">
-                    {venue.num_vip_rooms} Phòng VIP
+              {/* VIP Badge & Distance */}
+              <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                <div className="flex flex-wrap gap-1.5">
+                  {venue.is_vip && (
+                    <span className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-700 text-black font-extrabold text-[10px] px-2.5 py-0.5 rounded-full shadow-md vip-pin-glow">
+                      <Sparkles className="w-3 h-3" /> VIP VENUE
+                    </span>
+                  )}
+                  {venue.num_vip_rooms > 0 && (
+                    <span className="bg-zinc-950/80 text-amber-300 border border-amber-500/30 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-md">
+                      {venue.num_vip_rooms} Phòng VIP
+                    </span>
+                  )}
+                </div>
+
+                {distance !== null && (
+                  <span className="bg-blue-950/90 text-blue-300 border border-blue-500/50 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full backdrop-blur-md shadow-md shadow-blue-950">
+                    📍 {distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)} km`}
                   </span>
                 )}
               </div>

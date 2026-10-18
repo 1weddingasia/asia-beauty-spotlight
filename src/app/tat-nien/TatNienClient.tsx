@@ -7,7 +7,35 @@ import { PartyVenue, PartyFilterState } from '@/types/party';
 import VenueBottomSheet from './components/VenueBottomSheet';
 import PartyFilterWidget from './components/PartyFilterWidget';
 import VenueListView from './components/VenueListView';
-import { Map as MapIcon, List as ListIcon, Sparkles, ChevronLeft } from 'lucide-react';
+import { Map as MapIcon, List as ListIcon, Sparkles, ChevronLeft, Navigation, MapPin } from 'lucide-react';
+
+// Danh sách Quận / Huyện trọng điểm TP.HCM
+export const HCMC_DISTRICTS = [
+  { id: 'all', name: 'Toàn TP.HCM', center: [106.67, 10.77] as [number, number] },
+  { id: 'quan-1', name: 'Quận 1', keywords: ['quận 1', 'q.1', 'q1', 'quận 01', 'bến nghé', 'bến thành'], center: [106.6983, 10.7756] as [number, number] },
+  { id: 'quan-3', name: 'Quận 3', keywords: ['quận 3', 'q.3', 'q3', 'quận 03', 'võ thị sáu', 'phạm ngọc thạch'], center: [106.6844, 10.7845] as [number, number] },
+  { id: 'quan-10', name: 'Quận 10', keywords: ['quận 10', 'q.10', 'q10', 'thành thái'], center: [106.6668, 10.7715] as [number, number] },
+  { id: 'binh-thanh', name: 'Bình Thạnh', keywords: ['bình thạnh', 'binh thanh'], center: [106.7093, 10.8033] as [number, number] },
+  { id: 'phu-nhuan', name: 'Phú Nhuận', keywords: ['phú nhuận', 'phu nhuan'], center: [106.6806, 10.7992] as [number, number] },
+  { id: 'tan-binh', name: 'Tân Bình', keywords: ['tân bình', 'tan binh', 'nguyễn thái bình'], center: [106.6558, 10.8015] as [number, number] },
+  { id: 'thu-duc', name: 'Thủ Đức', keywords: ['thủ đức', 'thu duc', 'quận 2', 'quận 9'], center: [106.7537, 10.8494] as [number, number] },
+  { id: 'quan-7', name: 'Quận 7', keywords: ['quận 7', 'q.7', 'q7', 'phú mỹ hưng'], center: [106.7218, 10.7340] as [number, number] },
+  { id: 'go-vap', name: 'Gò Vấp', keywords: ['gò vấp', 'go vap'], center: [106.6653, 10.8388] as [number, number] },
+];
+
+function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 // Lazy load MapView với dynamic ssr: false
 const MapView = dynamic(() => import('./components/MapView'), {
@@ -30,6 +58,12 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [selectedVenue, setSelectedVenue] = useState<PartyVenue | null>(null);
 
+  // Quận / Huyện & Định vị GPS
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('all');
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [isLocating, setIsLocating] = useState<boolean>(false);
+  const [flyToCenter, setFlyToCenter] = useState<[number, number] | null>(null);
+
   // Bộ lọc Client-side
   const [filter, setFilter] = useState<PartyFilterState>({
     guests: 0,
@@ -40,9 +74,61 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
     onlyVip: false,
   });
 
+  // Xử lý lấy tọa độ người dùng ("📍 Gần tôi")
+  const handleGetNearMe = () => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      alert('Trình duyệt của bạn chưa hỗ trợ định vị GPS.');
+      return;
+    }
+    setIsLocating(true);
+    try {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setIsLocating(false);
+          const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setUserLocation(loc);
+          setFlyToCenter([loc.lng, loc.lat]);
+        },
+        (err) => {
+          setIsLocating(false);
+          console.warn('Geolocation error:', err);
+          alert('Không thể xác định vị trí. Vui lòng bật quyền truy cập vị trí trên trình duyệt.');
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    } catch (e) {
+      setIsLocating(false);
+      console.warn('Geolocation invocation failed:', e);
+      alert('Không thể kích hoạt định vị trong môi trường trình duyệt này.');
+    }
+  };
+
+  // Xử lý chọn Quận / Huyện
+  const handleSelectDistrict = (districtId: string) => {
+    setSelectedDistrict(districtId);
+    const dObj = HCMC_DISTRICTS.find((d) => d.id === districtId);
+    if (dObj) {
+      setUserLocation(null);
+      setFlyToCenter(dObj.center);
+    } else if (districtId === 'all') {
+      setUserLocation(null);
+      setFlyToCenter([106.6983, 10.7756]);
+    }
+  };
+
   // ⚡ TỐI ƯU 0MS: Lọc trực tiếp trên React State qua useMemo (không chờ mạng)
   const filteredVenues = useMemo(() => {
-    return initialVenues.filter((v) => {
+    const list = initialVenues.filter((v) => {
+      // 0. Lọc Quận / Huyện
+      if (selectedDistrict !== 'all') {
+        const dObj = HCMC_DISTRICTS.find((d) => d.id === selectedDistrict);
+        if (dObj && dObj.keywords) {
+          const addrLower = (v.address || '').toLowerCase();
+          const matches = dObj.keywords.some((k) => addrLower.includes(k));
+          if (!matches) return false;
+        }
+      }
+
       // 1. Số lượng khách
       if (filter.guests > 0 && v.max_guests < filter.guests) return false;
 
@@ -70,7 +156,26 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
 
       return true;
     });
-  }, [initialVenues, filter]);
+
+    // Nếu người dùng đã bật "Gần tôi", sắp xếp quán gần nhất lên đầu
+    if (userLocation) {
+      list.sort((a, b) => {
+        const aCoords = a.map_coordinates;
+        const bCoords = b.map_coordinates;
+        const aDist =
+          aCoords && typeof aCoords.lat === 'number' && typeof aCoords.lng === 'number'
+            ? getDistanceKm(userLocation.lat, userLocation.lng, aCoords.lat, aCoords.lng)
+            : 9999;
+        const bDist =
+          bCoords && typeof bCoords.lat === 'number' && typeof bCoords.lng === 'number'
+            ? getDistanceKm(userLocation.lat, userLocation.lng, bCoords.lat, bCoords.lng)
+            : 9999;
+        return aDist - bDist;
+      });
+    }
+
+    return list;
+  }, [initialVenues, filter, selectedDistrict, userLocation]);
 
   // Set ID để MapView highlight/dim markers
   const filteredVenueIds = useMemo(() => {
@@ -82,6 +187,14 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
     setSelectedVenue(venue);
     setViewMode('map');
   };
+
+  // Tọa độ trung tâm hiện tại (giữ vị trí khi chuyển đổi qua lại giữa Map và List)
+  const activeCenter = useMemo(() => {
+    if (userLocation) return [userLocation.lng, userLocation.lat] as [number, number];
+    if (flyToCenter) return flyToCenter;
+    const dObj = HCMC_DISTRICTS.find((d) => d.id === selectedDistrict);
+    return dObj ? dObj.center : ([106.67, 10.77] as [number, number]);
+  }, [userLocation, flyToCenter, selectedDistrict]);
 
   return (
     // ⚠️ BẮT BUỘC THEO CHỈ DẪN KỸ THUẬT:
@@ -110,7 +223,7 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
                 <Sparkles className="w-2.5 h-2.5" /> YEAR-END PARTY
               </span>
             </div>
-            <p className="text-[10px] text-zinc-400 hidden xs:block">
+            <p className="text-[10px] text-zinc-400 hidden sm:block">
               Bản đồ 2.5D khám phá nhà hàng tiệc VIP, phòng riêng & ưu đãi độc quyền
             </p>
           </div>
@@ -146,18 +259,59 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
             </button>
           </div>
 
-          {/* 🏷️ B2B CTA: Đăng ký điểm tiệc VIP */}
+          {/* 🏷️ B2B CTA: Đăng ký điểm tiệc 500k */}
           <Link
-            href="/bang-gia"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black text-xs font-black shadow-md shadow-amber-950/40 transition-all active:scale-95 shrink-0"
-            title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc VIP để xuất hiện trên bản đồ"
+            href="/tat-nien/dang-ky"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black shadow-md shadow-amber-950/40 transition-all active:scale-95 shrink-0"
+            title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc 500k để sáng đèn neon trên bản đồ"
           >
             <Sparkles className="w-3.5 h-3.5 fill-black" />
-            <span className="hidden md:inline">Đăng ký Điểm Tiệc VIP</span>
-            <span className="md:hidden">Đăng ký</span>
+            <span className="hidden md:inline">Chủ Quán Đăng Tiệc 500k</span>
+            <span className="md:hidden">Đăng Tiệc 500k</span>
           </Link>
         </div>
       </header>
+
+      {/* 1.1 Quick District & Near Me Floating Bar */}
+      <div className="relative z-20 bg-zinc-950/95 border-b border-zinc-800/80 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none backdrop-blur-md">
+        {/* Nút 📍 Gần tôi */}
+        <button
+          type="button"
+          onClick={handleGetNearMe}
+          disabled={isLocating}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all active:scale-95 border ${
+            userLocation
+              ? 'bg-blue-950/80 text-blue-300 border-blue-500/80 shadow-md shadow-blue-950'
+              : 'bg-zinc-900 text-zinc-300 border-zinc-700 hover:text-white hover:border-amber-400'
+          }`}
+          title="Định vị quán tiệc gần vị trí của bạn"
+        >
+          {isLocating ? (
+            <div className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Navigation className={`w-3.5 h-3.5 ${userLocation ? 'text-blue-400 fill-blue-400' : 'text-amber-400'}`} />
+          )}
+          <span>{userLocation ? 'Gần tôi (Đã bật)' : '📍 Gần tôi'}</span>
+        </button>
+
+        <div className="h-4 w-px bg-zinc-800 shrink-0 mx-0.5" />
+
+        {/* Danh sách Quận / Huyện */}
+        {HCMC_DISTRICTS.map((d) => (
+          <button
+            key={d.id}
+            type="button"
+            onClick={() => handleSelectDistrict(d.id)}
+            className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition-all active:scale-95 border ${
+              selectedDistrict === d.id
+                ? 'bg-amber-500 text-black font-extrabold border-amber-400 shadow-md shadow-amber-950'
+                : 'bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
+            }`}
+          >
+            {d.name}
+          </button>
+        ))}
+      </div>
 
       {/* 2. Main Content View Area */}
       <main className="relative flex-1 w-full overflow-hidden">
@@ -167,12 +321,16 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
             filteredVenueIds={filteredVenueIds}
             selectedVenue={selectedVenue}
             onSelectVenue={setSelectedVenue}
+            userLocation={userLocation}
+            flyToCenter={flyToCenter}
+            initialCenter={activeCenter}
           />
         ) : (
           <div className="w-full h-full overflow-y-auto">
             <VenueListView
               venues={filteredVenues}
               onSelectOnMap={handleSelectOnMap}
+              userLocation={userLocation}
             />
           </div>
         )}
@@ -198,3 +356,4 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
     </div>
   );
 }
+

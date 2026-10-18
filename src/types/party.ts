@@ -119,3 +119,27 @@ export function isFnBCategory(categorySlug?: string | null): boolean {
   const s = categorySlug.toLowerCase();
   return ['dining', 'fnb', 'restaurant', 'nha-hang', 'am-thuc'].some(k => s.includes(k));
 }
+
+export const VN_PHONE_REGEX = /^(03|05|07|08|09)\d{8}$/;
+
+export interface PartyDistrictItem {
+  id: string;
+  name: string;
+  keywords: string[];
+  center: [number, number];
+}
+
+export const PARTY_DISTRICTS: PartyDistrictItem[] = [
+  { id: 'quan-1', name: 'Quận 1', keywords: ['quận 1', 'q.1', 'q1', 'quận 01', 'bến nghé', 'bến thành'], center: [106.6983, 10.7756] },
+  { id: 'quan-3', name: 'Quận 3', keywords: ['quận 3', 'q.3', 'q3', 'quận 03', 'võ thị sáu', 'phạm ngọc thạch'], center: [106.6844, 10.7845] },
+  { id: 'quan-10', name: 'Quận 10', keywords: ['quận 10', 'q.10', 'q10', 'thành thái'], center: [106.6668, 10.7715] },
+  { id: 'binh-thanh', name: 'Bình Thạnh', keywords: ['bình thạnh', 'binh thanh'], center: [106.7093, 10.8033] },
+  { id: 'phu-nhuan', name: 'Phú Nhuận', keywords: ['phú nhuận', 'phu nhuan'], center: [106.6806, 10.7992] },
+  { id: 'tan-binh', name: 'Tân Bình', keywords: ['tân bình', 'tan binh', 'nguyễn thái bình'], center: [106.6558, 10.8015] },
+  { id: 'thu-duc', name: 'Thành phố Thủ Đức', keywords: ['thủ đức', 'thu duc', 'quận 2', 'quận 9'], center: [106.7537, 10.8494] },
+  { id: 'quan-7', name: 'Quận 7', keywords: ['quận 7', 'q.7', 'q7', 'phú mỹ hưng'], center: [106.7218, 10.7340] },
+  { id: 'quan-4', name: 'Quận 4', keywords: ['quận 4', 'q.4', 'q4'], center: [106.7042, 10.7617] },
+  { id: 'quan-5', name: 'Quận 5', keywords: ['quận 5', 'q.5', 'q5'], center: [106.6669, 10.7554] },
+  { id: 'go-vap', name: 'Gò Vấp', keywords: ['gò vấp', 'go vap'], center: [106.6653, 10.8388] },
+];
+
