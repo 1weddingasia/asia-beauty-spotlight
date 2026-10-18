@@ -38,7 +38,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
   const [showBookingForm, setShowBookingForm] = React.useState(false);
   const [bookingName, setBookingName] = React.useState('');
   const [bookingPhone, setBookingPhone] = React.useState('');
-  const [bookingGuests, setBookingGuests] = React.useState<number>(20);
+  const [bookingGuests, setBookingGuests] = React.useState<number | ''>(20);
   const [bookingDate, setBookingDate] = React.useState('');
   const [bookingNotes, setBookingNotes] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -385,7 +385,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                         value={bookingGuests || ''}
                         onChange={(e) => {
                           const raw = e.target.value;
-                          setBookingGuests(raw === '' ? ('' as any) : Number(raw));
+                          setBookingGuests(raw === '' ? '' : Number(raw));
                         }}
                         onBlur={() => {
                           if (!bookingGuests || Number(bookingGuests) < 1) {
