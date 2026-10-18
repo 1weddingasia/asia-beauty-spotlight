@@ -20,20 +20,7 @@ import {
   ShieldCheck,
   Zap,
 } from 'lucide-react';
-
-const DISTRICT_OPTIONS = [
-  { id: 'quan-1', name: 'Quận 1' },
-  { id: 'quan-3', name: 'Quận 3' },
-  { id: 'quan-10', name: 'Quận 10' },
-  { id: 'binh-thanh', name: 'Bình Thạnh' },
-  { id: 'phu-nhuan', name: 'Phú Nhuận' },
-  { id: 'tan-binh', name: 'Tân Bình' },
-  { id: 'thu-duc', name: 'Thành phố Thủ Đức' },
-  { id: 'quan-7', name: 'Quận 7' },
-  { id: 'quan-4', name: 'Quận 4' },
-  { id: 'quan-5', name: 'Quận 5' },
-  { id: 'go-vap', name: 'Gò Vấp' },
-];
+import { PartyDistrictItem } from '@/types/party';
 
 const SAMPLE_PHOTOS = [
   {
@@ -50,10 +37,14 @@ const SAMPLE_PHOTOS = [
   },
 ];
 
-export default function DangKyClient() {
+interface DangKyClientProps {
+  districts: PartyDistrictItem[];
+}
+
+export default function DangKyClient({ districts = [] }: DangKyClientProps) {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
-  const [district, setDistrict] = useState('quan-1');
+  const [district, setDistrict] = useState(districts[0]?.slug || '');
   const [phone, setPhone] = useState('');
   const [contactName, setContactName] = useState('');
   const [partyDeal, setPartyDeal] = useState('');
@@ -113,6 +104,11 @@ export default function DangKyClient() {
 
     if (!address.trim()) {
       setErrorMsg('Vui lòng nhập địa chỉ quán chi tiết.');
+      return;
+    }
+
+    if (!district) {
+      setErrorMsg('Vui lòng chọn Quận / Huyện cho nhà hàng.');
       return;
     }
 
@@ -385,13 +381,20 @@ export default function DangKyClient() {
                 <select
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-amber-400 transition-colors"
+                  disabled={districts.length === 0}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-amber-400 transition-colors disabled:opacity-50"
                 >
-                  {DISTRICT_OPTIONS.map((d) => (
-                    <option key={d.id} value={d.id} className="bg-zinc-950 text-white">
-                      {d.name}
+                  {districts.length === 0 ? (
+                    <option value="" disabled className="bg-zinc-950 text-white">
+                      Đang tải danh sách quận...
                     </option>
-                  ))}
+                  ) : (
+                    districts.map((d) => (
+                      <option key={d.id || d.slug} value={d.slug} className="bg-zinc-950 text-white">
+                        {d.name}
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
             </div>
@@ -527,10 +530,16 @@ export default function DangKyClient() {
               </ul>
             </div>
 
+            {districts.length === 0 && (
+              <div className="p-3.5 rounded-xl bg-rose-950/50 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
+                <span>⚠️ Hệ thống đang đồng bộ danh mục quận. Vui lòng tải lại trang hoặc liên hệ Hotline/Zalo BQT 1Booking.Asia: 0909.888.588 để đăng ký nhanh.</span>
+              </div>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || districts.length === 0}
               className="w-full py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-black text-sm sm:text-base shadow-xl shadow-amber-950/50 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {isSubmitting ? (

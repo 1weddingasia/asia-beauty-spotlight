@@ -3,25 +3,11 @@
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { PartyVenue, PartyFilterState } from '@/types/party';
+import { PartyVenue, PartyFilterState, PartyDistrictItem } from '@/types/party';
 import VenueBottomSheet from './components/VenueBottomSheet';
 import PartyFilterWidget from './components/PartyFilterWidget';
 import VenueListView from './components/VenueListView';
 import { Map as MapIcon, List as ListIcon, Sparkles, ChevronLeft, Navigation, MapPin } from 'lucide-react';
-
-// Danh sách Quận / Huyện trọng điểm TP.HCM
-export const HCMC_DISTRICTS = [
-  { id: 'all', name: 'Toàn TP.HCM', center: [106.67, 10.77] as [number, number] },
-  { id: 'quan-1', name: 'Quận 1', keywords: ['quận 1', 'q.1', 'q1', 'quận 01', 'bến nghé', 'bến thành'], center: [106.6983, 10.7756] as [number, number] },
-  { id: 'quan-3', name: 'Quận 3', keywords: ['quận 3', 'q.3', 'q3', 'quận 03', 'võ thị sáu', 'phạm ngọc thạch'], center: [106.6844, 10.7845] as [number, number] },
-  { id: 'quan-10', name: 'Quận 10', keywords: ['quận 10', 'q.10', 'q10', 'thành thái'], center: [106.6668, 10.7715] as [number, number] },
-  { id: 'binh-thanh', name: 'Bình Thạnh', keywords: ['bình thạnh', 'binh thanh'], center: [106.7093, 10.8033] as [number, number] },
-  { id: 'phu-nhuan', name: 'Phú Nhuận', keywords: ['phú nhuận', 'phu nhuan'], center: [106.6806, 10.7992] as [number, number] },
-  { id: 'tan-binh', name: 'Tân Bình', keywords: ['tân bình', 'tan binh', 'nguyễn thái bình'], center: [106.6558, 10.8015] as [number, number] },
-  { id: 'thu-duc', name: 'Thủ Đức', keywords: ['thủ đức', 'thu duc', 'quận 2', 'quận 9'], center: [106.7537, 10.8494] as [number, number] },
-  { id: 'quan-7', name: 'Quận 7', keywords: ['quận 7', 'q.7', 'q7', 'phú mỹ hưng'], center: [106.7218, 10.7340] as [number, number] },
-  { id: 'go-vap', name: 'Gò Vấp', keywords: ['gò vấp', 'go vap'], center: [106.6653, 10.8388] as [number, number] },
-];
 
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
@@ -50,11 +36,14 @@ const MapView = dynamic(() => import('./components/MapView'), {
   ),
 });
 
+const HCMC_DEFAULT_CENTER: [number, number] = [106.67, 10.77];
+
 interface TatNienClientProps {
   initialVenues: PartyVenue[];
+  initialDistricts: PartyDistrictItem[];
 }
 
-export default function TatNienClient({ initialVenues }: TatNienClientProps) {
+export default function TatNienClient({ initialVenues, initialDistricts }: TatNienClientProps) {
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [selectedVenue, setSelectedVenue] = useState<PartyVenue | null>(null);
 
@@ -73,6 +62,18 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
     perks: [],
     onlyVip: false,
   });
+
+  // Danh sách Quận / Huyện load từ database thật (directory_locations)
+  const districtsList = useMemo(() => {
+    const allOption: PartyDistrictItem = {
+      id: 'all',
+      name: 'Toàn TP.HCM',
+      slug: 'all',
+      keywords: [],
+      map_coordinates: HCMC_DEFAULT_CENTER,
+    };
+    return [allOption, ...(initialDistricts || [])];
+  }, [initialDistricts]);
 
   // Xử lý lấy tọa độ người dùng ("📍 Gần tôi")
   const handleGetNearMe = () => {
@@ -103,28 +104,33 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
     }
   };
 
+  // Helper tìm kiếm quận trong danh sách
+  const findDistrict = (key: string) =>
+    districtsList.find((d) => d.slug === key || d.id === key);
+
   // Xử lý chọn Quận / Huyện
-  const handleSelectDistrict = (districtId: string) => {
-    setSelectedDistrict(districtId);
-    const dObj = HCMC_DISTRICTS.find((d) => d.id === districtId);
-    if (dObj) {
-      setUserLocation(null);
-      setFlyToCenter(dObj.center);
-    } else if (districtId === 'all') {
-      setUserLocation(null);
-      setFlyToCenter([106.6983, 10.7756]);
-    }
+  const handleSelectDistrict = (districtKey: string) => {
+    setSelectedDistrict(districtKey);
+    const dObj = findDistrict(districtKey);
+    setUserLocation(null);
+    setFlyToCenter(dObj?.map_coordinates || HCMC_DEFAULT_CENTER);
   };
 
   // ⚡ TỐI ƯU 0MS: Lọc trực tiếp trên React State qua useMemo (không chờ mạng)
   const filteredVenues = useMemo(() => {
     const list = initialVenues.filter((v) => {
-      // 0. Lọc Quận / Huyện
+      // 0. Lọc Quận / Huyện từ database thật
       if (selectedDistrict !== 'all') {
-        const dObj = HCMC_DISTRICTS.find((d) => d.id === selectedDistrict);
-        if (dObj && dObj.keywords) {
+        const dObj = findDistrict(selectedDistrict);
+        if (dObj) {
           const addrLower = (v.address || '').toLowerCase();
-          const matches = dObj.keywords.some((k) => addrLower.includes(k));
+          const dNameLower = dObj.name.toLowerCase();
+          const keywords = Array.isArray(dObj.keywords) && dObj.keywords.length > 0
+            ? dObj.keywords
+            : [dNameLower];
+          const matches =
+            keywords.some((k) => addrLower.includes(k.toLowerCase())) ||
+            addrLower.includes(dNameLower);
           if (!matches) return false;
         }
       }
@@ -175,7 +181,7 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
     }
 
     return list;
-  }, [initialVenues, filter, selectedDistrict, userLocation]);
+  }, [initialVenues, filter, selectedDistrict, userLocation, districtsList]);
 
   // Set ID để MapView highlight/dim markers
   const filteredVenueIds = useMemo(() => {
@@ -192,9 +198,9 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
   const activeCenter = useMemo(() => {
     if (userLocation) return [userLocation.lng, userLocation.lat] as [number, number];
     if (flyToCenter) return flyToCenter;
-    const dObj = HCMC_DISTRICTS.find((d) => d.id === selectedDistrict);
-    return dObj ? dObj.center : ([106.67, 10.77] as [number, number]);
-  }, [userLocation, flyToCenter, selectedDistrict]);
+    const dObj = findDistrict(selectedDistrict);
+    return (dObj?.map_coordinates as [number, number]) || HCMC_DEFAULT_CENTER;
+  }, [userLocation, flyToCenter, selectedDistrict, districtsList]);
 
   return (
     // ⚠️ BẮT BUỘC THEO CHỈ DẪN KỸ THUẬT:
@@ -296,21 +302,24 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
 
         <div className="h-4 w-px bg-zinc-800 shrink-0 mx-0.5" />
 
-        {/* Danh sách Quận / Huyện */}
-        {HCMC_DISTRICTS.map((d) => (
-          <button
-            key={d.id}
-            type="button"
-            onClick={() => handleSelectDistrict(d.id)}
-            className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition-all active:scale-95 border ${
-              selectedDistrict === d.id
-                ? 'bg-amber-500 text-black font-extrabold border-amber-400 shadow-md shadow-amber-950'
-                : 'bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
-            }`}
-          >
-            {d.name}
-          </button>
-        ))}
+        {/* Danh sách Quận / Huyện từ database thật */}
+        {districtsList.map((d) => {
+          const key = d.slug || d.id;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => handleSelectDistrict(key)}
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition-all active:scale-95 border ${
+                selectedDistrict === key
+                  ? 'bg-amber-500 text-black font-extrabold border-amber-400 shadow-md shadow-amber-950'
+                  : 'bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
+              }`}
+            >
+              {d.name}
+            </button>
+          );
+        })}
       </div>
 
       {/* 2. Main Content View Area */}

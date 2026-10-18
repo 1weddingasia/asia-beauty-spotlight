@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createAdminClient } from '@/utils/supabase/server';
-import { VN_PHONE_REGEX, PARTY_DISTRICTS } from '@/types/party';
+import { VN_PHONE_REGEX } from '@/types/party';
 
 export const dynamic = 'force-dynamic';
 
@@ -114,14 +114,47 @@ export async function POST(req: NextRequest) {
     // 1. Phân tích giá tiệc bình quân
     const { priceMin, priceMax } = parsePricePerPax(price_per_pax);
 
-    // 2. Tính toán tọa độ ghim trên bản đồ (District + Jitter tự nhiên)
-    const districtObj = PARTY_DISTRICTS.find((d) => d.id === district);
-    const baseCenter = districtObj ? districtObj.center : [106.6983, 10.7756];
+    // 2. Lấy tọa độ từ database thật directory_locations + Jitter tự nhiên
+    const { data: districtRow } = await supabase
+      .from('directory_locations')
+      .select('id, name, slug, map_coordinates')
+      .eq('slug', district)
+      .maybeSingle();
+
+    if (!districtRow) {
+      return NextResponse.json(
+        { error: 'Quận / Huyện đã chọn không tồn tại trong hệ thống. Vui lòng chọn lại.' },
+        { status: 400 }
+      );
+    }
+
+    const rawCoords = districtRow.map_coordinates;
+    let baseCoords: [number, number] = [106.6983, 10.7756];
+
+    if (
+      Array.isArray(rawCoords) &&
+      rawCoords.length === 2 &&
+      typeof rawCoords[0] === 'number' &&
+      typeof rawCoords[1] === 'number'
+    ) {
+      baseCoords = [rawCoords[0], rawCoords[1]];
+    } else if (
+      rawCoords &&
+      typeof rawCoords === 'object' &&
+      'lng' in rawCoords &&
+      'lat' in rawCoords &&
+      typeof (rawCoords as Record<string, unknown>).lng === 'number' &&
+      typeof (rawCoords as Record<string, unknown>).lat === 'number'
+    ) {
+      const obj = rawCoords as { lng: number; lat: number };
+      baseCoords = [obj.lng, obj.lat];
+    }
+
     const jitterLat = (Math.random() - 0.5) * 0.006;
     const jitterLng = (Math.random() - 0.5) * 0.006;
     const mapCoordinates = {
-      lat: Number((baseCenter[1] + jitterLat).toFixed(6)),
-      lng: Number((baseCenter[0] + jitterLng).toFixed(6)),
+      lat: Number((baseCoords[1] + jitterLat).toFixed(6)),
+      lng: Number((baseCoords[0] + jitterLng).toFixed(6)),
     };
 
     let finalPhoto = '/images/demo/nha-hang/que-nha-banquet-luxury.jpg';
@@ -178,6 +211,7 @@ export async function POST(req: NextRequest) {
           name: name.trim(),
           address: address.trim(),
           category_slug: existingBiz.category_slug || 'nha-hang-am-thuc',
+          location_slug: districtRow.slug,
           map_coordinates: mapCoordinates,
           plan_tier: 'vip',
           page_content: {
@@ -223,7 +257,7 @@ export async function POST(req: NextRequest) {
           phone: cleanPhone,
           address: address.trim(),
           category_slug: 'nha-hang-am-thuc',
-          location_slug: 'ho-chi-minh',
+          location_slug: districtRow.slug,
           status: 'active',
           plan_tier: 'vip',
           map_coordinates: mapCoordinates,
@@ -279,6 +313,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Lỗi cấu hình hồ sơ tiệc' }, { status: 500 });
     }
 
+    // 4.1. Đồng bộ bảng liên kết business_locations chuẩn với location_id thật từ database
+    if (districtRow?.id) {
+      await supabase.from('business_locations').delete().eq('business_id', businessId);
+      const { error: linkErr } = await supabase.from('business_locations').insert({
+        business_id: businessId,
+        location_id: districtRow.id,
+      });
+      if (linkErr) {
+        console.warn('[Party Register] Cảnh báo link business_locations:', linkErr);
+      }
+    }
+
     // 5. Ghi nhận lead B2B vào business_leads
     const { error: leadErr } = await supabase.from('business_leads').insert({
       business_id: businessId,
@@ -304,7 +350,8 @@ export async function POST(req: NextRequest) {
 
     if (botToken && adminChatId) {
       const priceFormatted = `${priceMin.toLocaleString('vi-VN')} - ${priceMax.toLocaleString('vi-VN')} đ/người`;
-      const msg = `<b>🎉 [1BOOKING.ASIA - CHỦ QUÁN ĐĂNG KÝ TIỆC 500K]</b>\n\n🏛️ <b>Quán:</b> ${escapeHtml(name)}\n📍 <b>Địa chỉ:</b> ${escapeHtml(address)}\n👤 <b>Chủ quán / QL:</b> ${escapeHtml(contact_name || 'Chủ quán')}\n📞 <b>SĐT:</b> <code>${cleanPhone}</code>\n🎁 <b>Gói ưu đãi tiệc:</b> ${escapeHtml(party_deal)}\n💰 <b>Mức giá tiệc:</b> ${priceFormatted}\n👥 <b>Sức chứa:</b> ${min_guests} - ${max_guests} khách\n\n⚡ <i>Gọi xác nhận ngay trong 5 phút và gửi mã VietQR thu 500.000đ kích hoạt sáng đèn neon trên bản đồ!</i>`;
+      const districtLabel = districtRow?.name ? ` (${escapeHtml(districtRow.name)})` : '';
+      const msg = `<b>🎉 [1BOOKING.ASIA - CHỦ QUÁN ĐĂNG KÝ TIỆC 500K]</b>\n\n🏛️ <b>Quán:</b> ${escapeHtml(name)}\n📍 <b>Địa chỉ:</b> ${escapeHtml(address)}${districtLabel}\n👤 <b>Chủ quán / QL:</b> ${escapeHtml(contact_name || 'Chủ quán')}\n📞 <b>SĐT:</b> <code>${cleanPhone}</code>\n🎁 <b>Gói ưu đãi tiệc:</b> ${escapeHtml(party_deal)}\n💰 <b>Mức giá tiệc:</b> ${priceFormatted}\n👥 <b>Sức chứa:</b> ${min_guests} - ${max_guests} khách\n\n⚡ <i>Gọi xác nhận ngay trong 5 phút và gửi mã VietQR thu 500.000đ kích hoạt sáng đèn neon trên bản đồ!</i>`;
 
       try {
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {

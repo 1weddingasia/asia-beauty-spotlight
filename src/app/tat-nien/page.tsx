@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { createStaticClient } from '@/utils/supabase/server';
 import { PartyVenue } from '@/types/party';
+import { getHcmcPartyDistricts } from '@/lib/services/partyLocations';
 import TatNienClient from './TatNienClient';
 
 // 📱 TỐI ƯU OPENGRAPH HIỂN THỊ TRÊN ZALO & FACEBOOK (VIRAL MARKETING)
@@ -50,7 +51,7 @@ export const dynamic = 'force-dynamic';
 export default async function TatNienPage() {
   const supabase = createStaticClient();
 
-  // 🔗 CÚ PHÁP POSTGREST JOIN CHUẨN: Dùng !inner để chỉ lấy quán ĐÃ CÓ hồ sơ tiệc đang active
+  // 1. 🔗 CÚ PHÁP POSTGREST JOIN CHUẨN: Dùng !inner để chỉ lấy quán ĐÃ CÓ hồ sơ tiệc đang active
   const { data: businesses, error } = await supabase
     .from('businesses')
     .select(`
@@ -88,6 +89,9 @@ export default async function TatNienPage() {
     console.error('[TatNienPage] Lỗi truy vấn danh sách tiệc:', error);
   }
 
+  // 2. 📍 TRUY VẤN DANH SÁCH QUẬN / HUYỆN TỪ DATABASE THẬT (directory_locations)
+  const districts = await getHcmcPartyDistricts(supabase);
+
   // Chuyển đổi dữ liệu chuẩn hóa
   const venues: PartyVenue[] = (businesses || []).map((b: any) => {
     const profile = Array.isArray(b.business_party_profiles)
@@ -122,5 +126,5 @@ export default async function TatNienPage() {
     };
   });
 
-  return <TatNienClient initialVenues={venues} />;
+  return <TatNienClient initialVenues={venues} initialDistricts={districts} />;
 }

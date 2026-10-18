@@ -1,6 +1,11 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { createStaticClient } from '@/utils/supabase/server';
+import { PartyDistrictItem } from '@/types/party';
+import { getHcmcPartyDistricts } from '@/lib/services/partyLocations';
 import DangKyClient from './DangKyClient';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Đăng Ký Điểm Tiệc Tất Niên 2026 — Phủ Sóng Nhà Hàng Trên Bản Đồ VIP | 1Booking.Asia',
@@ -30,6 +35,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DangKyPage() {
-  return <DangKyClient />;
+export default async function DangKyPage() {
+  const supabase = createStaticClient();
+  let districts: PartyDistrictItem[] = [];
+  try {
+    districts = await getHcmcPartyDistricts(supabase);
+  } catch (err) {
+    console.error('[DangKyPage] Lỗi lấy danh sách quận:', err);
+  }
+
+  return <DangKyClient districts={districts} />;
 }
+
