@@ -23,12 +23,12 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
   const handleShareZalo = async () => {
     if (!venue) return;
     const shareUrl = `https://1booking.asia/${venue.slug}`;
-    const shareText = `🎉 [GỢI Ý ĐẶT TIỆC TẤT NIÊN 2026]\n🏛️ Nhà hàng: ${venue.name}\n📍 Địa chỉ: ${venue.address || 'TP.HCM'}\n👥 Sức chứa: ${venue.min_guests} - ${venue.max_guests} khách${venue.num_vip_rooms ? ` (${venue.num_vip_rooms} phòng VIP)` : ''}\n💰 Ngân sách: Từ ${venue.price_min?.toLocaleString('vi-VN')} đ/người\n🎁 Ưu đãi tiệc: ${venue.party_deal_highlight || 'Tặng bia, âm thanh & backdrop'}\n👉 Xem menu chi tiết & Giữ chỗ ngay: ${shareUrl}`;
+    const shareText = `📋 [THÔNG TIN THAM KHẢO TIỆC TẤT NIÊN 2026]\n🏛️ Nhà hàng: ${venue.name}\n📍 Địa chỉ: ${venue.address || 'TP.HCM'}\n👥 Sức chứa: ${venue.min_guests} - ${venue.max_guests} khách${venue.num_vip_rooms ? ` (${venue.num_vip_rooms} phòng VIP)` : ''}\n💰 Ngân sách tham khảo: Từ ${venue.price_min?.toLocaleString('vi-VN')} đ/người\n🎁 Ưu đãi tiệc: ${venue.party_deal_highlight || 'Tặng bia, âm thanh & backdrop'}\n👉 Xem chi tiết sảnh tiệc & menu để bình chọn: ${shareUrl}\n(Gửi nhóm công ty / phòng ban tham khảo & bình chọn)`;
 
     try {
       if (typeof navigator !== 'undefined' && navigator.share) {
         await navigator.share({
-          title: `Gợi ý tiệc Tất Niên: ${venue.name}`,
+          title: `Thông tin tham khảo tiệc Tất Niên: ${venue.name}`,
           text: shareText,
           url: shareUrl,
         });
@@ -271,7 +271,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                   ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
                   : 'bg-blue-950/50 hover:bg-blue-900/60 border-blue-500/50 text-blue-200'
               }`}
-              title="Gửi vào nhóm Zalo công ty để sếp và đồng nghiệp cùng bình chọn"
+              title="Chia sẻ thông tin tham khảo vào nhóm Zalo để cùng xem và bình chọn"
             >
               {copiedShare ? (
                 <>
