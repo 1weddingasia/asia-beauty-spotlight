@@ -56,8 +56,8 @@ export default function DangKyClient() {
   const [district, setDistrict] = useState('quan-1');
   const [phone, setPhone] = useState('');
   const [contactName, setContactName] = useState('');
-  const [partyDeal, setPartyDeal] = useState('Tặng 2 thùng bia Heineken & miễn phí dàn Karaoke');
-  const [pricePerPax, setPricePerPax] = useState('350.000đ/người');
+  const [partyDeal, setPartyDeal] = useState('');
+  const [pricePerPax, setPricePerPax] = useState('');
   const [minGuests, setMinGuests] = useState<number | ''>(20);
   const [maxGuests, setMaxGuests] = useState<number | ''>(250);
   const [photoUrl, setPhotoUrl] = useState('/images/demo/nha-hang/que-nha-banquet-luxury.jpg');
@@ -152,7 +152,7 @@ export default function DangKyClient() {
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(data.error || 'Có lỗi xảy ra khi gửi đăng ký.');
       }

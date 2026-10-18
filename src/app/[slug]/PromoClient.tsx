@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import {
   MapPin, Phone, CheckCircle2, Tag, MessageCircle, Clock, Globe, Mail, Sparkles,
   ChevronLeft, ChevronRight, X, BadgeCheck, Gift, Calendar, Eye, Users, Wine,
-  DoorClosed, Share2, Check, ExternalLink, CalendarCheck, Utensils, type LucideIcon
+  DoorClosed, Share2, Check, CalendarCheck, Utensils, type LucideIcon
 } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
@@ -105,7 +105,9 @@ export default function PromoClient({
   }, []);
 
   const handleShareZalo = async () => {
-    const shareUrl = typeof window !== 'undefined' ? window.location.href : `https://1booking.asia/${business.slug}`;
+    const shareUrl = typeof window !== 'undefined'
+      ? window.location.href
+      : `https://${siteConfig.domain || '1booking.asia'}/${business.slug}`;
     const text = `🎉 Tham khảo tiệc Tất Niên tại ${business.name}!\n📍 Địa chỉ: ${business.address || ''}\n🎁 Ưu đãi: ${partyProfile?.party_deal_highlight || 'Nhiều ưu đãi tiệc hấp dẫn'}\n👉 Xem chi tiết & thực đơn tại: ${shareUrl}`;
     try {
       await navigator.clipboard.writeText(text);
@@ -335,12 +337,12 @@ export default function PromoClient({
     ? business.page_content.banners
     : bannerImg ? [bannerImg] : [];
 
-  const partySpaces = partyProfile?.spaces_and_amenities ?? [];
-  const partyPerks = partyProfile?.party_perks ?? [];
-  const partyMenus = partyProfile?.set_menus ?? [];
+  const partySpaces = Array.isArray(partyProfile?.spaces_and_amenities) ? partyProfile.spaces_and_amenities : [];
+  const partyPerks = Array.isArray(partyProfile?.party_perks) ? partyProfile.party_perks : [];
+  const partyMenus = Array.isArray(partyProfile?.set_menus) ? partyProfile.set_menus : [];
 
   return (
-    <div className={`min-h-screen pb-24 md:pb-16 relative transition-colors duration-300 ${isPartyMode ? 'bg-[#0B0F17] text-zinc-100 selection:bg-amber-500 selection:text-black' : 'bg-[#FCFAF5] text-ink'}`}>
+    <div className={`min-h-screen relative transition-colors duration-300 ${isPartyMode ? 'pb-32 bg-[#0B0F17] text-zinc-100 selection:bg-amber-500 selection:text-black' : 'pb-24 md:pb-16 bg-[#FCFAF5] text-ink'}`}>
       {/* Ambient Radial Glow cho chế độ Midnight Slate sang trọng */}
       {isPartyMode && (
         <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(217,119,6,0.12),rgba(0,0,0,0))] -z-10" />

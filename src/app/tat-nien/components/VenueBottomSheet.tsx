@@ -587,6 +587,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
             {/* 3. Nút Xem Menu & Chi tiết quán trên trang thật */}
             <Link
               href={`/${venue.slug}`}
+              onClick={onClose}
               className="flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
               title="Xem trang chi tiết nhà hàng trên 1Booking.Asia"
             >
