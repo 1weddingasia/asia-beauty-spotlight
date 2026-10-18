@@ -66,6 +66,7 @@ export default async function TatNienPage() {
       plan_tier,
       status,
       category_slug,
+      location_slug,
       business_party_profiles!inner (
         min_guests,
         max_guests,
@@ -110,6 +111,7 @@ export default async function TatNienPage() {
       plan_tier: b.plan_tier,
       status: b.status,
       category_slug: b.category_slug,
+      location_slug: b.location_slug || null,
       min_guests: profile?.min_guests ?? 10,
       max_guests: profile?.max_guests ?? 200,
       num_vip_rooms: profile?.num_vip_rooms ?? 0,

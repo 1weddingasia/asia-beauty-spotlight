@@ -46,6 +46,7 @@ export interface PartyVenue {
   plan_tier: string | null;
   status: string;
   category_slug: string | null;
+  location_slug?: string | null;
 
   // Từ bảng business_party_profiles
   min_guests: number;

@@ -123,15 +123,20 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
       if (selectedDistrict !== 'all') {
         const dObj = findDistrict(selectedDistrict);
         if (dObj) {
-          const addrLower = (v.address || '').toLowerCase();
-          const dNameLower = dObj.name.toLowerCase();
-          const keywords = Array.isArray(dObj.keywords) && dObj.keywords.length > 0
-            ? dObj.keywords
-            : [dNameLower];
-          const matches =
-            keywords.some((k) => addrLower.includes(k.toLowerCase())) ||
-            addrLower.includes(dNameLower);
-          if (!matches) return false;
+          const isDirectMatch = Boolean(
+            v.location_slug && (v.location_slug === dObj.slug || v.location_slug === dObj.id)
+          );
+          if (!isDirectMatch) {
+            const addrLower = (v.address || '').toLowerCase();
+            const dNameLower = dObj.name.toLowerCase();
+            const keywords = Array.isArray(dObj.keywords) && dObj.keywords.length > 0
+              ? dObj.keywords
+              : [dNameLower];
+            const matches =
+              keywords.some((k) => addrLower.includes(k.toLowerCase())) ||
+              addrLower.includes(dNameLower);
+            if (!matches) return false;
+          }
         }
       }
 
