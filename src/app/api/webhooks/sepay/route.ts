@@ -197,7 +197,7 @@ export async function POST(request: Request) {
                 max_guests: existingParty?.max_guests ?? DEFAULT_PARTY_PROFILE_VALUES.max_guests,
                 price_min: existingParty?.price_min ?? DEFAULT_PARTY_PROFILE_VALUES.price_min,
                 price_max: existingParty?.price_max ?? DEFAULT_PARTY_PROFILE_VALUES.price_max,
-                is_vip: isVipParty,
+                is_vip: Boolean(existingParty?.is_vip || isVipParty),
                 is_active: true,
                 party_deal_highlight: existingParty?.party_deal_highlight || (isVipParty ? DEFAULT_PARTY_PROFILE_VALUES.party_deal_vip_highlight : DEFAULT_PARTY_PROFILE_VALUES.party_deal_highlight),
                 updated_at: new Date().toISOString(),
