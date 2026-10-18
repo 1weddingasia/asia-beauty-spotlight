@@ -54,6 +54,30 @@ export default function MapView({
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
 
     map.on('load', () => {
+      // 🌟 Tinh chỉnh tone Midnight Slate (Xanh than tiệc đêm sang trọng)
+      try {
+        if (map.getLayer('background')) {
+          map.setPaintProperty('background', 'background-color', '#0b1326');
+        }
+        if (map.getLayer('water')) {
+          map.setPaintProperty('water', 'fill-color', '#122644');
+        }
+        if (map.getLayer('waterway')) {
+          map.setPaintProperty('waterway', 'line-color', '#1a3a66');
+        }
+        if (map.getLayer('highway_minor')) {
+          map.setPaintProperty('highway_minor', 'line-color', '#22334e');
+        }
+        if (map.getLayer('highway_major_inner')) {
+          map.setPaintProperty('highway_major_inner', 'line-color', '#33486c');
+        }
+        if (map.getLayer('highway_name_other')) {
+          map.setPaintProperty('highway_name_other', 'text-color', '#94a3b8');
+        }
+      } catch (err) {
+        console.warn('[MapView] Tone layer adjust error:', err);
+      }
+
       // Bật hiệu ứng 3D buildings nếu source openmaptiles có sẵn
       const layers = map.getStyle().layers;
       const labelLayerId = layers?.find(
@@ -71,10 +95,10 @@ export default function MapView({
               type: 'fill-extrusion',
               minzoom: 14,
               paint: {
-                'fill-extrusion-color': '#1a2234',
+                'fill-extrusion-color': '#162238',
                 'fill-extrusion-height': ['get', 'height'],
                 'fill-extrusion-base': ['get', 'min_height'],
-                'fill-extrusion-opacity': 0.5,
+                'fill-extrusion-opacity': 0.6,
               },
             },
             labelLayerId

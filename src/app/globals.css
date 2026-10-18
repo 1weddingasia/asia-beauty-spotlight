@@ -229,3 +229,9 @@
   cursor: pointer;
   will-change: transform;
 }
+
+/* 🌟 TĂNG SÁNG & TƯƠNG PHẢN CHO BẢN ĐỒ ĐÊM PHỐ TIỆC:
+ * Đường phố sáng ánh xám bạc, sông Sài Gòn ánh xanh than lung linh, ghim neon VIP nổi bật */
+canvas.maplibregl-canvas {
+  filter: brightness(1.35) contrast(1.15) saturate(1.12);
+}
