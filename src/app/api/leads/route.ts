@@ -347,11 +347,21 @@ export async function POST(req: Request) {
         const industryKey = business.industry || business.category_slug || 'other';
         actionStr = actionNames[industryKey] || 'LỊCH HẸN';
 
-        header = isVIP
-          ? `🏆 [${platformStr}] ${actionStr} TỪ KHÁCH VIP (Lần ${visitNumber})`
-          : isReturning
-          ? `⭐ [${platformStr}] ${actionStr} TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
-          : `📅 [${platformStr}] ${actionStr} MỚI`;
+        const isPartyLead = safeDeal.toLowerCase().includes('tiệc') || safeDeal.toLowerCase().includes('tất niên');
+        if (isPartyLead) {
+          actionStr = 'ĐẶT TIỆC TẤT NIÊN';
+          header = isVIP
+            ? `🏆 [${platformStr}] YÊU CẦU ĐẶT TIỆC TỪ KHÁCH VIP (Lần ${visitNumber})`
+            : isReturning
+            ? `⭐ [${platformStr}] YÊU CẦU ĐẶT TIỆC TỪ KHÁCH QUEN (Lần ${visitNumber})`
+            : `🎉 [${platformStr}] YÊU CẦU ĐẶT TIỆC TẤT NIÊN MỚI!`;
+        } else {
+          header = isVIP
+            ? `🏆 [${platformStr}] ${actionStr} TỪ KHÁCH VIP (Lần ${visitNumber})`
+            : isReturning
+            ? `⭐ [${platformStr}] ${actionStr} TỪ KHÁCH QUAY LẠI (Lần ${visitNumber})`
+            : `📅 [${platformStr}] ${actionStr} MỚI`;
+        }
       } else {
         header = isVIP
           ? `🏆 [${platformStr}] ƯU ĐÃI TỪ KHÁCH VIP (Lần ${visitNumber})`
@@ -360,17 +370,24 @@ export async function POST(req: Request) {
           : `🎁 [${platformStr}] NHẬN ƯU ĐÃI MỚI`;
       }
 
-      // 🔔 KÊNH 1: Bắn về tiệm
-      const crossSellStr = cross_sell_items ? `\n🛒 Bán chéo: ${escapeHtml(cross_sell_items)}` : '';
-      const bookingTimeStr = booking_time ? `\n🕒 Lịch hẹn: ${escapeHtml(booking_time)}` : '';
-      const msgForShop = `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n${isBookingDeal ? `📅 ${actionStr}` : '🎁 Gói'}: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
+      // 🔔 KÊNH 1: Bắn về tiệm (hoặc fallback Telegram admin nếu tiệm chưa cài)
+      const crossSellStr = cross_sell_items ? `\n🛒 Yêu cầu / Ghi chú: ${escapeHtml(cross_sell_items)}` : '';
+      const bookingTimeStr = booking_time ? `\n🕒 Lịch tiệc / Hẹn: ${escapeHtml(booking_time)}` : '';
+      
+      const isPartyLead = safeDeal.toLowerCase().includes('tiệc') || safeDeal.toLowerCase().includes('tất niên');
+      const msgForShop = isPartyLead
+        ? `<b>${header}</b>\n\n🏛️ <b>Nhà hàng:</b> ${escapeHtml(business.name || '')}\n👤 <b>Người liên hệ:</b> ${safeName}\n📞 <b>SĐT khách:</b> <code>${cleanPhone}</code>\n👥 <b>Quy mô / Gói:</b> ${safeDeal}${bookingTimeStr}${crossSellStr}${historyNote}\n\n⚡ <i>Chủ quán hãy liên hệ ngay với khách để tư vấn thực đơn và giữ sảnh tiệc!</i>`
+        : `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n${isBookingDeal ? `📅 ${actionStr}` : '🎁 Gói'}: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
+
       notifications.push(sendTelegramAsync(botToken, telegramChatId, msgForShop));
 
-      // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Beauty để giám sát toàn mạng
+      // 📡 KÊNH 2: Dual-Dispatch bắn về Admin 1Booking/1Beauty để giám sát toàn mạng
       const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
       if (adminChatId && adminChatId !== telegramChatId) {
         const safeBusinessName = escapeHtml(business.name || 'Không rõ tiệm');
-        const msgForAdmin = `<b>📊 [${platformStr} - TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | ${isBookingDeal ? `📅 ${actionStr}` : '🎁 Ưu đãi'}: ${safeDeal}\nMã: ${voucher_code}`;
+        const msgForAdmin = isPartyLead
+          ? `<b>🎉 [${platformStr} - ĐẶT TIỆC MỚI] ${safeBusinessName}</b>\n\n👤 <b>Khách:</b> ${safeName} | 📞 <code>${cleanPhone}</code>\n👥 <b>Chi tiết:</b> ${safeDeal}${bookingTimeStr}${crossSellStr}`
+          : `<b>📊 [${platformStr} - TOÀN MẠNG] ${safeBusinessName}</b>\n\n${customerTag} | 📞 ${cleanPhone} | ${isBookingDeal ? `📅 ${actionStr}` : '🎁 Ưu đãi'}: ${safeDeal}\nMã: ${voucher_code}`;
         notifications.push(sendTelegramAsync(botToken, adminChatId, msgForAdmin));
       }
     }

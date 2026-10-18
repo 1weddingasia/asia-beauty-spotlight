@@ -10,7 +10,24 @@ import {
   DrawerDescription,
 } from '@/components/ui/drawer';
 import { PartyVenue, PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS } from '@/types/party';
-import { Users, Phone, ExternalLink, Sparkles, MapPin, Wine, Utensils, Award, Share2, Check } from 'lucide-react';
+import {
+  Users,
+  Phone,
+  ExternalLink,
+  Sparkles,
+  MapPin,
+  Wine,
+  Utensils,
+  Award,
+  Share2,
+  Check,
+  CalendarCheck,
+  ArrowLeft,
+  Loader2,
+  CheckCircle2,
+  Send,
+  MessageSquare,
+} from 'lucide-react';
 
 interface VenueBottomSheetProps {
   venue: PartyVenue | null;
@@ -19,6 +36,27 @@ interface VenueBottomSheetProps {
 
 export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetProps) {
   const [copiedShare, setCopiedShare] = React.useState(false);
+  const [showBookingForm, setShowBookingForm] = React.useState(false);
+  const [bookingName, setBookingName] = React.useState('');
+  const [bookingPhone, setBookingPhone] = React.useState('');
+  const [bookingGuests, setBookingGuests] = React.useState<number>(20);
+  const [bookingDate, setBookingDate] = React.useState('');
+  const [bookingNotes, setBookingNotes] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitSuccess, setSubmitSuccess] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState('');
+
+  // Reset form when venue changes
+  React.useEffect(() => {
+    setShowBookingForm(false);
+    setSubmitSuccess(false);
+    setSubmitError('');
+    setBookingName('');
+    setBookingPhone('');
+    setBookingGuests(venue?.min_guests || 20);
+    setBookingDate('');
+    setBookingNotes('');
+  }, [venue]);
 
   const handleShareZalo = async () => {
     if (!venue) return;
@@ -47,6 +85,54 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     }
   };
 
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!venue) return;
+
+    const cleanPhone = bookingPhone.trim().replace(/\D/g, '');
+    if (!cleanPhone || !/^(03|05|07|08|09)\d{8}$/.test(cleanPhone)) {
+      setSubmitError('Vui lòng nhập số điện thoại Việt Nam hợp lệ (10 chữ số).');
+      return;
+    }
+
+    if (!bookingName.trim()) {
+      setSubmitError('Vui lòng nhập tên người liên hệ.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const partyDateStr = bookingDate.trim();
+      const guestsCount = Number(bookingGuests) || venue.min_guests || 20;
+
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          business_id: venue.id,
+          customer_name: bookingName.trim(),
+          customer_phone: cleanPhone,
+          deal_name: `Yêu Cầu Đặt Tiệc Tất Niên (${guestsCount} khách)`,
+          booking_time: partyDateStr ? `${partyDateStr} (${guestsCount} khách)` : `${guestsCount} khách`,
+          cross_sell_items: bookingNotes.trim() ? `Yêu cầu tiệc: ${bookingNotes.trim()}` : `Khảo sát tiệc tất niên từ Phố Tiệc 2026`,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại.');
+      }
+
+      setSubmitSuccess(true);
+    } catch (err: any) {
+      setSubmitError(err.message || 'Lỗi gửi yêu cầu');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!venue) return null;
 
   // Banner image resolution
@@ -58,6 +144,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     venue.page_content?.hero_image ||
     '/images/categories/nha-hang-am-thuc.jpg';
 
+  const displayPhone = venue.phone || venue.page_content?.phone || 'Đang cập nhật';
   const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
 
   // Look up labels
@@ -144,8 +231,8 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
             )}
           </DrawerHeader>
 
-          {/* Quick Metrics Grid */}
-          <div className="grid grid-cols-2 gap-2.5 mb-4">
+          {/* Quick Metrics Grid - Hiển thị đầy đủ Sức chứa, Giá & Hotline quán */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-4">
             <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
                 <Users className="w-4 h-4" />
@@ -169,143 +256,332 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                 </div>
               </div>
             </div>
+
+            <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 flex items-center gap-3 col-span-2 sm:col-span-1">
+              <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                <Phone className="w-4 h-4" />
+              </div>
+              <div className="text-left">
+                <div className="text-[11px] text-zinc-400 font-medium">Điện thoại liên hệ</div>
+                <div className="text-sm font-bold text-emerald-400 font-mono tracking-wide">
+                  {displayPhone}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Space & Amenities */}
-          {spaceLabels.length > 0 && (
-            <div className="mb-3 text-left">
-              <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5 text-amber-400" /> Không gian & Tiện ích
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {spaceLabels.map((s, idx) => (
-                  <span
-                    key={idx}
-                    className="bg-zinc-900 text-zinc-200 border border-zinc-800 text-xs px-2.5 py-1 rounded-lg"
-                  >
-                    ✓ {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Cuisines */}
-          {cuisineLabels.length > 0 && (
-            <div className="mb-3 text-left">
-              <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Utensils className="w-3.5 h-3.5 text-amber-400" /> Phong cách ẩm thực
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {cuisineLabels.map((c, idx) => (
-                  <span
-                    key={idx}
-                    className="bg-amber-950/40 text-amber-200 border border-amber-800/40 text-xs px-2.5 py-1 rounded-lg font-medium"
-                  >
-                    {c}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Perks */}
-          {perkLabels.length > 0 && (
-            <div className="mb-4 text-left">
-              <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-rose-400" /> Quà tặng & Đặc quyền
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {perkLabels.map((p, idx) => (
-                  <span
-                    key={idx}
-                    className="bg-rose-950/40 text-rose-200 border border-rose-800/40 text-xs px-2.5 py-1 rounded-lg font-medium"
-                  >
-                    ★ {p}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Description */}
-          {venue.party_description && (
-            <div className="bg-zinc-900/60 rounded-xl p-3 border border-zinc-800/80 text-xs text-zinc-300 leading-relaxed mb-4 text-left">
-              {venue.party_description}
-            </div>
-          )}
-
-          {/* Set menus */}
-          {venue.set_menus && venue.set_menus.length > 0 && (
-            <div className="mb-5 text-left">
-              <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                Gợi ý Set Menu Tiệc
-              </div>
-              <div className="space-y-2">
-                {venue.set_menus.map((m, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs"
-                  >
-                    <div>
-                      <span className="font-bold text-white">{m.name}</span>
-                      <span className="text-zinc-400 ml-2">({m.pax} người/bàn)</span>
-                    </div>
-                    <span className="font-bold text-amber-400">
-                      {m.price?.toLocaleString('vi-VN')} đ
-                    </span>
+          {/* Form điền thông tin liên hệ đặt tiệc HOẶC Chi tiết quán */}
+          {showBookingForm ? (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-200 text-left pb-4">
+              {submitSuccess ? (
+                <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-6 text-center space-y-4 my-2">
+                  <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400">
+                    <CheckCircle2 className="w-8 h-8" />
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* CTA Actions Bar */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-2 border-t border-zinc-800">
-            {/* 1. Nút Gửi nhóm Zalo / Bình chọn */}
-            <button
-              type="button"
-              onClick={handleShareZalo}
-              className={`flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
-                copiedShare
-                  ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
-                  : 'bg-blue-950/50 hover:bg-blue-900/60 border-blue-500/50 text-blue-200'
-              }`}
-              title="Chia sẻ thông tin tham khảo vào nhóm Zalo để cùng xem và bình chọn"
-            >
-              {copiedShare ? (
-                <>
-                  <Check className="w-4 h-4 text-emerald-400" />
-                  <span>Đã sao chép!</span>
-                </>
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-1">
+                      Đã Gửi Yêu Cầu Đặt Tiệc Thành Công! 🎉
+                    </h3>
+                    <p className="text-xs text-zinc-300 max-w-md mx-auto leading-relaxed">
+                      Thông tin liên hệ của bạn đã được chuyển thẳng tới Telegram của{' '}
+                      <span className="text-amber-300 font-bold">{venue.name}</span> và bộ phận hỗ trợ tiệc của 1Booking.Asia.
+                    </p>
+                    <div className="mt-3 p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 text-xs text-zinc-300 text-left space-y-1.5">
+                      <div>🏛️ Nhà hàng: <span className="text-white font-semibold">{venue.name}</span></div>
+                      <div>📞 Hotline quán: <span className="text-emerald-400 font-bold font-mono">{displayPhone}</span></div>
+                      <div>👤 Khách liên hệ: <span className="text-white font-semibold">{bookingName}</span> ({bookingPhone})</div>
+                      <div>👥 Quy mô dự kiến: <span className="text-amber-300 font-semibold">{bookingGuests} khách</span></div>
+                      {bookingDate && <div>📅 Thời gian: <span className="text-zinc-200">{bookingDate}</span></div>}
+                    </div>
+                    <p className="text-[11px] text-zinc-400 mt-2">
+                      Đại diện nhà hàng sẽ chủ động liên hệ lại với bạn để tư vấn thực đơn chi tiết và giữ sảnh tiệc đẹp nhất.
+                    </p>
+                  </div>
+                  <div className="flex gap-2 justify-center pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowBookingForm(false)}
+                      className="px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition-all"
+                    >
+                      Quay lại xem quán
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all"
+                    >
+                      Đóng
+                    </button>
+                  </div>
+                </div>
               ) : (
-                <>
-                  <Share2 className="w-4 h-4 text-blue-400" />
-                  <span>Gửi Zalo</span>
-                </>
+                <form onSubmit={handleBookingSubmit} className="space-y-4 bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/80">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowBookingForm(false)}
+                        className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                      </button>
+                      <div>
+                        <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5">
+                          <CalendarCheck className="w-4 h-4 text-emerald-400" />
+                          Liên Hệ Đặt Tiệc — {venue.name}
+                        </h3>
+                        <p className="text-[11px] text-zinc-400">
+                          Nhà hàng nhận thông báo Telegram tức thì và gọi lại tư vấn menu cho bạn
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {submitError && (
+                    <div className="p-3 rounded-xl bg-rose-950/50 border border-rose-500/50 text-rose-300 text-xs">
+                      {submitError}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                        Họ & Tên người liên hệ <span className="text-rose-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={bookingName}
+                        onChange={(e) => setBookingName(e.target.value)}
+                        placeholder="VD: Nguyễn Văn A (Trưởng nhóm / HR)"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                        Số điện thoại nhận tư vấn <span className="text-rose-400">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={bookingPhone}
+                        onChange={(e) => setBookingPhone(e.target.value)}
+                        placeholder="VD: 0901234567"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                        Số lượng khách dự kiến
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={venue.max_guests || 1000}
+                        value={bookingGuests}
+                        onChange={(e) => setBookingGuests(Number(e.target.value))}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                        Ngày & Giờ dự kiến tổ chức
+                      </label>
+                      <input
+                        type="text"
+                        value={bookingDate}
+                        onChange={(e) => setBookingDate(e.target.value)}
+                        placeholder="VD: Tối 24/01/2026 (18:30)"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                      Nhu cầu chi tiết & Ghi chú thêm
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={bookingNotes}
+                      onChange={(e) => setBookingNotes(e.target.value)}
+                      placeholder="VD: Cần phòng VIP riêng có karaoke, ngân sách khoảng 400.000đ/người, set menu hải sản..."
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowBookingForm(false)}
+                      className="px-4 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-bold transition-all"
+                    >
+                      Quay lại
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-extrabold shadow-lg shadow-emerald-950/60 transition-all active:scale-[0.98] disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Đang gửi yêu cầu...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          <span>Gửi Yêu Cầu Đến Nhà Hàng</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
               )}
-            </button>
+            </div>
+          ) : (
+            <>
+              {/* Space & Amenities */}
+              {spaceLabels.length > 0 && (
+                <div className="mb-3 text-left">
+                  <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5 text-amber-400" /> Không gian & Tiện ích
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {spaceLabels.map((s, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-zinc-900 text-zinc-200 border border-zinc-800 text-xs px-2.5 py-1 rounded-lg"
+                      >
+                        ✓ {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {/* 2. Nút Gọi quán */}
-            {venue.phone && (
-              <a
-                href={`tel:${venue.phone}`}
-                className="flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
-              >
-                <Phone className="w-4 h-4 text-emerald-400" />
-                <span>Gọi Quán</span>
-              </a>
-            )}
+              {/* Cuisines */}
+              {cuisineLabels.length > 0 && (
+                <div className="mb-3 text-left">
+                  <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                    <Utensils className="w-3.5 h-3.5 text-amber-400" /> Phong cách ẩm thực
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {cuisineLabels.map((c, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-amber-950/40 text-amber-200 border border-amber-800/40 text-xs px-2.5 py-1 rounded-lg font-medium"
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {/* 3. Nút Xem Menu & Đặt Bàn */}
-            <Link
-              href={`/${venue.slug}`}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-black text-sm font-extrabold shadow-lg shadow-amber-900/40 transition-all active:scale-[0.98]"
-            >
-              <span>Xem Menu & Đặt Bàn</span>
-              <ExternalLink className="w-4 h-4" />
-            </Link>
-          </div>
+              {/* Perks */}
+              {perkLabels.length > 0 && (
+                <div className="mb-4 text-left">
+                  <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-rose-400" /> Quà tặng & Đặc quyền
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {perkLabels.map((p, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-rose-950/40 text-rose-200 border border-rose-800/40 text-xs px-2.5 py-1 rounded-lg font-medium"
+                      >
+                        ★ {p}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              {venue.party_description && (
+                <div className="bg-zinc-900/60 rounded-xl p-3 border border-zinc-800/80 text-xs text-zinc-300 leading-relaxed mb-4 text-left">
+                  {venue.party_description}
+                </div>
+              )}
+
+              {/* Set menus */}
+              {venue.set_menus && venue.set_menus.length > 0 && (
+                <div className="mb-5 text-left">
+                  <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+                    Gợi ý Set Menu Tiệc
+                  </div>
+                  <div className="space-y-2">
+                    {venue.set_menus.map((m, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs"
+                      >
+                        <div>
+                          <span className="font-bold text-white">{m.name}</span>
+                          <span className="text-zinc-400 ml-2">({m.pax} người/bàn)</span>
+                        </div>
+                        <span className="font-bold text-amber-400">
+                          {m.price?.toLocaleString('vi-VN')} đ
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* CTA Actions Bar: Bỏ nút gọi quán, thay bằng Nút Liên Hệ Đặt Tiệc */}
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-2 border-t border-zinc-800">
+                {/* 1. Nút Gửi nhóm Zalo / Bình chọn */}
+                <button
+                  type="button"
+                  onClick={handleShareZalo}
+                  className={`flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
+                    copiedShare
+                      ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
+                      : 'bg-blue-950/50 hover:bg-blue-900/60 border-blue-500/50 text-blue-200'
+                  }`}
+                  title="Chia sẻ thông tin tham khảo vào nhóm Zalo để cùng xem và bình chọn"
+                >
+                  {copiedShare ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-400" />
+                      <span>Đã sao chép!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="w-4 h-4 text-blue-400" />
+                      <span>Gửi Zalo</span>
+                    </>
+                  )}
+                </button>
+
+                {/* 2. Nút Liên Hệ Đặt Tiệc (Bấm vào bung form đặt tiệc & bắn Telegram) */}
+                <button
+                  type="button"
+                  onClick={() => setShowBookingForm(true)}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-950/50 transition-all active:scale-[0.98]"
+                >
+                  <CalendarCheck className="w-4 h-4 text-emerald-200" />
+                  <span>Liên Hệ Đặt Tiệc</span>
+                </button>
+
+                {/* 3. Nút Xem Menu & Chi tiết quán trên trang thật */}
+                <Link
+                  href={`/${venue.slug}`}
+                  className="flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
+                >
+                  <span>Chi Tiết Quán</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </DrawerContent>
     </Drawer>

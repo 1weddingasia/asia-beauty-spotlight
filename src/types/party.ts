@@ -39,6 +39,9 @@ export interface PartyVenue {
     logo_url?: string;
     price_range?: string;
     hero_image?: string;
+    phone?: string;
+    zalo?: string;
+    telegram_chat_id?: string;
   };
   plan_tier: string | null;
   status: string;
