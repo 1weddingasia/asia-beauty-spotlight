@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS } from "@/types/party";
+import { PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS, isFnBCategory, DEFAULT_PARTY_PROFILE_VALUES } from "@/types/party";
 
 const AMENITY_OPTIONS = [
   "Có chỗ đỗ xe",
@@ -45,11 +45,11 @@ export default function BusinessProfilePage() {
   // Party Profile State (Dành cho nhà hàng ẩm thực F&B)
   const [partyProfile, setPartyProfile] = useState<any>({
     is_active: true,
-    min_guests: 15,
-    max_guests: 150,
-    num_vip_rooms: 0,
-    price_min: 250000,
-    price_max: 600000,
+    min_guests: DEFAULT_PARTY_PROFILE_VALUES.min_guests,
+    max_guests: DEFAULT_PARTY_PROFILE_VALUES.max_guests,
+    num_vip_rooms: DEFAULT_PARTY_PROFILE_VALUES.num_vip_rooms,
+    price_min: DEFAULT_PARTY_PROFILE_VALUES.price_min,
+    price_max: DEFAULT_PARTY_PROFILE_VALUES.price_max,
     spaces_and_amenities: [],
     cuisines: [],
     party_perks: [],
@@ -186,14 +186,7 @@ export default function BusinessProfilePage() {
     });
   }, []);
 
-  const isFnB = Boolean(
-    business?.category_slug && (
-      business.category_slug.includes('dining') ||
-      business.category_slug.includes('fnb') ||
-      business.category_slug.includes('nha-hang') ||
-      business.category_slug.includes('am-thuc')
-    )
-  );
+  const isFnB = isFnBCategory(business?.category_slug);
 
   const handleChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));

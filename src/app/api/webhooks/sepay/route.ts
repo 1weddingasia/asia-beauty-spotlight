@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { isFnBCategory, DEFAULT_PARTY_PROFILE_VALUES } from '@/types/party';
 
 // SePay webhook payload
 interface SepayPayload {
@@ -175,26 +176,30 @@ export async function POST(request: Request) {
             .eq('id', business.id);
 
           // 4.1. Tự động kích hoạt Hồ sơ Phố Tiệc Tất Niên nếu là quán ẩm thực hoặc thanh toán gói tiệc
-          const isFnB = Boolean(
-            business.category_slug &&
-            ['dining', 'fnb', 'restaurant', 'nha-hang', 'am-thuc'].some((k: string) =>
-              business.category_slug.toLowerCase().includes(k)
-            )
-          );
-          const isPartyPayment = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN') || isFnB;
+          const isFnB = isFnBCategory(business.category_slug);
+          const isPartyKeyword = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN');
+          // Yêu cầu chuyển khoản tối thiểu 500.000đ (bằng giá Gói Tiệc Chuẩn) hoặc có từ khóa tiệc rõ ràng kèm số tiền tương ứng
+          const isPartyPayment = (isPartyKeyword || isFnB) && payload.transferAmount >= 500000;
           const isVipParty = payload.transferAmount >= 1000000 || contentUpper.includes('VIP');
 
           if (isPartyPayment) {
             try {
+              // Kiểm tra xem đã có party profile chưa để tránh ghi đè dữ liệu chủ quán đã tự cấu hình
+              const { data: existingParty } = await supabase
+                .from('business_party_profiles')
+                .select('business_id, min_guests, max_guests, price_min, price_max, party_deal_highlight')
+                .eq('business_id', business.id)
+                .maybeSingle();
+
               await supabase.from('business_party_profiles').upsert({
                 business_id: business.id,
-                min_guests: 15,
-                max_guests: 150,
-                price_min: 250000,
-                price_max: 600000,
+                min_guests: existingParty?.min_guests ?? DEFAULT_PARTY_PROFILE_VALUES.min_guests,
+                max_guests: existingParty?.max_guests ?? DEFAULT_PARTY_PROFILE_VALUES.max_guests,
+                price_min: existingParty?.price_min ?? DEFAULT_PARTY_PROFILE_VALUES.price_min,
+                price_max: existingParty?.price_max ?? DEFAULT_PARTY_PROFILE_VALUES.price_max,
                 is_vip: isVipParty,
                 is_active: true,
-                party_deal_highlight: isVipParty ? '⭐ Điểm Tiệc VIP Hot 2026' : '🎉 Nhận đặt tiệc Tất Niên',
+                party_deal_highlight: existingParty?.party_deal_highlight || (isVipParty ? DEFAULT_PARTY_PROFILE_VALUES.party_deal_vip_highlight : DEFAULT_PARTY_PROFILE_VALUES.party_deal_highlight),
                 updated_at: new Date().toISOString(),
               }, { onConflict: 'business_id' });
               console.log(`[SePay Webhook] Activated business_party_profiles for ${business.name} (VIP: ${isVipParty}, amount: ${payload.transferAmount})`);

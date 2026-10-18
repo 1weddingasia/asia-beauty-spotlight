@@ -100,3 +100,19 @@ export const PARTY_PERKS = [
   { id: 'free_gui_xe', label: 'Miễn phí giữ xe' },
   { id: 'cho_mang_ruou_vao', label: 'Miễn phí mang rượu' },
 ] as const;
+
+export const DEFAULT_PARTY_PROFILE_VALUES = {
+  min_guests: 15,
+  max_guests: 150,
+  num_vip_rooms: 0,
+  price_min: 250000,
+  price_max: 600000,
+  party_deal_highlight: '🎉 Nhận đặt tiệc Tất Niên & Year-End Party',
+  party_deal_vip_highlight: '⭐ Điểm Tiệc VIP Hot 2026',
+} as const;
+
+export function isFnBCategory(categorySlug?: string | null): boolean {
+  if (!categorySlug) return false;
+  const s = categorySlug.toLowerCase();
+  return ['dining', 'fnb', 'restaurant', 'nha-hang', 'am-thuc'].some(k => s.includes(k));
+}
