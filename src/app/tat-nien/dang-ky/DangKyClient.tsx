@@ -58,6 +58,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
   const [successData, setSuccessData] = useState<{
     slug: string;
     qr_url: string;
+    claim_url?: string | null;
     bank_acc: string;
     bank_name: string;
     bank_owner: string;
@@ -295,6 +296,30 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
               </p>
             </div>
 
+            {/* Card Nhận Quyền Quản Trị Quán */}
+            {successData.claim_url && (
+              <div className="bg-gradient-to-r from-amber-500/15 via-yellow-500/20 to-amber-500/15 border border-amber-500/40 rounded-2xl p-4 sm:p-5 mb-5 text-center space-y-2.5">
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-400 text-black text-[11px] font-black uppercase tracking-wider">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Dành Cho Chủ Quán
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-white">
+                  Thiết Lập Mật Khẩu & Bàn Giao Quyền Quản Trị Gian Hàng
+                </h3>
+                <p className="text-xs text-zinc-300 max-w-md mx-auto leading-relaxed">
+                  Sau khi quét mã chuyển khoản 500.000đ, bạn hãy tạo mật khẩu đăng nhập ngay để nhận bàn giao tài khoản, vào bảng điều khiển tự cập nhật thực đơn tiệc, sức chứa và kiểm tra khách đặt bàn.
+                </p>
+                <div className="pt-1">
+                  <Link
+                    href={successData.claim_url}
+                    className="inline-flex items-center justify-center gap-2 py-2.5 px-5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 hover:from-amber-300 hover:to-amber-200 text-black font-extrabold text-xs shadow-md shadow-amber-950/40 transition-all"
+                  >
+                    <span>Kích Hoạt Tài Khoản Quản Lý Quán Ngay</span>
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {/* Action Links */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link
@@ -307,7 +332,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
                 href={`/${successData.slug}`}
                 className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white font-bold text-xs transition-colors text-center"
               >
-                <span>Xem Trang Chi Tiết Quán (/{successData.slug})</span>
+                <span>Xem Trang Gian Hàng (/{successData.slug})</span>
                 <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
               </Link>
             </div>

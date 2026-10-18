@@ -39,7 +39,7 @@ export default async function BusinessDashboardLayout({
   // Lấy thông tin doanh nghiệp của user
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, plan_id, plan_tier, status, created_at")
+    .select("id, name, slug, plan_id, plan_tier, status, created_at, category_slug")
     .eq("slug", slug)
     .eq("owner_id", user.id)
     .single();
@@ -80,7 +80,7 @@ export default async function BusinessDashboardLayout({
               {business?.name || "Chưa có doanh nghiệp"}
             </h3>
           </div>
-          <SidebarNav slug={slug} />
+          <SidebarNav slug={slug} categorySlug={business.category_slug} />
           <div className="p-4 mt-auto">
             {(() => {
               const bizStatus = business?.status || 'trial';

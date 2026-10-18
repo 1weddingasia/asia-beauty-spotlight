@@ -19,7 +19,7 @@ export async function claimBusinessAction(token: string) {
     // 1. Verify token exists and is not claimed
     const { data: business, error: fetchError } = await supabaseAdmin
       .from("businesses")
-      .select("id, owner_id")
+      .select("id, slug, owner_id")
       .eq("claim_token", token)
       .single();
       
@@ -51,6 +51,10 @@ export async function claimBusinessAction(token: string) {
     // 3. Clear cache
     revalidatePath("/admin/businesses");
     revalidatePath("/dashboard");
+    if (business.slug) {
+      revalidatePath(`/${business.slug}/dashboard`);
+      revalidatePath(`/${business.slug}`);
+    }
     
     return { success: true };
   } catch (error: any) {

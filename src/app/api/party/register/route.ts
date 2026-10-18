@@ -5,6 +5,8 @@ import { VN_PHONE_REGEX } from '@/types/party';
 
 export const dynamic = 'force-dynamic';
 
+const PARTY_DEAL_NAME = 'Đăng Ký Điểm Tiệc VIP 500K';
+
 function toSlug(str: string): string {
   return str
     .toLowerCase()
@@ -177,7 +179,7 @@ export async function POST(req: NextRequest) {
       .from('business_leads')
       .select('id')
       .eq('customer_phone', cleanPhone)
-      .eq('deal_name', 'Đăng Ký Điểm Tiệc 500k (B2B)')
+      .eq('deal_name', PARTY_DEAL_NAME)
       .gt('created_at', oneMinuteAgo)
       .maybeSingle();
 
@@ -191,18 +193,27 @@ export async function POST(req: NextRequest) {
     // 3. Kiểm tra xem doanh nghiệp với số điện thoại này đã có chưa
     const { data: existingBiz } = await supabase
       .from('businesses')
-      .select('id, slug, name, page_content, category_slug')
+      .select('id, slug, name, page_content, category_slug, claim_token, owner_id')
       .eq('phone', cleanPhone)
       .maybeSingle();
 
     let businessId: string;
     let businessSlug: string;
+    let activeClaimToken: string | null = null;
 
     if (existingBiz) {
       businessId = existingBiz.id;
       businessSlug = existingBiz.slug;
       const prevContent = (existingBiz.page_content as Record<string, unknown>) || {};
       const prevBanners = Array.isArray(prevContent.banners) ? (prevContent.banners as string[]) : [];
+
+      if (!existingBiz.owner_id) {
+        // Quán đã có trong DB nhưng chưa có chủ nhận quyền: tái sử dụng claim_token sẵn có hoặc tạo mới
+        activeClaimToken = existingBiz.claim_token || crypto.randomUUID();
+        if (!existingBiz.claim_token) {
+          await supabase.from('businesses').update({ claim_token: activeClaimToken }).eq('id', businessId);
+        }
+      }
 
       // Cập nhật thông tin quán hiện có và bảo tồn các trường dữ liệu trước đó
       const { error: updateBizErr } = await supabase
@@ -248,6 +259,7 @@ export async function POST(req: NextRequest) {
       }
 
       businessSlug = candidateSlug;
+      activeClaimToken = crypto.randomUUID();
 
       const { data: newBiz, error: insertBizErr } = await supabase
         .from('businesses')
@@ -260,6 +272,7 @@ export async function POST(req: NextRequest) {
           location_slug: districtRow.slug,
           status: 'active',
           plan_tier: 'vip',
+          claim_token: activeClaimToken,
           map_coordinates: mapCoordinates,
           page_content: {
             hero_image: finalPhoto,
@@ -325,18 +338,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 5. Ghi nhận lead B2B vào business_leads
+    // 5. Ghi nhận đăng ký vào business_leads
     const { error: leadErr } = await supabase.from('business_leads').insert({
       business_id: businessId,
       customer_name: contact_name || 'Chủ quán / Quản lý',
       customer_phone: cleanPhone,
-      deal_name: 'Đăng Ký Điểm Tiệc 500k (B2B)',
-      voucher_code: `B2B-${cleanPhone.slice(-4)}`,
+      deal_name: PARTY_DEAL_NAME,
+      voucher_code: `TN-${cleanPhone.slice(-4)}`,
       notes: `Địa chỉ: ${address} | Gói: 500.000đ | Ưu đãi: ${party_deal}`,
     });
 
     if (leadErr) {
-      console.error('[Party Register] Lỗi ghi nhận lead B2B:', leadErr);
+      console.error('[Party Register] Lỗi ghi nhận hồ sơ tiệc:', leadErr);
     }
 
     // 6. Gửi chuông Telegram tức thì về Admin (await để đảm bảo tin nhắn được gửi)
@@ -381,6 +394,8 @@ export async function POST(req: NextRequest) {
       success: true,
       business_id: businessId,
       slug: businessSlug,
+      claim_token: activeClaimToken,
+      claim_url: activeClaimToken ? `/claim/${activeClaimToken}` : null,
       bank_acc: BANK_ACC,
       bank_name: BANK_NAME,
       bank_owner: BANK_OWNER,

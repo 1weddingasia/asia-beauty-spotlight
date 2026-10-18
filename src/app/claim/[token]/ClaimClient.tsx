@@ -69,8 +69,8 @@ export default function ClaimClient({ business, token }: { business: any, token:
       }
       
       toast.success("Bàn giao thành công! Đang chuyển hướng đến bảng điều khiển...");
-      router.push("/dashboard/profile");
-      router.refresh();
+      const target = business?.slug ? `/${business.slug}/dashboard` : "/dashboard";
+      router.push(target);
       
     } catch (err: any) {
       toast.error(err.message || "Có lỗi xảy ra");

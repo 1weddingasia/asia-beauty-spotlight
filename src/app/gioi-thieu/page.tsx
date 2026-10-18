@@ -61,7 +61,7 @@ export default function GioiThieuPage() {
             transition={{ duration: 1, ease: "easeOut" }}
           >
             <span className="text-gold tracking-[0.3em] text-sm md:text-base uppercase mb-6 block font-medium">
-              B2B Sales Kit • Giới thiệu giải pháp
+              Dành cho Đối tác Doanh nghiệp • Giới thiệu giải pháp
             </span>
             <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.1] mb-8 tracking-tight">
               1BEAUTY.ASIA

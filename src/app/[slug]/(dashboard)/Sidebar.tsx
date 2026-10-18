@@ -4,21 +4,26 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LayoutDashboard, Store, Ticket, Users, Settings, Sparkles, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { isFnBCategory } from "@/types/party";
 
 export default function Sidebar({ 
   slug, 
   businessName,
   businessStatus,
-  planTier 
+  planTier,
+  categorySlug,
 }: { 
   slug: string, 
   businessName: string,
   businessStatus: string,
-  planTier?: string 
+  planTier?: string,
+  categorySlug?: string,
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentTab = searchParams.get('tab');
+
+  const isFnB = isFnBCategory(categorySlug);
 
   const menuGroups = [
     {
@@ -32,6 +37,7 @@ export default function Sidebar({
       title: "NỘI DUNG & TIẾP THỊ",
       items: [
         { name: "Chỉnh sửa Gian hàng", href: `/${slug}/profile`, icon: Store },
+        ...(isFnB ? [{ name: "Hồ sơ Tiệc Tất Niên", href: `/${slug}/profile?tab=party`, icon: Sparkles }] : []),
         { name: "Bảng giá Dịch vụ", href: `/${slug}/profile?tab=services`, icon: ClipboardList },
         { name: "Quản lý Ưu đãi", href: `/${slug}/deals`, icon: Ticket },
       ]

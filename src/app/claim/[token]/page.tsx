@@ -10,7 +10,7 @@ export default async function ClaimPage(props: { params: Promise<{ token: string
   // Validate token
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, owner_id")
+    .select("id, name, slug, owner_id")
     .eq("claim_token", token)
     .single();
 

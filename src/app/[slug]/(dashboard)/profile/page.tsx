@@ -188,6 +188,12 @@ export default function BusinessProfilePage() {
 
   const isFnB = isFnBCategory(business?.category_slug);
 
+  useEffect(() => {
+    if (business && !isFnB && searchParams.get('tab') === 'party') {
+      router.replace(`/${slug}/profile`);
+    }
+  }, [business, isFnB, searchParams, slug, router]);
+
   const handleChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -328,6 +334,7 @@ export default function BusinessProfilePage() {
 
   if (loading) return <div className="p-10 text-center text-muted-foreground">Đang tải thông tin...</div>;
   if (!business) return <div className="p-10 text-center text-red-500">Lỗi: Không tìm thấy doanh nghiệp.</div>;
+  const effectiveTab = !isFnB && currentTab === "party" ? "overview" : currentTab;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -347,7 +354,7 @@ export default function BusinessProfilePage() {
         </div>
       </div>
 
-      <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
+      <Tabs value={effectiveTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className={`grid w-full ${isFnB ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2 md:grid-cols-4'} h-auto md:h-12 gap-2 bg-muted p-2 rounded-xl mb-6`}>
           <TabsTrigger value="overview">Tổng quan</TabsTrigger>
           <TabsTrigger value="contact">Liên hệ & Bản đồ</TabsTrigger>

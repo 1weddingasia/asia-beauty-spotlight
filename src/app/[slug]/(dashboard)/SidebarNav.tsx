@@ -1,17 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { LayoutDashboard, Store, Ticket, Users, Settings, CalendarDays, Sparkles } from "lucide-react";
+import { isFnBCategory } from "@/types/party";
 
-export default function SidebarNav({ slug }: { slug: string }) {
+export default function SidebarNav({ slug, categorySlug }: { slug: string; categorySlug?: string }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get('tab');
+  const isFnB = isFnBCategory(categorySlug);
 
   const links = [
     { href: `/${slug}/dashboard`, label: "Tổng quan", icon: LayoutDashboard },
     { href: `/${slug}/leads`, label: "Booking & Nhận ưu đãi", icon: CalendarDays },
     { href: `/${slug}/deals`, label: "Ưu đãi & Dịch vụ", icon: Ticket },
-    { href: `/${slug}/profile?tab=party`, label: "Nhận Tiệc Tất Niên 🎉", icon: Sparkles },
+    ...(isFnB ? [{ href: `/${slug}/profile?tab=party`, label: "Nhận Tiệc Tất Niên 🎉", icon: Sparkles }] : []),
     { href: `/${slug}/customers`, label: "Danh bạ Khách hàng", icon: Users },
     { href: `/${slug}/profile`, label: "Chỉnh sửa Gian hàng", icon: Store },
     { href: `/${slug}/settings`, label: "Cài đặt Tài khoản", icon: Settings },
@@ -20,8 +24,15 @@ export default function SidebarNav({ slug }: { slug: string }) {
   return (
     <nav className="flex-1 space-y-1 px-4">
       {links.map((link) => {
-        // Kiểm tra xem pathname hiện tại có bằng chính xác link.href không, hoặc là sub-path của nó
-        const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+        const [linkPath, linkQuery] = link.href.split('?');
+        const linkTab = linkQuery ? new URLSearchParams(linkQuery).get('tab') : null;
+        const isProfileRoot = link.href === `/${slug}/profile`;
+        const isActive = linkTab
+          ? pathname === linkPath && currentTab === linkTab
+          : isProfileRoot
+            ? pathname === linkPath && !currentTab
+            : pathname === linkPath || pathname.startsWith(`${linkPath}/`);
+
         const Icon = link.icon;
         
         return (
