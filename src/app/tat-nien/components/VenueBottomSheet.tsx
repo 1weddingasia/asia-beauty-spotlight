@@ -26,7 +26,6 @@ import {
   Loader2,
   CheckCircle2,
   Send,
-  MessageSquare,
 } from 'lucide-react';
 
 interface VenueBottomSheetProps {
@@ -51,6 +50,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     setShowBookingForm(false);
     setSubmitSuccess(false);
     setSubmitError('');
+    setIsSubmitting(false);
     setBookingName('');
     setBookingPhone('');
     setBookingGuests(venue?.min_guests || 20);
@@ -87,7 +87,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!venue) return;
+    if (!venue || isSubmitting) return;
 
     const cleanPhone = bookingPhone.trim().replace(/\D/g, '');
     if (!cleanPhone || !/^(03|05|07|08|09)\d{8}$/.test(cleanPhone)) {
@@ -115,19 +115,19 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
           customer_name: bookingName.trim(),
           customer_phone: cleanPhone,
           deal_name: `Yêu Cầu Đặt Tiệc Tất Niên (${guestsCount} khách)`,
-          booking_time: partyDateStr ? `${partyDateStr} (${guestsCount} khách)` : `${guestsCount} khách`,
-          cross_sell_items: bookingNotes.trim() ? `Yêu cầu tiệc: ${bookingNotes.trim()}` : `Khảo sát tiệc tất niên từ Phố Tiệc 2026`,
+          booking_time: partyDateStr || null,
+          cross_sell_items: bookingNotes.trim() ? `Yêu cầu tiệc: ${bookingNotes.trim().slice(0, 450)}` : `Khảo sát tiệc tất niên từ Phố Tiệc 2026`,
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({} as { error?: string }));
       if (!res.ok) {
         throw new Error(data.error || 'Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại.');
       }
 
       setSubmitSuccess(true);
-    } catch (err: any) {
-      setSubmitError(err.message || 'Lỗi gửi yêu cầu');
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Lỗi gửi yêu cầu');
     } finally {
       setIsSubmitting(false);
     }
@@ -383,7 +383,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                         min={1}
                         max={venue.max_guests || 1000}
                         value={bookingGuests}
-                        onChange={(e) => setBookingGuests(Number(e.target.value))}
+                        onChange={(e) => setBookingGuests(Math.max(1, Number(e.target.value) || venue.min_guests || 20))}
                         className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition-colors"
                       />
                     </div>
@@ -408,6 +408,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                     </label>
                     <textarea
                       rows={3}
+                      maxLength={450}
                       value={bookingNotes}
                       onChange={(e) => setBookingNotes(e.target.value)}
                       placeholder="VD: Cần phòng VIP riêng có karaoke, ngân sách khoảng 400.000đ/người, set menu hải sản..."

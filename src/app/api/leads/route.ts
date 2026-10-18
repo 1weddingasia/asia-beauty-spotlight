@@ -323,6 +323,7 @@ export async function POST(req: Request) {
         ? (process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN || '') 
         : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN || '');
 
+      const isPartyLead = safeDeal.toLowerCase().includes('tiệc') || safeDeal.toLowerCase().includes('tất niên');
       let actionStr = 'LỊCH HẸN';
       if (isBookingDeal) {
         const actionNames: Record<string, string> = {
@@ -347,7 +348,6 @@ export async function POST(req: Request) {
         const industryKey = business.industry || business.category_slug || 'other';
         actionStr = actionNames[industryKey] || 'LỊCH HẸN';
 
-        const isPartyLead = safeDeal.toLowerCase().includes('tiệc') || safeDeal.toLowerCase().includes('tất niên');
         if (isPartyLead) {
           actionStr = 'ĐẶT TIỆC TẤT NIÊN';
           header = isVIP
@@ -371,10 +371,11 @@ export async function POST(req: Request) {
       }
 
       // 🔔 KÊNH 1: Bắn về tiệm (hoặc fallback Telegram admin nếu tiệm chưa cài)
-      const crossSellStr = cross_sell_items ? `\n🛒 Yêu cầu / Ghi chú: ${escapeHtml(cross_sell_items)}` : '';
+      const crossSellStr = cross_sell_items
+        ? (isPartyLead ? `\n📝 Yêu cầu / Ghi chú: ${escapeHtml(cross_sell_items)}` : `\n🛒 Bán chéo: ${escapeHtml(cross_sell_items)}`)
+        : '';
       const bookingTimeStr = booking_time ? `\n🕒 Lịch tiệc / Hẹn: ${escapeHtml(booking_time)}` : '';
-      
-      const isPartyLead = safeDeal.toLowerCase().includes('tiệc') || safeDeal.toLowerCase().includes('tất niên');
+
       const msgForShop = isPartyLead
         ? `<b>${header}</b>\n\n🏛️ <b>Nhà hàng:</b> ${escapeHtml(business.name || '')}\n👤 <b>Người liên hệ:</b> ${safeName}\n📞 <b>SĐT khách:</b> <code>${cleanPhone}</code>\n👥 <b>Quy mô / Gói:</b> ${safeDeal}${bookingTimeStr}${crossSellStr}${historyNote}\n\n⚡ <i>Chủ quán hãy liên hệ ngay với khách để tư vấn thực đơn và giữ sảnh tiệc!</i>`
         : `<b>${header}</b>\n\n👤 Khách: ${safeName}\n📞 SĐT: ${cleanPhone}\n${isBookingDeal ? `📅 ${actionStr}` : '🎁 Gói'}: ${safeDeal}${crossSellStr}${bookingTimeStr}\n🏷 Mã: ${voucher_code}${historyNote}\n\n${tip}`;
