@@ -128,7 +128,7 @@ export async function POST(request: Request) {
       if (targetSlug) {
         const { data, error } = await supabase
           .from('businesses')
-          .select('id, name, slug, phone, email, owner_id')
+          .select('id, name, slug, phone, email, owner_id, category_slug')
           .eq('slug', targetSlug)
           .maybeSingle();
         if (error) console.error("Error finding business by slug:", error);
@@ -138,7 +138,7 @@ export async function POST(request: Request) {
       if (!business && targetPhone) {
         const { data, error } = await supabase
           .from('businesses')
-          .select('id, name, slug, phone, email, owner_id')
+          .select('id, name, slug, phone, email, owner_id, category_slug')
           .eq('phone', targetPhone)
           .maybeSingle();
         if (error) console.error("Error finding business by phone:", error);
@@ -175,19 +175,29 @@ export async function POST(request: Request) {
             .eq('id', business.id);
 
           // 4.1. Tự động kích hoạt Hồ sơ Phố Tiệc Tất Niên nếu là quán ẩm thực hoặc thanh toán gói tiệc
-          const isPartyPayment = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN') || payload.transferAmount >= 500000;
+          const isFnB = Boolean(
+            business.category_slug &&
+            ['dining', 'fnb', 'restaurant', 'nha-hang', 'am-thuc'].some((k: string) =>
+              business.category_slug.toLowerCase().includes(k)
+            )
+          );
+          const isPartyPayment = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN') || isFnB;
           const isVipParty = payload.transferAmount >= 1000000 || contentUpper.includes('VIP');
 
           if (isPartyPayment) {
             try {
               await supabase.from('business_party_profiles').upsert({
                 business_id: business.id,
+                min_guests: 15,
+                max_guests: 150,
+                price_min: 250000,
+                price_max: 600000,
                 is_vip: isVipParty,
                 is_active: true,
                 party_deal_highlight: isVipParty ? '⭐ Điểm Tiệc VIP Hot 2026' : '🎉 Nhận đặt tiệc Tất Niên',
                 updated_at: new Date().toISOString(),
               }, { onConflict: 'business_id' });
-              console.log(`[SePay Webhook] Activated business_party_profiles for ${business.name} (VIP: ${isVipParty})`);
+              console.log(`[SePay Webhook] Activated business_party_profiles for ${business.name} (VIP: ${isVipParty}, amount: ${payload.transferAmount})`);
             } catch (partyErr) {
               console.error('[SePay Webhook] Error activating party profile:', partyErr);
             }

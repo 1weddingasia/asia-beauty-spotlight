@@ -37,7 +37,10 @@ export async function POST(request: Request) {
       query = query.eq('phone', phone.trim());
     }
 
-    const { data: business, error } = await query.maybeSingle();
+    const { data: business, error } = await query
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error) {
       console.error('[CheckPaymentStatus] Query error:', error);
