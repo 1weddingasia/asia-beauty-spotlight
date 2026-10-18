@@ -33,14 +33,20 @@ export default async function BangGiaPage() {
   const supabase = createStaticClient();
   let plans: any[] = [];
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('plans')
       .select('*')
       .eq('is_active', true)
       .order('price_yearly', { ascending: false });
-    plans = data || [];
-  } catch (error) {
-    console.error('[BangGiaPage] Lỗi lấy gói từ DB:', error);
+
+    if (error) {
+      console.error('[BangGiaPage] Lỗi lấy gói từ DB:', error);
+      plans = [];
+    } else {
+      plans = data || [];
+    }
+  } catch (err) {
+    console.error('[BangGiaPage] Ngoại lệ kết nối DB:', err);
     plans = [];
   }
 

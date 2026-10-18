@@ -51,7 +51,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         canonical: `https://1booking.asia/${slug}/tiec`,
       },
     };
-  } catch {
+  } catch (error) {
+    console.error('[PartyVenuePage] Metadata error:', error);
     return { title: `Đặt Tiệc Tất Niên - ${siteConfig.brand}` };
   }
 }
@@ -88,20 +89,23 @@ export default async function PartyVenuePage({ params }: { params: Promise<{ slu
     notFound();
   }
 
-  // Lấy hồ sơ tiệc tất niên
-  let partyProfile: BusinessPartyProfile | null = null;
-  try {
-    const { data: pData } = await supabase
-      .from('business_party_profiles')
-      .select('*')
-      .eq('business_id', business.id)
-      .maybeSingle();
-
-    partyProfile = (pData as BusinessPartyProfile | null) ?? null;
-  } catch (err) {
-    console.error('[PartyVenuePage] Lỗi lấy party profile:', err);
-    partyProfile = null;
+  // Nếu quán bị tạm ngưng (hết hạn), điều hướng về trang thông báo bảo trì của quán
+  if (business.status === 'suspended') {
+    redirect(`/${slug}`);
   }
+
+  // Lấy hồ sơ tiệc tất niên với xử lý lỗi tường minh
+  let partyProfile: BusinessPartyProfile | null = null;
+  const { data: pData, error: pErr } = await supabase
+    .from('business_party_profiles')
+    .select('*')
+    .eq('business_id', business.id)
+    .maybeSingle();
+
+  if (pErr) {
+    console.error('[PartyVenuePage] Lỗi lấy party profile:', pErr);
+  }
+  partyProfile = (pData as BusinessPartyProfile | null) ?? null;
 
   // Nếu quán chưa kích hoạt sảnh tiệc, chuyển hướng người dùng về trang ưu đãi chính của quán
   if (!partyProfile || !partyProfile.is_active) {

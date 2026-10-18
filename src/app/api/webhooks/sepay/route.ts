@@ -109,8 +109,8 @@ export async function POST(request: Request) {
     // 2. Hoặc chỉ cần chứa Số điện thoại (10 số, bắt đầu bằng số 0)
     const contentUpper = payload.content.toUpperCase();
     
-    // Tìm Slug
-    const slugMatch = contentUpper.match(/(?:UPGRADE|VIP)\s+([A-Z0-9-]+)/);
+    // Tìm Slug (hỗ trợ UPGRADE, VIP, TIEC, UDAI)
+    const slugMatch = contentUpper.match(/(?:UPGRADE|VIP|TIEC|UDAI)\s+([A-Z0-9-]+)/);
     const targetSlug = slugMatch ? slugMatch[1].toLowerCase() : null;
 
     // Tìm Số điện thoại
@@ -147,14 +147,41 @@ export async function POST(request: Request) {
       }
 
       if (business) {
-        // 2. Lấy thông tin của gói VIP (ví dụ gói có tên 'VIP' hoặc 'Premium')
-        const { data: plan } = await supabase
-          .from('plans')
-          .select('id, name, features, price_yearly')
-          .eq('is_active', true)
-          .ilike('name', '%Premium%')
-          .limit(1)
-          .single();
+        // 2. Lấy thông tin gói tương ứng (Ưu Đãi, Tiệc hoặc Gói Active)
+        const isPartyOrder = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN');
+        let plan: any = null;
+
+        if (isPartyOrder) {
+          const { data: pPlan } = await supabase
+            .from('plans')
+            .select('id, name, features, price_yearly')
+            .eq('is_active', true)
+            .ilike('name', '%Tiệc%')
+            .limit(1)
+            .maybeSingle();
+          plan = pPlan;
+        } else {
+          const { data: uPlan } = await supabase
+            .from('plans')
+            .select('id, name, features, price_yearly')
+            .eq('is_active', true)
+            .ilike('name', '%Ưu Đãi%')
+            .limit(1)
+            .maybeSingle();
+          plan = uPlan;
+        }
+
+        // Fallback: nếu không khớp tên cụ thể, lấy gói active có sẵn
+        if (!plan) {
+          const { data: fallbackPlan } = await supabase
+            .from('plans')
+            .select('id, name, features, price_yearly')
+            .eq('is_active', true)
+            .order('price_yearly', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          plan = fallbackPlan;
+        }
 
         if (plan) {
           // 3. Tạo membership mới (1 năm)

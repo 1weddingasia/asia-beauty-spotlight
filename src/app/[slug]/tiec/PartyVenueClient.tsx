@@ -72,7 +72,7 @@ export default function PartyVenueClient({
   }, []);
 
   const handleShare = async () => {
-    const url = typeof window !== 'undefined' ? window.location.href : `https://${siteConfig.domain}/${b.slug}/tiec`;
+    const url = `https://${siteConfig.domain}/${b.slug}/tiec`;
     const shareText = `🎉 Sảnh Tiệc Tất Niên & Sự Kiện tại ${b.name}!\n📍 Địa chỉ: ${b.address || ''}\n🎁 Ưu đãi: ${partyProfile.party_deal_highlight || 'Nhiều ưu đãi tiệc đặc quyền'}\n👉 Xem thực đơn & giữ chỗ: ${url}`;
 
     if (navigator.clipboard) {
@@ -148,7 +148,7 @@ export default function PartyVenueClient({
     }
   };
 
-  const heroImage = bannerImg || '/images/demo/nha-hang/que-nha-banquet-luxury.jpg';
+  const heroImage = bannerImg || '/images/categories/nha-hang-am-thuc.jpg';
 
   // Format price
   const priceMinFormatted = partyProfile.price_min ? Number(partyProfile.price_min).toLocaleString('vi-VN') : '250.000';
