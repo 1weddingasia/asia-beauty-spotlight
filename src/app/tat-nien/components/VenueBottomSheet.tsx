@@ -10,7 +10,7 @@ import {
   DrawerDescription,
 } from '@/components/ui/drawer';
 import { PartyVenue, PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS } from '@/types/party';
-import { Users, Phone, ExternalLink, Sparkles, MapPin, Wine, Utensils, Award } from 'lucide-react';
+import { Users, Phone, ExternalLink, Sparkles, MapPin, Wine, Utensils, Award, Share2, Check } from 'lucide-react';
 
 interface VenueBottomSheetProps {
   venue: PartyVenue | null;
@@ -18,6 +18,35 @@ interface VenueBottomSheetProps {
 }
 
 export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetProps) {
+  const [copiedShare, setCopiedShare] = React.useState(false);
+
+  const handleShareZalo = async () => {
+    if (!venue) return;
+    const shareUrl = `https://1booking.asia/${venue.slug}`;
+    const shareText = `🎉 [GỢI Ý ĐẶT TIỆC TẤT NIÊN 2026]\n🏛️ Nhà hàng: ${venue.name}\n📍 Địa chỉ: ${venue.address || 'TP.HCM'}\n👥 Sức chứa: ${venue.min_guests} - ${venue.max_guests} khách${venue.num_vip_rooms ? ` (${venue.num_vip_rooms} phòng VIP)` : ''}\n💰 Ngân sách: Từ ${venue.price_min?.toLocaleString('vi-VN')} đ/người\n🎁 Ưu đãi tiệc: ${venue.party_deal_highlight || 'Tặng bia, âm thanh & backdrop'}\n👉 Xem menu chi tiết & Giữ chỗ ngay: ${shareUrl}`;
+
+    try {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({
+          title: `Gợi ý tiệc Tất Niên: ${venue.name}`,
+          text: shareText,
+          url: shareUrl,
+        });
+      } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(shareText);
+        setCopiedShare(true);
+        setTimeout(() => setCopiedShare(false), 3500);
+        window.open(`https://zalo.me/share?url=${encodeURIComponent(shareUrl)}`, '_blank');
+      }
+    } catch {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(shareText);
+        setCopiedShare(true);
+        setTimeout(() => setCopiedShare(false), 3500);
+      }
+    }
+  };
+
   if (!venue) return null;
 
   // Banner image resolution
@@ -232,17 +261,43 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
           )}
 
           {/* CTA Actions Bar */}
-          <div className="flex items-center gap-2 pt-2 border-t border-zinc-800">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-2 border-t border-zinc-800">
+            {/* 1. Nút Gửi nhóm Zalo / Bình chọn */}
+            <button
+              type="button"
+              onClick={handleShareZalo}
+              className={`flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
+                copiedShare
+                  ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
+                  : 'bg-blue-950/50 hover:bg-blue-900/60 border-blue-500/50 text-blue-200'
+              }`}
+              title="Gửi vào nhóm Zalo công ty để sếp và đồng nghiệp cùng bình chọn"
+            >
+              {copiedShare ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span>Đã sao chép!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-4 h-4 text-blue-400" />
+                  <span>Gửi Zalo</span>
+                </>
+              )}
+            </button>
+
+            {/* 2. Nút Gọi quán */}
             {venue.phone && (
               <a
                 href={`tel:${venue.phone}`}
-                className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
+                className="flex items-center justify-center gap-1.5 px-3.5 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
               >
                 <Phone className="w-4 h-4 text-emerald-400" />
                 <span>Gọi Quán</span>
               </a>
             )}
 
+            {/* 3. Nút Xem Menu & Đặt Bàn */}
             <Link
               href={`/${venue.slug}`}
               className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-400 hover:to-amber-600 text-black text-sm font-extrabold shadow-lg shadow-amber-900/40 transition-all active:scale-[0.98]"

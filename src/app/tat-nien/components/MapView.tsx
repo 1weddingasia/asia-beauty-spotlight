@@ -53,6 +53,19 @@ export default function MapView({
     // Thêm điều khiển zoom / la bàn ở góc phải trên
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
 
+    // 🔍 CHỐNG ĐÈ GHIM KHI NHIỀU QUÁN: Cập nhật class map-zoom-far tự động theo mức zoom
+    const handleZoom = () => {
+      if (!mapContainer.current) return;
+      const zoom = map.getZoom();
+      if (zoom < 14.2) {
+        mapContainer.current.classList.add('map-zoom-far');
+      } else {
+        mapContainer.current.classList.remove('map-zoom-far');
+      }
+    };
+    map.on('zoom', handleZoom);
+    handleZoom();
+
     map.on('load', () => {
       // 🌟 Tinh chỉnh tone Midnight Slate (Xanh than tiệc đêm sang trọng)
       try {
@@ -169,8 +182,18 @@ export default function MapView({
     });
   }, [venues, filteredVenueIds, onSelectVenue]);
 
-  // 3. Khi selectedVenue thay đổi từ bên ngoài -> Fly camera đến quán đó
+  // 3. Khi selectedVenue thay đổi -> Fly camera & làm nổi bật marker quán đó
   useEffect(() => {
+    // Cập nhật class is-selected cho marker được chọn
+    Object.keys(markersRef.current).forEach((id) => {
+      const el = markersRef.current[id].getElement();
+      if (selectedVenue && id === selectedVenue.id) {
+        el.classList.add('is-selected');
+      } else {
+        el.classList.remove('is-selected');
+      }
+    });
+
     if (!selectedVenue || !mapRef.current) return;
     const coords = selectedVenue.map_coordinates;
     if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {

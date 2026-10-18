@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin, Building2, Home, Gift, LayoutGrid, Phone, Sparkles } from "lucide-react";
+import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin, Building2, Home, Gift, LayoutGrid, Phone, Sparkles, CreditCard } from "lucide-react";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { getSiteConfig, type SiteConfig } from "@/config/site-config";
@@ -220,6 +220,12 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               <Sparkles className="size-3.5" />
               <span>Phố Tiệc</span>
             </Link>
+            <Link
+              href="/bang-gia"
+              className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${solid ? "text-foreground" : "text-background/85"}`}
+            >
+              Bảng giá
+            </Link>
             {/* Danh Mục dropdown */}
             <NavDropdown
               label="Danh Mục"
@@ -294,6 +300,10 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               <Link href="/tat-nien" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
                 <Sparkles className="size-4 text-amber-500" />
                 <span>Phố Tiệc Tất Niên 🎉</span>
+              </Link>
+              <Link href="/bang-gia" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted font-medium text-foreground">
+                <CreditCard className="size-4 text-amber-500" />
+                <span>Bảng Giá Gói Dịch Vụ</span>
               </Link>
               <button
                 onClick={() => setMobileMenuSection("categories")}

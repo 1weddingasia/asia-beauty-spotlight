@@ -80,7 +80,7 @@ export function createPinElement(
     }">
       ${
         highlight
-          ? `<div class="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/95 text-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-amber-500/50 shadow-md">
+          ? `<div class="venue-deal-badge absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/95 text-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-amber-500/50 shadow-md transition-all duration-200">
               🎁 ${highlight}
              </div>`
           : ''

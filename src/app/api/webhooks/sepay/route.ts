@@ -174,12 +174,47 @@ export async function POST(request: Request) {
             .update({ is_featured: true, plan_id: plan.id, plan_tier: 'premium' })
             .eq('id', business.id);
 
+          // 4.1. Tự động kích hoạt Hồ sơ Phố Tiệc Tất Niên nếu là quán ẩm thực hoặc thanh toán gói tiệc
+          const isPartyPayment = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN') || payload.transferAmount >= 500000;
+          const isVipParty = payload.transferAmount >= 1000000 || contentUpper.includes('VIP');
+
+          if (isPartyPayment) {
+            try {
+              await supabase.from('business_party_profiles').upsert({
+                business_id: business.id,
+                is_vip: isVipParty,
+                is_active: true,
+                party_deal_highlight: isVipParty ? '⭐ Điểm Tiệc VIP Hot 2026' : '🎉 Nhận đặt tiệc Tất Niên',
+                updated_at: new Date().toISOString(),
+              }, { onConflict: 'business_id' });
+              console.log(`[SePay Webhook] Activated business_party_profiles for ${business.name} (VIP: ${isVipParty})`);
+            } catch (partyErr) {
+              console.error('[SePay Webhook] Error activating party profile:', partyErr);
+            }
+          }
+
           // 5. Cập nhật trạng thái transaction
           await supabase.from('transactions')
             .update({ processed: true, user_id: business.owner_id })
             .eq('transaction_id', payload.id.toString());
 
           console.log(`Successfully upgraded business ${business.name} to VIP via SePay transaction ${payload.id}`);
+
+          // 5.1. Bắn thông báo nổ chuông Telegram cho Admin
+          try {
+            const botToken = process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN;
+            const chatId = process.env.TELEGRAM_CHAT_ID;
+            if (botToken && chatId) {
+              const msg = `🎉 <b>[1BOOKING.ASIA] NỔ ĐƠN THANH TOÁN TỰ ĐỘNG!</b>\n━━━━━━━━━━━━━━━━━━━━\n🏛️ <b>Quán / Doanh nghiệp:</b> ${business.name}\n🔗 <b>Slug:</b> /${business.slug}\n📞 <b>SĐT:</b> ${business.phone || 'Không rõ'}\n💰 <b>Số tiền:</b> ${payload.transferAmount.toLocaleString('vi-VN')} đ\n📦 <b>Gói:</b> ${plan.name || 'Gói Thành Viên VIP'}\n✨ <b>Phố Tiệc Tất Niên:</b> ${isPartyPayment ? (isVipParty ? '🌟 Kích hoạt VIP Neon' : '✅ Kích hoạt Phố Tiệc') : 'Gian hàng Doanh nghiệp'}\n📝 <b>Nội dung CK:</b> ${payload.content}\n━━━━━━━━━━━━━━━━━━━━\n⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
+              await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'HTML' }),
+              });
+            }
+          } catch (teleErr) {
+            console.error('[SePay Webhook] Telegram alert error:', teleErr);
+          }
 
           // 6. Gửi email xác nhận thanh toán & kích hoạt gói thành viên qua Resend (hi@1booking.asia)
           try {

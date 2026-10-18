@@ -235,3 +235,15 @@
 canvas.maplibregl-canvas {
   filter: brightness(1.35) contrast(1.15) saturate(1.12);
 }
+
+/* 🔍 CHỐNG ĐÈ CHỮ KHI ZOOM XA (Pin Clutter Prevention):
+ * Khi zoom xa (< 14.2), ẩn deal badge dài để không đè lên nhau.
+ * Chỉ bung to khi zoom gần hoặc khi hover/chọn vào quán */
+.map-zoom-far .venue-deal-badge {
+  display: none !important;
+}
+.map-zoom-far .venue-marker-container:hover .venue-deal-badge,
+.map-zoom-far .venue-marker-container.is-selected .venue-deal-badge {
+  display: block !important;
+  z-index: 50;
+}

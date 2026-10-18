@@ -116,32 +116,46 @@ export default function TatNienClient({ initialVenues }: TatNienClientProps) {
           </div>
         </div>
 
-        {/* Dual View Mode Toggle */}
-        <div className="flex items-center gap-1.5 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800">
-          <button
-            type="button"
-            onClick={() => setViewMode('map')}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              viewMode === 'map'
-                ? 'bg-amber-500 text-black shadow-md shadow-amber-950'
-                : 'text-zinc-400 hover:text-white'
-            }`}
+        {/* Controls: Dual View Mode Toggle + B2B Registration */}
+        <div className="flex items-center gap-2">
+          {/* Dual View Mode Toggle */}
+          <div className="flex items-center gap-1.5 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800">
+            <button
+              type="button"
+              onClick={() => setViewMode('map')}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'map'
+                  ? 'bg-amber-500 text-black shadow-md shadow-amber-950'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <MapIcon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Bản Đồ</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'list'
+                  ? 'bg-amber-500 text-black shadow-md shadow-amber-950'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <ListIcon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Danh Sách ({filteredVenues.length})</span>
+            </button>
+          </div>
+
+          {/* 🏷️ B2B CTA: Đăng ký điểm tiệc VIP */}
+          <Link
+            href="/bang-gia"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black text-xs font-black shadow-md shadow-amber-950/40 transition-all active:scale-95 shrink-0"
+            title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc VIP để xuất hiện trên bản đồ"
           >
-            <MapIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Bản Đồ</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('list')}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              viewMode === 'list'
-                ? 'bg-amber-500 text-black shadow-md shadow-amber-950'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            <ListIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Danh Sách ({filteredVenues.length})</span>
-          </button>
+            <Sparkles className="w-3.5 h-3.5 fill-black" />
+            <span className="hidden md:inline">Đăng ký Điểm Tiệc VIP</span>
+            <span className="md:hidden">Đăng ký</span>
+          </Link>
         </div>
       </header>
 
