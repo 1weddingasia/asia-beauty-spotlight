@@ -212,25 +212,28 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
     // Dùng h-[100dvh] để thích nghi với Zalo/Facebook Webview, tuyệt đối không dùng 100vh cứng
     <div className="relative w-full h-[100dvh] overflow-hidden bg-slate-950 flex flex-col select-none">
       {/* 1. Header Festive Bar */}
-      <header className="relative z-30 flex items-center justify-between px-3.5 py-2.5 bg-zinc-950/90 border-b border-amber-500/20 backdrop-blur-md">
-        <div className="flex items-center gap-2">
+      <header className="relative z-30 flex items-center justify-between px-2.5 sm:px-3.5 py-2 sm:py-2.5 bg-zinc-950/90 border-b border-amber-500/20 backdrop-blur-md">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <Link
             href="/"
-            className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-white hover:border-amber-400 transition-colors shrink-0"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-white hover:border-amber-400 transition-colors shrink-0"
             title="Về trang chủ"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </Link>
 
-          <div className="text-left">
+          <div className="text-left min-w-0">
             <div className="flex items-center gap-1.5">
-              <h1 className="text-sm sm:text-base font-extrabold tracking-tight text-white flex items-center gap-1">
+              <h1 className="text-xs sm:text-base font-extrabold tracking-tight text-white flex items-center gap-1 truncate">
                 <span className="text-amber-400">PHỐ TIỆC</span>
                 <span className="bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500 bg-clip-text text-transparent">
-                  TẤT NIÊN 2026
+                  TẤT NIÊN
+                </span>
+                <span className="hidden sm:inline bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500 bg-clip-text text-transparent">
+                  2026
                 </span>
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-rose-950 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold">
+              <span className="hidden md:inline-flex items-center gap-1 text-[10px] bg-rose-950 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold">
                 <Sparkles className="w-2.5 h-2.5" /> YEAR-END PARTY
               </span>
             </div>
@@ -241,13 +244,13 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
         </div>
 
         {/* Controls: Dual View Mode Toggle + B2B Registration */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Dual View Mode Toggle */}
-          <div className="flex items-center gap-1 bg-zinc-900/90 p-0.5 sm:p-1 rounded-xl border border-zinc-800">
+          <div className="flex items-center gap-0.5 sm:gap-1 bg-zinc-900/90 p-0.5 sm:p-1 rounded-xl border border-zinc-800 shrink-0">
             <button
               type="button"
               onClick={() => setViewMode('map')}
-              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
                 viewMode === 'map'
                   ? 'bg-amber-500 text-black shadow-md shadow-amber-950'
                   : 'text-zinc-400 hover:text-white'
@@ -259,7 +262,7 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
             <button
               type="button"
               onClick={() => setViewMode('list')}
-              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
                 viewMode === 'list'
                   ? 'bg-amber-500 text-black shadow-md shadow-amber-950'
                   : 'text-zinc-400 hover:text-white'
@@ -276,12 +279,13 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
           {/* 🏷️ B2B CTA: Đăng ký điểm tiệc */}
           <Link
             href="/tat-nien/dang-ky"
-            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black shadow-md shadow-amber-950/40 transition-all active:scale-95 shrink-0"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black shadow-md shadow-amber-950/40 transition-all active:scale-95 shrink-0"
             title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc 500k để sáng đèn trên bản đồ"
           >
             <Sparkles className="w-3.5 h-3.5 fill-black shrink-0" />
-            <span className="hidden md:inline">Chủ Quán Đăng Tiệc 500k</span>
-            <span className="md:hidden text-[11px] whitespace-nowrap">+ Đăng Tiệc</span>
+            <span className="hidden md:inline">Đăng Điểm Tiệc 500k</span>
+            <span className="hidden xs:inline md:hidden text-[11px] whitespace-nowrap">Đăng Tiệc 500k</span>
+            <span className="xs:hidden text-[10.5px] whitespace-nowrap">+ Tiệc 500k</span>
           </Link>
         </div>
       </header>

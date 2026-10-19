@@ -101,7 +101,7 @@ const DEFAULT_PARTY_PLANS: PricingPlanItem[] = [
       'Đăng tải thực đơn set menu tiệc, sức chứa bàn & phòng VIP kín đáo',
       'Tiếp nhận yêu cầu đặt bàn tiệc đoàn và khách công ty trực tiếp',
     ],
-    ctaText: 'Kích Hoạt Trang Đặt Tiệc (500k)',
+    ctaText: 'Kích Hoạt Gói Tiệc (500k)',
   },
   {
     id: 'tiec_vip',
@@ -215,7 +215,7 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
             pageType: 'party' as const,
             tier: isVip ? 'vip' as const : 'standard' as const,
             features: Array.isArray(p.features) && p.features.length > 0 ? p.features : (isVip ? DEFAULT_PARTY_PLANS[1].features : DEFAULT_PARTY_PLANS[0].features),
-            ctaText: isVip ? 'Kích Hoạt VIP Neon (700k)' : 'Kích Hoạt Trang Đặt Tiệc (500k)',
+            ctaText: isVip ? 'Kích Hoạt VIP Neon (700k)' : 'Kích Hoạt Gói Tiệc (500k)',
           };
         })
     : [];

@@ -612,8 +612,9 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
                 <span>Đang xử lý đăng ký...</span>
               ) : (
                 <>
-                  <Zap className="w-5 h-5 fill-black text-black" />
-                  <span>Đăng Ký Điểm Tiệc 500.000đ/năm Ngay</span>
+                  <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-black text-black shrink-0" />
+                  <span className="hidden sm:inline">Đăng Ký Điểm Tiệc 500.000đ/năm</span>
+                  <span className="sm:hidden text-xs sm:text-sm font-black whitespace-nowrap">Đăng Ký Điểm Tiệc 500k/năm</span>
                 </>
               )}
             </button>
