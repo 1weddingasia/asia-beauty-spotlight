@@ -683,12 +683,12 @@ export default function BusinessProfilePage() {
                     <Sparkles className="size-5" /> Cấu Hình Nhận Tiệc Tất Niên 2026
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Thông tin tiệc sẽ xuất hiện trên bản đồ 2.5D tại trang <strong>/tat-nien</strong> và trang gian hàng của bạn.
+                    Thông tin tiệc sẽ xuất hiện nổi bật trên Bản Đồ Phố Tiệc Tất Niên và trang sảnh tiệc riêng của quán.
                   </p>
                 </div>
                 <Button asChild variant="outline" size="sm" className="border-amber-500/50 text-amber-600 hover:bg-amber-500/10">
                   <Link href="/tat-nien" target="_blank">
-                    Xem Bản Đồ Tiệc (/tat-nien)
+                    Xem Bản Đồ Phố Tiệc
                   </Link>
                 </Button>
               </div>

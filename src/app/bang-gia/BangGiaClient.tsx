@@ -45,15 +45,15 @@ const PLANS: PricingPlan[] = [
   {
     id: 'fnb_standard',
     name: 'Gói Tiệc Chuẩn',
-    tagline: 'Phủ điểm trên Phố Tiệc Tất Niên 2026, nhận khách tiệc tự động qua Telegram',
+    tagline: 'Hiện diện nổi bật trên Phố Tiệc Tất Niên 2026, nhận thông báo đặt bàn tự động qua Telegram/Zalo',
     price: 500000,
     period: '/ năm',
     category: 'fnb',
     features: [
-      'Ghim điểm trên Bản Đồ 2.5D Phố Tiệc Tất Niên 2026',
-      'Gian hàng số chuyên nghiệp chuẩn SEO (1booking.asia/slug)',
+      'Ghim điểm trên Bản Đồ Phố Tiệc Tất Niên 2026',
+      'Gian hàng số chuyên nghiệp chuẩn SEO (1booking.asia/ten-tiem)',
       'Hiển thị đầy đủ Menu, bảng giá set menu & ưu đãi tiệc',
-      'Nổ chuông Telegram tức thì ngay khi khách đặt bàn',
+      'Nhận thông báo tức thì ngay khi khách đặt bàn',
       'Tích hợp nút gọi điện thoại & dẫn về nhóm Zalo',
       'Kích hoạt tự động ngay sau khi quét mã QR',
     ],
@@ -62,18 +62,18 @@ const PLANS: PricingPlan[] = [
   {
     id: 'fnb_vip_neon',
     name: 'Gói VIP Neon Tất Niên',
-    tagline: 'Ghim hào quang Neon vàng kim độc quyền, thuật toán ưu tiên TOP 1 gợi ý sảnh tiệc',
+    tagline: 'Điểm tiệc phát sáng nổi bật độc quyền, ưu tiên vị trí hàng đầu khi khách tìm sảnh tiệc',
     price: 1000000,
     period: '/ mùa tiệc',
     badge: 'ĐƯỢC ĐẶT NHIỀU NHẤT ⭐',
     isPopular: true,
     category: 'fnb',
     features: [
-      'Ghim Hào Quang Vàng Neon (VIP Pulse Glow) phát sáng độc quyền',
-      'Thuật toán ưu tiên đẩy lên TOP 1 khi khách tìm sảnh tiệc',
+      'Hiệu ứng ánh sáng nổi bật (VIP Glow) thu hút khách đặt tiệc',
+      'Ưu tiên hiển thị vị trí hàng đầu khi khách tìm kiếm sảnh tiệc',
       'Huy hiệu "Ưu Đãi Tiệc Hot" rực rỡ trên bản đồ & danh sách',
       'Nổi bật không gian phòng VIP kín đáo & set menu thượng hạng',
-      'Nổ chuông Telegram có gắn nhãn KHÁCH ĐẶT TIỆC VIP',
+      'Nhận thông báo tự động có gắn nhãn KHÁCH ĐẶT TIỆC VIP',
       'Hỗ trợ thiết kế hình ảnh banner & set menu tiệc cao cấp',
       'Hỗ trợ kỹ thuật & chăm sóc gian hàng 24/7',
     ],
@@ -108,7 +108,7 @@ const PLANS: PricingPlan[] = [
       'Huy hiệu Doanh Nghiệp Đã Xác Minh (Tích xanh VIP)',
       'Ưu tiên Top 1 hiển thị danh mục ngành & địa phương',
       'Trợ lý Chatbot AI tư vấn & chốt lịch tự động 24/7',
-      'Không giới hạn tiếp nhận Lead khách hàng qua Telegram',
+      'Không giới hạn tiếp nhận yêu cầu đặt lịch & khách hàng tiềm năng',
       'Tích hợp form đặt lịch, mã ưu đãi & quà tặng khách',
       'Email báo cáo xác nhận thanh toán & bảo hành 1 năm',
     ],
@@ -143,7 +143,7 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
           tagline:
             p.description ||
             (isParty
-              ? 'Kích hoạt Trang Sảnh Tiệc riêng biệt phong cách xanh dương tối, ghim phát sáng trên Bản Đồ Phố Tiệc 2026'
+              ? 'Kích hoạt Trang Sảnh Tiệc Chuyên Nghiệp riêng biệt, hiển thị nổi bật trên Bản Đồ Phố Tiệc Tất Niên 2026'
               : 'Gian hàng số chuẩn sang trọng toàn nền tảng, hiển thị quanh năm, đăng deal ưu đãi & đón khách đa ngành'),
           price: Number(p.price_yearly) || (isParty ? 500000 : 1500000),
           period: '/ năm',
@@ -155,15 +155,15 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
               ? p.features
               : isParty
               ? [
-                  'Kích hoạt Trang Sảnh Tiệc Chuyên Biệt phong cách Xanh Dương Tối (/slug/tiec)',
-                  'Ghim phát sáng Neon trên Bản Đồ Phố Tiệc Tất Niên 2026',
+                  'Kích hoạt Trang Sảnh Tiệc Chuyên Biệt tiếp nhận khách đoàn (1booking.asia/ten-tiem/tiec)',
+                  'Hiển thị nổi bật trên Bản Đồ Phố Tiệc Tất Niên 2026',
                   'Đăng tải thực đơn set menu 10 người, sức chứa & phòng VIP',
-                  'Nổ chuông Telegram tức thì ngay khi có khách công ty đặt tiệc',
+                  'Nhận thông báo tức thì ngay khi có khách công ty & đoàn đông đặt tiệc',
                   'Tích hợp nút Đặt Bàn Tiệc & Giữ Chỗ VIP 1-chạm kết nối trực tiếp',
                   'Hỗ trợ chăm sóc gian hàng mùa tiệc 24/7',
                 ]
               : [
-                  'Trang Gian Hàng Số Chuyên Nghiệp (1booking.asia/slug)',
+                  'Trang Gian Hàng Số Chuyên Nghiệp (1booking.asia/ten-tiem)',
                   'Giao diện chuẩn sang trọng toàn nền tảng (Spa, Salon, Phòng khám, Dịch vụ...)',
                   'Đăng tải không giới hạn ưu đãi & deal giảm giá quanh năm',
                   'Hệ thống tiếp nhận lịch hẹn & thông báo khách hàng tức thì',

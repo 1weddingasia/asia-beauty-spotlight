@@ -416,7 +416,7 @@ export default function GioiThieuPage() {
                 {[
                   { crit: "Chi phí đầu tư", fz: "Miễn phí (nhưng tốn tiền nhân viên trực)", web: "5M – 10M VNĐ", beauty: `${PRICING_AMOUNT}/năm (Trọn gói)` },
                   { crit: "Tốc độ đón khách", fz: "Chậm (phụ thuộc người cầm máy)", web: "Rườm rà (nhiều bước đăng ký)", beauty: "3 giây (Chỉ cần 1 chạm điền SĐT)" },
-                  { crit: "Nguy cơ sót đơn", fz: "Rất cao (trôi tin, khách thoát)", web: "Trung bình (khách lười điền form)", beauty: "0% (Chuông Telegram nổ tức thì)" },
+                  { crit: "Nguy cơ sót đơn", fz: "Rất cao (trôi tin, khách thoát)", web: "Trung bình (khách lười điền form)", beauty: "0% (Thông báo Telegram tức thì)" },
                   { crit: "Thời gian triển khai", fz: "Tự quản lý thủ công", web: "Mất 2 – 4 tuần lập trình", beauty: `Bàn giao dùng ngay trong ${SETUP_TIME}` },
                   { crit: "Quảng bá cộng đồng", fz: "Tự chạy quảng cáo", web: "Tự làm SEO", beauty: "Xuất hiện miễn phí trên Khám Phá" },
                 ].map((row, idx) => (

@@ -57,7 +57,7 @@ export default function MapView({
       style: 'https://tiles.openfreemap.org/styles/dark',
       center: startCenter, // [lng, lat]
       zoom: initialCenter || userLocation ? 14.5 : 13,
-      pitch: 60, // Góc nhìn 2.5D sang trọng
+      pitch: 60, // Góc nhìn 3D trực quan sang trọng
       bearing: -15,
       attributionControl: false,
     });

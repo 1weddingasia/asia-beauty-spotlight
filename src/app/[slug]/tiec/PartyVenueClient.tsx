@@ -178,7 +178,7 @@ export default function PartyVenueClient({
               className="text-xs text-amber-300 hover:text-amber-200 font-bold hidden sm:inline-flex items-center gap-1 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Bản Đồ Phố Tiệc 2.5D</span>
+              <span>Bản Đồ Phố Tiệc Tất Niên</span>
             </Link>
             <button
               onClick={handleShare}

@@ -478,7 +478,7 @@ export default function PromoClient({
                   {partyProfile.party_deal_highlight || `${business.name} Nhận Đặt Tiệc & Sự Kiện Cuối Năm`}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Quán có trang sảnh tiệc riêng phong cách Midnight Neon với sức chứa <strong>{partyProfile.min_guests} - {partyProfile.max_guests} khách</strong>
+                  Nhà hàng có không gian sảnh tiệc riêng sang trọng với sức chứa <strong>{partyProfile.min_guests} - {partyProfile.max_guests} khách</strong>
                   {partyProfile.num_vip_rooms > 0 ? `, gồm ${partyProfile.num_vip_rooms} phòng VIP riêng tư` : ''}. Đầy đủ thực đơn set menu & ưu đãi đoàn tiệc.
                 </p>
               </div>

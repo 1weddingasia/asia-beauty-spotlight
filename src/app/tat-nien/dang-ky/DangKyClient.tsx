@@ -201,8 +201,8 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
             </span>
           </h1>
           <p className="mt-2.5 text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-            Ghim nhà hàng lên Bản đồ 2.5D Phố Tiệc Tất Niên 2026. Chuông Telegram nổ tức thì mỗi khi
-            khách công ty đặt tiệc. Kích hoạt trong 5 phút!
+            Ghim nhà hàng lên Bản Đồ Phố Tiệc Tất Niên 2026. Nhận thông báo tự động tức thì khi có
+            khách đặt bàn tiệc đoàn. Kích hoạt nhanh chóng!
           </p>
         </div>
 
@@ -217,15 +217,15 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
               Đăng Ký Thành Công! 🎉
             </h2>
             <p className="text-xs sm:text-sm text-zinc-300 text-center max-w-md mx-auto mb-6">
-              Hồ sơ quán <strong className="text-amber-300">{name}</strong> đã được đồng bộ vào hệ thống.
-              Chuông Telegram của Ban Quản Trị đã thông báo để ưu tiên xét duyệt cho bạn.
+              Hồ sơ nhà hàng <strong className="text-amber-300">{name}</strong> đã được đồng bộ vào hệ thống.
+              Ban Quản Trị đã nhận thông tin và sẽ ưu tiên kích hoạt điểm tiệc cho quý khách.
             </p>
 
             {/* QR Payment Box */}
             <div className="bg-zinc-950 border border-amber-500/30 rounded-2xl p-5 mb-6 text-center space-y-4">
               <div className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center justify-center gap-1.5">
                 <Sparkles className="w-4 h-4" />
-                Quét Mã VietQR Ngân Hàng Kích Hoạt Đèn Neon
+                Quét Mã VietQR Ngân Hàng Kích Hoạt Điểm Tiệc
               </div>
 
               <div className="bg-white p-3 rounded-2xl inline-block shadow-inner mx-auto">
@@ -546,12 +546,12 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
             <div className="bg-zinc-950/60 rounded-2xl p-4 border border-zinc-800/80 text-xs text-zinc-400 space-y-1.5">
               <div className="font-bold text-white flex items-center gap-1.5 text-xs">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                Quy Trình Chốt Điểm Tiệc 500.000đ:
+                Quy Trình Kích Hoạt Điểm Tiệc 500.000đ/Năm:
               </div>
               <ul className="list-disc pl-5 space-y-1 text-[11px] text-zinc-400">
-                <li>Bấm nút đăng ký bên dưới: Hồ sơ quán được lưu ngay vào database thật của 1Booking.Asia.</li>
-                <li>Hệ thống gửi chuông Telegram tức thì về Ban Quản Trị: Quán ABC - Quận X - SĐT: 090xxx.</li>
-                <li>Ban Quản Trị gọi xác nhận trong 5 phút, gửi mã VietQR thu 500k và kích hoạt đèn neon rực rỡ!</li>
+                <li>Bước 1: Gửi thông tin nhà hàng và thực đơn tiệc để khởi tạo hồ sơ trên hệ thống 1Booking.Asia.</li>
+                <li>Bước 2: Ban Quản Trị tiếp nhận, hỗ trợ xác thực và gửi hướng dẫn thanh toán qua tin nhắn/Zalo.</li>
+                <li>Bước 3: Hoàn tất thanh toán VietQR 500.000đ/năm, điểm tiệc lập tức xuất hiện nổi bật trên Bản Đồ Phố Tiệc để đón khách.</li>
               </ul>
             </div>
 

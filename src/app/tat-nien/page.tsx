@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Phố Tiệc Tất Niên 2026 — Bản Đồ Chọn Quán Tiệc Tất Niên & Year-End Party VIP',
     description:
-      'Bản đồ 2.5D khám phá 50+ nhà hàng tiệc tất niên hàng đầu: Lọc phòng VIP riêng, sức chứa 15-500 khách, ưu đãi tặng bia & karaoke. Giữ chỗ tiệc công ty ngay!',
+      'Bản đồ trực quan khám phá các nhà hàng tiệc tất niên hàng đầu: Lọc phòng VIP riêng, sức chứa 15-500 khách, ưu đãi tặng bia & karaoke. Giữ chỗ tiệc công ty ngay!',
     keywords: [
       'tiệc tất niên',
       'đặt tiệc tất niên',
@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: 'Phố Tiệc Tất Niên 2026 — 1Booking.asia',
-      description: 'Bản đồ 2.5D tìm sảnh tiệc tất niên sang trọng, ưu đãi bia và karaoke.',
+      description: 'Bản đồ trực quan tìm sảnh tiệc tất niên sang trọng, ưu đãi bia và karaoke.',
     },
   };
 }

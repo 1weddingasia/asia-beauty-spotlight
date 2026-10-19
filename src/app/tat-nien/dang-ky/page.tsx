@@ -10,14 +10,14 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Đăng Ký Điểm Tiệc Tất Niên 2026 — Phủ Sóng Nhà Hàng Trên Bản Đồ VIP | 1Booking.Asia',
   description:
-    'Đăng ký điểm tiệc siêu tốc chỉ 500k: Ghim quán tiệc lên Bản đồ 2.5D Phố Tiệc Tất Niên 2026, nhận chuông Telegram tự động khi khách đặt bàn, tiếp cận hàng nghìn công ty tại TP.HCM.',
+    'Đăng ký điểm tiệc nhanh chóng chỉ 500.000đ: Đưa nhà hàng lên Bản Đồ Phố Tiệc Tất Niên 2026, tiếp nhận khách đặt tiệc công ty và gia đình tự động tại TP.HCM.',
   alternates: {
     canonical: 'https://1booking.asia/tat-nien/dang-ky',
   },
   openGraph: {
     title: 'Đăng Ký Điểm Tiệc Tất Niên 2026 | 1Booking.Asia',
     description:
-      'Ghim quán tiệc lên Bản đồ 2.5D Phố Tiệc Tất Niên 2026 chỉ với 500.000đ. Nhận khách đặt tiệc công ty tự động qua Telegram!',
+      'Ghim nhà hàng lên Bản Đồ Phố Tiệc Tất Niên 2026 với 500.000đ/năm. Đón sóng khách đặt tiệc công ty và đoàn đông cuối năm!',
     url: 'https://1booking.asia/tat-nien/dang-ky',
     type: 'website',
     images: [

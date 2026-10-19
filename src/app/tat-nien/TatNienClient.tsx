@@ -30,7 +30,7 @@ const MapView = dynamic(() => import('./components/MapView'), {
     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 text-amber-400 gap-3">
       <div className="w-9 h-9 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
       <span className="text-xs font-bold tracking-widest text-amber-300 uppercase">
-        Đang khởi tạo Bản đồ 2.5D...
+        Đang tải Bản Đồ Phố Tiệc Tất Niên...
       </span>
     </div>
   ),
@@ -235,7 +235,7 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
               </span>
             </div>
             <p className="text-[10px] text-zinc-400 hidden sm:block">
-              Bản đồ 2.5D khám phá nhà hàng tiệc VIP, phòng riêng & ưu đãi độc quyền
+              Bản đồ trực quan khám phá nhà hàng tiệc VIP, phòng riêng & ưu đãi độc quyền
             </p>
           </div>
         </div>

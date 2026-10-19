@@ -30,7 +30,7 @@ export default function Sidebar({
       title: "QUẢN LÝ CHUNG",
       items: [
         { name: "Tổng quan", href: `/${slug}/dashboard`, icon: LayoutDashboard },
-        { name: "Danh sách Khách (Leads)", href: `/${slug}/leads`, icon: Users },
+        { name: "Danh Sách Khách Hàng", href: `/${slug}/leads`, icon: Users },
       ]
     },
     {

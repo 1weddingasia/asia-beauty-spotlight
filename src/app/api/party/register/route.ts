@@ -315,7 +315,7 @@ export async function POST(req: NextRequest) {
             { name: 'Set Tiệc Thượng Hạng (10 người)', price: priceMax * 10, pax: 10 },
           ],
           is_vip: true,
-          is_active: true, // Kích hoạt ngay để quán sẵn sàng hiển thị trên bản đồ 2.5D
+          is_active: true, // Kích hoạt ngay để quán sẵn sàng hiển thị trên Bản Đồ Phố Tiệc
           updated_at: new Date().toISOString(),
         },
         { onConflict: 'business_id' }

@@ -58,7 +58,7 @@ export default function UpgradePage() {
     return (
       <div className="p-12 text-center flex flex-col items-center justify-center gap-3">
         <Loader2 className="size-8 animate-spin text-gold" />
-        <p className="text-muted-foreground text-sm">Đang tải gói dịch vụ từ cơ sở dữ liệu...</p>
+        <p className="text-muted-foreground text-sm">Đang tải thông tin gói thành viên...</p>
       </div>
     );
   }
@@ -153,7 +153,7 @@ export default function UpgradePage() {
                   )}
                 </div>
                 <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-                  {p.description || (isParty ? 'Kích hoạt trang sảnh tiệc riêng phong cách xanh dương tối (/slug/tiec)' : 'Gian hàng chuẩn sang trọng toàn nền tảng (/slug)')}
+                  {p.description || (isParty ? 'Kích hoạt trang sảnh tiệc riêng chuyên biệt đón khách đoàn & tiệc tất niên' : 'Gian hàng số chuẩn sang trọng toàn nền tảng, quảng bá ưu đãi quanh năm')}
                 </p>
               </div>
               <div className="pt-3 border-t border-slate-100 flex items-baseline justify-between">
@@ -189,7 +189,7 @@ export default function UpgradePage() {
                 {(Array.isArray(selectedPlan.features) && selectedPlan.features.length > 0 ? selectedPlan.features : [
                   'Kích hoạt tính năng theo đúng cấu hình gói',
                   'Hiển thị thông tin liên hệ và số điện thoại bấm gọi ngay',
-                  'Tiếp nhận lead khách hàng và thông báo tự động',
+                  'Tiếp nhận yêu cầu đặt lịch hẹn, đặt bàn & thông báo tự động',
                   'Hỗ trợ kỹ thuật 24/7 trong suốt thời gian kích hoạt',
                 ]).map((feat: string, i: number) => (
                   <div key={i} className="flex items-start gap-2 text-xs text-slate-700">
