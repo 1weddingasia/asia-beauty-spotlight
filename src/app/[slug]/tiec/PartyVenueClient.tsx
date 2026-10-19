@@ -158,7 +158,8 @@ export default function PartyVenueClient({
   const activeSpaces = PARTY_SPACES.filter((s) => (partyProfile.spaces_and_amenities || []).includes(s.id));
   const activeCuisines = PARTY_CUISINES.filter((c) => (partyProfile.cuisines || []).includes(c.id));
   const activePerks = PARTY_PERKS.filter((p) => (partyProfile.party_perks || []).includes(p.id));
-  const partyMenuLink = partyProfile.party_menu_url || (b.page_content as any)?.menu_url || null;
+  const rawPartyMenuUrl = partyProfile.party_menu_url || b.page_content?.menu_url || null;
+  const partyMenuLink = rawPartyMenuUrl && /^https?:\/\//.test(rawPartyMenuUrl) ? rawPartyMenuUrl : null;
 
   return (
     <div className="min-h-screen bg-[#070b16] text-slate-100 selection:bg-amber-500 selection:text-black">
@@ -658,39 +659,41 @@ export default function PartyVenueClient({
       </Dialog>
 
       {/* 🌟 NÚT BẤM DÍNH ĐÁY MÀN HÌNH (FIXED BOTTOM CTA CHO MOBILE) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#091024]/95 backdrop-blur-md border-t border-amber-500/20 p-3 flex gap-2 md:hidden">
-        {partyMenuLink && (
-          <a
-            href={partyMenuLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3.5 py-3 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold text-xs flex items-center justify-center gap-1.5 shrink-0"
-            title="Xem thực đơn tiệc chi tiết trên Google Drive"
+      {!isBookingOpen && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#091024]/95 backdrop-blur-md border-t border-amber-500/20 p-3 flex gap-2 md:hidden">
+          {partyMenuLink && (
+            <a
+              href={partyMenuLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3.5 py-3 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold text-xs flex items-center justify-center gap-1.5 shrink-0"
+              title="Xem thực đơn tiệc chi tiết trên Google Drive"
+            >
+              <Wine className="w-4 h-4 text-amber-400" />
+              <span>Menu</span>
+            </a>
+          )}
+          <button
+            onClick={() => {
+              setSelectedSetMenu('');
+              setIsBookingOpen(true);
+            }}
+            className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs py-3 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5 uppercase"
           >
-            <Wine className="w-4 h-4 text-amber-400" />
-            <span>Menu</span>
-          </a>
-        )}
-        <button
-          onClick={() => {
-            setSelectedSetMenu('');
-            setIsBookingOpen(true);
-          }}
-          className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs py-3 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5 uppercase"
-        >
-          <CalendarCheck className="w-4 h-4" />
-          <span>Đặt Bàn Tiệc VIP</span>
-        </button>
-        {b.phone && (
-          <a
-            href={`tel:${b.phone.replace(/\D/g, '')}`}
-            className="px-3.5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center shrink-0"
-            title="Gọi hotline"
-          >
-            <Phone className="w-4 h-4" />
-          </a>
-        )}
-      </div>
+            <CalendarCheck className="w-4 h-4" />
+            <span>Đặt Bàn Tiệc VIP</span>
+          </button>
+          {b.phone && (
+            <a
+              href={`tel:${b.phone.replace(/\D/g, '')}`}
+              className="px-3.5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center shrink-0"
+              title="Gọi hotline"
+            >
+              <Phone className="w-4 h-4" />
+            </a>
+          )}
+        </div>
+      )}
     </div>
   );
 }

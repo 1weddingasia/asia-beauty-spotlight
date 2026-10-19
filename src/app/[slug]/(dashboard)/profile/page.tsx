@@ -156,6 +156,7 @@ export default function BusinessProfilePage() {
                 instagram: data.socials?.instagram || "",
                 tiktok: data.socials?.tiktok || "",
                 youtube: data.socials?.youtube || "",
+                menu_url: "",
               }));
             }
 

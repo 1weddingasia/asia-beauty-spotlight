@@ -118,6 +118,11 @@ export async function POST(req: NextRequest) {
     // 1. Phân tích giá tiệc bình quân
     const { priceMin, priceMax } = parsePricePerPax(price_per_pax);
 
+    // Chuẩn hóa link thực đơn Google Drive (chỉ chấp nhận http/https)
+    const normalizedMenuUrl = party_menu_url?.trim() && /^https?:\/\//.test(party_menu_url.trim())
+      ? party_menu_url.trim()
+      : null;
+
     // 2. Lấy tọa độ từ database thật directory_locations + Jitter tự nhiên
     const { data: districtRow } = await supabase
       .from('directory_locations')
@@ -235,7 +240,7 @@ export async function POST(req: NextRequest) {
             action_name: 'Đặt Bàn Ngay',
             party_deal: party_deal.trim(),
             contact_person: contact_name || 'Chủ quán',
-            menu_url: party_menu_url && party_menu_url.trim().length > 0 ? party_menu_url.trim() : prevContent.menu_url || null,
+            menu_url: normalizedMenuUrl || prevContent.menu_url || null,
           },
           updated_at: new Date().toISOString(),
         })
@@ -285,7 +290,7 @@ export async function POST(req: NextRequest) {
             action_name: 'Đặt Bàn Ngay',
             party_deal: party_deal.trim(),
             contact_person: contact_name || 'Chủ quán',
-            menu_url: party_menu_url && party_menu_url.trim().length > 0 ? party_menu_url.trim() : null,
+            menu_url: normalizedMenuUrl,
           },
         })
         .select('id')
@@ -314,7 +319,7 @@ export async function POST(req: NextRequest) {
           party_perks: ['tang_bia', 'free_karaoke'],
           party_deal_highlight: party_deal.trim(),
           party_description: `Sảnh tiệc tất niên sang trọng tại ${name.trim()}. Nhận tiệc từ ${min_guests} đến ${max_guests} khách với ưu đãi độc quyền: ${party_deal.trim()}.`,
-          party_menu_url: party_menu_url && party_menu_url.trim().length > 0 ? party_menu_url.trim() : null,
+          party_menu_url: normalizedMenuUrl,
           set_menus: [
             { name: 'Set Tiệc Thịnh Vượng (10 người)', price: priceMin * 10, pax: 10 },
             { name: 'Set Tiệc Thượng Hạng (10 người)', price: priceMax * 10, pax: 10 },

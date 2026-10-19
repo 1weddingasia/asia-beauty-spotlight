@@ -339,7 +339,8 @@ export default function PromoClient({
   const partySpaces = Array.isArray(partyProfile?.spaces_and_amenities) ? partyProfile.spaces_and_amenities : [];
   const partyPerks = Array.isArray(partyProfile?.party_perks) ? partyProfile.party_perks : [];
   const partyMenus = Array.isArray(partyProfile?.set_menus) ? partyProfile.set_menus : [];
-  const menuLink = business.page_content?.menu_url || partyProfile?.party_menu_url || null;
+  const rawMenuLink = business.page_content?.menu_url || partyProfile?.party_menu_url || null;
+  const menuLink = rawMenuLink && /^https?:\/\//.test(rawMenuLink) ? rawMenuLink : null;
 
   return (
     <div className="min-h-screen relative transition-colors duration-300 pb-24 md:pb-16 bg-[#FCFAF5] text-ink">

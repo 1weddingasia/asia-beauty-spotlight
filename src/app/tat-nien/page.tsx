@@ -81,6 +81,7 @@ export default async function TatNienPage() {
         party_banner_url,
         party_gallery,
         set_menus,
+        party_menu_url,
         is_vip,
         is_active
       )
@@ -127,6 +128,7 @@ export default async function TatNienPage() {
       party_banner_url: profile?.party_banner_url ?? null,
       party_gallery: profile?.party_gallery ?? [],
       set_menus: profile?.set_menus ?? [],
+      party_menu_url: profile?.party_menu_url ?? null,
       is_vip: Boolean(profile?.is_vip),
       is_active: Boolean(profile?.is_active),
     };

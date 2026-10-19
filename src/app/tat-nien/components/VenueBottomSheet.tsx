@@ -161,7 +161,8 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     .map((p) => PARTY_PERKS.find((item) => item.id === p)?.label || p)
     .filter(Boolean);
 
-  const venueMenuUrl = venue.party_menu_url || venue.page_content?.menu_url || null;
+  const rawMenuUrl = venue.party_menu_url || venue.page_content?.menu_url || null;
+  const venueMenuUrl = rawMenuUrl && /^https?:\/\//.test(rawMenuUrl) ? rawMenuUrl : null;
 
   return (
     <Drawer open={!!venue} onOpenChange={(open) => !open && onClose()}>

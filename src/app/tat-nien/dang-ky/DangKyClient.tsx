@@ -131,6 +131,11 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
       return;
     }
 
+    if (partyMenuUrl.trim() && !/^https?:\/\//.test(partyMenuUrl.trim())) {
+      setErrorMsg('Đường dẫn link thực đơn phải bắt đầu bằng http:// hoặc https://');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {

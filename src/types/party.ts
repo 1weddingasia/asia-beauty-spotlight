@@ -46,7 +46,7 @@ export interface PartyVenue {
     phone?: string;
     zalo?: string;
     telegram_chat_id?: string;
-    menu_url?: string;
+    menu_url?: string | null;
   };
   plan_tier: string | null;
   status: string;
