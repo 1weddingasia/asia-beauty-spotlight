@@ -565,21 +565,21 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
               </div>
             </div>
 
-            {/* 7. Link Google Drive Thực Đơn / Menu Món Ăn (Tùy chọn) */}
+            {/* 7. Đường dẫn Thực Đơn / Menu Món Ăn Trực Tuyến (Tùy chọn) */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-zinc-200 uppercase mb-1 flex items-center gap-1.5">
                 <Utensils className="w-3.5 h-3.5 text-amber-400" />
-                Link Thực Đơn / Menu Món Ăn (Google Drive - Tùy chọn)
+                Đường Dẫn Thực Đơn / Menu Món Ăn Trực Tuyến (Tùy chọn)
               </label>
               <input
                 type="text"
                 value={partyMenuUrl}
                 onChange={(e) => setPartyMenuUrl(e.target.value)}
-                placeholder="VD: https://drive.google.com/file/d/... (chế độ công khai ai có link đều xem được)"
+                placeholder="VD: https://... (Dán đường link xem thực đơn món ăn &amp; bảng giá)"
                 className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 transition-colors"
               />
               <p className="text-[11px] text-zinc-400">
-                Dán đường link Google Drive menu để khách hàng xem chi tiết trọn bộ các món ăn và báo giá khi bấm vào nhà hàng.
+                Dán đường liên kết xem thực đơn để thực khách mở xem trọn bộ các món ăn và báo giá khi bấm vào nhà hàng.
               </p>
             </div>
 

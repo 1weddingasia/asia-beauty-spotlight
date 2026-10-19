@@ -458,21 +458,21 @@ export default function BusinessProfilePage() {
               </div>
             </div>
 
-            {/* Link Google Drive Menu Món Ăn */}
+            {/* Đường Dẫn Thực Đơn Menu Món Ăn Trực Tuyến */}
             <div className="space-y-3 pt-6 border-t">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <Label className="text-base font-semibold flex items-center gap-2">
-                    <Utensils className="size-5 text-gold" /> Link Thực Đơn / Menu Món Ăn (Google Drive / PDF)
+                    <Utensils className="size-5 text-gold" /> Đường Dẫn Thực Đơn / Menu Món Ăn Trực Tuyến
                   </Label>
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    Dán đường link Google Drive (chế độ công khai &quot;Bất kỳ ai có đường liên kết đều có thể xem&quot;) để khách hàng mở xem chi tiết thực đơn món ăn & đồ uống.
+                    Dán đường link xem thực đơn để thực khách bấm vào xem trọn bộ danh sách món ăn &amp; thức uống của quán.
                   </p>
                 </div>
                 {pageContent.menu_url && /^https?:\/\//.test(pageContent.menu_url) && (
                   <Button asChild variant="outline" size="sm" className="border-gold text-gold hover:bg-gold/10 shrink-0">
                     <a href={pageContent.menu_url} target="_blank" rel="noopener noreferrer">
-                      Xem thử link ↗
+                      Xem thử thực đơn ↗
                     </a>
                   </Button>
                 )}
@@ -480,7 +480,7 @@ export default function BusinessProfilePage() {
               <Input
                 value={pageContent.menu_url || ""}
                 onChange={(e) => handlePageContentChange("menu_url", e.target.value)}
-                placeholder="https://drive.google.com/file/d/... hoặc link thực đơn trực tuyến"
+                placeholder="https://... (Dán đường link thực đơn trực tuyến của quán)"
               />
             </div>
           </div>
@@ -1001,21 +1001,21 @@ export default function BusinessProfilePage() {
                 </div>
               </div>
 
-              {/* Link Google Drive Thực Đơn Tiệc & Báo Giá Chi Tiết */}
+              {/* Đường Dẫn Thực Đơn Tiệc & Báo Giá Chi Tiết */}
               <div className="space-y-3 pt-4 border-t border-amber-500/20 bg-amber-500/5 p-4 md:p-5 rounded-2xl border">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <Label className="text-sm font-bold text-amber-500 flex items-center gap-1.5">
-                      <Wine className="size-4" /> Link Thực Đơn Tiệc & Báo Giá Trọn Gói (Google Drive / Brochure PDF)
+                      <Wine className="size-4" /> Đường Dẫn Thực Đơn Tiệc &amp; Báo Giá Trọn Gói
                     </Label>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Dán link Google Drive chứa file PDF hoặc ảnh trọn bộ thực đơn tiệc tất niên, các gói set menu và bảng giá đồ uống để khách tham khảo chi tiết.
+                      Dán đường link xem thực đơn tiệc, các gói set menu và bảng giá đồ uống chi tiết để khách đặt tiệc tham khảo.
                     </p>
                   </div>
                   {partyProfile.party_menu_url && /^https?:\/\//.test(partyProfile.party_menu_url) && (
                     <Button asChild variant="outline" size="sm" className="border-amber-500 text-amber-600 hover:bg-amber-50 shrink-0">
                       <a href={partyProfile.party_menu_url} target="_blank" rel="noopener noreferrer">
-                        Xem thử link tiệc ↗
+                        Xem thử thực đơn ↗
                       </a>
                     </Button>
                   )}
@@ -1023,7 +1023,7 @@ export default function BusinessProfilePage() {
                 <Input
                   value={partyProfile.party_menu_url || ""}
                   onChange={(e) => handlePartyProfileChange("party_menu_url", e.target.value)}
-                  placeholder="https://drive.google.com/file/d/... hoặc https://drive.google.com/drive/folders/..."
+                  placeholder="https://... (Dán đường link thực đơn tiệc chi tiết của nhà hàng)"
                 />
               </div>
 

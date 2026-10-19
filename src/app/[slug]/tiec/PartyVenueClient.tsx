@@ -280,7 +280,7 @@ export default function PartyVenueClient({
                 className="px-5 py-3.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-600/30 hover:from-amber-500/30 hover:to-amber-600/40 text-amber-300 hover:text-white font-bold text-sm border border-amber-500/50 transition-all hover:scale-105 flex items-center gap-2 shadow-lg"
               >
                 <Wine className="w-4 h-4 text-amber-400" />
-                <span>Thực Đơn Chi Tiết (Google Drive)</span>
+                <span>Xem Thực Đơn Chi Tiết</span>
               </a>
             )}
 
@@ -361,7 +361,7 @@ export default function PartyVenueClient({
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-white border border-amber-500/40 text-xs font-bold transition-all w-fit shrink-0"
                 >
                   <Wine className="w-4 h-4 text-amber-400" />
-                  <span>Xem File Thực Đơn Đầy Đủ (Google Drive) ↗</span>
+                  <span>Xem Toàn Bộ Thực Đơn Tiệc ↗</span>
                 </a>
               )}
             </div>
@@ -414,7 +414,7 @@ export default function PartyVenueClient({
           </div>
         )}
 
-        {/* Thực đơn tiệc trên Google Drive nếu quán chưa cấu hình từng món lẻ */}
+        {/* Thực đơn tiệc nếu quán chưa cấu hình từng món lẻ */}
         {(!Array.isArray(partyProfile.set_menus) || partyProfile.set_menus.length === 0) && partyMenuLink && (
           <div className="bg-gradient-to-r from-[#0d1733] to-[#121f45] border border-amber-500/30 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="space-y-1.5 text-center sm:text-left">
@@ -422,10 +422,10 @@ export default function PartyVenueClient({
                 <Wine className="w-3.5 h-3.5 text-amber-400" /> THỰC ĐƠN TIỆC TRỌN GÓI
               </div>
               <h3 className="text-xl font-black text-white">
-                Thực Đơn &amp; Báo Giá Tiệc Chi Tiết (Google Drive)
+                Thực Đơn &amp; Báo Giá Tiệc Chi Tiết
               </h3>
               <p className="text-xs sm:text-sm text-zinc-300 max-w-2xl leading-relaxed">
-                Nhà hàng đã cập nhật file brochure thực đơn tiệc, gói đồ uống và dịch vụ chi tiết trên Google Drive để quý khách và quý công ty thuận tiện lựa chọn.
+                Nhà hàng đã cập nhật bảng thực đơn tiệc, các gói set menu và bảng giá dịch vụ để quý khách và quý công ty thuận tiện lựa chọn.
               </p>
             </div>
             <a
@@ -434,7 +434,7 @@ export default function PartyVenueClient({
               rel="noopener noreferrer"
               className="px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase shadow-lg shadow-amber-950/50 hover:scale-105 active:scale-95 transition-all shrink-0 w-full sm:w-auto text-center"
             >
-              Mở Thực Đơn Trên Google Drive ↗
+              Xem Thực Đơn Trực Tuyến ↗
             </a>
           </div>
         )}
@@ -667,7 +667,7 @@ export default function PartyVenueClient({
               target="_blank"
               rel="noopener noreferrer"
               className="px-3.5 py-3 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold text-xs flex items-center justify-center gap-1.5 shrink-0"
-              title="Xem thực đơn tiệc chi tiết trên Google Drive"
+              title="Xem thực đơn tiệc chi tiết"
             >
               <Wine className="w-4 h-4 text-amber-400" />
               <span>Menu</span>

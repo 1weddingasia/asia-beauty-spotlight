@@ -523,7 +523,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                 </div>
               )}
 
-              {/* Menu link Google Drive */}
+              {/* Liên kết thực đơn món ăn & tiệc chi tiết */}
               {venueMenuUrl && (
                 <div className="mb-3.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-left">
                   <div className="flex items-center gap-2">
@@ -534,9 +534,9 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                     href={venueMenuUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shrink-0"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shrink-0"
                   >
-                    <span>Mở Menu Drive</span>
+                    <span>Xem Thực Đơn</span>
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>

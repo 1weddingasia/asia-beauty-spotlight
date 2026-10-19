@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
     // 1. Phân tích giá tiệc bình quân
     const { priceMin, priceMax } = parsePricePerPax(price_per_pax);
 
-    // Chuẩn hóa link thực đơn Google Drive (chỉ chấp nhận http/https)
+    // Chuẩn hóa link thực đơn trực tuyến (chỉ chấp nhận http/https)
     const normalizedMenuUrl = party_menu_url?.trim() && /^https?:\/\//.test(party_menu_url.trim())
       ? party_menu_url.trim()
       : null;

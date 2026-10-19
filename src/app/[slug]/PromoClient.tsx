@@ -506,7 +506,7 @@ export default function PromoClient({
           </div>
         )}
 
-        {/* 📋 BANNER THỰC ĐƠN / MENU MÓN ĂN GOOGLE DRIVE */}
+        {/* 📋 BANNER THỰC ĐƠN / MENU MÓN ĂN TRỰC TUYẾN */}
         {menuLink && (
           <div className="mb-8 bg-gradient-to-r from-amber-50 via-white to-orange-50/70 rounded-3xl p-5 md:p-6 border border-amber-300/80 shadow-lg shadow-amber-500/5 text-left relative overflow-hidden backdrop-blur-md">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -520,7 +520,7 @@ export default function PromoClient({
                       Thực Đơn &amp; Bảng Giá Món Ăn Chi Tiết
                     </h3>
                     <span className="text-[10px] font-bold bg-amber-500/20 text-amber-900 border border-amber-400/50 px-2.5 py-0.5 rounded-full">
-                      Google Drive
+                      Trực Tuyến
                     </span>
                   </div>
                   <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
@@ -1278,7 +1278,7 @@ export default function PromoClient({
             target="_blank"
             rel="noopener noreferrer"
             className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3.5 py-3 rounded-xl flex items-center justify-center gap-1.5 shadow-sm active:scale-95 shrink-0"
-            title="Xem menu món ăn trên Google Drive"
+            title="Xem thực đơn món ăn chi tiết"
           >
             <Utensils className="size-4 text-amber-600" />
             <span className="font-black">Menu</span>
