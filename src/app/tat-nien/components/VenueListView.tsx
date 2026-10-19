@@ -58,7 +58,9 @@ export default function VenueListView({
           venue.page_content?.hero_image ||
           '/images/categories/nha-hang-am-thuc.jpg';
 
-        const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
+        const pMin = typeof venue.price_min === 'number' ? venue.price_min : Number(String(venue.price_min || '').replace(/[^\d]/g, '')) || 250000;
+        const pMax = typeof venue.price_max === 'number' ? venue.price_max : Number(String(venue.price_max || '').replace(/[^\d]/g, '')) || 650000;
+        const priceFormatted = `${pMin.toLocaleString('vi-VN')} - ${pMax.toLocaleString('vi-VN')} đ`;
 
         const coords = venue.map_coordinates;
         const distance =

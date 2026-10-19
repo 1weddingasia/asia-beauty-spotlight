@@ -134,7 +134,7 @@ export const PARTY_PERKS = [
   { id: 'cho_mang_ruou_vao', label: 'Miễn phí mang rượu' },
 ] as const;
 
-function getLabelById(list: readonly { id: string; label: string }[], idOrCustom: string): string {
+function getLabelById<T extends { readonly id: string; readonly label: string }>(list: readonly T[], idOrCustom: string): string {
   return list.find((item) => item.id === idOrCustom)?.label ?? idOrCustom;
 }
 

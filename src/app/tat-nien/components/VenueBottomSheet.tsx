@@ -587,7 +587,10 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                   </div>
                   <div className="space-y-2">
                     {venue.set_menus.map((m, idx) => {
-                      const menuPrice = typeof m.price === 'number' ? m.price : parseInt(String(m.price || 0), 10);
+                      const rawPrice = typeof m.price === 'number'
+                        ? m.price
+                        : Number(String(m.price || '').replace(/[^\d]/g, ''));
+                      const menuPrice = Number.isFinite(rawPrice) ? rawPrice : 0;
                       return (
                         <div
                           key={idx}
@@ -602,22 +605,22 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                               {menuPrice > 0 ? `${menuPrice.toLocaleString('vi-VN')} đ` : 'Liên hệ báo giá'}
                             </span>
                           </div>
-                        {Array.isArray(m.dishes) && m.dishes.length > 0 && (
-                          <div className="pt-1.5 border-t border-zinc-800/80">
-                            <p className="text-[10px] text-zinc-400 font-semibold mb-1">Món ăn trong set:</p>
-                            <div className="flex flex-wrap gap-1">
-                              {m.dishes.map((dish: string, dIdx: number) => (
-                                <span key={dIdx} className="text-[10px] px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300">
-                                  • {dish}
-                                </span>
-                              ))}
+                          {Array.isArray(m.dishes) && m.dishes.length > 0 && (
+                            <div className="pt-1.5 border-t border-zinc-800/80">
+                              <p className="text-[10px] text-zinc-400 font-semibold mb-1">Món ăn trong set:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {m.dishes.map((dish: string, dIdx: number) => (
+                                  <span key={dIdx} className="text-[10px] px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300">
+                                    • {dish}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
