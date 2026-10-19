@@ -6,17 +6,17 @@ export default async function AdminBusinessesPage() {
   const { data, error } = await supabase
     .from("businesses")
     .select(`
-      id, slug, name, status, is_featured, created_at, claim_token, owner_id, website,
+      id, slug, name, status, is_featured, created_at, claim_token, owner_id, website, plan_tier, plan_id, category_slug,
       business_categories(directory_categories(name)),
-      business_locations(directory_locations(name))
+      business_locations(directory_locations(name)),
+      profiles:owner_id(email, full_name),
+      memberships(id, status, starts_at, expires_at, plan_id, plans(name, price_yearly))
     `)
     .order("created_at", { ascending: false })
-    .limit(200);
+    .limit(250);
 
   if (error) {
     console.error("Lỗi tải danh sách doanh nghiệp:", error);
-    // Optionally return an error UI, but for now we'll pass empty and log the critical error
-    // so it doesn't fail silently.
   }
 
   return <BusinessesClient initialBusinesses={data || []} />;

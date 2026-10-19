@@ -45,7 +45,7 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
   // Exclusive end: ngày clampedDay+1 của tháng trước → bao gồm hết ngày clampedDay
   const endOfSameDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, clampedDay + 1).toISOString();
 
-  const [leadsAllResult, leadsMonthResult, dealsResult, prevMonthResult, bookingsResult] = await Promise.all([
+  const [leadsAllResult, leadsMonthResult, dealsResult, prevMonthResult, bookingsResult, membershipResult] = await Promise.all([
     // Tổng leads từ trước đến nay
     supabase
       .from("business_leads")
@@ -73,6 +73,14 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
       .select("id", { count: "exact", head: true })
       .eq("business_id", business.id)
       .ilike("notes", "%Lịch hẹn:%"),
+    // Gói thành viên thật từ database
+    supabase
+      .from("memberships")
+      .select("id, status, starts_at, expires_at, plan_id, plans(name, price_yearly)")
+      .eq("business_id", business.id)
+      .order("expires_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   const totalLeads = leadsAllResult.error ? 0 : (leadsAllResult.count ?? 0);
@@ -88,13 +96,23 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
         (r: { deal_name: string; lead_count: number }) => [r.deal_name, Number(r.lead_count)]
       );
 
-
   // Tăng trưởng so cùng khoảng ngày tháng trước (month-to-date vs same period last month)
   const growthPct = prevMonthLeads && prevMonthLeads > 0
     ? Math.round(((monthLeads - prevMonthLeads) / prevMonthLeads) * 100)
     : null;
 
-
+  // Tính toán gói thành viên thật từ Database
+  const membership = membershipResult.data;
+  const rawExpiry = membership?.expires_at ? new Date(membership.expires_at) : null;
+  const fallbackExpiry = new Date(new Date(business.created_at || now).getTime() + 30 * 24 * 60 * 60 * 1000);
+  const expiryDate = rawExpiry || fallbackExpiry;
+  const msLeft = expiryDate.getTime() - now.getTime();
+  const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+  const isExpired = msLeft <= 0;
+  const isTrial = membership?.status === 'trial' || business?.plan_tier === 'trial';
+  const isActive = (membership?.status === 'active' || business?.plan_tier === 'premium') && !isExpired;
+  const planName = (membership?.plans as any)?.name || (business.category_slug?.includes('am-thuc') || business.category_slug?.includes('tiec') ? 'Gói Trang Đặt Tiệc' : 'Gói Trang Ưu Đãi');
+  const formattedExpiry = expiryDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   return (
     <div className="space-y-8">
@@ -103,6 +121,67 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
         <p className="text-muted-foreground mt-2">
           Theo dõi hiệu quả hoạt động kinh doanh và tối ưu hóa gian hàng của bạn.
         </p>
+      </div>
+
+      {/* THẺ TRẠNG THÁI GÓI THÀNH VIÊN TỪ DATABASE */}
+      <div className={`rounded-2xl border p-6 shadow-sm transition-all relative overflow-hidden ${
+        isActive 
+          ? 'bg-gradient-to-r from-emerald-950/20 via-card to-card border-emerald-500/40'
+          : isExpired 
+          ? 'bg-gradient-to-r from-rose-950/20 via-card to-card border-rose-500/40'
+          : 'bg-gradient-to-r from-amber-950/15 via-gold/5 to-card border-gold/40'
+      }`}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+                isActive 
+                  ? 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30'
+                  : isExpired 
+                  ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30'
+                  : 'bg-gold/20 text-ink border border-gold/30'
+              }`}>
+                <Sparkles className="size-3.5" />
+                {isActive ? 'Gói Thành Viên Chính Thức' : isExpired ? 'Đã Hết Hạn Dùng Thử' : 'Dùng Thử Miễn Phí 30 Ngày'}
+              </span>
+              <span className="text-xs font-bold text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                {planName}
+              </span>
+            </div>
+            <p className="text-sm text-slate-600">
+              {isActive ? (
+                <>Trang của bạn đang hoạt động chính thức. Hạn sử dụng: <strong>{formattedExpiry}</strong> (Còn <strong>{daysLeft} ngày</strong>).</>
+              ) : isExpired ? (
+                <>Thời gian dùng thử 30 ngày đã kết thúc vào ngày <strong>{formattedExpiry}</strong>. Vui lòng thanh toán để tiếp tục hiển thị gian hàng.</>
+              ) : (
+                <>Bạn đang trải nghiệm trọn bộ tính năng miễn phí. Hạn dùng thử đến ngày: <strong>{formattedExpiry}</strong> (Còn <strong>{daysLeft} ngày</strong>).</>
+              )}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <Button asChild className="bg-gold text-ink font-bold hover:brightness-105 shadow-md">
+              <Link href={`/${business.slug}/upgrade`}>
+                <span>{isActive ? 'Gia hạn gói thành viên ↗' : 'Kích hoạt gói chính thức ↗'}</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
+
+        {/* Thanh đếm ngược thời gian nếu đang dùng thử */}
+        {isTrial && !isExpired && (
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-3">
+            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+              <div 
+                className="bg-gold h-full rounded-full transition-all"
+                style={{ width: `${Math.min(100, Math.max(3, (daysLeft / 30) * 100))}%` }}
+              />
+            </div>
+            <span className="text-xs font-mono font-bold text-slate-600 shrink-0">
+              {daysLeft}/30 ngày
+            </span>
+          </div>
+        )}
       </div>
       
       {/* Top Deals + Quick Links */}
