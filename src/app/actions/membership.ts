@@ -202,129 +202,92 @@ export async function adminManageMembershipAction(payload: {
     // Tìm membership hiện tại của quán
     const { data: currentMem } = await supabaseAdmin
       .from("memberships")
-      .select("id, status, expires_at, plan_id")
+      .select("id, status, starts_at, expires_at, plan_id")
       .eq("business_id", business.id)
       .order("expires_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
+    const applyMembershipChange = async (planId: string, status: "trial" | "active", daysToAdd: number, planTier: "trial" | "premium") => {
+      let baseTime = now.getTime();
+      let startsAt = now;
+      if (currentMem?.expires_at) {
+        const curExp = new Date(currentMem.expires_at).getTime();
+        if (curExp > now.getTime()) {
+          baseTime = curExp;
+          startsAt = currentMem.starts_at ? new Date(currentMem.starts_at) : now;
+        }
+      }
+      const newExpiry = new Date(baseTime + daysToAdd * 24 * 60 * 60 * 1000);
+
+      if (currentMem) {
+        const { error: memErr } = await supabaseAdmin.from("memberships").update({
+          plan_id: planId,
+          status,
+          starts_at: startsAt.toISOString(),
+          expires_at: newExpiry.toISOString(),
+        }).eq("id", currentMem.id);
+        if (memErr) throw new Error("Lỗi cập nhật membership: " + memErr.message);
+      } else {
+        const { error: memErr } = await supabaseAdmin.from("memberships").insert({
+          business_id: business.id,
+          plan_id: planId,
+          status,
+          starts_at: startsAt.toISOString(),
+          expires_at: newExpiry.toISOString(),
+        });
+        if (memErr) throw new Error("Lỗi tạo membership: " + memErr.message);
+      }
+
+      const { error: bizErr } = await supabaseAdmin.from("businesses").update({
+        plan_id: planId,
+        plan_tier: planTier,
+        status: "published",
+        is_featured: planTier === "premium",
+      }).eq("id", business.id);
+      if (bizErr) throw new Error("Lỗi cập nhật business: " + bizErr.message);
+    };
+
     if (action === "extend_trial_30") {
-      let baseTime = now.getTime();
-      if (currentMem?.expires_at) {
-        const curExp = new Date(currentMem.expires_at).getTime();
-        if (curExp > now.getTime()) {
-          baseTime = curExp; // Cộng thêm 30 ngày nối tiếp
-        }
-      }
-      const newExpiry = new Date(baseTime + 30 * 24 * 60 * 60 * 1000);
+      const targetPlanId = currentMem?.plan_id || business.plan_id || udaiPlan?.id;
+      // Nếu đang active chính thức, giữ nguyên active và chỉ cộng thêm 30 ngày, không hạ cấp về trial
+      const targetStatus = currentMem?.status === "active" ? "active" : "trial";
+      const targetTier = currentMem?.status === "active" ? "premium" : "trial";
+      await applyMembershipChange(targetPlanId, targetStatus, 30, targetTier);
 
-      if (currentMem) {
-        await supabaseAdmin.from("memberships").update({
-          status: "trial",
-          expires_at: newExpiry.toISOString(),
-        }).eq("id", currentMem.id);
-      } else {
-        await supabaseAdmin.from("memberships").insert({
-          business_id: business.id,
-          plan_id: business.plan_id || udaiPlan?.id,
-          status: "trial",
-          starts_at: now.toISOString(),
-          expires_at: newExpiry.toISOString(),
-        });
-      }
+    } else if (action === "activate_udai_1year") {
+      if (!udaiPlan) return { success: false, error: "Không tìm thấy cấu hình Gói Trang Ưu Đãi trong hệ thống." };
+      await applyMembershipChange(udaiPlan.id, "active", 365, "premium");
 
-      await supabaseAdmin.from("businesses").update({
-        status: "published",
-        plan_tier: "trial",
-      }).eq("id", business.id);
-
-    } else if (action === "activate_udai_1year" && udaiPlan) {
-      let baseTime = now.getTime();
-      if (currentMem?.expires_at) {
-        const curExp = new Date(currentMem.expires_at).getTime();
-        if (curExp > now.getTime()) {
-          baseTime = curExp; // Cộng nối tiếp 365 ngày
-        }
-      }
-      const newExpiry = new Date(baseTime + 365 * 24 * 60 * 60 * 1000);
-
-      if (currentMem) {
-        await supabaseAdmin.from("memberships").update({
-          plan_id: udaiPlan.id,
-          status: "active",
-          expires_at: newExpiry.toISOString(),
-        }).eq("id", currentMem.id);
-      } else {
-        await supabaseAdmin.from("memberships").insert({
-          business_id: business.id,
-          plan_id: udaiPlan.id,
-          status: "active",
-          starts_at: now.toISOString(),
-          expires_at: newExpiry.toISOString(),
-        });
-      }
-
-      await supabaseAdmin.from("businesses").update({
-        plan_id: udaiPlan.id,
-        plan_tier: "premium",
-        status: "published",
-        is_featured: true,
-      }).eq("id", business.id);
-
-    } else if (action === "activate_tiec_1year" && tiecPlan) {
-      let baseTime = now.getTime();
-      if (currentMem?.expires_at) {
-        const curExp = new Date(currentMem.expires_at).getTime();
-        if (curExp > now.getTime()) {
-          baseTime = curExp; // Cộng nối tiếp 365 ngày
-        }
-      }
-      const newExpiry = new Date(baseTime + 365 * 24 * 60 * 60 * 1000);
-
-      if (currentMem) {
-        await supabaseAdmin.from("memberships").update({
-          plan_id: tiecPlan.id,
-          status: "active",
-          expires_at: newExpiry.toISOString(),
-        }).eq("id", currentMem.id);
-      } else {
-        await supabaseAdmin.from("memberships").insert({
-          business_id: business.id,
-          plan_id: tiecPlan.id,
-          status: "active",
-          starts_at: now.toISOString(),
-          expires_at: newExpiry.toISOString(),
-        });
-      }
-
-      await supabaseAdmin.from("businesses").update({
-        plan_id: tiecPlan.id,
-        plan_tier: "premium",
-        status: "published",
-        is_featured: true,
-      }).eq("id", business.id);
+    } else if (action === "activate_tiec_1year") {
+      if (!tiecPlan) return { success: false, error: "Không tìm thấy cấu hình Gói Trang Đặt Tiệc trong hệ thống." };
+      await applyMembershipChange(tiecPlan.id, "active", 365, "premium");
 
     } else if (action === "suspend") {
-      await supabaseAdmin.from("businesses").update({
+      const { error: bizErr } = await supabaseAdmin.from("businesses").update({
         status: "suspended",
       }).eq("id", business.id);
+      if (bizErr) throw new Error("Lỗi tạm ngưng: " + bizErr.message);
 
       if (currentMem) {
-        await supabaseAdmin.from("memberships").update({
+        const { error: memErr } = await supabaseAdmin.from("memberships").update({
           status: "suspended",
         }).eq("id", currentMem.id);
+        if (memErr) throw new Error("Lỗi tạm ngưng membership: " + memErr.message);
       }
 
     } else if (action === "activate") {
-      await supabaseAdmin.from("businesses").update({
+      const { error: bizErr } = await supabaseAdmin.from("businesses").update({
         status: "published",
       }).eq("id", business.id);
+      if (bizErr) throw new Error("Lỗi kích hoạt: " + bizErr.message);
 
       if (currentMem && currentMem.status === "suspended") {
-        const isStillValid = new Date(currentMem.expires_at) > now;
-        await supabaseAdmin.from("memberships").update({
-          status: isStillValid ? "active" : "expired",
+        const isStillValid = currentMem.expires_at ? new Date(currentMem.expires_at) > now : false;
+        const { error: memErr } = await supabaseAdmin.from("memberships").update({
+          status: isStillValid ? (business.plan_tier === "premium" ? "active" : "trial") : "expired",
         }).eq("id", currentMem.id);
+        if (memErr) throw new Error("Lỗi khôi phục membership: " + memErr.message);
       }
     } else {
       return { success: false, error: "Hành động không hợp lệ." };
