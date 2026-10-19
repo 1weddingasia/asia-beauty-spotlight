@@ -11,9 +11,6 @@ import {
 } from '@/components/ui/drawer';
 import {
   PartyVenue,
-  PARTY_SPACES,
-  PARTY_CUISINES,
-  PARTY_PERKS,
   getSpaceLabel,
   getCuisineLabel,
   getPerkLabel,
@@ -546,11 +543,17 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                         {h.features && (
                           <p className="text-[11px] text-zinc-400 line-clamp-1">{h.features}</p>
                         )}
-                        {h.price_min ? (
-                          <span className="text-[11px] text-amber-400 font-mono">
-                            Từ {Number(h.price_min).toLocaleString('vi-VN')} đ
-                          </span>
-                        ) : null}
+                        {(() => {
+                          const rawNum = typeof h.price_min === 'number'
+                            ? h.price_min
+                            : Number(String(h.price_min || '').replace(/[^\d]/g, ''));
+                          const hallPrice = Number.isFinite(rawNum) ? rawNum : 0;
+                          return hallPrice > 0 ? (
+                            <span className="text-[11px] text-amber-400 font-mono">
+                              Từ {hallPrice.toLocaleString('vi-VN')} đ
+                            </span>
+                          ) : null;
+                        })()}
                       </div>
                     ))}
                   </div>
@@ -583,20 +586,22 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                     Gợi ý Set Menu Tiệc
                   </div>
                   <div className="space-y-2">
-                    {venue.set_menus.map((m, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs space-y-1.5"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="font-bold text-white text-xs sm:text-sm">{m.name}</span>
-                            <span className="text-zinc-400 ml-2">({m.pax || 10} người/bàn)</span>
+                    {venue.set_menus.map((m, idx) => {
+                      const menuPrice = typeof m.price === 'number' ? m.price : parseInt(String(m.price || 0), 10);
+                      return (
+                        <div
+                          key={idx}
+                          className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs space-y-1.5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="font-bold text-white text-xs sm:text-sm">{m.name}</span>
+                              <span className="text-zinc-400 ml-2">({m.pax || 10} người/bàn)</span>
+                            </div>
+                            <span className="font-bold text-amber-300 font-mono text-xs sm:text-sm">
+                              {menuPrice > 0 ? `${menuPrice.toLocaleString('vi-VN')} đ` : 'Liên hệ báo giá'}
+                            </span>
                           </div>
-                          <span className="font-bold text-amber-300 font-mono text-xs sm:text-sm">
-                            {m.price?.toLocaleString('vi-VN')} đ
-                          </span>
-                        </div>
                         {Array.isArray(m.dishes) && m.dishes.length > 0 && (
                           <div className="pt-1.5 border-t border-zinc-800/80">
                             <p className="text-[10px] text-zinc-400 font-semibold mb-1">Món ăn trong set:</p>
@@ -610,8 +615,9 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                           </div>
                         )}
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
+                </div>
                 </div>
               )}
 

@@ -367,7 +367,10 @@ export default function PartyVenueClient({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {partyProfile.party_halls.map((hall, idx) => {
-                const hallMinPrice = typeof hall.price_min === 'number' ? hall.price_min : parseInt(String(hall.price_min || 0), 10);
+                const normalizedPrice = typeof hall.price_min === 'number'
+                  ? hall.price_min
+                  : Number(String(hall.price_min ?? '').replace(/[^\d]/g, ''));
+                const hallMinPrice = Number.isFinite(normalizedPrice) ? normalizedPrice : 0;
                 return (
                   <div
                     key={hall.id || idx}
@@ -430,7 +433,7 @@ export default function PartyVenueClient({
                   <Wine className="w-5 h-5 text-amber-400" /> Thực Đơn Set Menu Tất Niên
                 </h3>
                 <p className="text-xs text-zinc-400 mt-0.5">
-                  Thực đơn phong phú được thiết kế chuẩn cho bàn tiệc {partyProfile.set_menus[0]?.pax || 10} người
+                  Thực đơn phong phú được thiết kế chuẩn cho bàn tiệc tiêu chuẩn
                 </p>
               </div>
 
@@ -575,9 +578,9 @@ export default function PartyVenueClient({
             </h4>
             <div className="flex flex-wrap gap-2">
               {activeSpaces.length > 0 ? (
-                activeSpaces.map((s, idx) => (
+                activeSpaces.map((s) => (
                   <span
-                    key={idx}
+                    key={s}
                     className="text-xs px-3 py-1.5 rounded-xl bg-zinc-800/80 text-zinc-200 border border-zinc-700"
                   >
                     ✓ {s}
@@ -596,9 +599,9 @@ export default function PartyVenueClient({
             </h4>
             <div className="flex flex-wrap gap-2">
               {activeCuisines.length > 0 ? (
-                activeCuisines.map((c, idx) => (
+                activeCuisines.map((c) => (
                   <span
-                    key={idx}
+                    key={c}
                     className="text-xs px-3 py-1.5 rounded-xl bg-rose-950/40 text-rose-200 border border-rose-800/50"
                   >
                     ✓ {c}
@@ -617,9 +620,9 @@ export default function PartyVenueClient({
             </h4>
             <div className="flex flex-wrap gap-2">
               {activePerks.length > 0 ? (
-                activePerks.map((p, idx) => (
+                activePerks.map((p) => (
                   <span
-                    key={idx}
+                    key={p}
                     className="text-xs px-3 py-1.5 rounded-xl bg-emerald-950/40 text-emerald-200 border border-emerald-800/50"
                   >
                     🎁 {p}

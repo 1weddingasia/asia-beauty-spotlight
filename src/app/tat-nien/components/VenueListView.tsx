@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { PartyVenue, PARTY_SPACES, PARTY_PERKS, getPerkLabel } from '@/types/party';
+import { PartyVenue, getPerkLabel } from '@/types/party';
 import { MapPin, Users, Wine, Sparkles, ExternalLink, Map as MapIcon } from 'lucide-react';
 
 interface VenueListViewProps {

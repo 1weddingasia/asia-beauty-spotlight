@@ -296,7 +296,7 @@ export default function BusinessProfilePage() {
       ...prev,
       party_halls: [
         ...(prev.party_halls || []),
-        { id: 'hall_' + Date.now(), name: '', capacity: '', price_min: '', features: '' },
+        { id: `hall_${crypto.randomUUID()}`, name: '', capacity: '', price_min: '', features: '' },
       ],
     }));
   };
@@ -322,7 +322,7 @@ export default function BusinessProfilePage() {
       ...prev,
       set_menus: [
         ...(prev.set_menus || []),
-        { id: 'menu_' + Date.now(), name: 'Set Tiệc Mới', price: 2500000, pax: 10, dishes: [] },
+        { id: `menu_${crypto.randomUUID()}`, name: '', price: 0, pax: 10, dishes: [] },
       ],
     }));
   };
@@ -382,7 +382,7 @@ export default function BusinessProfilePage() {
       ...prev,
       party_specifications: [
         ...(prev.party_specifications || []),
-        { id: 'spec_' + Date.now(), title: '', content: '' },
+        { id: `spec_${crypto.randomUUID()}`, title: '', content: '' },
       ],
     }));
   };
@@ -464,12 +464,21 @@ export default function BusinessProfilePage() {
             party_gallery: Array.isArray(partyProfile.party_gallery)
               ? partyProfile.party_gallery.filter((u: any) => typeof u === 'string' && /^https?:\/\//.test(u))
               : [],
-            set_menus: (partyProfile.set_menus || []).map((m: any) => ({
-              ...m,
-              dishes: Array.isArray(m.dishes) ? m.dishes.filter((d: any) => typeof d === 'string' && d.trim()) : [],
-            })),
-            party_halls: (partyProfile.party_halls || []).filter((h: any) => h && (h.name?.trim() || h.capacity?.trim())),
-            party_specifications: (partyProfile.party_specifications || []).filter((s: any) => s && (s.title?.trim() || s.content?.trim())),
+            set_menus: (partyProfile.set_menus || [])
+              .filter((m: any) => m && typeof m.name === 'string' && m.name.trim())
+              .map((m: any) => ({
+                ...m,
+                name: m.name.trim(),
+                dishes: Array.isArray(m.dishes)
+                  ? m.dishes.filter((d: any) => typeof d === 'string' && d.trim()).map((d: string) => d.trim())
+                  : [],
+              })),
+            party_halls: (partyProfile.party_halls || [])
+              .filter((h: any) => h && typeof h.name === 'string' && h.name.trim())
+              .map((h: any) => ({ ...h, name: h.name.trim() })),
+            party_specifications: (partyProfile.party_specifications || [])
+              .filter((s: any) => s && typeof s.title === 'string' && s.title.trim())
+              .map((s: any) => ({ ...s, title: s.title.trim() })),
             party_menu_url: typeof partyProfile.party_menu_url === 'string' && partyProfile.party_menu_url.trim().length > 0
               ? partyProfile.party_menu_url.trim()
               : null,

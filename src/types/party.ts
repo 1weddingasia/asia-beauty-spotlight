@@ -134,19 +134,20 @@ export const PARTY_PERKS = [
   { id: 'cho_mang_ruou_vao', label: 'Miễn phí mang rượu' },
 ] as const;
 
+function getLabelById(list: readonly { id: string; label: string }[], idOrCustom: string): string {
+  return list.find((item) => item.id === idOrCustom)?.label ?? idOrCustom;
+}
+
 export function getSpaceLabel(idOrCustom: string): string {
-  const found = (PARTY_SPACES as readonly { id: string; label: string }[]).find((s) => s.id === idOrCustom);
-  return found ? found.label : idOrCustom;
+  return getLabelById(PARTY_SPACES, idOrCustom);
 }
 
 export function getCuisineLabel(idOrCustom: string): string {
-  const found = (PARTY_CUISINES as readonly { id: string; label: string }[]).find((c) => c.id === idOrCustom);
-  return found ? found.label : idOrCustom;
+  return getLabelById(PARTY_CUISINES, idOrCustom);
 }
 
 export function getPerkLabel(idOrCustom: string): string {
-  const found = (PARTY_PERKS as readonly { id: string; label: string }[]).find((p) => p.id === idOrCustom);
-  return found ? found.label : idOrCustom;
+  return getLabelById(PARTY_PERKS, idOrCustom);
 }
 
 export const DEFAULT_PARTY_PROFILE_VALUES = {
@@ -176,5 +177,3 @@ export interface PartyDistrictItem {
   sort_order?: number;
   parent_slug?: string | null;
 }
-
-

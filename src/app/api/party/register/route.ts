@@ -324,14 +324,14 @@ export async function POST(req: NextRequest) {
             {
               id: 'hall-1',
               name: 'Sảnh Tiệc Chính',
-              capacity: max_guests,
+              capacity: String(max_guests),
               price_min: priceMin * 10,
               features: 'Sân khấu, hệ thống âm thanh, ánh sáng tiệc & máy chiếu',
             },
             {
               id: 'hall-2',
               name: 'Phòng VIP Riêng',
-              capacity: 25,
+              capacity: String(Math.max(10, Math.round(max_guests * 0.25))),
               price_min: priceMin * 10,
               features: 'Không gian riêng tư kín đáo, hệ thống karaoke chọn bài',
             },
