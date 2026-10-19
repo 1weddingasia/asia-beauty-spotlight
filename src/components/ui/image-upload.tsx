@@ -28,8 +28,18 @@ export function ImageUpload({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Vui lòng chọn file hình ảnh (JPG, PNG, WEBP)!");
+    const ALLOWED_IMAGE_MIMES = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'image/heic',
+      'image/heif',
+    ];
+
+    if (!ALLOWED_IMAGE_MIMES.includes((file.type || '').toLowerCase())) {
+      toast.error('Vui lòng chọn file hình ảnh hợp lệ (JPG, PNG, WEBP, GIF)!');
       return;
     }
 

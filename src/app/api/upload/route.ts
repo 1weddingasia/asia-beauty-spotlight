@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic';
 // Supabase client với Service Role để đảm bảo quyền upload an toàn từ mọi thiết bị (Mobile/Desktop)
 function getAdminStorageClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
   if (!url || !serviceKey) {
-    throw new Error('Supabase Storage chưa được cấu hình khóa truy cập.');
+    throw new Error('Supabase Storage chưa được cấu hình khóa quản trị (SUPABASE_SERVICE_ROLE_KEY).');
   }
   return createSupabaseJsClient(url, serviceKey, {
     auth: {
@@ -49,9 +49,10 @@ export async function POST(req: NextRequest) {
     // Kiểm tra bucket hợp lệ
     const bucket = ALLOWED_BUCKETS.includes(rawBucket) ? rawBucket : 'media';
 
-    // Làm sạch đường dẫn thư mục
-    const folder = /^[a-zA-Z0-9_\-/]+$/.test(rawFolder) && !rawFolder.includes('..')
-      ? rawFolder.replace(/^\/+/, '')
+    // Làm sạch và chuẩn hóa đường dẫn thư mục
+    const normalizedFolder = rawFolder.split('/').filter(Boolean).join('/');
+    const folder = normalizedFolder && !normalizedFolder.includes('..')
+      ? normalizedFolder
       : 'uploads';
 
     // Kiểm tra định dạng ảnh an toàn

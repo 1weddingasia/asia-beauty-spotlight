@@ -55,6 +55,8 @@ export default function BusinessProfilePage() {
     party_perks: [],
     party_deal_highlight: "",
     party_description: "",
+    party_banner_url: null,
+    party_gallery: [],
     set_menus: [],
     is_vip: false,
   });
@@ -296,8 +298,12 @@ export default function BusinessProfilePage() {
             party_perks: partyProfile.party_perks || [],
             party_deal_highlight: partyProfile.party_deal_highlight || null,
             party_description: partyProfile.party_description || null,
-            party_banner_url: partyProfile.party_banner_url || null,
-            party_gallery: partyProfile.party_gallery || [],
+            party_banner_url: typeof partyProfile.party_banner_url === 'string' && /^https?:\/\//.test(partyProfile.party_banner_url)
+              ? partyProfile.party_banner_url
+              : null,
+            party_gallery: Array.isArray(partyProfile.party_gallery)
+              ? partyProfile.party_gallery.filter((u: any) => typeof u === 'string' && /^https?:\/\//.test(u))
+              : [],
             set_menus: partyProfile.set_menus || [],
             is_vip: Boolean(partyProfile.is_vip),
             is_active: Boolean(partyProfile.is_active),
