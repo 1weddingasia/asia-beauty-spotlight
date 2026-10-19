@@ -136,8 +136,8 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
 
-  // Map plans từ database nếu có
-  const dealPlans = initialPlans.length > 0
+  // Map plans từ database nếu có, fallback an toàn về danh sách mặc định nếu chưa có
+  const mappedDeal = initialPlans.length > 0
     ? initialPlans
         .filter((p) => p.plan_type === 'deal' || p.name.includes('Ưu Đãi'))
         .map((p) => {
@@ -157,9 +157,10 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
             ctaText: isVip ? 'Đăng Ký Gói VIP Trao Tay (1.5tr)' : 'Đăng Ký Gói Chuẩn (500k)',
           };
         })
-    : DEFAULT_DEAL_PLANS;
+    : [];
+  const dealPlans = mappedDeal.length > 0 ? mappedDeal : DEFAULT_DEAL_PLANS;
 
-  const partyPlans = initialPlans.length > 0
+  const mappedParty = initialPlans.length > 0
     ? initialPlans
         .filter((p) => p.plan_type === 'party' || p.name.includes('Tiệc'))
         .map((p) => {
@@ -179,7 +180,8 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
             ctaText: isVip ? 'Kích Hoạt VIP Neon (700k)' : 'Kích Hoạt Trang Đặt Tiệc (500k)',
           };
         })
-    : DEFAULT_PARTY_PLANS;
+    : [];
+  const partyPlans = mappedParty.length > 0 ? mappedParty : DEFAULT_PARTY_PLANS;
 
   // Ngân hàng SePay
   const BANK_ACC = '00003554020';

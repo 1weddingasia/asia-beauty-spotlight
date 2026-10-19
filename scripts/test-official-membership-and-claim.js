@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env.local') });
 const { createClient } = require('@supabase/supabase-js');
 
 async function runTest() {

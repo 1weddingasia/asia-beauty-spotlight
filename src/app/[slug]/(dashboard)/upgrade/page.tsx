@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { 
   Check, Loader2, Sparkles, Building2, Utensils, Clock, CheckCircle2, 
-  Flame, ShieldCheck, ArrowRight, Copy 
+  Copy, CheckCheck 
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { activateMembershipAction } from "@/app/actions/membership";
@@ -440,8 +440,8 @@ export default function UpgradePage() {
                 <p className="text-xs text-slate-500">Nội dung chuyển khoản (chính xác):</p>
                 <div className="flex items-center justify-center gap-1.5">
                   <span className="font-mono font-bold text-base text-slate-900 tracking-wide select-all">{TRANSFER_CONTENT}</span>
-                  <button type="button" onClick={copyTransfer} className="text-slate-400 hover:text-black">
-                    <Copy className="size-3.5" />
+                  <button type="button" onClick={copyTransfer} className="text-slate-400 hover:text-black" title="Sao chép nội dung">
+                    {copiedCode ? <CheckCheck className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
                   </button>
                 </div>
                 <p className="text-[11px] text-slate-500">Số tiền: <strong className="text-slate-900 font-mono">{UPGRADE_AMOUNT.toLocaleString('vi-VN')} đ</strong></p>
