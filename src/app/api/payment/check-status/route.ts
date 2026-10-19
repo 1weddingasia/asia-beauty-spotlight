@@ -77,23 +77,34 @@ export async function POST(request: Request) {
       });
     }
 
-    // 2. Kiểm tra trạng thái kích hoạt gói
+    // 2. Kiểm tra trạng thái kích hoạt gói từ bảng memberships và party profiles
+    const { data: activeMems } = await supabase
+      .from('memberships')
+      .select('id, status, starts_at, expires_at, plans(code, plan_type, tier, name)')
+      .eq('business_id', business.id)
+      .eq('status', 'active')
+      .gt('expires_at', new Date().toISOString());
+
     const partyProfile = Array.isArray(business.business_party_profiles)
       ? business.business_party_profiles[0]
       : business.business_party_profiles;
 
-    const isPartyActive = Boolean(partyProfile?.is_active);
-    const isPartyVip = Boolean(partyProfile?.is_vip);
+    const isPartyActive = Boolean(partyProfile?.is_active) || activeMems?.some((m: any) => m.plans?.plan_type === 'party');
+    const isPartyVip = Boolean(partyProfile?.is_vip) || activeMems?.some((m: any) => m.plans?.plan_type === 'party' && m.plans?.tier === 'vip');
+    const isDealActive = activeMems?.some((m: any) => m.plans?.plan_type === 'deal');
     const isPremium = business.plan_tier === 'premium';
+    const isActivated = Boolean((activeMems && activeMems.length > 0) || isPartyActive || isPremium);
 
     return NextResponse.json({
       success: true,
-      activated: isPartyActive || isPremium,
+      activated: isActivated,
+      membershipsCount: activeMems?.length || 0,
       business: {
         id: business.id,
         name: business.name,
         slug: business.slug,
         plan_tier: business.plan_tier,
+        is_deal_active: isDealActive,
         is_party_active: isPartyActive,
         is_party_vip: isPartyVip,
       },

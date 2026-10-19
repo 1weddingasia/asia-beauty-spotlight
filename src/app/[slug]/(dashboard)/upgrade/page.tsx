@@ -118,8 +118,8 @@ export default function UpgradePage() {
   };
 
   const planPrefix = getTransferPrefix(selectedPlan);
-  const cleanPhone = business.phone ? business.phone.replace(/\D/g, "") : "";
-  const TRANSFER_CONTENT = cleanPhone ? `${planPrefix} ${cleanPhone}` : `${planPrefix} ${business.slug.toUpperCase()}`;
+  // Định danh độc nhất 100% bằng SLUG của doanh nghiệp để hệ thống SePay tự động kích hoạt đúng quán
+  const TRANSFER_CONTENT = `${planPrefix} ${business.slug.toUpperCase()}`;
   const QR_URL = `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${UPGRADE_AMOUNT}&des=${encodeURIComponent(TRANSFER_CONTENT)}`;
 
   // Tính trạng thái từng gói
@@ -445,6 +445,9 @@ export default function UpgradePage() {
                   </button>
                 </div>
                 <p className="text-[11px] text-slate-500">Số tiền: <strong className="text-slate-900 font-mono">{UPGRADE_AMOUNT.toLocaleString('vi-VN')} đ</strong></p>
+                <div className="text-[11px] text-emerald-800 font-medium bg-emerald-50 rounded-lg p-2 border border-emerald-200/70 text-left mt-2">
+                  ✓ <strong>Tự động 100%:</strong> Khi quét mã bằng App Ngân Hàng, số tiền và nội dung đơn hàng được điền sẵn chính xác cho quán <strong>{business.name}</strong>. Quý khách chỉ cần bấm Xác nhận chuyển khoản!
+                </div>
               </div>
             </CardContent>
             <CardFooter>

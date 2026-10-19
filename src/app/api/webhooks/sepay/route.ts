@@ -109,8 +109,8 @@ export async function POST(request: Request) {
     // 2. Hoặc chỉ cần chứa Số điện thoại (10 số, bắt đầu bằng số 0)
     const contentUpper = payload.content.toUpperCase();
     
-    // Tìm Slug (hỗ trợ UPGRADE, VIP, TIEC, UDAI)
-    const slugMatch = contentUpper.match(/(?:UPGRADE|VIP|TIEC|UDAI)\s+([A-Z0-9-]+)/);
+    // Tìm Slug (hỗ trợ TIECVIP, UDAIVIP, UPGRADE, TIEC, UDAI, VIP theo sau bởi slug)
+    const slugMatch = contentUpper.match(/(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP)[\s_]+([A-Z0-9-]+)/);
     const targetSlug = slugMatch ? slugMatch[1].toLowerCase() : null;
 
     // Tìm Số điện thoại

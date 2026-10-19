@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { createClient } from '@/utils/supabase/client';
+import { Button } from '@/components/ui/button';
 import {
   Sparkles,
   Check,
@@ -17,6 +19,8 @@ import {
   RefreshCw,
   PartyPopper,
   Flame,
+  Store,
+  ExternalLink,
 } from 'lucide-react';
 import {
   Dialog,
@@ -127,14 +131,37 @@ interface BangGiaClientProps {
 export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps) {
   const [selectedPlan, setSelectedPlan] = useState<PricingPlanItem | null>(null);
 
-  // Form thanh toán QR
-  const [businessName, setBusinessName] = useState('');
+  const [userBusiness, setUserBusiness] = useState<{ id: string; name: string; slug: string } | null>(null);
+  const [targetSlug, setTargetSlug] = useState('');
   const [phone, setPhone] = useState('');
   const [isCopiedContent, setIsCopiedContent] = useState(false);
   const [isCopiedAcc, setIsCopiedAcc] = useState(false);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const supabase = createClient();
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (user) {
+          const { data: biz } = await supabase
+            .from('businesses')
+            .select('id, name, slug')
+            .eq('owner_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (biz) {
+            setUserBusiness(biz);
+            setTargetSlug(biz.slug);
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Error fetching user business in BangGiaClient:', e);
+    }
+  }, []);
 
   // Map plans từ database nếu có, fallback an toàn về danh sách mặc định nếu chưa có
   const mappedDeal = initialPlans.length > 0
@@ -196,8 +223,13 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
   };
 
   const planPrefix = selectedPlan ? getSyntaxPrefix(selectedPlan) : 'UDAI';
+  const effectiveSlug = (userBusiness?.slug || targetSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-'));
   const cleanPhone = phone ? phone.replace(/\D/g, '') : '';
-  const transferCode = cleanPhone ? `${planPrefix} ${cleanPhone}` : `${planPrefix} 1BOOKING`;
+  const transferCode = effectiveSlug 
+    ? `${planPrefix} ${effectiveSlug.toUpperCase()}` 
+    : cleanPhone 
+    ? `${planPrefix} ${cleanPhone}` 
+    : `${planPrefix} BIZ`;
 
   const qrUrl = selectedPlan
     ? `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${selectedPlan.price}&des=${encodeURIComponent(
@@ -225,8 +257,8 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
   };
 
   const handleCheckStatus = async () => {
-    if (!phone) {
-      setCheckMessage('Vui lòng nhập số điện thoại quán để kiểm tra thanh toán!');
+    if (!effectiveSlug && !cleanPhone) {
+      setCheckMessage('Vui lòng nhập đường link slug quán của bạn để hệ thống kiểm tra tự động!');
       return;
     }
 
@@ -237,7 +269,7 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
       const res = await fetch('/api/payment/check-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ slug: effectiveSlug, phone: cleanPhone }),
       });
       const data = await res.json();
 
@@ -508,33 +540,63 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
             </div>
           ) : (
             <div className="space-y-4 pt-2">
-              {/* Form nhập thông tin */}
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-zinc-300 uppercase mb-1">
-                    1. Tên Quán / Doanh Nghiệp:
-                  </label>
-                  <input
-                    type="text"
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="VD: Nhà hàng Ẩm Thực Sài Gòn"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
-                  />
+              {/* Thẻ nhận diện Quán */}
+              {userBusiness ? (
+                <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-xl p-3 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+                      <Store className="w-4 h-4" /> Đã nhận diện quán của bạn:
+                    </span>
+                    <span className="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded text-[10px]">
+                      Đã đăng nhập
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-white pt-0.5">
+                    <span className="font-bold text-sm">{userBusiness.name}</span>
+                    <Link
+                      href={`/${userBusiness.slug}/upgrade`}
+                      className="text-amber-400 hover:underline flex items-center gap-1 font-bold text-xs"
+                    >
+                      Mở trong Quản lý quán <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  </div>
+                  <p className="text-[11px] text-zinc-400">
+                    Mã QR bên dưới đã được điền sẵn định danh quán (<code className="text-amber-300">/{userBusiness.slug}</code>). Bạn chỉ cần quét mã trên App ngân hàng là kích hoạt tự động!
+                  </p>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-zinc-300 uppercase mb-1">
-                    2. Số Điện Thoại Quán (Để hệ thống tự động gán gói):
-                  </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="VD: 0901234567"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
-                  />
+              ) : (
+                <div className="bg-zinc-900 border border-amber-500/30 rounded-xl p-3.5 space-y-2.5">
+                  <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
+                    <Sparkles className="w-3.5 h-3.5" /> Khuyên dùng để kích hoạt tự động 100%:
+                  </div>
+                  <p className="text-[11px] text-zinc-300 leading-relaxed">
+                    Quý đối tác hãy <strong>Đăng nhập vào Quán của mình</strong>. Khi đó mã QR sẽ tự động điền sẵn mọi thông tin, quý khách <strong>không cần phải gõ bất kỳ chữ nào</strong>!
+                  </p>
+                  <div className="flex gap-2 pt-1">
+                    <Button asChild size="sm" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold text-xs h-8 flex-1">
+                      <Link href="/login?redirect=/bang-gia">Đăng Nhập Quán</Link>
+                    </Button>
+                    <Button asChild size="sm" variant="outline" className="text-zinc-300 border-zinc-700 text-xs h-8 flex-1">
+                      <Link href="/danh-cho-doanh-nghiep">Đăng Ký Quán Mới (30N Thử)</Link>
+                    </Button>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-800 space-y-1">
+                    <label className="block text-[11px] font-bold text-zinc-300 uppercase">
+                      Hoặc nhập đường link slug quán của bạn để tạo mã QR ngay:
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-zinc-500 font-mono">1booking.asia/</span>
+                      <input
+                        type="text"
+                        value={targetSlug}
+                        onChange={(e) => setTargetSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
+                        placeholder="vd: nha-hang-que-nha"
+                        className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 font-mono focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* QR Image */}
               <div className="bg-white p-4 rounded-2xl flex flex-col items-center justify-center shadow-inner">
@@ -549,8 +611,8 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
                     Đang tạo mã QR...
                   </div>
                 )}
-                <div className="text-[11px] font-bold text-black mt-2">
-                  Quét bằng App Ngân Hàng bất kỳ (VietQR 24/7)
+                <div className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full text-center mt-2 flex items-center justify-center gap-1">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" /> App ngân hàng tự động điền Số tiền & Mã quán, không cần nhập tay!
                 </div>
               </div>
 

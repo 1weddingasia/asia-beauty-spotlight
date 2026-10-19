@@ -13,6 +13,7 @@ export default function SidebarNav({ slug, categorySlug }: { slug: string; categ
 
   const links = [
     { href: `/${slug}/dashboard`, label: "Tổng quan", icon: LayoutDashboard },
+    { href: `/${slug}/upgrade`, label: "Gói Thành Viên & Kích Hoạt", icon: Sparkles },
     { href: `/${slug}/leads`, label: "Danh Sách Khách Đặt", icon: CalendarDays },
     { href: `/${slug}/deals`, label: "Quản lý Ưu đãi & Dịch vụ", icon: Ticket },
     ...(isFnB ? [{ href: `/${slug}/profile?tab=party`, label: "Quản lý Trang Nhận Tiệc 🎉", icon: Sparkles }] : []),
