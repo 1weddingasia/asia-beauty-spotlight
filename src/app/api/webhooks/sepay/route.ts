@@ -147,36 +147,46 @@ export async function POST(request: Request) {
       }
 
       if (business) {
-        // 2. Lấy thông tin gói tương ứng (Ưu Đãi, Tiệc hoặc Gói Active)
-        const isPartyOrder = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN');
-        let plan: any = null;
+        // 2. Xác định gói dịch vụ tương ứng dựa trên nội dung CK và số tiền
+        // Có 2 dòng sản phẩm độc lập:
+        // - Trang Đặt Tiệc (party): TIEC (500k) hoặc TIECVIP / NEON (700k)
+        // - Trang Ưu Đãi (deal): UDAI (500k) hoặc UDAIVIP / VIP (1.5tr)
+        const isPartyKeyword = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN') || contentUpper.includes('NEON');
+        const isPartyOrder = isPartyKeyword || (isFnBCategory(business.category_slug) && !contentUpper.includes('UDAI'));
 
+        let targetPlanCode: string;
         if (isPartyOrder) {
-          const { data: pPlan } = await supabase
-            .from('plans')
-            .select('id, name, features, price_yearly')
-            .eq('is_active', true)
-            .ilike('name', '%Tiệc%')
-            .limit(1)
-            .maybeSingle();
-          plan = pPlan;
+          // Gói tiệc: 700k là VIP Neon, 500k là Chuẩn
+          if (payload.transferAmount >= 700000 || contentUpper.includes('TIECVIP') || contentUpper.includes('NEON')) {
+            targetPlanCode = 'tiec_vip';
+          } else {
+            targetPlanCode = 'tiec_standard';
+          }
         } else {
-          const { data: uPlan } = await supabase
-            .from('plans')
-            .select('id, name, features, price_yearly')
-            .eq('is_active', true)
-            .ilike('name', '%Ưu Đãi%')
-            .limit(1)
-            .maybeSingle();
-          plan = uPlan;
+          // Gói ưu đãi: 1.5tr là VIP Chìa Khóa Trao Tay, 500k là Chuẩn
+          if (payload.transferAmount >= 1500000 || contentUpper.includes('UDAIVIP')) {
+            targetPlanCode = 'udai_vip';
+          } else {
+            targetPlanCode = 'udai_standard';
+          }
         }
 
-        // Fallback: nếu không khớp tên cụ thể, lấy gói active có sẵn
+        // Lấy plan từ database
+        let { data: plan } = await supabase
+          .from('plans')
+          .select('id, code, name, plan_type, tier, features, price_yearly')
+          .eq('is_active', true)
+          .eq('code', targetPlanCode)
+          .maybeSingle();
+
+        // Fallback theo plan_type nếu code chưa match
         if (!plan) {
+          const expectedType = isPartyOrder ? 'party' : 'deal';
           const { data: fallbackPlan } = await supabase
             .from('plans')
-            .select('id, name, features, price_yearly')
+            .select('id, code, name, plan_type, tier, features, price_yearly')
             .eq('is_active', true)
+            .eq('plan_type', expectedType)
             .order('price_yearly', { ascending: false })
             .limit(1)
             .maybeSingle();
@@ -184,34 +194,64 @@ export async function POST(request: Request) {
         }
 
         if (plan) {
-          // 3. Tạo membership mới (1 năm)
-          const startsAt = new Date();
-          const expiresAt = new Date();
-          expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 năm
+          // 3. Tìm membership hiện tại của dòng sản phẩm này để gia hạn nối tiếp
+          const { data: existingMems } = await supabase
+            .from('memberships')
+            .select('id, plan_id, status, starts_at, expires_at, plans!inner(plan_type)')
+            .eq('business_id', business.id)
+            .eq('plans.plan_type', plan.plan_type)
+            .order('expires_at', { ascending: false })
+            .limit(1);
 
-          await supabase.from('memberships').insert({
-            business_id: business.id,
-            plan_id: plan.id,
-            status: 'active',
-            starts_at: startsAt.toISOString(),
-            expires_at: expiresAt.toISOString(),
-          });
+          const currentMem = existingMems?.[0];
+          const now = new Date();
+          let baseTime = now.getTime();
+          let startsAt = now;
+          if (currentMem?.expires_at) {
+            const curExp = new Date(currentMem.expires_at).getTime();
+            if (curExp > now.getTime()) {
+              baseTime = curExp; // Nối tiếp hạn dùng
+              startsAt = currentMem.starts_at ? new Date(currentMem.starts_at) : now;
+            }
+          }
+          const expiresAt = new Date(baseTime + 365 * 24 * 60 * 60 * 1000); // 1 năm
 
-          // 4. Update Business hiển thị "is_featured" và cập nhật plan_id, plan_tier
-          await supabase.from('businesses')
-            .update({ is_featured: true, plan_id: plan.id, plan_tier: 'premium' })
-            .eq('id', business.id);
+          let membershipId: string;
+          if (currentMem) {
+            const { data: updatedMem } = await supabase
+              .from('memberships')
+              .update({
+                plan_id: plan.id,
+                status: 'active',
+                starts_at: startsAt.toISOString(),
+                expires_at: expiresAt.toISOString(),
+              })
+              .eq('id', currentMem.id)
+              .select('id')
+              .single();
+            membershipId = updatedMem?.id || currentMem.id;
+          } else {
+            const { data: newMem } = await supabase
+              .from('memberships')
+              .insert({
+                business_id: business.id,
+                plan_id: plan.id,
+                status: 'active',
+                starts_at: startsAt.toISOString(),
+                expires_at: expiresAt.toISOString(),
+              })
+              .select('id')
+              .single();
+            membershipId = newMem?.id;
+          }
 
-          // 4.1. Tự động kích hoạt Hồ sơ Phố Tiệc Tất Niên nếu là quán ẩm thực hoặc thanh toán gói tiệc
-          const isFnB = isFnBCategory(business.category_slug);
-          const isPartyKeyword = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN');
-          // Yêu cầu chuyển khoản tối thiểu 500.000đ (bằng giá Gói Tiệc Chuẩn) hoặc có từ khóa tiệc rõ ràng kèm số tiền tương ứng
-          const isPartyPayment = (isPartyKeyword || isFnB) && payload.transferAmount >= 500000;
-          const isVipParty = payload.transferAmount >= 1000000 || contentUpper.includes('VIP');
-
+          // 4. Nếu là gói Tiệc: Kích hoạt business_party_profiles
+          // Nếu là tiec_vip (700k): Bật is_vip = true (Đèn neon phát sáng trên bản đồ)
+          const isPartyVIP = plan.code === 'tiec_vip' || plan.tier === 'vip' || payload.transferAmount >= 700000;
+          const isPartyPayment = plan.plan_type === 'party' || isPartyOrder;
+          const isVipParty = isPartyVIP;
           if (isPartyPayment) {
             try {
-              // Kiểm tra xem đã có party profile chưa để tránh ghi đè dữ liệu chủ quán đã tự cấu hình
               const { data: existingParty } = await supabase
                 .from('business_party_profiles')
                 .select('business_id, min_guests, max_guests, num_vip_rooms, price_min, price_max, party_deal_highlight, is_vip')
@@ -225,15 +265,41 @@ export async function POST(request: Request) {
                 num_vip_rooms: existingParty?.num_vip_rooms ?? DEFAULT_PARTY_PROFILE_VALUES.num_vip_rooms,
                 price_min: existingParty?.price_min ?? DEFAULT_PARTY_PROFILE_VALUES.price_min,
                 price_max: existingParty?.price_max ?? DEFAULT_PARTY_PROFILE_VALUES.price_max,
-                is_vip: Boolean(existingParty?.is_vip || isVipParty),
+                is_vip: Boolean(existingParty?.is_vip || isPartyVIP),
                 is_active: true,
-                party_deal_highlight: existingParty?.party_deal_highlight || (isVipParty ? DEFAULT_PARTY_PROFILE_VALUES.party_deal_vip_highlight : DEFAULT_PARTY_PROFILE_VALUES.party_deal_highlight),
+                party_deal_highlight: existingParty?.party_deal_highlight || (isPartyVIP ? DEFAULT_PARTY_PROFILE_VALUES.party_deal_vip_highlight : DEFAULT_PARTY_PROFILE_VALUES.party_deal_highlight),
                 updated_at: new Date().toISOString(),
               }, { onConflict: 'business_id' });
-              console.log(`[SePay Webhook] Activated business_party_profiles for ${business.name} (VIP: ${isVipParty}, amount: ${payload.transferAmount})`);
+              console.log(`[SePay Webhook] Activated business_party_profiles for ${business.name} (VIP Neon: ${isPartyVIP})`);
             } catch (partyErr) {
               console.error('[SePay Webhook] Error activating party profile:', partyErr);
             }
+          }
+
+          // 5. Cập nhật Business sang published và plan_tier
+          await supabase.from('businesses')
+            .update({ 
+              status: 'published',
+              is_featured: true, 
+              plan_id: plan.id, 
+              plan_tier: plan.tier === 'vip' ? 'vip' : 'premium',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', business.id);
+
+          // 6. Ghi nhận lịch sử thanh toán vào bảng payments
+          try {
+            await supabase.from('payments').insert({
+              business_id: business.id,
+              membership_id: membershipId,
+              amount: payload.transferAmount,
+              provider: 'VietQR-SePay',
+              transaction_id: payload.code || `SP-${payload.id}`,
+              status: 'completed',
+              paid_at: now.toISOString(),
+            });
+          } catch (payErr) {
+            console.warn('[SePay Webhook] Log payment warning:', payErr);
           }
 
           // 5. Cập nhật trạng thái transaction

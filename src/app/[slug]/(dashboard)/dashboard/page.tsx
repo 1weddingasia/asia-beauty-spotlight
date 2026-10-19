@@ -76,11 +76,9 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
     // Gói thành viên thật từ database
     supabase
       .from("memberships")
-      .select("id, status, starts_at, expires_at, plan_id, plans(name, price_yearly)")
+      .select("id, status, starts_at, expires_at, plan_id, plans(id, code, name, plan_type, tier, price_yearly)")
       .eq("business_id", business.id)
-      .order("expires_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
+      .order("expires_at", { ascending: false }),
   ]);
 
   const totalLeads = leadsAllResult.error ? 0 : (leadsAllResult.count ?? 0);
@@ -101,87 +99,129 @@ export default async function BusinessDashboardPage({ params }: { params: Promis
     ? Math.round(((monthLeads - prevMonthLeads) / prevMonthLeads) * 100)
     : null;
 
-  // Tính toán gói thành viên thật từ Database
-  const membership = membershipResult.data;
-  const rawExpiry = membership?.expires_at ? new Date(membership.expires_at) : null;
-  const fallbackExpiry = new Date(new Date(business.created_at || now).getTime() + 30 * 24 * 60 * 60 * 1000);
-  const expiryDate = rawExpiry || fallbackExpiry;
-  const msLeft = expiryDate.getTime() - now.getTime();
-  const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
-  const isExpired = msLeft <= 0;
-  const isTrial = membership?.status === 'trial' || business?.plan_tier === 'trial';
-  const isActive = (membership?.status === 'active' || business?.plan_tier === 'premium') && !isExpired;
-  const planName = (membership?.plans as any)?.name || (business.category_slug?.includes('am-thuc') || business.category_slug?.includes('tiec') ? 'Gói Trang Đặt Tiệc' : 'Gói Trang Ưu Đãi');
-  const formattedExpiry = expiryDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  // Tính toán 2 gói thành viên độc lập từ Database
+  const allMemberships = (membershipResult.data as any[]) || [];
+  const dealMem = allMemberships.find((m: any) => m.plans?.plan_type === 'deal' || m.plans?.name?.includes('Ưu Đãi'));
+  const partyMem = allMemberships.find((m: any) => m.plans?.plan_type === 'party' || m.plans?.name?.includes('Tiệc'));
+
+  // 1. Trạng thái Trang Ưu Đãi
+  const dealExpiry = dealMem?.expires_at ? new Date(dealMem.expires_at) : new Date(new Date(business.created_at || now).getTime() + 30 * 24 * 60 * 60 * 1000);
+  const dealMsLeft = dealExpiry.getTime() - now.getTime();
+  const dealDaysLeft = Math.max(0, Math.ceil(dealMsLeft / (1000 * 60 * 60 * 24)));
+  const dealActive = dealMem?.status === 'active' && dealMsLeft > 0;
+  const dealExpired = dealMsLeft <= 0;
+
+  // 2. Trạng thái Trang Đặt Tiệc
+  const partyExpiry = partyMem?.expires_at ? new Date(partyMem.expires_at) : null;
+  const partyMsLeft = partyExpiry ? partyExpiry.getTime() - now.getTime() : 0;
+  const partyDaysLeft = partyExpiry ? Math.max(0, Math.ceil(partyMsLeft / (1000 * 60 * 60 * 24))) : 0;
+  const partyActive = partyMem?.status === 'active' && partyMsLeft > 0;
+  const partyIsVip = partyActive && partyMem?.plans?.tier === 'vip';
+
+  const activeCount = (dealActive ? 1 : 0) + (partyActive ? 1 : 0);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 select-none">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Xin chào, {business.name}!</h2>
         <p className="text-muted-foreground mt-2">
-          Theo dõi hiệu quả hoạt động kinh doanh và tối ưu hóa gian hàng của bạn.
+          Theo dõi hiệu quả hoạt động kinh doanh và trạng thái gói thành viên của các trang.
         </p>
       </div>
 
-      {/* THẺ TRẠNG THÁI GÓI THÀNH VIÊN TỪ DATABASE */}
+      {/* THẺ TRẠNG THÁI 2 GÓI THÀNH VIÊN ĐỘC LẬP TỪ DATABASE */}
       <div className={`rounded-2xl border p-6 shadow-sm transition-all relative overflow-hidden ${
-        isActive 
+        activeCount === 2
           ? 'bg-gradient-to-r from-emerald-950/20 via-card to-card border-emerald-500/40'
-          : isExpired 
-          ? 'bg-gradient-to-r from-rose-950/20 via-card to-card border-rose-500/40'
+          : activeCount === 1
+          ? 'bg-gradient-to-r from-blue-950/20 via-card to-card border-blue-500/40'
           : 'bg-gradient-to-r from-amber-950/15 via-gold/5 to-card border-gold/40'
       }`}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-100">
+          <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
-                isActive 
+                activeCount === 2 
                   ? 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30'
-                  : isExpired 
-                  ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30'
-                  : 'bg-gold/20 text-ink border border-gold/30'
+                  : activeCount === 1 
+                  ? 'bg-blue-500/20 text-blue-700 border border-blue-500/30'
+                  : 'bg-amber-500/20 text-amber-800 border border-amber-500/30'
               }`}>
                 <Sparkles className="size-3.5" />
-                {isActive ? 'Gói Thành Viên Chính Thức' : isExpired ? 'Đã Hết Hạn Dùng Thử' : 'Dùng Thử Miễn Phí 30 Ngày'}
+                {activeCount > 0 ? `Đang kích hoạt: ${activeCount} / 2 gói thành viên` : 'Đang dùng thử 30 ngày (0 / 2 gói)'}
               </span>
-              <span className="text-xs font-bold text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded-md">
-                {planName}
+              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                Doanh nghiệp: {business.name}
               </span>
             </div>
-            <p className="text-sm text-slate-600">
-              {isActive ? (
-                <>Trang của bạn đang hoạt động chính thức. Hạn sử dụng: <strong>{formattedExpiry}</strong> (Còn <strong>{daysLeft} ngày</strong>).</>
-              ) : isExpired ? (
-                <>Thời gian dùng thử 30 ngày đã kết thúc vào ngày <strong>{formattedExpiry}</strong>. Vui lòng thanh toán để tiếp tục hiển thị gian hàng.</>
-              ) : (
-                <>Bạn đang trải nghiệm trọn bộ tính năng miễn phí. Hạn dùng thử đến ngày: <strong>{formattedExpiry}</strong> (Còn <strong>{daysLeft} ngày</strong>).</>
-              )}
+            <p className="text-xs text-slate-500">
+              Quản lý độc lập 2 dòng sản phẩm: Trang Ưu Đãi quanh năm & Trang Nhận Tiệc trên Bản Đồ Phố Tiệc.
             </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
             <Button asChild className="bg-gold text-ink font-bold hover:brightness-105 shadow-md">
               <Link href={`/${business.slug}/upgrade`}>
-                <span>{isActive ? 'Gia hạn gói thành viên ↗' : 'Kích hoạt gói chính thức ↗'}</span>
+                <span>{activeCount < 2 ? 'Kích hoạt thêm gói ↗' : 'Quản lý & Gia hạn ↗'}</span>
               </Link>
             </Button>
           </div>
         </div>
 
-        {/* Thanh đếm ngược thời gian nếu đang dùng thử */}
-        {isTrial && !isExpired && (
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-3">
-            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-              <div 
-                className="bg-gold h-full rounded-full transition-all"
-                style={{ width: `${Math.min(100, Math.max(3, (daysLeft / 30) * 100))}%` }}
-              />
+        {/* 2 Khung trạng thái chi tiết của 2 loại trang */}
+        <div className="grid sm:grid-cols-2 gap-4">
+          {/* Card 1: Trang Ưu Đãi */}
+          <div className={`p-4 rounded-xl border ${dealActive ? 'bg-emerald-50/60 border-emerald-200' : dealExpired ? 'bg-rose-50/60 border-rose-200' : 'bg-amber-50/60 border-amber-200'}`}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-bold uppercase text-slate-700 flex items-center gap-1.5">
+                <Store className="size-4 text-amber-600" /> Trang Ưu Đãi ({business.slug})
+              </span>
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                dealActive ? 'bg-emerald-200 text-emerald-800' : dealExpired ? 'bg-rose-200 text-rose-800' : 'bg-amber-200 text-amber-800'
+              }`}>
+                {dealActive ? 'Chính thức' : dealExpired ? 'Đã hết hạn' : 'Dùng thử 30N'}
+              </span>
             </div>
-            <span className="text-xs font-mono font-bold text-slate-600 shrink-0">
-              {daysLeft}/30 ngày
-            </span>
+            <p className="text-xs text-slate-600 mt-2">
+              Hạn dùng: <strong className="text-slate-900">{dealExpiry.toLocaleDateString('vi-VN')}</strong> ({dealDaysLeft > 0 ? `Còn ${dealDaysLeft} ngày` : 'Hết hạn'}).
+            </p>
+            <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
+              <span className="text-slate-500">Gói: {dealMem?.plans?.name || 'Gói Trang Ưu Đãi Chuẩn'}</span>
+              <Link href={`/${business.slug}`} target="_blank" className="text-amber-700 font-bold hover:underline">
+                Xem trang ↗
+              </Link>
+            </div>
           </div>
-        )}
+
+          {/* Card 2: Trang Đặt Tiệc */}
+          <div className={`p-4 rounded-xl border ${partyActive ? 'bg-blue-50/60 border-blue-200' : 'bg-slate-50 border-slate-200'}`}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-bold uppercase text-slate-700 flex items-center gap-1.5">
+                <Sparkles className="size-4 text-blue-600" /> Trang Đặt Tiệc ({business.slug}/tiec)
+              </span>
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                partyIsVip ? 'bg-amber-200 text-amber-800' : partyActive ? 'bg-blue-200 text-blue-800' : 'bg-slate-200 text-slate-600'
+              }`}>
+                {partyIsVip ? '🔥 VIP Neon Bản Đồ' : partyActive ? 'Chính thức' : 'Chưa kích hoạt'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 mt-2">
+              {partyActive && partyExpiry ? (
+                <>Hạn dùng: <strong className="text-slate-900">{partyExpiry.toLocaleDateString('vi-VN')}</strong> (Còn {partyDaysLeft} ngày).</>
+              ) : (
+                <span className="text-slate-400">Chưa kích hoạt hiển thị trên Bản Đồ Tiệc Tất Niên.</span>
+              )}
+            </p>
+            <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
+              <span className="text-slate-500">
+                Gói: {partyActive ? (partyMem?.plans?.name || 'Gói Trang Đặt Tiệc') : 'Chưa đăng ký'}
+              </span>
+              <Link href={`/${business.slug}/tiec`} target="_blank" className="text-blue-700 font-bold hover:underline">
+                Xem sảnh tiệc ↗
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
       
       {/* Top Deals + Quick Links */}

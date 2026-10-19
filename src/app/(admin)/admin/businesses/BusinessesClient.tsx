@@ -86,22 +86,37 @@ function MembershipCell({ business }: { business: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const mem = business.memberships?.[0];
   const now = new Date();
-  const rawExp = mem?.expires_at ? new Date(mem.expires_at) : null;
-  const fallbackExp = new Date(new Date(business.created_at || now).getTime() + 30 * 24 * 60 * 60 * 1000);
-  const expiryDate = rawExp || fallbackExp;
+  const mems = business.memberships || [];
+  const dealMem = mems.find((m: any) => m.plans?.plan_type === 'deal' || m.plans?.name?.includes('Ưu Đãi'));
+  const partyMem = mems.find((m: any) => m.plans?.plan_type === 'party' || m.plans?.name?.includes('Tiệc'));
 
-  const msLeft = expiryDate.getTime() - now.getTime();
-  const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
-  const isExpired = msLeft <= 0;
+  // 1. Trạng thái Trang Ưu Đãi
+  const dealExpiry = dealMem?.expires_at ? new Date(dealMem.expires_at) : new Date(new Date(business.created_at || now).getTime() + 30 * 24 * 60 * 60 * 1000);
+  const dealMsLeft = dealExpiry.getTime() - now.getTime();
+  const dealDaysLeft = Math.max(0, Math.ceil(dealMsLeft / (1000 * 60 * 60 * 24)));
+  const dealActive = dealMem?.status === 'active' && dealMsLeft > 0;
+  const dealExpired = dealMsLeft <= 0;
 
-  const memStatus = mem?.status || (business.plan_tier === 'premium' ? 'active' : 'trial');
-  const planName = mem?.plans?.name || (business.category_slug?.includes('am-thuc') || business.category_slug?.includes('tiec') ? 'Gói Trang Đặt Tiệc' : 'Gói Trang Ưu Đãi');
-  const formattedExpiry = expiryDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  // 2. Trạng thái Trang Đặt Tiệc
+  const partyExpiry = partyMem?.expires_at ? new Date(partyMem.expires_at) : null;
+  const partyMsLeft = partyExpiry ? partyExpiry.getTime() - now.getTime() : 0;
+  const partyDaysLeft = partyExpiry ? Math.max(0, Math.ceil(partyMsLeft / (1000 * 60 * 60 * 24))) : 0;
+  const partyActive = partyMem?.status === 'active' && partyMsLeft > 0;
+  const isVipParty = partyActive && (business.business_party_profiles?.[0]?.is_vip || partyMem?.plans?.tier === 'vip');
 
-  const handleAction = async (action: "extend_trial_30" | "activate_udai_1year" | "activate_tiec_1year") => {
-    const label = action === "extend_trial_30" ? "Tặng thêm 30 ngày dùng thử" : action === "activate_udai_1year" ? "Kích hoạt Gói Ưu Đãi (1 năm)" : "Kích hoạt Gói Đặt Tiệc (1 năm)";
+  // Tổng số gói đang kích hoạt chính thức
+  const activeCount = (dealActive ? 1 : 0) + (partyActive ? 1 : 0);
+
+  const handleAction = async (action: "activate_udai_standard" | "activate_udai_vip" | "activate_tiec_standard" | "activate_tiec_vip" | "extend_trial_30") => {
+    const labels: Record<string, string> = {
+      activate_udai_standard: "Kích hoạt Trang Ưu Đãi (Chuẩn 500k/năm)",
+      activate_udai_vip: "Kích hoạt Trang Ưu Đãi (VIP Trao Tay 1.5tr/năm)",
+      activate_tiec_standard: "Kích hoạt Trang Đặt Tiệc (Chuẩn 500k/năm)",
+      activate_tiec_vip: "Kích hoạt Trang Đặt Tiệc (VIP Neon 700k/năm)",
+      extend_trial_30: "Tặng thêm 30 ngày dùng thử",
+    };
+    const label = labels[action] || action;
     if (!confirm(`Xác nhận: ${label} cho "${business.name}"?`)) return;
 
     setLoading(true);
@@ -120,66 +135,99 @@ function MembershipCell({ business }: { business: any }) {
   };
 
   return (
-    <div className="flex flex-col gap-1 min-w-[170px]">
+    <div className="flex flex-col gap-1.5 min-w-[210px] text-xs">
+      {/* Badge tổng số gói đang dùng */}
       <div className="flex items-center gap-1.5 flex-wrap">
-        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${
-          memStatus === 'active' && !isExpired
+        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ${
+          activeCount === 2
             ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-            : isExpired
-            ? 'bg-rose-100 text-rose-800 border border-rose-300'
-            : 'bg-amber-100 text-amber-900 border border-gold/40'
+            : activeCount === 1
+            ? 'bg-blue-100 text-blue-800 border border-blue-300'
+            : 'bg-amber-100 text-amber-800 border border-amber-300'
         }`}>
-          {memStatus === 'active' && !isExpired ? (
-            <><CheckCircle2 className="size-3 text-emerald-600" /> Chính thức</>
-          ) : isExpired ? (
-            <><Clock className="size-3 text-rose-600" /> Hết hạn</>
+          {activeCount > 0 ? (
+            <><CheckCircle2 className="size-3 text-emerald-600" /> {activeCount} / 2 Gói Đang Dùng</>
           ) : (
-            <><Sparkles className="size-3 text-amber-600" /> Dùng thử</>
+            <><Clock className="size-3 text-amber-600" /> 0 Gói (Dùng Thử)</>
           )}
-        </span>
-        <span className="text-[11px] font-semibold text-slate-700 truncate max-w-[110px]" title={planName}>
-          {planName}
         </span>
       </div>
 
-      <p className="text-[11px] text-slate-500">
-        Hạn: <strong className="text-slate-900">{formattedExpiry}</strong> ({daysLeft > 0 ? `Còn ${daysLeft} ngày` : 'Đã hết'})
-      </p>
+      {/* Chi tiết 2 dòng trang */}
+      <div className="space-y-1 bg-slate-50 p-2 rounded-lg border border-slate-200/70 text-[11px]">
+        {/* Trang Ưu Đãi */}
+        <div className="flex items-center justify-between text-slate-700">
+          <span className="font-semibold text-slate-600">Trang Ưu Đãi:</span>
+          <span className={`font-bold ${dealActive ? 'text-emerald-700' : dealExpired ? 'text-rose-600' : 'text-amber-700'}`}>
+            {dealActive ? `1N (${dealDaysLeft}N)` : dealExpired ? 'Hết hạn' : `Thử (${dealDaysLeft}N)`}
+          </span>
+        </div>
+
+        {/* Trang Đặt Tiệc */}
+        <div className="flex items-center justify-between text-slate-700 pt-0.5 border-t border-slate-200/50">
+          <span className="font-semibold text-slate-600">Trang Đặt Tiệc:</span>
+          <span className={`font-bold ${isVipParty ? 'text-amber-800' : partyActive ? 'text-blue-700' : 'text-slate-400'}`}>
+            {isVipParty ? `🔥 Neon (${partyDaysLeft}N)` : partyActive ? `1N (${partyDaysLeft}N)` : 'Chưa ghim'}
+          </span>
+        </div>
+      </div>
 
       {/* Nút thao tác nhanh của Admin */}
-      <div className="flex items-center gap-1 pt-1 flex-wrap">
+      <div className="flex items-center gap-1 pt-0.5 flex-wrap">
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          disabled={loading}
+          onClick={() => handleAction("activate_udai_standard")}
+          className="h-5 text-[10px] px-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 font-semibold"
+          title="Kích hoạt Trang Ưu Đãi Chuẩn (500k/năm)"
+        >
+          +Ưu Đãi 500k
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          disabled={loading}
+          onClick={() => handleAction("activate_udai_vip")}
+          className="h-5 text-[10px] px-1.5 bg-amber-100 text-amber-900 hover:bg-amber-200 border border-amber-300 font-bold"
+          title="Kích hoạt Trang Ưu Đãi VIP Chìa Khóa Trao Tay (1.5tr/năm)"
+        >
+          +VIP 1.5tr
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          disabled={loading}
+          onClick={() => handleAction("activate_tiec_standard")}
+          className="h-5 text-[10px] px-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200 font-semibold"
+          title="Kích hoạt Trang Đặt Tiệc Chuẩn (500k/năm)"
+        >
+          +Tiệc 500k
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          disabled={loading}
+          onClick={() => handleAction("activate_tiec_vip")}
+          className="h-5 text-[10px] px-1.5 bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border border-indigo-200 font-bold"
+          title="Kích hoạt Trang Đặt Tiệc VIP Neon Logo (700k/năm)"
+        >
+          +Neon 700k
+        </Button>
         <Button
           type="button"
           size="sm"
           variant="ghost"
           disabled={loading}
           onClick={() => handleAction("extend_trial_30")}
-          className="h-5 text-[10px] px-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200"
-          title="Tặng thêm 30 ngày dùng thử miễn phí"
+          className="h-5 text-[10px] px-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
+          title="Tặng thêm 30 ngày dùng thử"
         >
           +30N Thử
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          disabled={loading}
-          onClick={() => handleAction("activate_udai_1year")}
-          className="h-5 text-[10px] px-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
-          title="Kích hoạt chính thức 1 năm Gói Trang Ưu Đãi"
-        >
-          1N Ưu Đãi
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          disabled={loading}
-          onClick={() => handleAction("activate_tiec_1year")}
-          className="h-5 text-[10px] px-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200"
-          title="Kích hoạt chính thức 1 năm Gói Trang Đặt Tiệc"
-        >
-          1N Tiệc
         </Button>
       </div>
     </div>

@@ -10,7 +10,8 @@ export default async function AdminBusinessesPage() {
       business_categories(directory_categories(name)),
       business_locations(directory_locations(name)),
       profiles:owner_id(email, full_name),
-      memberships(id, status, starts_at, expires_at, plan_id, plans(name, price_yearly))
+      memberships(id, status, starts_at, expires_at, plan_id, plans(id, code, name, plan_type, tier, price_yearly)),
+      business_party_profiles(is_vip, is_active)
     `)
     .order("created_at", { ascending: false })
     .order("expires_at", { ascending: false, referencedTable: "memberships" })

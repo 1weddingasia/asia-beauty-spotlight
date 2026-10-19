@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   Sparkles,
   Check,
@@ -10,7 +9,6 @@ import {
   Zap,
   Star,
   Copy,
-  ExternalLink,
   Phone,
   QrCode,
   ArrowRight,
@@ -18,6 +16,7 @@ import {
   Building2,
   RefreshCw,
   PartyPopper,
+  Flame,
 } from 'lucide-react';
 import {
   Dialog,
@@ -27,92 +26,97 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 
-interface PricingPlan {
+export interface PricingPlanItem {
   id: string;
+  code: string;
   name: string;
   tagline: string;
   price: number;
   period: string;
   badge?: string;
   isPopular?: boolean;
-  category: 'fnb' | 'general';
+  pageType: 'deal' | 'party';
+  tier: 'standard' | 'vip';
   features: string[];
   ctaText: string;
 }
 
-const PLANS: PricingPlan[] = [
-  // Nhóm F&B / Tiệc Tất Niên
+// 4 gói chính thức chia làm 2 dòng sản phẩm độc lập
+const DEFAULT_DEAL_PLANS: PricingPlanItem[] = [
   {
-    id: 'fnb_standard',
-    name: 'Gói Tiệc Chuẩn',
-    tagline: 'Hiện diện nổi bật trên Phố Tiệc Tất Niên 2026, nhận thông báo đặt bàn tự động qua Telegram/Zalo',
+    id: 'udai_standard',
+    code: 'udai_standard',
+    name: 'Gói Trang Ưu Đãi (Chuẩn)',
+    tagline: 'Kích hoạt trang ưu đãi chính của doanh nghiệp hoạt động chính thức 1 năm',
     price: 500000,
     period: '/ năm',
-    category: 'fnb',
+    pageType: 'deal',
+    tier: 'standard',
     features: [
-      'Ghim điểm trên Bản Đồ Phố Tiệc Tất Niên 2026',
-      'Gian hàng số chuyên nghiệp chuẩn SEO (1booking.asia/ten-tiem)',
-      'Hiển thị đầy đủ Menu, bảng giá set menu & ưu đãi tiệc',
-      'Nhận thông báo tức thì ngay khi khách đặt bàn',
-      'Tích hợp nút gọi điện thoại & dẫn về nhóm Zalo',
-      'Kích hoạt tự động ngay sau khi quét mã QR',
+      'Kích hoạt Trang Ưu Đãi chính thức 1 năm (1booking.asia/ten-tiem)',
+      'Đăng tải deal ưu đãi, dịch vụ & bảng giá không giới hạn',
+      'Tích hợp số điện thoại gọi trực tiếp & liên kết Zalo đón khách',
+      'Tài khoản quản trị chủ động cập nhật hình ảnh & thông tin',
     ],
-    ctaText: 'Đăng Ký Gói Chuẩn',
+    ctaText: 'Đăng Ký Gói Chuẩn (500k)',
   },
   {
-    id: 'fnb_vip_neon',
-    name: 'Gói VIP Neon Tất Niên',
-    tagline: 'Điểm tiệc phát sáng nổi bật độc quyền, ưu tiên vị trí hàng đầu khi khách tìm sảnh tiệc',
-    price: 1000000,
-    period: '/ mùa tiệc',
-    badge: 'ĐƯỢC ĐẶT NHIỀU NHẤT ⭐',
+    id: 'udai_vip',
+    code: 'udai_vip',
+    name: 'Gói Trang Ưu Đãi (VIP Trao Tay)',
+    tagline: 'Gói chìa khóa trao tay: Setup toàn bộ trang vận hành & kích hoạt chuông Telegram',
+    price: 1500000,
+    period: '/ năm',
+    badge: 'CHÌA KHÓA TRAO TAY ⭐',
     isPopular: true,
-    category: 'fnb',
+    pageType: 'deal',
+    tier: 'vip',
     features: [
-      'Hiệu ứng ánh sáng nổi bật (VIP Glow) thu hút khách đặt tiệc',
-      'Ưu tiên hiển thị vị trí hàng đầu khi khách tìm kiếm sảnh tiệc',
-      'Huy hiệu "Ưu Đãi Tiệc Hot" rực rỡ trên bản đồ & danh sách',
-      'Nổi bật không gian phòng VIP kín đáo & set menu thượng hạng',
-      'Nhận thông báo tự động có gắn nhãn KHÁCH ĐẶT TIỆC VIP',
-      'Hỗ trợ thiết kế hình ảnh banner & set menu tiệc cao cấp',
-      'Hỗ trợ kỹ thuật & chăm sóc gian hàng 24/7',
+      'Trọn bộ quyền lợi Gói Trang Ưu Đãi Chuẩn trong vòng 1 năm',
+      'Đội ngũ kỹ thuật hỗ trợ setup toàn bộ nội dung & hình ảnh gian hàng',
+      'Cấu hình & kích hoạt nổ chuông thông báo qua Telegram khi có khách đặt hẹn',
+      'Hỗ trợ kỹ thuật ưu tiên trong suốt 1 năm hoạt động',
     ],
-    ctaText: 'Đăng Ký VIP Neon Ngay',
+    ctaText: 'Đăng Ký Gói VIP Trao Tay (1.5tr)',
   },
-  // Nhóm Doanh Nghiệp Đa Ngành
+];
+
+const DEFAULT_PARTY_PLANS: PricingPlanItem[] = [
   {
-    id: 'general_free',
-    name: 'Gói Trải Nghiệm',
-    tagline: 'Khởi đầu hiện diện số cho mọi cửa hàng, spa, salon & trung tâm dịch vụ',
-    price: 0,
-    period: '/ vĩnh viễn',
-    category: 'general',
-    features: [
-      'Trang giới thiệu gian hàng chuẩn SEO cơ bản',
-      'Hiển thị thông tin liên hệ, hotline & địa chỉ',
-      'Xuất hiện trong danh bạ tìm kiếm địa phương',
-      'Hỗ trợ tạo tài khoản miễn phí',
-    ],
-    ctaText: 'Tạo Gian Hàng Miễn Phí',
-  },
-  {
-    id: 'general_premium',
-    name: 'Doanh Nghiệp Premium',
-    tagline: 'Tăng trưởng doanh thu vượt trội, ưu tiên hiển thị top tìm kiếm & chatbot AI 24/7',
+    id: 'tiec_standard',
+    code: 'tiec_standard',
+    name: 'Gói Trang Đặt Tiệc (Chuẩn)',
+    tagline: 'Kích hoạt trang nhận tiệc tất niên riêng biệt, tiếp nhận đoàn đông & tiệc công ty 1 năm',
     price: 500000,
     period: '/ năm',
-    badge: 'TIẾT KIỆM 50% HÔM NAY',
-    isPopular: true,
-    category: 'general',
+    pageType: 'party',
+    tier: 'standard',
     features: [
-      'Huy hiệu Doanh Nghiệp Đã Xác Minh (Tích xanh VIP)',
-      'Ưu tiên Top 1 hiển thị danh mục ngành & địa phương',
-      'Trợ lý Chatbot AI tư vấn & chốt lịch tự động 24/7',
-      'Không giới hạn tiếp nhận yêu cầu đặt lịch & khách hàng tiềm năng',
-      'Tích hợp form đặt lịch, mã ưu đãi & quà tặng khách',
-      'Email báo cáo xác nhận thanh toán & bảo hành 1 năm',
+      'Kích hoạt Trang Nhận Tiệc riêng biệt 1 năm (1booking.asia/ten-tiem/tiec)',
+      'Hiển thị vị trí quán trên Bản Đồ Phố Tiệc & Danh Sách Tìm Kiếm',
+      'Đăng tải thực đơn set menu tiệc, sức chứa bàn & phòng VIP kín đáo',
+      'Tiếp nhận yêu cầu đặt bàn tiệc đoàn và khách công ty trực tiếp',
     ],
-    ctaText: 'Nâng Cấp Doanh Nghiệp VIP',
+    ctaText: 'Kích Hoạt Trang Đặt Tiệc (500k)',
+  },
+  {
+    id: 'tiec_vip',
+    code: 'tiec_vip',
+    name: 'Gói Trang Đặt Tiệc (VIP Neon)',
+    tagline: 'Thêm chức năng đèn Neon phát sáng rực rỡ trên logo trên Bản Đồ Tiệc Tất Niên',
+    price: 700000,
+    period: '/ năm',
+    badge: 'ĐÈN NEON NỔI BẬT BẢN ĐỒ 🔥',
+    isPopular: true,
+    pageType: 'party',
+    tier: 'vip',
+    features: [
+      'Trọn bộ quyền lợi Gói Trang Đặt Tiệc Chuẩn trong vòng 1 năm',
+      'Hiệu ứng Đèn Neon phát sáng rực rỡ trên Logo quán trên Bản Đồ Tiệc',
+      'Huy hiệu VIP nổi bật, thu hút khách công ty & đoàn đông ưu tiên chọn',
+      'Ưu tiên vị trí hiển thị hàng đầu trong danh sách tìm kiếm sảnh tiệc',
+    ],
+    ctaText: 'Kích Hoạt VIP Neon (700k)',
   },
 ];
 
@@ -121,8 +125,7 @@ interface BangGiaClientProps {
 }
 
 export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps) {
-  const [activeTab, setActiveTab] = useState<'all' | 'general' | 'fnb'>('all');
-  const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PricingPlanItem | null>(null);
 
   // Form thanh toán QR
   const [businessName, setBusinessName] = useState('');
@@ -133,57 +136,66 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
 
-  // Dynamic mapping từ bảng plans thật trong database Supabase
-  const dynamicPlans: PricingPlan[] = initialPlans.length > 0
-    ? initialPlans.map((p) => {
-        const isParty = p.name.toLowerCase().includes('tiệc');
-        return {
-          id: p.id,
-          name: p.name,
-          tagline:
-            p.description ||
-            (isParty
-              ? 'Kích hoạt Trang Sảnh Tiệc Chuyên Nghiệp riêng biệt, hiển thị nổi bật trên Bản Đồ Phố Tiệc Tất Niên 2026'
-              : 'Gian hàng số chuẩn sang trọng toàn nền tảng, hiển thị quanh năm, đăng deal ưu đãi & đón khách đa ngành'),
-          price: Number(p.price_yearly) || (isParty ? 500000 : 1500000),
-          period: '/ năm',
-          badge: isParty ? 'MÙA TIỆC TẤT NIÊN 2026 🔥' : 'GÓI CỐT LÕI QUANH NĂM ⭐',
-          isPopular: !isParty,
-          category: isParty ? 'fnb' : 'general',
-          features:
-            Array.isArray(p.features) && p.features.length > 0
-              ? p.features
-              : isParty
-              ? [
-                  'Kích hoạt Trang Sảnh Tiệc Chuyên Biệt tiếp nhận khách đoàn (1booking.asia/ten-tiem/tiec)',
-                  'Hiển thị nổi bật trên Bản Đồ Phố Tiệc Tất Niên 2026',
-                  'Đăng tải thực đơn set menu 10 người, sức chứa & phòng VIP',
-                  'Nhận thông báo tức thì ngay khi có khách công ty & đoàn đông đặt tiệc',
-                  'Tích hợp nút Đặt Bàn Tiệc & Giữ Chỗ VIP 1-chạm kết nối trực tiếp',
-                  'Hỗ trợ chăm sóc gian hàng mùa tiệc 24/7',
-                ]
-              : [
-                  'Trang Gian Hàng Số Chuyên Nghiệp (1booking.asia/ten-tiem)',
-                  'Giao diện chuẩn sang trọng toàn nền tảng (Spa, Salon, Phòng khám, Dịch vụ...)',
-                  'Đăng tải không giới hạn ưu đãi & deal giảm giá quanh năm',
-                  'Hệ thống tiếp nhận lịch hẹn & thông báo khách hàng tức thì',
-                  'Tối ưu SEO Google địa phương & danh bạ dịch vụ',
-                  'Hỗ trợ kỹ thuật và chăm sóc gian hàng cả năm',
-                ],
-          ctaText: isParty ? 'Kích Hoạt Trang Đặt Tiệc' : 'Đăng Ký Trang Ưu Đãi',
-        };
-      })
-    : PLANS;
+  // Map plans từ database nếu có
+  const dealPlans = initialPlans.length > 0
+    ? initialPlans
+        .filter((p) => p.plan_type === 'deal' || p.name.includes('Ưu Đãi'))
+        .map((p) => {
+          const isVip = p.tier === 'vip' || p.code === 'udai_vip' || Number(p.price_yearly) >= 1000000;
+          return {
+            id: p.id,
+            code: p.code || (isVip ? 'udai_vip' : 'udai_standard'),
+            name: p.name,
+            tagline: p.description || (isVip ? 'Gói chìa khóa trao tay: Setup toàn bộ trang vận hành & chuông Telegram' : 'Kích hoạt trang ưu đãi chính hoạt động 1 năm'),
+            price: Number(p.price_yearly) || (isVip ? 1500000 : 500000),
+            period: '/ năm',
+            badge: isVip ? 'CHÌA KHÓA TRAO TAY ⭐' : undefined,
+            isPopular: isVip,
+            pageType: 'deal' as const,
+            tier: isVip ? 'vip' as const : 'standard' as const,
+            features: Array.isArray(p.features) && p.features.length > 0 ? p.features : (isVip ? DEFAULT_DEAL_PLANS[1].features : DEFAULT_DEAL_PLANS[0].features),
+            ctaText: isVip ? 'Đăng Ký Gói VIP Trao Tay (1.5tr)' : 'Đăng Ký Gói Chuẩn (500k)',
+          };
+        })
+    : DEFAULT_DEAL_PLANS;
 
-  // Thông tin ngân hàng SePay
+  const partyPlans = initialPlans.length > 0
+    ? initialPlans
+        .filter((p) => p.plan_type === 'party' || p.name.includes('Tiệc'))
+        .map((p) => {
+          const isVip = p.tier === 'vip' || p.code === 'tiec_vip' || Number(p.price_yearly) >= 700000;
+          return {
+            id: p.id,
+            code: p.code || (isVip ? 'tiec_vip' : 'tiec_standard'),
+            name: p.name,
+            tagline: p.description || (isVip ? 'Thêm chức năng đèn Neon sáng trên logo trên bản đồ tiệc tất niên' : 'Kích hoạt trang nhận tiệc riêng biệt trong vòng 1 năm'),
+            price: Number(p.price_yearly) || (isVip ? 700000 : 500000),
+            period: '/ năm',
+            badge: isVip ? 'ĐÈN NEON NỔI BẬT BẢN ĐỒ 🔥' : undefined,
+            isPopular: isVip,
+            pageType: 'party' as const,
+            tier: isVip ? 'vip' as const : 'standard' as const,
+            features: Array.isArray(p.features) && p.features.length > 0 ? p.features : (isVip ? DEFAULT_PARTY_PLANS[1].features : DEFAULT_PARTY_PLANS[0].features),
+            ctaText: isVip ? 'Kích Hoạt VIP Neon (700k)' : 'Kích Hoạt Trang Đặt Tiệc (500k)',
+          };
+        })
+    : DEFAULT_PARTY_PLANS;
+
+  // Ngân hàng SePay
   const BANK_ACC = '00003554020';
   const BANK_NAME = 'TPBank';
   const BANK_OWNER = '1BOOKING.ASIA';
 
-  const planTag = selectedPlan?.name.toLowerCase().includes('tiệc') ? 'TIEC' : 'UDAI';
-  const transferCode = phone
-    ? `${planTag} ${phone.replace(/\D/g, '')}`
-    : `${planTag} 1BOOKING`;
+  const getSyntaxPrefix = (plan: PricingPlanItem) => {
+    if (plan.pageType === 'party') {
+      return plan.tier === 'vip' ? 'TIECVIP' : 'TIEC';
+    }
+    return plan.tier === 'vip' ? 'UDAIVIP' : 'UDAI';
+  };
+
+  const planPrefix = selectedPlan ? getSyntaxPrefix(selectedPlan) : 'UDAI';
+  const cleanPhone = phone ? phone.replace(/\D/g, '') : '';
+  const transferCode = cleanPhone ? `${planPrefix} ${cleanPhone}` : `${planPrefix} 1BOOKING`;
 
   const qrUrl = selectedPlan
     ? `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${selectedPlan.price}&des=${encodeURIComponent(
@@ -191,11 +203,7 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
       )}`
     : '';
 
-  const handleOpenPayment = (plan: PricingPlan) => {
-    if (plan.price === 0) {
-      window.location.href = '/danh-cho-doanh-nghiep';
-      return;
-    }
+  const handleOpenPayment = (plan: PricingPlanItem) => {
     setSelectedPlan(plan);
     setPaymentSuccess(false);
     setCheckMessage(null);
@@ -245,150 +253,206 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
     }
   };
 
-  const visiblePlans = activeTab === 'all'
-    ? dynamicPlans
-    : dynamicPlans.filter((p) => p.category === activeTab);
-
   return (
-    <div className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto select-none">
-      {/* 1. Header & Hero */}
-      <div className="text-center max-w-3xl mx-auto mb-12">
+    <div className="py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto select-none">
+      {/* 1. Header */}
+      <div className="text-center max-w-3xl mx-auto mb-14">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold mb-4">
-          <Sparkles className="w-3.5 h-3.5" /> BẢNG GIÁ 2 GÓI HỘI VIÊN CHÍNH THỨC
+          <Sparkles className="w-3.5 h-3.5" /> BẢNG GIÁ KÍCH HOẠT THEO TỪNG LOẠI TRANG
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-          Kích Hoạt Trang Thương Hiệu &{' '}
+          Bảng Giá Gói Thành Viên{' '}
           <span className="bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500 bg-clip-text text-transparent">
-            Sảnh Tiệc 2026
+            Chính Thức
           </span>
         </h1>
         <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
-          Đăng ký <strong>Gói Trang Ưu Đãi (1.5tr/năm)</strong> theo phong cách chuẩn toàn nền tảng hoặc kích hoạt <strong>Gói Trang Đặt Tiệc (500k/năm)</strong> phong cách xanh dương tối. Quản trị trực tiếp từ hệ thống, thanh toán VietQR tự động kích hoạt 24/7.
+          Hệ thống gồm <strong>2 loại trang độc lập</strong>: <strong>Trang Ưu Đãi</strong> (hiển thị gian hàng quanh năm) và <strong>Trang Đặt Tiệc</strong> (hiển thị trên Bản Đồ Tiệc Tất Niên). Quý đối tác có thể kích hoạt từng trang hoặc cả 2 trang tùy theo nhu cầu vận hành.
         </p>
       </div>
 
-      {/* 2. Switcher Category */}
-      <div className="flex justify-center mb-12">
-        <div className="p-1.5 bg-zinc-900/90 border border-zinc-800 rounded-2xl flex flex-wrap items-center justify-center gap-1.5 shadow-xl">
-          <button
-            type="button"
-            onClick={() => setActiveTab('all')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              activeTab === 'all'
-                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg shadow-amber-950 font-extrabold'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Tất Cả 2 Gói Chính Thức</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('general')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              activeTab === 'general'
-                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg shadow-amber-950 font-extrabold'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Building2 className="w-4 h-4" />
-            <span>💼 Gói Trang Ưu Đãi (1.5tr/năm)</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('fnb')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              activeTab === 'fnb'
-                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg shadow-amber-950 font-extrabold'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Utensils className="w-4 h-4" />
-            <span>🍷 Gói Trang Đặt Tiệc (500k/năm)</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 3. Cards Grid */}
-      <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
-        {visiblePlans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 border ${
-              plan.isPopular
-                ? 'bg-gradient-to-b from-amber-950/40 via-zinc-950 to-zinc-950 border-amber-500/60 shadow-2xl shadow-amber-950/50 hover:border-amber-400'
-                : 'bg-zinc-950/80 border-zinc-800 hover:border-zinc-700'
-            }`}
-          >
-            {/* Popular Badge */}
-            {plan.badge && (
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-600 text-black text-[11px] font-black px-4 py-1 rounded-full shadow-lg shadow-amber-950/60">
-                {plan.badge}
-              </div>
-            )}
-
-            <div>
-              <div className="mb-4">
-                <h3 className="text-xl sm:text-2xl font-black text-white">{plan.name}</h3>
-                <p className="text-xs text-zinc-400 mt-1 min-h-[36px]">{plan.tagline}</p>
-              </div>
-
-              {/* Price */}
-              <div className="flex items-baseline gap-1 my-6 pb-6 border-b border-zinc-800">
-                <span className="text-3xl sm:text-4xl font-extrabold text-amber-300">
-                  {plan.price === 0 ? 'Miễn Phí' : `${plan.price.toLocaleString('vi-VN')} đ`}
-                </span>
-                {plan.price > 0 && (
-                  <span className="text-xs text-zinc-400 font-semibold">{plan.period}</span>
-                )}
-              </div>
-
-              {/* Features List */}
-              <div className="space-y-3 mb-8">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                  Quyền lợi đặc quyền:
-                </div>
-                {plan.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-200">
-                    <div className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3" />
-                    </div>
-                    <span>{feat}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* CTA Button */}
-            <button
-              type="button"
-              onClick={() => handleOpenPayment(plan)}
-              className={`w-full py-3.5 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
-                plan.isPopular
-                  ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black shadow-lg shadow-amber-950'
-                  : 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700'
-              }`}
-            >
-              <span>{plan.ctaText}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+      {/* 2. DÒNG 1: DÀNH CHO TRANG ƯU ĐÃI & GIAN HÀNG SỐ */}
+      <section className="mb-16">
+        <div className="flex items-center gap-3 mb-6 pb-3 border-b border-zinc-800">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            <Building2 className="w-5 h-5" />
           </div>
-        ))}
-      </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                DÒNG 1
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black text-white">
+                DÀNH CHO TRANG ƯU ĐÃI & GIAN HÀNG SỐ
+              </h2>
+            </div>
+            <p className="text-xs text-zinc-400 mt-0.5">
+              Địa chỉ: <code className="text-amber-300 font-mono">1booking.asia/[slug]</code> — Dành cho mọi ngành nghề (Spa, Salon, Phòng khám, Dịch vụ, Ẩm thực) hiển thị deal quanh năm.
+            </p>
+          </div>
+        </div>
 
-      {/* 4. Banner Cam Kết An Tâm */}
-      <div className="max-w-4xl mx-auto rounded-3xl bg-zinc-900/60 border border-zinc-800 p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left mb-16">
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {dealPlans.map((plan) => {
+            const isVip = plan.tier === 'vip';
+            return (
+              <div
+                key={plan.id}
+                className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 border ${
+                  isVip
+                    ? 'bg-gradient-to-b from-amber-950/40 via-zinc-950 to-zinc-950 border-amber-500/60 shadow-2xl shadow-amber-950/40'
+                    : 'bg-zinc-950/80 border-zinc-800 hover:border-zinc-700'
+                }`}
+              >
+                {plan.badge && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-600 text-black text-[11px] font-black px-4 py-1 rounded-full shadow-lg shadow-amber-950/60 whitespace-nowrap">
+                    {plan.badge}
+                  </div>
+                )}
+
+                <div>
+                  <div className="mb-4">
+                    <h3 className="text-xl sm:text-2xl font-black text-white">{plan.name}</h3>
+                    <p className="text-xs text-zinc-400 mt-1 min-h-[36px]">{plan.tagline}</p>
+                  </div>
+
+                  <div className="flex items-baseline gap-1 my-5 pb-5 border-b border-zinc-800">
+                    <span className="text-3xl sm:text-4xl font-extrabold text-amber-300 font-mono">
+                      {plan.price.toLocaleString('vi-VN')} đ
+                    </span>
+                    <span className="text-xs text-zinc-400 font-semibold">{plan.period}</span>
+                  </div>
+
+                  <div className="space-y-3 mb-8">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                      Quyền lợi bao gồm:
+                    </div>
+                    {plan.features.map((feat: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-200">
+                        <div className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                          <Check className="w-3 h-3" />
+                        </div>
+                        <span className="leading-relaxed">{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleOpenPayment(plan)}
+                  className={`w-full py-3.5 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
+                    isVip
+                      ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black shadow-lg shadow-amber-950'
+                      : 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700'
+                  }`}
+                >
+                  <span>{plan.ctaText}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 3. DÒNG 2: DÀNH CHO TRANG ĐẶT TIỆC TẤT NIÊN */}
+      <section className="mb-16">
+        <div className="flex items-center gap-3 mb-6 pb-3 border-b border-zinc-800">
+          <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
+            <Utensils className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">
+                DÒNG 2
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black text-white">
+                DÀNH CHO TRANG ĐẶT TIỆC TẤT NIÊN
+              </h2>
+            </div>
+            <p className="text-xs text-zinc-400 mt-0.5">
+              Địa chỉ: <code className="text-blue-300 font-mono">1booking.asia/[slug]/tiec</code> & Bản Đồ Tiệc: <code className="text-blue-300 font-mono">/tat-nien</code> — Đón khách công ty & đặt tiệc đoàn đông.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {partyPlans.map((plan) => {
+            const isVip = plan.tier === 'vip';
+            return (
+              <div
+                key={plan.id}
+                className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 border ${
+                  isVip
+                    ? 'bg-gradient-to-b from-blue-950/50 via-zinc-950 to-zinc-950 border-blue-500/60 shadow-2xl shadow-blue-950/50 ring-1 ring-blue-500/30'
+                    : 'bg-zinc-950/80 border-zinc-800 hover:border-zinc-700'
+                }`}
+              >
+                {plan.badge && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-[11px] font-black px-4 py-1 rounded-full shadow-lg shadow-blue-950/60 whitespace-nowrap flex items-center gap-1.5">
+                    <Flame className="w-3.5 h-3.5 text-amber-300" />
+                    <span>{plan.badge}</span>
+                  </div>
+                )}
+
+                <div>
+                  <div className="mb-4">
+                    <h3 className="text-xl sm:text-2xl font-black text-white">{plan.name}</h3>
+                    <p className="text-xs text-zinc-400 mt-1 min-h-[36px]">{plan.tagline}</p>
+                  </div>
+
+                  <div className="flex items-baseline gap-1 my-5 pb-5 border-b border-zinc-800">
+                    <span className={`text-3xl sm:text-4xl font-extrabold font-mono ${isVip ? 'text-blue-300' : 'text-zinc-100'}`}>
+                      {plan.price.toLocaleString('vi-VN')} đ
+                    </span>
+                    <span className="text-xs text-zinc-400 font-semibold">{plan.period}</span>
+                  </div>
+
+                  <div className="space-y-3 mb-8">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                      Quyền lợi bao gồm:
+                    </div>
+                    {plan.features.map((feat: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-200">
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isVip ? 'bg-blue-500/20 text-blue-400' : 'bg-zinc-800 text-zinc-300'}`}>
+                          <Check className="w-3 h-3" />
+                        </div>
+                        <span className="leading-relaxed">{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleOpenPayment(plan)}
+                  className={`w-full py-3.5 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
+                    isVip
+                      ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-600 hover:from-blue-400 hover:to-indigo-400 text-white shadow-lg shadow-blue-950'
+                      : 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700'
+                  }`}
+                >
+                  <span>{plan.ctaText}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 4. Banner Cam Kết Minh Bạch */}
+      <div className="max-w-4xl mx-auto rounded-3xl bg-zinc-900/60 border border-zinc-800 p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left mb-12">
         <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
           <ShieldCheck className="w-7 h-7" />
         </div>
         <div className="flex-1">
           <h4 className="text-base font-bold text-white mb-1">
-            Cam kết kích hoạt tự động 100% & Bảo trợ truyền thông
+            Cam kết kích hoạt tự động & đúng thỏa thuận
           </h4>
           <p className="text-xs text-zinc-400 leading-relaxed">
-            Hệ thống thanh toán kết nối trực tiếp với cổng ngân hàng SePay. Giao dịch được bảo mật
-            và nổ chuông kích hoạt tức thời. Đội ngũ kỹ thuật hỗ trợ hoàn thiện hình ảnh, banner và
-            menu tiệc cho nhà hàng trong vòng 2 giờ.
+            Hệ thống thanh toán qua cổng VietQR SePay ghi nhận tự động 24/7. Đúng quyền lợi niêm yết, không phát sinh chi phí ẩn. Hỗ trợ giải đáp & hướng dẫn quản trị qua Zalo / Hotline.
           </p>
         </div>
         <a
@@ -411,8 +475,7 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
               Thanh Toán Quét Mã QR Tự Động
             </DialogTitle>
             <DialogDescription className="text-zinc-400 text-xs">
-              Kích hoạt ngay: <strong>{selectedPlan?.name}</strong> (
-              {selectedPlan?.price.toLocaleString('vi-VN')} đ)
+              Kích hoạt ngay: <strong>{selectedPlan?.name}</strong> ({selectedPlan?.price.toLocaleString('vi-VN')} đ / năm)
             </DialogDescription>
           </DialogHeader>
 
@@ -427,10 +490,10 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
               </p>
               <div className="pt-4 flex flex-col gap-2">
                 <Link
-                  href="/tat-nien"
+                  href={selectedPlan?.pageType === 'party' ? '/tat-nien' : '/danh-cho-doanh-nghiep'}
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold text-xs text-center shadow-lg shadow-amber-950"
                 >
-                  Xem Quán Trên Bản Đồ Phố Tiệc
+                  {selectedPlan?.pageType === 'party' ? 'Xem Quán Trên Bản Đồ Phố Tiệc' : 'Đến Bảng Điều Khiển'}
                 </Link>
                 <button
                   type="button"
@@ -453,13 +516,13 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
                     type="text"
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="VD: Quán Ẩm Thực Sài Gòn"
+                    placeholder="VD: Nhà hàng Ẩm Thực Sài Gòn"
                     className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
                   />
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-zinc-300 uppercase mb-1">
-                    2. Số Điện Thoại Quán (Để tự động kích hoạt):
+                    2. Số Điện Thoại Quán (Để hệ thống tự động gán gói):
                   </label>
                   <input
                     type="tel"
