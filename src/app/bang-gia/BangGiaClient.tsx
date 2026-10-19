@@ -562,12 +562,12 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
             </div>
           ) : (
             <div className="space-y-4 pt-2">
-              {/* Thẻ nhận diện Quán */}
+              {/* Thẻ Gian hàng của bạn */}
               {userBusiness ? (
                 <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-xl p-3 text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-emerald-400 font-bold flex items-center gap-1.5">
-                      <Store className="w-4 h-4" /> Đã nhận diện quán của bạn:
+                      <Store className="w-4 h-4" /> Gian hàng của bạn:
                     </span>
                     <span className="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded text-[10px]">
                       Đã đăng nhập
@@ -583,7 +583,7 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
                     </Link>
                   </div>
                   <p className="text-[11px] text-zinc-400">
-                    Mã QR bên dưới đã được điền sẵn định danh quán (<code className="text-amber-300">/{userBusiness.slug}</code>). Bạn chỉ cần quét mã trên App ngân hàng là kích hoạt tự động!
+                    Mã QR bên dưới đã được điền sẵn thông tin cho gian hàng (<code className="text-amber-300">/{userBusiness.slug}</code>). Bạn chỉ cần quét mã trên App ngân hàng là kích hoạt tự động!
                   </p>
                 </div>
               ) : (
