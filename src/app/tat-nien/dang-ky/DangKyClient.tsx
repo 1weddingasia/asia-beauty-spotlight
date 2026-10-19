@@ -575,7 +575,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
                 type="text"
                 value={partyMenuUrl}
                 onChange={(e) => setPartyMenuUrl(e.target.value)}
-                placeholder="VD: https://... (Dán đường link xem thực đơn món ăn &amp; bảng giá)"
+                placeholder="VD: https://... (Dán đường link xem thực đơn món ăn & bảng giá)"
                 className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 transition-colors"
               />
               <p className="text-[11px] text-zinc-400">
