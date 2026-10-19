@@ -284,8 +284,8 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
           >
             <Sparkles className="w-3.5 h-3.5 fill-black shrink-0" />
             <span className="hidden md:inline">Đăng Điểm Tiệc 500k</span>
-            <span className="hidden xs:inline md:hidden text-[11px] whitespace-nowrap">Đăng Tiệc 500k</span>
-            <span className="xs:hidden text-[10.5px] whitespace-nowrap">+ Tiệc 500k</span>
+            <span className="hidden sm:inline md:hidden text-[11px] whitespace-nowrap">Đăng Tiệc 500k</span>
+            <span className="sm:hidden text-[10.5px] whitespace-nowrap">+ Tiệc 500k</span>
           </Link>
         </div>
       </header>
