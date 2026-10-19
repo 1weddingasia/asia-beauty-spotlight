@@ -10,6 +10,8 @@ import type { Metadata } from "next";
 import { getSiteConfig, PRICING_AMOUNT } from "@/config/site-config";
 import { headers } from "next/headers";
 
+import { isFnBCategory } from "@/types/party";
+
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
   const siteConfig = getSiteConfig(h.get('host') || '');
@@ -49,23 +51,35 @@ export default async function BusinessDashboardLayout({
     redirect("/dashboard");
   }
 
+  const isFnB = isFnBCategory(business?.category_slug);
+
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 shadow-sm">
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-gold">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6 shadow-sm">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg sm:text-xl text-gold">
           {siteConfig.logoText}<span className="text-ink">{siteConfig.logoDomain}</span>
         </Link>
-        <div className="ml-auto flex items-center gap-2 md:gap-4">
-          <Button variant="ghost" size="sm" asChild className="px-2 md:px-3">
-            <Link href={business ? `/${business.slug}` : "/"}>
-              <Store className="size-4 md:mr-2" />
-              <span className="hidden md:inline">Xem Trang Ưu Đãi</span>
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
+          <Button variant="ghost" size="sm" asChild className="px-2 sm:px-3 text-zinc-700 hover:text-black">
+            <Link href={business ? `/${business.slug}` : "/"} target="_blank">
+              <Store className="size-4 sm:mr-1.5 text-gold" />
+              <span className="hidden sm:inline">Xem Trang Ưu Đãi</span>
             </Link>
           </Button>
+
+          {isFnB && (
+            <Button variant="outline" size="sm" asChild className="px-2 sm:px-3 border-amber-500/40 text-amber-700 hover:text-amber-800 hover:bg-amber-50">
+              <Link href={`/${business.slug}/tiec`} target="_blank">
+                <Sparkles className="size-4 sm:mr-1.5 text-amber-500" />
+                <span className="hidden sm:inline">Xem Trang Đặt Tiệc</span>
+              </Link>
+            </Button>
+          )}
+
           <form action="/auth/signout" method="post">
-            <Button variant="outline" size="sm" type="submit" className="px-2 md:px-3 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
-              <LogOut className="size-4 md:mr-2" />
-              <span className="hidden md:inline">Đăng xuất</span>
+            <Button variant="outline" size="sm" type="submit" className="px-2 sm:px-3 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+              <LogOut className="size-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Đăng xuất</span>
             </Button>
           </form>
         </div>
@@ -141,7 +155,7 @@ export default async function BusinessDashboardLayout({
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <MobileBottomNav slug={slug} />
+      <MobileBottomNav slug={slug} categorySlug={business?.category_slug} />
     </div>
   );
 }

@@ -13,11 +13,11 @@ export default function SidebarNav({ slug, categorySlug }: { slug: string; categ
 
   const links = [
     { href: `/${slug}/dashboard`, label: "Tổng quan", icon: LayoutDashboard },
-    { href: `/${slug}/leads`, label: "Booking & Nhận ưu đãi", icon: CalendarDays },
-    { href: `/${slug}/deals`, label: "Ưu đãi & Dịch vụ", icon: Ticket },
-    ...(isFnB ? [{ href: `/${slug}/profile?tab=party`, label: "Nhận Tiệc Tất Niên 🎉", icon: Sparkles }] : []),
+    { href: `/${slug}/leads`, label: "Danh Sách Khách Đặt", icon: CalendarDays },
+    { href: `/${slug}/deals`, label: "Quản lý Ưu đãi & Dịch vụ", icon: Ticket },
+    ...(isFnB ? [{ href: `/${slug}/profile?tab=party`, label: "Quản lý Trang Nhận Tiệc 🎉", icon: Sparkles }] : []),
     { href: `/${slug}/customers`, label: "Danh bạ Khách hàng", icon: Users },
-    { href: `/${slug}/profile`, label: "Chỉnh sửa Gian hàng", icon: Store },
+    { href: `/${slug}/profile`, label: "Trang Ưu Đãi (Gian hàng)", icon: Store },
     { href: `/${slug}/settings`, label: "Cài đặt Tài khoản", icon: Settings },
   ];
 

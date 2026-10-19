@@ -316,6 +316,10 @@ export default function BusinessProfilePage() {
       }
 
       await revalidatePagePath(`/${business.slug}`);
+      if (isFnB) {
+        await revalidatePagePath(`/${business.slug}/tiec`);
+        await revalidatePagePath(`/tat-nien`);
+      }
       toast.success("Đã lưu thông tin doanh nghiệp");
     } catch (error: any) {
       toast.error("Lỗi khi lưu: " + error.message);
@@ -353,10 +357,15 @@ export default function BusinessProfilePage() {
           <h1 className="text-2xl font-bold font-display text-gold">Chỉnh sửa Gian hàng</h1>
           <p className="text-muted-foreground text-sm mt-1">Cập nhật thông tin chi tiết để thu hút khách hàng tốt hơn.</p>
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto">
           <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
-            <Link href={`/${business.slug}`} target="_blank">Xem Trang Khách</Link>
+            <Link href={`/${business.slug}`} target="_blank">Xem Trang Ưu Đãi</Link>
           </Button>
+          {isFnB && (
+            <Button asChild variant="outline" className="border-amber-500 text-amber-700 hover:bg-amber-50 hidden md:flex">
+              <Link href={`/${business.slug}/tiec`} target="_blank">Xem Trang Đặt Tiệc</Link>
+            </Button>
+          )}
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto shadow-md">
             <Save className="mr-2 size-4" />
             {saving ? "Đang lưu..." : "Lưu thay đổi"}

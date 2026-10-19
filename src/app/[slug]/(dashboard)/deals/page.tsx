@@ -8,10 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Save, Plus, Trash2, Copy } from "lucide-react";
+import { Save, Plus, Trash2, Copy, Store } from "lucide-react";
+import Link from "next/link";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { toast } from "sonner";
 import { useSiteConfig } from "@/components/site/Layout";
+import { revalidatePagePath } from "@/actions/revalidate";
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
@@ -162,6 +164,11 @@ export default function DealsManagementPage() {
       setDeals(cleanDeals);
       setCrossSells(crossSells);
       setServices(services);
+
+      if (typeof slug === 'string') {
+        await revalidatePagePath(`/${slug}`);
+      }
+
       toast.success("Đã lưu cấu hình Dịch vụ & Ưu đãi!");
     } catch (err: any) {
       console.error("Lỗi khi lưu cấu hình ưu đãi:", err);
@@ -250,6 +257,12 @@ export default function DealsManagementPage() {
           <p className="text-muted-foreground text-sm mt-1">Cài đặt bảng giá dịch vụ, các gói ưu đãi và cấu hình mua kèm.</p>
         </div>
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+          <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
+            <Link href={`/${slug}`} target="_blank">
+              <Store className="mr-2 size-4" />
+              Xem Trang Ưu Đãi
+            </Link>
+          </Button>
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
             <Save className="mr-2 size-4" />
             {saving ? "Đang lưu..." : "Lưu thay đổi"}
