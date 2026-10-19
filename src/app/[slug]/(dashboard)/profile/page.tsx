@@ -9,12 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { revalidatePagePath } from "@/actions/revalidate";
-import { Save, Plus, Trash2, Link as LinkIcon, Lock, MapPin, CheckSquare, Square, Sparkles, Utensils, Users, Wine, Image as ImageIcon } from "lucide-react";
+import { Save, Plus, Trash2, Link as LinkIcon, Lock, MapPin, CheckSquare, Square, Sparkles, Utensils, Users, Wine, Image as ImageIcon, X, Building, FileText, ListPlus, CornerDownRight, Gift } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS, isFnBCategory, DEFAULT_PARTY_PROFILE_VALUES } from "@/types/party";
+import { PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS, isFnBCategory, DEFAULT_PARTY_PROFILE_VALUES, getSpaceLabel, getCuisineLabel, getPerkLabel } from "@/types/party";
 
 const AMENITY_OPTIONS = [
   "Có chỗ đỗ xe",
@@ -58,9 +58,15 @@ export default function BusinessProfilePage() {
     party_banner_url: null,
     party_gallery: [],
     set_menus: [],
+    party_halls: [],
+    party_specifications: [],
     party_menu_url: "",
     is_vip: false,
   });
+
+  const [customSpaceInput, setCustomSpaceInput] = useState("");
+  const [customCuisineInput, setCustomCuisineInput] = useState("");
+  const [customPerkInput, setCustomPerkInput] = useState("");
 
   const handleTabChange = (val: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -183,6 +189,8 @@ export default function BusinessProfilePage() {
                     party_banner_url: pData.party_banner_url || null,
                     party_gallery: Array.isArray(pData.party_gallery) ? pData.party_gallery : [],
                     set_menus: Array.isArray(pData.set_menus) ? pData.set_menus : [],
+                    party_halls: Array.isArray(pData.party_halls) ? pData.party_halls : [],
+                    party_specifications: Array.isArray(pData.party_specifications) ? pData.party_specifications : [],
                     party_menu_url: pData.party_menu_url || "",
                     is_vip: Boolean(pData.is_vip),
                   });
@@ -225,10 +233,97 @@ export default function BusinessProfilePage() {
     });
   };
 
+  const handleAddCustomSpace = () => {
+    const val = customSpaceInput.trim();
+    if (!val) return;
+    if (!(partyProfile.spaces_and_amenities || []).includes(val)) {
+      setPartyProfile((prev: any) => ({
+        ...prev,
+        spaces_and_amenities: [...(prev.spaces_and_amenities || []), val],
+      }));
+    }
+    setCustomSpaceInput('');
+  };
+
+  const handleRemoveSpace = (tag: string) => {
+    setPartyProfile((prev: any) => ({
+      ...prev,
+      spaces_and_amenities: (prev.spaces_and_amenities || []).filter((t: string) => t !== tag),
+    }));
+  };
+
+  const handleAddCustomCuisine = () => {
+    const val = customCuisineInput.trim();
+    if (!val) return;
+    if (!(partyProfile.cuisines || []).includes(val)) {
+      setPartyProfile((prev: any) => ({
+        ...prev,
+        cuisines: [...(prev.cuisines || []), val],
+      }));
+    }
+    setCustomCuisineInput('');
+  };
+
+  const handleRemoveCuisine = (tag: string) => {
+    setPartyProfile((prev: any) => ({
+      ...prev,
+      cuisines: (prev.cuisines || []).filter((t: string) => t !== tag),
+    }));
+  };
+
+  const handleAddCustomPerk = () => {
+    const val = customPerkInput.trim();
+    if (!val) return;
+    if (!(partyProfile.party_perks || []).includes(val)) {
+      setPartyProfile((prev: any) => ({
+        ...prev,
+        party_perks: [...(prev.party_perks || []), val],
+      }));
+    }
+    setCustomPerkInput('');
+  };
+
+  const handleRemovePerk = (tag: string) => {
+    setPartyProfile((prev: any) => ({
+      ...prev,
+      party_perks: (prev.party_perks || []).filter((t: string) => t !== tag),
+    }));
+  };
+
+  // Sảnh Tiệc & Phòng VIP
+  const addPartyHall = () => {
+    setPartyProfile((prev: any) => ({
+      ...prev,
+      party_halls: [
+        ...(prev.party_halls || []),
+        { id: 'hall_' + Date.now(), name: '', capacity: '', price_min: '', features: '' },
+      ],
+    }));
+  };
+
+  const updatePartyHall = (index: number, field: string, value: any) => {
+    setPartyProfile((prev: any) => {
+      const updated = [...(prev.party_halls || [])];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, party_halls: updated };
+    });
+  };
+
+  const removePartyHall = (index: number) => {
+    setPartyProfile((prev: any) => ({
+      ...prev,
+      party_halls: (prev.party_halls || []).filter((_: any, i: number) => i !== index),
+    }));
+  };
+
+  // Set Menu & Món ăn chi tiết
   const addSetMenu = () => {
     setPartyProfile((prev: any) => ({
       ...prev,
-      set_menus: [...(prev.set_menus || []), { name: 'Set Mới', price: 2500000, pax: 10 }],
+      set_menus: [
+        ...(prev.set_menus || []),
+        { id: 'menu_' + Date.now(), name: 'Set Tiệc Mới', price: 2500000, pax: 10, dishes: [] },
+      ],
     }));
   };
 
@@ -245,6 +340,66 @@ export default function BusinessProfilePage() {
       updated[index] = { ...updated[index], [field]: value };
       return { ...prev, set_menus: updated };
     });
+  };
+
+  const addDishToMenu = (menuIndex: number) => {
+    setPartyProfile((prev: any) => {
+      const updatedMenus = [...(prev.set_menus || [])];
+      const currentMenu = updatedMenus[menuIndex] || {};
+      const currentDishes = Array.isArray(currentMenu.dishes) ? currentMenu.dishes : [];
+      updatedMenus[menuIndex] = {
+        ...currentMenu,
+        dishes: [...currentDishes, ''],
+      };
+      return { ...prev, set_menus: updatedMenus };
+    });
+  };
+
+  const updateDishInMenu = (menuIndex: number, dishIndex: number, value: string) => {
+    setPartyProfile((prev: any) => {
+      const updatedMenus = [...(prev.set_menus || [])];
+      const currentMenu = updatedMenus[menuIndex] || {};
+      const updatedDishes = [...(currentMenu.dishes || [])];
+      updatedDishes[dishIndex] = value;
+      updatedMenus[menuIndex] = { ...currentMenu, dishes: updatedDishes };
+      return { ...prev, set_menus: updatedMenus };
+    });
+  };
+
+  const removeDishFromMenu = (menuIndex: number, dishIndex: number) => {
+    setPartyProfile((prev: any) => {
+      const updatedMenus = [...(prev.set_menus || [])];
+      const currentMenu = updatedMenus[menuIndex] || {};
+      const updatedDishes = (currentMenu.dishes || []).filter((_: any, i: number) => i !== dishIndex);
+      updatedMenus[menuIndex] = { ...currentMenu, dishes: updatedDishes };
+      return { ...prev, set_menus: updatedMenus };
+    });
+  };
+
+  // Bảng Quy Cách & Chính Sách Tiệc Tùy Chỉnh
+  const addPartySpecification = () => {
+    setPartyProfile((prev: any) => ({
+      ...prev,
+      party_specifications: [
+        ...(prev.party_specifications || []),
+        { id: 'spec_' + Date.now(), title: '', content: '' },
+      ],
+    }));
+  };
+
+  const updatePartySpecification = (index: number, field: string, value: string) => {
+    setPartyProfile((prev: any) => {
+      const updated = [...(prev.party_specifications || [])];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, party_specifications: updated };
+    });
+  };
+
+  const removePartySpecification = (index: number) => {
+    setPartyProfile((prev: any) => ({
+      ...prev,
+      party_specifications: (prev.party_specifications || []).filter((_: any, i: number) => i !== index),
+    }));
   };
 
   const toggleAmenity = (amenity: string) => {
@@ -309,7 +464,12 @@ export default function BusinessProfilePage() {
             party_gallery: Array.isArray(partyProfile.party_gallery)
               ? partyProfile.party_gallery.filter((u: any) => typeof u === 'string' && /^https?:\/\//.test(u))
               : [],
-            set_menus: partyProfile.set_menus || [],
+            set_menus: (partyProfile.set_menus || []).map((m: any) => ({
+              ...m,
+              dishes: Array.isArray(m.dishes) ? m.dishes.filter((d: any) => typeof d === 'string' && d.trim()) : [],
+            })),
+            party_halls: (partyProfile.party_halls || []).filter((h: any) => h && (h.name?.trim() || h.capacity?.trim())),
+            party_specifications: (partyProfile.party_specifications || []).filter((s: any) => s && (s.title?.trim() || s.content?.trim())),
             party_menu_url: typeof partyProfile.party_menu_url === 'string' && partyProfile.party_menu_url.trim().length > 0
               ? partyProfile.party_menu_url.trim()
               : null,
@@ -854,9 +1014,16 @@ export default function BusinessProfilePage() {
               </div>
 
               {/* Tiện ích & Không gian */}
-              <div>
-                <Label className="text-xs font-bold block mb-2">Tiện Ích & Không Gian Tiệc</Label>
-                <div className="flex flex-wrap gap-2">
+              <div className="space-y-3 p-4 rounded-2xl border bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold flex items-center gap-1.5">
+                    <Sparkles className="size-3.5 text-amber-500" /> Tiện Ích & Không Gian Tiệc
+                  </Label>
+                  <span className="text-[11px] text-muted-foreground">Chọn nhanh hoặc tự nhập thêm tiện ích riêng</span>
+                </div>
+
+                {/* Gợi ý chọn nhanh */}
+                <div className="flex flex-wrap gap-1.5">
                   {PARTY_SPACES.map((space) => {
                     const active = (partyProfile.spaces_and_amenities || []).includes(space.id);
                     return (
@@ -864,7 +1031,7 @@ export default function BusinessProfilePage() {
                         key={space.id}
                         type="button"
                         onClick={() => togglePartyTag('spaces_and_amenities', space.id)}
-                        className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
                           active
                             ? 'bg-amber-500 text-black font-bold border-amber-500'
                             : 'bg-muted/60 text-muted-foreground border-border hover:bg-muted'
@@ -876,12 +1043,66 @@ export default function BusinessProfilePage() {
                     );
                   })}
                 </div>
+
+                {/* Ô nhập tiện ích riêng */}
+                <div className="flex items-center gap-2 pt-1">
+                  <Input
+                    value={customSpaceInput}
+                    onChange={(e) => setCustomSpaceInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddCustomSpace();
+                      }
+                    }}
+                    placeholder="Thêm tiện ích khác... (VD: Bãi đỗ xe ô tô 50 chiếc, Hầm rượu vang, Hồ bơi ngoài trời)"
+                    className="h-8 text-xs bg-background"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddCustomSpace}
+                    className="h-8 text-xs border-amber-500 text-amber-600 shrink-0"
+                  >
+                    <Plus className="size-3.5 mr-1" /> Thêm Tiện Ích
+                  </Button>
+                </div>
+
+                {/* Danh sách các tiện ích đã chọn */}
+                {(partyProfile.spaces_and_amenities || []).length > 0 && (
+                  <div className="pt-1.5 flex flex-wrap gap-1.5 items-center">
+                    <span className="text-[11px] text-zinc-400 mr-1">Đã cấu hình:</span>
+                    {(partyProfile.spaces_and_amenities || []).map((s: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 font-semibold"
+                      >
+                        <span>✓ {getSpaceLabel(s)}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSpace(s)}
+                          className="hover:text-red-400 p-0.5 rounded-full"
+                          title="Xóa tiện ích này"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Phong cách ẩm thực */}
-              <div>
-                <Label className="text-xs font-bold block mb-2">Phong Cách Ẩm Thực</Label>
-                <div className="flex flex-wrap gap-2">
+              <div className="space-y-3 p-4 rounded-2xl border bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold flex items-center gap-1.5">
+                    <Utensils className="size-3.5 text-rose-500" /> Phong Cách Ẩm Thực & Món Đặc Sản
+                  </Label>
+                  <span className="text-[11px] text-muted-foreground">Chọn nhanh hoặc tự nhập phong cách của quán</span>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5">
                   {PARTY_CUISINES.map((c) => {
                     const active = (partyProfile.cuisines || []).includes(c.id);
                     return (
@@ -889,7 +1110,7 @@ export default function BusinessProfilePage() {
                         key={c.id}
                         type="button"
                         onClick={() => togglePartyTag('cuisines', c.id)}
-                        className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
                           active
                             ? 'bg-rose-500 text-white font-bold border-rose-500'
                             : 'bg-muted/60 text-muted-foreground border-border hover:bg-muted'
@@ -901,12 +1122,66 @@ export default function BusinessProfilePage() {
                     );
                   })}
                 </div>
+
+                {/* Ô nhập ẩm thực riêng */}
+                <div className="flex items-center gap-2 pt-1">
+                  <Input
+                    value={customCuisineInput}
+                    onChange={(e) => setCustomCuisineInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddCustomCuisine();
+                      }
+                    }}
+                    placeholder="Thêm món/phong cách khác... (VD: Món Nhật / Sashimi, Bò Tơ Củ Chi, BBQ Hàn Quốc, Dê Tươi)"
+                    className="h-8 text-xs bg-background"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddCustomCuisine}
+                    className="h-8 text-xs border-rose-500 text-rose-600 shrink-0"
+                  >
+                    <Plus className="size-3.5 mr-1" /> Thêm Ẩm Thực
+                  </Button>
+                </div>
+
+                {/* Danh sách ẩm thực đã chọn */}
+                {(partyProfile.cuisines || []).length > 0 && (
+                  <div className="pt-1.5 flex flex-wrap gap-1.5 items-center">
+                    <span className="text-[11px] text-zinc-400 mr-1">Đã cấu hình:</span>
+                    {(partyProfile.cuisines || []).map((c: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/40 text-rose-300 font-semibold"
+                      >
+                        <span>✓ {getCuisineLabel(c)}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCuisine(c)}
+                          className="hover:text-red-400 p-0.5 rounded-full"
+                          title="Xóa món/phong cách này"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Quà tặng & Đặc quyền */}
-              <div>
-                <Label className="text-xs font-bold block mb-2">Quà Tặng & Đặc Quyền Khách Đặt Tiệc</Label>
-                <div className="flex flex-wrap gap-2">
+              <div className="space-y-3 p-4 rounded-2xl border bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold flex items-center gap-1.5">
+                    <Gift className="size-3.5 text-emerald-500" /> Quà Tặng & Đặc Quyền Khách Đặt Tiệc
+                  </Label>
+                  <span className="text-[11px] text-muted-foreground">Tự do bổ sung ưu đãi hấp dẫn để thu hút đoàn tiệc</span>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5">
                   {PARTY_PERKS.map((p) => {
                     const active = (partyProfile.party_perks || []).includes(p.id);
                     return (
@@ -914,7 +1189,7 @@ export default function BusinessProfilePage() {
                         key={p.id}
                         type="button"
                         onClick={() => togglePartyTag('party_perks', p.id)}
-                        className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
                           active
                             ? 'bg-emerald-600 text-white font-bold border-emerald-600'
                             : 'bg-muted/60 text-muted-foreground border-border hover:bg-muted'
@@ -925,6 +1200,148 @@ export default function BusinessProfilePage() {
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Ô nhập ưu đãi riêng */}
+                <div className="flex items-center gap-2 pt-1">
+                  <Input
+                    value={customPerkInput}
+                    onChange={(e) => setCustomPerkInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddCustomPerk();
+                      }
+                    }}
+                    placeholder="Thêm ưu đãi riêng... (VD: Tặng bánh kem khai tiệc, Giảm 20% rượu vang, Tặng gói quay chụp tiệc)"
+                    className="h-8 text-xs bg-background"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddCustomPerk}
+                    className="h-8 text-xs border-emerald-500 text-emerald-600 shrink-0"
+                  >
+                    <Plus className="size-3.5 mr-1" /> Thêm Ưu Đãi
+                  </Button>
+                </div>
+
+                {/* Danh sách ưu đãi đã chọn */}
+                {(partyProfile.party_perks || []).length > 0 && (
+                  <div className="pt-1.5 flex flex-wrap gap-1.5 items-center">
+                    <span className="text-[11px] text-zinc-400 mr-1">Đã cấu hình:</span>
+                    {(partyProfile.party_perks || []).map((p: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-semibold"
+                      >
+                        <span>🎁 {getPerkLabel(p)}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePerk(p)}
+                          className="hover:text-red-400 p-0.5 rounded-full"
+                          title="Xóa ưu đãi này"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* MỤC MỚI: Danh sách Sảnh Tiệc & Phòng VIP Riêng (Halls) */}
+              <div className="space-y-4 p-4 md:p-5 rounded-2xl border border-blue-500/30 bg-blue-500/5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <Label className="text-sm font-bold text-blue-400 flex items-center gap-2">
+                      <Building className="size-4" /> Danh Sách Sảnh Tiệc &amp; Phòng VIP Riêng
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Thêm từng sảnh hoặc phòng VIP cụ thể với sức chứa, mức giá và trang bị để đoàn tiệc dễ dàng chọn sảnh.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addPartyHall}
+                    className="border-blue-500 text-blue-400 hover:bg-blue-500/20 shrink-0 h-8 text-xs font-bold"
+                  >
+                    <Plus className="size-3.5 mr-1" /> Thêm Sảnh / Phòng VIP
+                  </Button>
+                </div>
+
+                {(!partyProfile.party_halls || partyProfile.party_halls.length === 0) && (
+                  <div className="text-center py-5 text-xs text-muted-foreground border border-dashed border-blue-500/30 rounded-xl bg-background/50">
+                    Chưa có sảnh tiệc riêng nào. Nhấn <strong>&quot;+ Thêm Sảnh / Phòng VIP&quot;</strong> để thiết lập quy cách từng sảnh.
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {(partyProfile.party_halls || []).map((hall: any, idx: number) => (
+                    <div
+                      key={hall.id || idx}
+                      className="p-3.5 rounded-xl border border-blue-500/20 bg-background/80 space-y-2.5 relative group"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-black text-blue-400 flex items-center gap-1.5">
+                          <Building className="size-3.5" /> Sảnh / Phòng #{idx + 1}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removePartyHall(idx)}
+                          className="h-7 px-2 text-red-400 hover:text-red-300 hover:bg-red-950/40"
+                          title="Xóa sảnh này"
+                        >
+                          <Trash2 className="size-3.5 mr-1" /> Xóa sảnh
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div className="space-y-1">
+                          <Label className="text-[11px] text-muted-foreground">Tên Sảnh / Tên Phòng VIP *</Label>
+                          <Input
+                            value={hall.name || ''}
+                            onChange={(e) => updatePartyHall(idx, 'name', e.target.value)}
+                            placeholder="VD: Sảnh Hoàng Gia / VIP 1"
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[11px] text-muted-foreground">Sức Chứa Khách</Label>
+                          <Input
+                            value={hall.capacity || ''}
+                            onChange={(e) => updatePartyHall(idx, 'capacity', e.target.value)}
+                            placeholder="VD: 20 - 40 khách (hoặc 4 bàn)"
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[11px] text-muted-foreground">Mức Chi Tiêu / Tiêu Chuẩn Bàn</Label>
+                          <Input
+                            value={hall.price_min || ''}
+                            onChange={(e) => updatePartyHall(idx, 'price_min', e.target.value)}
+                            placeholder="VD: Từ 3.000.000đ/bàn"
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <Label className="text-[11px] text-muted-foreground">Trang Thiết Bị &amp; Đặc Điểm</Label>
+                        <Input
+                          value={hall.features || ''}
+                          onChange={(e) => updatePartyHall(idx, 'features', e.target.value)}
+                          placeholder="VD: Dàn Karaoke chọn bài, Màn LED 200 inch, Máy lạnh riêng, View sân vườn, Lối đi riêng"
+                          className="h-8 text-xs"
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -1027,70 +1444,205 @@ export default function BusinessProfilePage() {
                 />
               </div>
 
-              {/* Danh sách Set Menu động */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-xs font-bold flex items-center gap-1.5">
-                    <Utensils className="size-3.5 text-amber-500" /> Gợi Ý Set Menu Tiệc
-                  </Label>
-                  <Button type="button" variant="outline" size="sm" onClick={addSetMenu} className="h-8 text-xs border-amber-500 text-amber-600">
+              {/* Danh sách Set Menu động & Thêm dòng từng món ăn */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-bold flex items-center gap-1.5 text-amber-500">
+                      <Utensils className="size-4" /> Gợi Ý Set Menu Tiệc &amp; Thực Đơn Từng Món
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Thêm set menu và thêm từng dòng món ăn chi tiết (khai vị, món chính, lẩu, tráng miệng).
+                    </p>
+                  </div>
+                  <Button type="button" variant="outline" size="sm" onClick={addSetMenu} className="h-8 text-xs border-amber-500 text-amber-600 font-bold">
                     <Plus className="size-3.5 mr-1" /> Thêm Set Menu
                   </Button>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {(!partyProfile.set_menus || partyProfile.set_menus.length === 0) && (
                     <div className="text-center py-6 text-xs text-muted-foreground border border-dashed rounded-xl">
-                      Chưa có set menu nào. Nhấn &quot;Thêm Set Menu&quot; để giới thiệu thực đơn mẫu cho khách.
+                      Chưa có set menu nào. Nhấn &quot;Thêm Set Menu&quot; để tạo thực đơn mẫu kèm từng món cho khách.
                     </div>
                   )}
-                  {(partyProfile.set_menus || []).map((menu: any, idx: number) => (
-                    <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-xl border bg-muted/30">
-                      <div className="w-16 h-16 shrink-0">
-                        <ImageUpload
-                          value={menu.image_url || ''}
-                          onChange={(url) => updateSetMenu(idx, 'image_url', url)}
-                          className="w-16 h-16"
-                          label="Ảnh"
-                        />
+
+                  {(partyProfile.set_menus || []).map((menu: any, menuIdx: number) => (
+                    <div key={menu.id || menuIdx} className="p-4 rounded-2xl border border-zinc-800 bg-muted/20 space-y-3.5">
+                      {/* Set menu header inputs */}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                        <div className="w-16 h-16 shrink-0">
+                          <ImageUpload
+                            value={menu.image_url || ''}
+                            onChange={(url) => updateSetMenu(menuIdx, 'image_url', url)}
+                            className="w-16 h-16"
+                            label="Ảnh"
+                          />
+                        </div>
+                        <div className="flex-1 space-y-1 w-full sm:w-auto">
+                          <Label className="text-[11px] font-bold">Tên Set Menu *</Label>
+                          <Input
+                            value={menu.name || ''}
+                            onChange={(e) => updateSetMenu(menuIdx, 'name', e.target.value)}
+                            placeholder="VD: Set Tiệc Đại Lộc 1 (Hải Sản)"
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <div className="w-full sm:w-40 space-y-1">
+                          <Label className="text-[11px] font-bold">Giá (VNĐ/bàn)</Label>
+                          <Input
+                            type="number"
+                            step={50000}
+                            value={menu.price || 0}
+                            onChange={(e) => updateSetMenu(menuIdx, 'price', parseInt(e.target.value) || 0)}
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <div className="w-full sm:w-28 space-y-1">
+                          <Label className="text-[11px] font-bold">Số người/bàn</Label>
+                          <Input
+                            type="number"
+                            value={menu.pax || 10}
+                            onChange={(e) => updateSetMenu(menuIdx, 'pax', parseInt(e.target.value) || 10)}
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSetMenu(menuIdx)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-500/10 h-8 px-2 sm:mt-5"
+                          title="Xóa cả Set Menu này"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
                       </div>
-                      <div className="flex-1 space-y-1 w-full sm:w-auto">
-                        <Label className="text-[11px]">Tên Set Menu</Label>
+
+                      {/* Danh sách từng món ăn trong set menu (Dishes list) */}
+                      <div className="pt-2 border-t border-border/60 pl-2 sm:pl-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                            <CornerDownRight className="size-3.5 text-amber-500" /> Các món trong set:
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => addDishToMenu(menuIdx)}
+                            className="h-7 text-xs text-amber-500 hover:text-amber-400 hover:bg-amber-500/10"
+                          >
+                            <Plus className="size-3 mr-1" /> Thêm món vào set
+                          </Button>
+                        </div>
+
+                        {(!menu.dishes || menu.dishes.length === 0) && (
+                          <div className="text-[11px] text-muted-foreground italic">
+                            Chưa có món chi tiết. Bấm &quot;+ Thêm món vào set&quot; để bổ sung từng món (Khai vị, Món chính, Lẩu...).
+                          </div>
+                        )}
+
+                        <div className="space-y-1.5">
+                          {(menu.dishes || []).map((dish: string, dishIdx: number) => (
+                            <div key={dishIdx} className="flex items-center gap-2">
+                              <span className="text-[11px] font-mono text-zinc-500 w-14 shrink-0">
+                                Món {dishIdx + 1}:
+                              </span>
+                              <Input
+                                value={dish || ''}
+                                onChange={(e) => updateDishInMenu(menuIdx, dishIdx, e.target.value)}
+                                placeholder={`VD: Món ${dishIdx + 1} (Khai vị 3 món / Cá chẽm hấp / Lẩu hải sản...)`}
+                                className="h-7 text-xs flex-1 bg-background"
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeDishFromMenu(menuIdx, dishIdx)}
+                                className="h-7 w-7 p-0 text-zinc-400 hover:text-red-400"
+                                title="Xóa món này"
+                              >
+                                <X className="size-3.5" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* MỤC MỚI: Bảng Quy Cách & Chính Sách Tiệc Tùy Chỉnh (Custom Specifications & Policies) */}
+              <div className="space-y-4 p-4 md:p-5 rounded-2xl border border-amber-500/30 bg-amber-500/5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <Label className="text-sm font-bold text-amber-400 flex items-center gap-2">
+                      <FileText className="size-4" /> Bảng Quy Cách &amp; Chính Sách Phục Vụ Tiệc
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Tùy biến quy định riêng của quán: chính sách đặt cọc, quy định mang đồ uống vào, thời gian tiệc, trang trí, v.v.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addPartySpecification}
+                    className="border-amber-500 text-amber-400 hover:bg-amber-500/20 shrink-0 h-8 text-xs font-bold"
+                  >
+                    <Plus className="size-3.5 mr-1" /> Thêm Quy Cách / Chính Sách
+                  </Button>
+                </div>
+
+                {(!partyProfile.party_specifications || partyProfile.party_specifications.length === 0) && (
+                  <div className="text-center py-5 text-xs text-muted-foreground border border-dashed border-amber-500/30 rounded-xl bg-background/50">
+                    Chưa có quy cách tiệc nào. Nhấn <strong>&quot;+ Thêm Quy Cách / Chính Sách&quot;</strong> để nhập chính sách đặt cọc, đồ uống...
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {(partyProfile.party_specifications || []).map((spec: any, specIdx: number) => (
+                    <div
+                      key={spec.id || specIdx}
+                      className="p-3.5 rounded-xl border border-amber-500/20 bg-background/80 space-y-2 relative group"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-black text-amber-400 flex items-center gap-1.5">
+                          <FileText className="size-3.5" /> Mục Quy Cách #{specIdx + 1}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removePartySpecification(specIdx)}
+                          className="h-7 px-2 text-red-400 hover:text-red-300 hover:bg-red-950/40"
+                          title="Xóa mục quy cách này"
+                        >
+                          <Trash2 className="size-3.5 mr-1" /> Xóa mục
+                        </Button>
+                      </div>
+
+                      <div className="space-y-1">
+                        <Label className="text-[11px] text-muted-foreground">Tiêu Đề Quy Cách / Chính Sách *</Label>
                         <Input
-                          value={menu.name || ''}
-                          onChange={(e) => updateSetMenu(idx, 'name', e.target.value)}
-                          placeholder="VD: Set Đoàn Viên"
+                          value={spec.title || ''}
+                          onChange={(e) => updatePartySpecification(specIdx, 'title', e.target.value)}
+                          placeholder="VD: Chính sách Đặt Cọc & Hoàn Hủy / Đồ Uống Mang Vào / Phụ Thu Ngoài Giờ"
                           className="h-8 text-xs"
                         />
                       </div>
-                      <div className="w-full sm:w-40 space-y-1">
-                        <Label className="text-[11px]">Giá (VNĐ/bàn)</Label>
-                        <Input
-                          type="number"
-                          step={50000}
-                          value={menu.price || 0}
-                          onChange={(e) => updateSetMenu(idx, 'price', parseInt(e.target.value) || 0)}
-                          className="h-8 text-xs"
+
+                      <div className="space-y-1">
+                        <Label className="text-[11px] text-muted-foreground">Nội Dung Chi Tiết *</Label>
+                        <Textarea
+                          value={spec.content || ''}
+                          onChange={(e) => updatePartySpecification(specIdx, 'content', e.target.value)}
+                          placeholder="VD: Đặt cọc trước 30% để giữ sảnh và chốt thực đơn; Hoàn 100% nếu báo hủy trước 7 ngày. Miễn phí mang 1 thùng bia cho đoàn từ 30 khách..."
+                          rows={2}
+                          className="text-xs"
                         />
                       </div>
-                      <div className="w-full sm:w-28 space-y-1">
-                        <Label className="text-[11px]">Số người/bàn</Label>
-                        <Input
-                          type="number"
-                          value={menu.pax || 10}
-                          onChange={(e) => updateSetMenu(idx, 'pax', parseInt(e.target.value) || 10)}
-                          className="h-8 text-xs"
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeSetMenu(idx)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-2 sm:mt-5"
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
                     </div>
                   ))}
                 </div>

@@ -24,6 +24,9 @@ import {
   BadgeCheck,
   AlertCircle,
   Coins,
+  Building2,
+  FileText,
+  CheckCircle,
 } from 'lucide-react';
 import {
   Dialog,
@@ -33,7 +36,15 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { BusinessPartyProfile, PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS } from '@/types/party';
+import {
+  BusinessPartyProfile,
+  PARTY_SPACES,
+  PARTY_CUISINES,
+  PARTY_PERKS,
+  getSpaceLabel,
+  getCuisineLabel,
+  getPerkLabel,
+} from '@/types/party';
 import { useSiteConfig } from '@/components/site/Layout';
 
 interface PartyVenueClientProps {
@@ -154,10 +165,10 @@ export default function PartyVenueClient({
   const priceMinFormatted = partyProfile.price_min ? Number(partyProfile.price_min).toLocaleString('vi-VN') : '250.000';
   const priceMaxFormatted = partyProfile.price_max ? Number(partyProfile.price_max).toLocaleString('vi-VN') : '650.000';
 
-  // Active space tags
-  const activeSpaces = PARTY_SPACES.filter((s) => (partyProfile.spaces_and_amenities || []).includes(s.id));
-  const activeCuisines = PARTY_CUISINES.filter((c) => (partyProfile.cuisines || []).includes(c.id));
-  const activePerks = PARTY_PERKS.filter((p) => (partyProfile.party_perks || []).includes(p.id));
+  // Active space tags (resolves both standard presets and custom tags)
+  const activeSpaces = (partyProfile.spaces_and_amenities || []).map(getSpaceLabel).filter(Boolean);
+  const activeCuisines = (partyProfile.cuisines || []).map(getCuisineLabel).filter(Boolean);
+  const activePerks = (partyProfile.party_perks || []).map(getPerkLabel).filter(Boolean);
   const rawPartyMenuUrl = partyProfile.party_menu_url || b.page_content?.menu_url || null;
   const partyMenuLink = rawPartyMenuUrl && /^https?:\/\//.test(rawPartyMenuUrl) ? rawPartyMenuUrl : null;
 
@@ -340,6 +351,76 @@ export default function PartyVenueClient({
           </div>
         )}
 
+        {/* Danh Sách Sảnh Tiệc & Không Gian Riêng Độc Lập */}
+        {Array.isArray(partyProfile.party_halls) && partyProfile.party_halls.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-xl font-black text-white flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-amber-400" /> Sảnh Tiệc &amp; Không Gian Riêng
+                </h3>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Đa dạng sảnh tiệc và phòng VIP đẳng cấp, phù hợp mọi quy mô từ ấm cúng đến đại tiệc công ty
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {partyProfile.party_halls.map((hall, idx) => {
+                const hallMinPrice = typeof hall.price_min === 'number' ? hall.price_min : parseInt(String(hall.price_min || 0), 10);
+                return (
+                  <div
+                    key={hall.id || idx}
+                    className="bg-[#0d1733] border border-zinc-800 hover:border-amber-500/40 rounded-2xl p-5 transition-all hover:bg-[#101c3d] flex flex-col justify-between space-y-4 group"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="flex justify-between items-start gap-2">
+                        <h4 className="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+                          {hall.name || `Sảnh Tiệc #${idx + 1}`}
+                        </h4>
+                        <span className="text-[11px] px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-bold shrink-0">
+                          {hall.capacity ? `Tối đa ${hall.capacity} khách` : 'Linh hoạt'}
+                        </span>
+                      </div>
+
+                      {hallMinPrice > 0 ? (
+                        <div className="text-xs text-zinc-300">
+                          Mức chi tiêu tối thiểu:{' '}
+                          <span className="font-bold text-amber-400 font-mono">
+                            {hallMinPrice.toLocaleString('vi-VN')} đ
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="text-xs text-emerald-400 font-semibold">
+                          Không phụ thu chi tiêu tối thiểu
+                        </div>
+                      )}
+
+                      {hall.features && (
+                        <div className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800/80 text-xs text-zinc-300 leading-relaxed">
+                          <span className="font-medium text-zinc-400 block mb-0.5">Trang bị &amp; Đặc điểm:</span>
+                          {hall.features}
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setSelectedSetMenu(`[Sảnh/Phòng] ${hall.name || `Sảnh #${idx + 1}`}`);
+                        setIsBookingOpen(true);
+                      }}
+                      className="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-amber-500 hover:text-black text-white font-bold text-xs transition-colors text-center flex items-center justify-center gap-1.5"
+                    >
+                      <CalendarCheck className="w-3.5 h-3.5" />
+                      <span>Giữ Chỗ Sảnh Này</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Thực Đơn Set Menu Tiệc */}
         {Array.isArray(partyProfile.set_menus) && partyProfile.set_menus.length > 0 && (
           <div className="space-y-4">
@@ -349,7 +430,7 @@ export default function PartyVenueClient({
                   <Wine className="w-5 h-5 text-amber-400" /> Thực Đơn Set Menu Tất Niên
                 </h3>
                 <p className="text-xs text-zinc-400 mt-0.5">
-                  Thực đơn phong phú được thiết kế chuẩn cho bàn tiệc 10 người
+                  Thực đơn phong phú được thiết kế chuẩn cho bàn tiệc {partyProfile.set_menus[0]?.pax || 10} người
                 </p>
               </div>
 
@@ -393,9 +474,34 @@ export default function PartyVenueClient({
                           {menu.pax || 10} người
                         </span>
                       </div>
-                      <div className="text-lg font-black text-amber-400">
+                      <div className="text-lg font-black text-amber-400 mb-2">
                         {menuPrice > 0 ? `${menuPrice.toLocaleString('vi-VN')} đ` : 'Liên hệ báo giá'}
                       </div>
+
+                      {menu.description && (
+                        <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
+                          {menu.description}
+                        </p>
+                      )}
+
+                      {/* Danh sách món ăn trong Set */}
+                      {Array.isArray(menu.dishes) && menu.dishes.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-zinc-800/80 space-y-1.5">
+                          <div className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                            Các món trong set:
+                          </div>
+                          <ul className="space-y-1.5">
+                            {menu.dishes.map((dish: string, dIdx: number) => (
+                              <li key={dIdx} className="text-xs text-zinc-300 flex items-start gap-2">
+                                <span className="w-4 h-4 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-amber-500/20">
+                                  {dIdx + 1}
+                                </span>
+                                <span className="leading-tight">{dish}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
 
                     <button
@@ -469,12 +575,12 @@ export default function PartyVenueClient({
             </h4>
             <div className="flex flex-wrap gap-2">
               {activeSpaces.length > 0 ? (
-                activeSpaces.map((s) => (
+                activeSpaces.map((s, idx) => (
                   <span
-                    key={s.id}
+                    key={idx}
                     className="text-xs px-3 py-1.5 rounded-xl bg-zinc-800/80 text-zinc-200 border border-zinc-700"
                   >
-                    ✓ {s.label}
+                    ✓ {s}
                   </span>
                 ))
               ) : (
@@ -490,12 +596,12 @@ export default function PartyVenueClient({
             </h4>
             <div className="flex flex-wrap gap-2">
               {activeCuisines.length > 0 ? (
-                activeCuisines.map((c) => (
+                activeCuisines.map((c, idx) => (
                   <span
-                    key={c.id}
+                    key={idx}
                     className="text-xs px-3 py-1.5 rounded-xl bg-rose-950/40 text-rose-200 border border-rose-800/50"
                   >
-                    ✓ {c.label}
+                    ✓ {c}
                   </span>
                 ))
               ) : (
@@ -511,12 +617,12 @@ export default function PartyVenueClient({
             </h4>
             <div className="flex flex-wrap gap-2">
               {activePerks.length > 0 ? (
-                activePerks.map((p) => (
+                activePerks.map((p, idx) => (
                   <span
-                    key={p.id}
+                    key={idx}
                     className="text-xs px-3 py-1.5 rounded-xl bg-emerald-950/40 text-emerald-200 border border-emerald-800/50"
                   >
-                    🎁 {p.label}
+                    🎁 {p}
                   </span>
                 ))
               ) : (
@@ -525,6 +631,31 @@ export default function PartyVenueClient({
             </div>
           </div>
         </div>
+
+        {/* Quy Cách & Chính Sách Phục Vụ Tiệc Độc Lập */}
+        {Array.isArray(partyProfile.party_specifications) && partyProfile.party_specifications.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-xl font-black text-white flex items-center gap-2">
+              <FileText className="w-5 h-5 text-amber-400" /> Quy Cách &amp; Chính Sách Phục Vụ Tiệc
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {partyProfile.party_specifications.map((spec, idx) => (
+                <div
+                  key={spec.id || idx}
+                  className="bg-[#0b1329] border border-zinc-800 rounded-2xl p-5 space-y-2 hover:border-amber-500/30 transition-colors"
+                >
+                  <h4 className="text-sm font-bold text-amber-300 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>{spec.title || `Quy định #${idx + 1}`}</span>
+                  </h4>
+                  <p className="text-xs text-zinc-300 leading-relaxed whitespace-pre-line pl-6">
+                    {spec.content}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Liên kết quay về trang ưu đãi chính */}
         <div className="pt-6 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">

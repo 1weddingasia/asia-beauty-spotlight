@@ -1,9 +1,26 @@
 export interface SetMenu {
+  id?: string;
   name: string;
   price: number;
   pax: number;
+  description?: string;
   dishes?: string[];
   image_url?: string;
+}
+
+export interface PartyHall {
+  id: string;
+  name: string;
+  capacity?: string;
+  price_min?: number;
+  features?: string;
+  image_url?: string;
+}
+
+export interface PartySpecification {
+  id: string;
+  title: string;
+  content: string;
 }
 
 export interface BusinessPartyProfile {
@@ -22,6 +39,8 @@ export interface BusinessPartyProfile {
   party_gallery?: string[];
   party_menu_url?: string | null;
   set_menus: SetMenu[];
+  party_halls?: PartyHall[];
+  party_specifications?: PartySpecification[];
   is_vip: boolean;
   is_active: boolean;
   created_at?: string;
@@ -68,6 +87,8 @@ export interface PartyVenue {
   party_gallery?: string[];
   party_menu_url?: string | null;
   set_menus: SetMenu[];
+  party_halls?: PartyHall[];
+  party_specifications?: PartySpecification[];
   is_vip: boolean;
   is_active: boolean;
 
@@ -113,6 +134,21 @@ export const PARTY_PERKS = [
   { id: 'cho_mang_ruou_vao', label: 'Miễn phí mang rượu' },
 ] as const;
 
+export function getSpaceLabel(idOrCustom: string): string {
+  const found = (PARTY_SPACES as readonly { id: string; label: string }[]).find((s) => s.id === idOrCustom);
+  return found ? found.label : idOrCustom;
+}
+
+export function getCuisineLabel(idOrCustom: string): string {
+  const found = (PARTY_CUISINES as readonly { id: string; label: string }[]).find((c) => c.id === idOrCustom);
+  return found ? found.label : idOrCustom;
+}
+
+export function getPerkLabel(idOrCustom: string): string {
+  const found = (PARTY_PERKS as readonly { id: string; label: string }[]).find((p) => p.id === idOrCustom);
+  return found ? found.label : idOrCustom;
+}
+
 export const DEFAULT_PARTY_PROFILE_VALUES = {
   min_guests: 10,
   max_guests: 200,
@@ -140,4 +176,5 @@ export interface PartyDistrictItem {
   sort_order?: number;
   parent_slug?: string | null;
 }
+
 

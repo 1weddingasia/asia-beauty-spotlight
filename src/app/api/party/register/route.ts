@@ -320,9 +320,61 @@ export async function POST(req: NextRequest) {
           party_deal_highlight: party_deal.trim(),
           party_description: `Sảnh tiệc tất niên sang trọng tại ${name.trim()}. Nhận tiệc từ ${min_guests} đến ${max_guests} khách với ưu đãi độc quyền: ${party_deal.trim()}.`,
           party_menu_url: normalizedMenuUrl,
+          party_halls: [
+            {
+              id: 'hall-1',
+              name: 'Sảnh Tiệc Chính',
+              capacity: max_guests,
+              price_min: priceMin * 10,
+              features: 'Sân khấu, hệ thống âm thanh, ánh sáng tiệc & máy chiếu',
+            },
+            {
+              id: 'hall-2',
+              name: 'Phòng VIP Riêng',
+              capacity: 25,
+              price_min: priceMin * 10,
+              features: 'Không gian riêng tư kín đáo, hệ thống karaoke chọn bài',
+            },
+          ],
+          party_specifications: [
+            {
+              id: 'spec-1',
+              title: 'Quy định đặt cọc & giữ sảnh',
+              content: 'Đặt cọc 30% để xác nhận giữ chỗ và khóa ngày tổ chức tiệc.',
+            },
+            {
+              id: 'spec-2',
+              title: 'Phí thức uống & rượu mang ngoài',
+              content: 'Phụ thu phục vụ nếu mang đồ uống ngoài, hoặc miễn phí khi sử dụng trọn gói đồ uống của quán.',
+            },
+          ],
           set_menus: [
-            { name: 'Set Tiệc Thịnh Vượng (10 người)', price: priceMin * 10, pax: 10 },
-            { name: 'Set Tiệc Thượng Hạng (10 người)', price: priceMax * 10, pax: 10 },
+            {
+              name: 'Set Tiệc Thịnh Vượng (10 người)',
+              price: priceMin * 10,
+              pax: 10,
+              dishes: [
+                'Khai vị 3 món thượng hạng',
+                'Súp gà nấm đông cô hạt sen',
+                'Gà ta hấp lá chanh & xôi gấc',
+                'Cá chẽm hấp Hồng Kông',
+                'Lẩu hải sản chua cay & bún tươi',
+                'Tráng miệng trái cây ngũ quả',
+              ],
+            },
+            {
+              name: 'Set Tiệc Thượng Hạng (10 người)',
+              price: priceMax * 10,
+              pax: 10,
+              dishes: [
+                'Gỏi bắp bò ngũ sắc bánh phồng',
+                'Tôm sú hấp nước dừa xiêm',
+                'Bò Úc sốt tiêu đen kèm bánh mì',
+                'Heo sữa quay giòn bì',
+                'Lẩu cua đồng hải sản bắp bò',
+                'Chè sen long nhãn tráng miệng',
+              ],
+            },
           ],
           is_vip: true,
           is_active: true, // Kích hoạt ngay để quán sẵn sàng hiển thị trên Bản Đồ Phố Tiệc

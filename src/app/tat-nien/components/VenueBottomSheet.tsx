@@ -9,7 +9,15 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/ui/drawer';
-import { PartyVenue, PARTY_SPACES, PARTY_CUISINES, PARTY_PERKS } from '@/types/party';
+import {
+  PartyVenue,
+  PARTY_SPACES,
+  PARTY_CUISINES,
+  PARTY_PERKS,
+  getSpaceLabel,
+  getCuisineLabel,
+  getPerkLabel,
+} from '@/types/party';
 import {
   Users,
   Phone,
@@ -26,6 +34,8 @@ import {
   Loader2,
   CheckCircle2,
   Send,
+  Building2,
+  FileText,
 } from 'lucide-react';
 
 interface VenueBottomSheetProps {
@@ -148,18 +158,10 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
   const displayPhone = venue.phone || venue.page_content?.phone || 'Đang cập nhật';
   const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
 
-  // Look up labels
-  const spaceLabels = venue.spaces_and_amenities
-    .map((s) => PARTY_SPACES.find((item) => item.id === s)?.label || s)
-    .filter(Boolean);
-
-  const cuisineLabels = venue.cuisines
-    .map((c) => PARTY_CUISINES.find((item) => item.id === c)?.label || c)
-    .filter(Boolean);
-
-  const perkLabels = venue.party_perks
-    .map((p) => PARTY_PERKS.find((item) => item.id === p)?.label || p)
-    .filter(Boolean);
+  // Look up labels (resolves both presets and custom tags)
+  const spaceLabels = (venue.spaces_and_amenities || []).map(getSpaceLabel).filter(Boolean);
+  const cuisineLabels = (venue.cuisines || []).map(getCuisineLabel).filter(Boolean);
+  const perkLabels = (venue.party_perks || []).map(getPerkLabel).filter(Boolean);
 
   const rawMenuUrl = venue.party_menu_url || venue.page_content?.menu_url || null;
   const venueMenuUrl = rawMenuUrl && /^https?:\/\//.test(rawMenuUrl) ? rawMenuUrl : null;
@@ -523,6 +525,38 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                 </div>
               )}
 
+              {/* Sảnh tiệc & Phòng VIP */}
+              {venue.party_halls && venue.party_halls.length > 0 && (
+                <div className="mb-4 text-left">
+                  <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-amber-400" /> Sảnh Tiệc &amp; Không Gian Riêng
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {venue.party_halls.map((h, idx) => (
+                      <div
+                        key={h.id || idx}
+                        className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs flex flex-col justify-between space-y-1"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white text-xs">{h.name}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
+                            {h.capacity ? `Tới ${h.capacity} khách` : 'Linh hoạt'}
+                          </span>
+                        </div>
+                        {h.features && (
+                          <p className="text-[11px] text-zinc-400 line-clamp-1">{h.features}</p>
+                        )}
+                        {h.price_min ? (
+                          <span className="text-[11px] text-amber-400 font-mono">
+                            Từ {Number(h.price_min).toLocaleString('vi-VN')} đ
+                          </span>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Liên kết thực đơn món ăn & tiệc chi tiết */}
               {venueMenuUrl && (
                 <div className="mb-3.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-left">
@@ -544,7 +578,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
               {/* Set menus */}
               {venue.set_menus && venue.set_menus.length > 0 && (
-                <div className="mb-2 text-left">
+                <div className="mb-4 text-left">
                   <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
                     Gợi ý Set Menu Tiệc
                   </div>
@@ -552,15 +586,46 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                     {venue.set_menus.map((m, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs"
+                        className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs space-y-1.5"
                       >
-                        <div>
-                          <span className="font-bold text-white text-xs sm:text-sm">{m.name}</span>
-                          <span className="text-zinc-400 ml-2">({m.pax} người/bàn)</span>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="font-bold text-white text-xs sm:text-sm">{m.name}</span>
+                            <span className="text-zinc-400 ml-2">({m.pax || 10} người/bàn)</span>
+                          </div>
+                          <span className="font-bold text-amber-300 font-mono text-xs sm:text-sm">
+                            {m.price?.toLocaleString('vi-VN')} đ
+                          </span>
                         </div>
-                        <span className="font-bold text-amber-300 font-mono text-xs sm:text-sm">
-                          {m.price?.toLocaleString('vi-VN')} đ
-                        </span>
+                        {Array.isArray(m.dishes) && m.dishes.length > 0 && (
+                          <div className="pt-1.5 border-t border-zinc-800/80">
+                            <p className="text-[10px] text-zinc-400 font-semibold mb-1">Món ăn trong set:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {m.dishes.map((dish: string, dIdx: number) => (
+                                <span key={dIdx} className="text-[10px] px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300">
+                                  • {dish}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quy cách & Chính sách phục vụ */}
+              {venue.party_specifications && venue.party_specifications.length > 0 && (
+                <div className="mb-2 text-left">
+                  <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-amber-400" /> Quy Cách &amp; Chính Sách Tiệc
+                  </div>
+                  <div className="space-y-1.5">
+                    {venue.party_specifications.map((spec, idx) => (
+                      <div key={spec.id || idx} className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs">
+                        <div className="font-bold text-amber-300 text-xs mb-0.5">{spec.title}</div>
+                        <div className="text-[11px] text-zinc-300 leading-relaxed whitespace-pre-line">{spec.content}</div>
                       </div>
                     ))}
                   </div>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { PartyVenue, PARTY_SPACES, PARTY_PERKS } from '@/types/party';
+import { PartyVenue, PARTY_SPACES, PARTY_PERKS, getPerkLabel } from '@/types/party';
 import { MapPin, Users, Wine, Sparkles, ExternalLink, Map as MapIcon } from 'lucide-react';
 
 interface VenueListViewProps {
@@ -148,7 +148,7 @@ export default function VenueListView({
                 {venue.party_perks && venue.party_perks.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-3">
                     {venue.party_perks.slice(0, 3).map((p, idx) => {
-                      const label = PARTY_PERKS.find((item) => item.id === p)?.label || p;
+                      const label = getPerkLabel(p);
                       return (
                         <span
                           key={idx}
