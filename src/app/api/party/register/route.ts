@@ -364,7 +364,7 @@ export async function POST(req: NextRequest) {
     if (botToken && adminChatId) {
       const priceFormatted = `${priceMin.toLocaleString('vi-VN')} - ${priceMax.toLocaleString('vi-VN')} đ/người`;
       const districtLabel = districtRow?.name ? ` (${escapeHtml(districtRow.name)})` : '';
-      const msg = `<b>🎉 [1BOOKING.ASIA - CHỦ QUÁN ĐĂNG KÝ TIỆC 500K]</b>\n\n🏛️ <b>Quán:</b> ${escapeHtml(name)}\n📍 <b>Địa chỉ:</b> ${escapeHtml(address)}${districtLabel}\n👤 <b>Chủ quán / QL:</b> ${escapeHtml(contact_name || 'Chủ quán')}\n📞 <b>SĐT:</b> <code>${cleanPhone}</code>\n🎁 <b>Gói ưu đãi tiệc:</b> ${escapeHtml(party_deal)}\n💰 <b>Mức giá tiệc:</b> ${priceFormatted}\n👥 <b>Sức chứa:</b> ${min_guests} - ${max_guests} khách\n\n⚡ <i>Gọi xác nhận ngay trong 5 phút và gửi mã VietQR thu 500.000đ kích hoạt sáng đèn neon trên bản đồ!</i>`;
+      const msg = `<b>🎉 [1BOOKING.ASIA - ĐĂNG KÝ ĐIỂM TIỆC 500K/NĂM]</b>\n\n🏛️ <b>Nhà hàng:</b> ${escapeHtml(name)}\n📍 <b>Địa chỉ:</b> ${escapeHtml(address)}${districtLabel}\n👤 <b>Người đại diện:</b> ${escapeHtml(contact_name || 'Chủ nhà hàng')}\n📞 <b>SĐT:</b> <code>${cleanPhone}</code>\n🎁 <b>Gói ưu đãi tiệc:</b> ${escapeHtml(party_deal)}\n💰 <b>Mức giá tiệc:</b> ${priceFormatted}\n👥 <b>Sức chứa:</b> ${min_guests} - ${max_guests} khách\n\n⚡ <i>Liên hệ xác nhận hỗ trợ đối soát thanh toán và kích hoạt hiển thị trên Bản Đồ Phố Tiệc!</i>`;
 
       try {
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {

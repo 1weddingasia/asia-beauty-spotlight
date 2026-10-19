@@ -290,9 +290,9 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
               </div>
 
               <p className="text-[11px] text-zinc-400 leading-relaxed max-w-sm mx-auto">
-                Sau khi chuyển khoản, chuyên viên kỹ thuật 1Booking.Asia sẽ liên hệ theo hotline{' '}
-                <strong className="text-white">{phone}</strong> trong 5 phút để bàn giao gian hàng số
-                và bật sáng đèn ghim neon rực rỡ!
+                Sau khi thanh toán thành công, chuyên viên 1Booking.Asia sẽ liên hệ theo số điện thoại{' '}
+                <strong className="text-white">{phone}</strong> để hỗ trợ kích hoạt hiển thị điểm tiệc
+                và hoàn tất bàn giao quyền quản trị.
               </p>
             </div>
 
@@ -306,7 +306,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
                   Thiết Lập Mật Khẩu & Bàn Giao Quyền Quản Trị Gian Hàng
                 </h3>
                 <p className="text-xs text-zinc-300 max-w-md mx-auto leading-relaxed">
-                  Sau khi quét mã chuyển khoản 500.000đ, bạn hãy tạo mật khẩu đăng nhập ngay để nhận bàn giao tài khoản, vào bảng điều khiển tự cập nhật thực đơn tiệc, sức chứa và kiểm tra khách đặt bàn.
+                  Sau khi quét mã thanh toán 500.000đ/năm, quý khách hãy thiết lập mật khẩu đăng nhập để nhận bàn giao tài khoản, vào bảng điều khiển tự cập nhật thực đơn tiệc, sức chứa và kiểm tra khách đặt bàn.
                 </p>
                 <div className="pt-1">
                   <Link
