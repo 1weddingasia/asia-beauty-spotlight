@@ -63,6 +63,7 @@ export default function PartyVenueClient({
 }: PartyVenueClientProps) {
   const siteConfig = useSiteConfig();
   const b = business;
+  const isDemo = Boolean(partyProfile.is_demo || (b as any).is_demo);
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedSetMenu, setSelectedSetMenu] = useState<string>('');
@@ -221,7 +222,7 @@ export default function PartyVenueClient({
                 ⭐ Điểm Tiệc Đề Xuất TOP 1
               </span>
             )}
-            {partyProfile.is_demo && (
+            {isDemo && (
               <span className="px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/30 text-xs font-semibold flex items-center gap-1">
                 <Info className="w-3.5 h-3.5 text-sky-400" /> Bản xem trước (Demo)
               </span>
@@ -237,7 +238,7 @@ export default function PartyVenueClient({
             <span>{b.address || 'Đang cập nhật địa chỉ'}</span>
           </p>
 
-          {partyProfile.is_demo && (
+          {isDemo && (
             <div className="bg-amber-500/10 border border-amber-500/25 text-amber-200/90 text-xs px-3.5 py-2.5 rounded-xl flex items-center gap-2.5 max-w-2xl mb-6">
               <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
               <span>

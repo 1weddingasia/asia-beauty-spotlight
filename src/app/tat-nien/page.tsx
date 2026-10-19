@@ -99,22 +99,21 @@ export default async function TatNienPage() {
   // 2. 📍 TRUY VẤN DANH SÁCH QUẬN / HUYỆN TỪ DATABASE THẬT (directory_locations)
   const districts = await getHcmcPartyDistricts(supabase);
 
-  // Biến môi trường tùy chọn: Nếu đặt NEXT_PUBLIC_HIDE_DEMO_PARTY=true thì chỉ hiện quán thật
-  const hideDemoEnv = process.env.NEXT_PUBLIC_HIDE_DEMO_PARTY === 'true';
+  // Biến môi trường tùy chọn: Nếu đặt HIDE_DEMO_PARTY=true thì chỉ hiện quán thật
+  const hideDemoEnv = process.env.HIDE_DEMO_PARTY === 'true' || process.env.NEXT_PUBLIC_HIDE_DEMO_PARTY === 'true';
+
+  const getProfile = (b: any) =>
+    Array.isArray(b.business_party_profiles) ? b.business_party_profiles[0] : b.business_party_profiles;
 
   // Chuyển đổi dữ liệu chuẩn hóa
   const venues: PartyVenue[] = (businesses || [])
     .filter((b: any) => {
       if (!hideDemoEnv) return true;
-      const profile = Array.isArray(b.business_party_profiles)
-        ? b.business_party_profiles[0]
-        : b.business_party_profiles;
+      const profile = getProfile(b);
       return !b.is_demo && !profile?.is_demo;
     })
     .map((b: any) => {
-    const profile = Array.isArray(b.business_party_profiles)
-      ? b.business_party_profiles[0]
-      : b.business_party_profiles;
+      const profile = getProfile(b);
 
     return {
       id: b.id,

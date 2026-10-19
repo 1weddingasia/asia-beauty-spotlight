@@ -120,24 +120,32 @@ async function main() {
         }
 
         console.log('\n⏳ Bắt đầu dọn sạch dữ liệu demo an toàn...');
-        
-        // 1. Xóa hồ sơ tiệc demo
-        const delPartyRes = await client.query(`
-          DELETE FROM business_party_profiles
-          WHERE is_demo = true;
-        `);
-        console.log(`🧹 Đã xóa ${delPartyRes.rowCount} hồ sơ tiệc demo.`);
+        try {
+          await client.query('BEGIN');
 
-        // 2. Xóa các doanh nghiệp test demo (không có chủ thật)
-        const delBizRes = await client.query(`
-          DELETE FROM businesses
-          WHERE is_demo = true 
-            AND owner_id IS NULL
-            AND slug LIKE 'test-biz-%';
-        `);
-        console.log(`🧹 Đã xóa ${delBizRes.rowCount} doanh nghiệp test thử nghiệm.`);
+          // 1. Xóa hồ sơ tiệc demo
+          const delPartyRes = await client.query(`
+            DELETE FROM business_party_profiles
+            WHERE is_demo = true;
+          `);
+          console.log(`🧹 Đã xóa ${delPartyRes.rowCount} hồ sơ tiệc demo.`);
 
-        console.log('🎉 Hoàn tất dọn dẹp an toàn! Không có bất kỳ dữ liệu thật nào của khách hàng bị ảnh hưởng.');
+          // 2. Xóa các doanh nghiệp test demo (không có chủ thật)
+          const delBizRes = await client.query(`
+            DELETE FROM businesses
+            WHERE is_demo = true 
+              AND owner_id IS NULL
+              AND slug LIKE 'test-biz-%';
+          `);
+          console.log(`🧹 Đã xóa ${delBizRes.rowCount} doanh nghiệp test thử nghiệm.`);
+
+          await client.query('COMMIT');
+          console.log('🎉 Hoàn tất dọn dẹp an toàn! Không có bất kỳ dữ liệu thật nào của khách hàng bị ảnh hưởng.');
+        } catch (purgeErr) {
+          await client.query('ROLLBACK');
+          console.error('❌ Lỗi khi dọn dữ liệu, đã ROLLBACK an toàn:', purgeErr);
+          throw purgeErr;
+        }
         break;
       }
 
@@ -146,6 +154,7 @@ async function main() {
     }
   } catch (err) {
     console.error('❌ Lỗi xử lý:', err);
+    process.exitCode = 1;
   } finally {
     await client.end();
   }
