@@ -181,7 +181,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
           </Link>
           <div className="flex items-center gap-1.5 text-xs text-amber-400 font-extrabold tracking-wide uppercase">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Gói Điểm Tiệc VIP 500.000đ</span>
+            <span>Gói Điểm Tiệc VIP 500.000đ/năm</span>
           </div>
         </div>
       </header>
@@ -197,7 +197,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
             Đăng Ký Điểm Tiệc Siêu Tốc{' '}
             <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
-              Chỉ 500.000đ
+              Chỉ 500.000đ/năm
             </span>
           </h1>
           <p className="mt-2.5 text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
@@ -218,7 +218,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
             </h2>
             <p className="text-xs sm:text-sm text-zinc-300 text-center max-w-md mx-auto mb-6">
               Hồ sơ nhà hàng <strong className="text-amber-300">{name}</strong> đã được đồng bộ vào hệ thống.
-              Ban Quản Trị đã nhận thông tin và sẽ ưu tiên kích hoạt điểm tiệc cho quý khách.
+              Quý khách vui lòng quét mã VietQR bên dưới để hoàn tất kích hoạt hiển thị điểm tiệc trên Bản Đồ Phố Tiệc.
             </p>
 
             {/* QR Payment Box */}
@@ -550,8 +550,8 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
               </div>
               <ul className="list-disc pl-5 space-y-1 text-[11px] text-zinc-400">
                 <li>Bước 1: Gửi thông tin nhà hàng và thực đơn tiệc để khởi tạo hồ sơ trên hệ thống 1Booking.Asia.</li>
-                <li>Bước 2: Ban Quản Trị tiếp nhận, hỗ trợ xác thực và gửi hướng dẫn thanh toán qua tin nhắn/Zalo.</li>
-                <li>Bước 3: Hoàn tất thanh toán VietQR 500.000đ/năm, điểm tiệc lập tức xuất hiện nổi bật trên Bản Đồ Phố Tiệc để đón khách.</li>
+                <li>Bước 2: Quét mã VietQR ngân hàng 500.000đ/năm để hoàn tất thanh toán tự động qua hệ thống.</li>
+                <li>Bước 3: Điểm tiệc được kích hoạt hiển thị nổi bật trên Bản Đồ Phố Tiệc và sẵn sàng đón khách đặt bàn.</li>
               </ul>
             </div>
 
@@ -572,7 +572,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
               ) : (
                 <>
                   <Zap className="w-5 h-5 fill-black text-black" />
-                  <span>Đăng Ký Điểm Tiệc 500.000đ Ngay</span>
+                  <span>Đăng Ký Điểm Tiệc 500.000đ/năm Ngay</span>
                 </>
               )}
             </button>
