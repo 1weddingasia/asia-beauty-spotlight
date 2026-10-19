@@ -28,7 +28,7 @@ export function ImageUpload({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.includes("image/")) {
+    if (!file.type.startsWith("image/")) {
       toast.error("Vui lòng chọn file hình ảnh (JPG, PNG, WEBP)!");
       return;
     }
@@ -51,17 +51,18 @@ export function ImageUpload({
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
 
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Không thể tải ảnh lên máy chủ");
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || "Không thể tải ảnh lên máy chủ");
       }
 
       onChange(data.url);
       toast.success("Tải ảnh từ thiết bị thành công!");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("[ImageUpload Error]:", error);
-      toast.error("Lỗi khi tải ảnh: " + error.message);
+      const msg = error instanceof Error ? error.message : "Không thể tải ảnh lên";
+      toast.error("Lỗi khi tải ảnh: " + msg);
     } finally {
       setIsUploading(false);
       e.target.value = "";

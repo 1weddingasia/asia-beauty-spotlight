@@ -174,6 +174,8 @@ export default function BusinessProfilePage() {
                     party_perks: Array.isArray(pData.party_perks) ? pData.party_perks : [],
                     party_deal_highlight: pData.party_deal_highlight || "",
                     party_description: pData.party_description || "",
+                    party_banner_url: pData.party_banner_url || null,
+                    party_gallery: Array.isArray(pData.party_gallery) ? pData.party_gallery : [],
                     set_menus: Array.isArray(pData.set_menus) ? pData.set_menus : [],
                     is_vip: Boolean(pData.is_vip),
                   });
@@ -294,6 +296,8 @@ export default function BusinessProfilePage() {
             party_perks: partyProfile.party_perks || [],
             party_deal_highlight: partyProfile.party_deal_highlight || null,
             party_description: partyProfile.party_description || null,
+            party_banner_url: partyProfile.party_banner_url || null,
+            party_gallery: partyProfile.party_gallery || [],
             set_menus: partyProfile.set_menus || [],
             is_vip: Boolean(partyProfile.is_vip),
             is_active: Boolean(partyProfile.is_active),
