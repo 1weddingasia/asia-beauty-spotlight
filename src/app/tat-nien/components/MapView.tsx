@@ -46,6 +46,8 @@ export default function MapView({
   useEffect(() => {
     if (!mapContainer.current) return;
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
     const startCenter: [number, number] =
       initialCenter ||
       flyToCenter ||
@@ -56,10 +58,11 @@ export default function MapView({
       container: mapContainer.current,
       style: 'https://tiles.openfreemap.org/styles/dark',
       center: startCenter, // [lng, lat]
-      zoom: initialCenter || userLocation ? 14.5 : 13,
-      pitch: 60, // Góc nhìn 3D trực quan sang trọng
-      bearing: -15,
+      zoom: initialCenter || userLocation ? (isMobile ? 14 : 14.5) : (isMobile ? 12.5 : 13),
+      pitch: isMobile ? 35 : 60, // Góc nghiêng tối ưu hiệu năng đồ họa trên di động
+      bearing: isMobile ? -5 : -15,
       attributionControl: false,
+      maxTileCacheSize: 50,
     });
 
     // Thêm điều khiển zoom / la bàn ở góc phải trên
@@ -103,33 +106,35 @@ export default function MapView({
         console.warn('[MapView] Tone layer adjust error:', err);
       }
 
-      // Bật hiệu ứng 3D buildings nếu source openmaptiles có sẵn
-      const layers = map.getStyle().layers;
-      const labelLayerId = layers?.find(
-        (l: any) => l.type === 'symbol' && l.layout && 'text-field' in l.layout
-      )?.id;
+      // Bật hiệu ứng 3D buildings trên máy tính (bỏ qua trên di động để giữ vững 60 FPS mượt mà)
+      if (!isMobile) {
+        const layers = map.getStyle().layers;
+        const labelLayerId = layers?.find(
+          (l: any) => l.type === 'symbol' && l.layout && 'text-field' in l.layout
+        )?.id;
 
-      if (!map.getLayer('3d-buildings') && map.getSource('openmaptiles')) {
-        try {
-          map.addLayer(
-            {
-              id: '3d-buildings',
-              source: 'openmaptiles',
-              'source-layer': 'building',
-              filter: ['==', 'extrude', 'true'],
-              type: 'fill-extrusion',
-              minzoom: 14,
-              paint: {
-                'fill-extrusion-color': '#162238',
-                'fill-extrusion-height': ['get', 'height'],
-                'fill-extrusion-base': ['get', 'min_height'],
-                'fill-extrusion-opacity': 0.6,
+        if (!map.getLayer('3d-buildings') && map.getSource('openmaptiles')) {
+          try {
+            map.addLayer(
+              {
+                id: '3d-buildings',
+                source: 'openmaptiles',
+                'source-layer': 'building',
+                filter: ['==', 'extrude', 'true'],
+                type: 'fill-extrusion',
+                minzoom: 14,
+                paint: {
+                  'fill-extrusion-color': '#162238',
+                  'fill-extrusion-height': ['get', 'height'],
+                  'fill-extrusion-base': ['get', 'min_height'],
+                  'fill-extrusion-opacity': 0.6,
+                },
               },
-            },
-            labelLayerId
-          );
-        } catch {
-          // Fallback an toàn
+              labelLayerId
+            );
+          } catch {
+            // Fallback an toàn
+          }
         }
       }
     });
@@ -159,6 +164,8 @@ export default function MapView({
       }
     });
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
     // Tạo hoặc cập nhật markers
     venues.forEach((venue) => {
       const coords = venue.map_coordinates;
@@ -170,27 +177,39 @@ export default function MapView({
       const lngLat: [number, number] = [Number(coords.lng), Number(coords.lat)];
       const isDimmed = !filteredVenueIds.has(venue.id);
 
-      // Nếu đã có marker -> xóa đi dựng lại element mới cập nhật trạng thái
-      if (markersRef.current[venue.id]) {
-        markersRef.current[venue.id].remove();
-      }
-
-      const el = createPinElement(venue, isDimmed, () => {
-        onSelectVenue(venue);
-        map.flyTo({
-          center: lngLat,
-          zoom: 15.5,
-          pitch: 55,
-          duration: 1000,
-          essential: true,
+      const existingMarker = markersRef.current[venue.id];
+      if (existingMarker) {
+        // Tối ưu cực đại: Cập nhật DOM trực tiếp qua classList, không xóa dựng lại marker
+        const el = existingMarker.getElement();
+        const pinInner = el.querySelector('.venue-pin-inner');
+        if (pinInner) {
+          if (isDimmed) {
+            pinInner.classList.add('opacity-30', 'scale-90');
+            pinInner.classList.remove('opacity-100', 'scale-100', 'hover:scale-110');
+          } else {
+            pinInner.classList.remove('opacity-30', 'scale-90');
+            pinInner.classList.add('opacity-100', 'scale-100', 'hover:scale-110');
+          }
+        }
+      } else {
+        // Chỉ tạo mới nếu marker chưa có trong bản đồ
+        const el = createPinElement(venue, isDimmed, () => {
+          onSelectVenue(venue);
+          map.flyTo({
+            center: lngLat,
+            zoom: 15.5,
+            pitch: isMobile ? 35 : 55,
+            duration: 900,
+            essential: true,
+          });
         });
-      });
 
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat(lngLat)
-        .addTo(map);
+        const marker = new maplibregl.Marker({ element: el })
+          .setLngLat(lngLat)
+          .addTo(map);
 
-      markersRef.current[venue.id] = marker;
+        markersRef.current[venue.id] = marker;
+      }
     });
   }, [venues, filteredVenueIds, onSelectVenue]);
 

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { revalidatePagePath } from "@/actions/revalidate";
-import { Save, Plus, Trash2, Link as LinkIcon, Lock, MapPin, CheckSquare, Square, Sparkles, Utensils, Users, Wine } from "lucide-react";
+import { Save, Plus, Trash2, Link as LinkIcon, Lock, MapPin, CheckSquare, Square, Sparkles, Utensils, Users, Wine, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Switch } from "@/components/ui/switch";
@@ -886,6 +886,68 @@ export default function BusinessProfilePage() {
                 />
               </div>
 
+              {/* Hình ảnh Sảnh Tiệc & Phòng VIP từ thiết bị */}
+              <div className="space-y-4 pt-4 border-t border-amber-500/20">
+                <div className="space-y-1">
+                  <Label className="text-sm font-bold text-amber-500 flex items-center gap-1.5">
+                    <ImageIcon className="size-4" /> Ảnh Sảnh Tiệc Chính (Banner Tiệc 16:9)
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Hình ảnh này sẽ xuất hiện trên đầu trang sảnh tiệc riêng và thẻ giới thiệu của quán.
+                  </p>
+                </div>
+                <div className="w-full max-w-md h-44">
+                  <ImageUpload
+                    value={partyProfile.party_banner_url || ''}
+                    onChange={(url) => handlePartyProfileChange('party_banner_url', url)}
+                    className="w-full h-44 aspect-[16/9]"
+                    label="Tải ảnh sảnh tiệc chính từ thiết bị (16:9)"
+                  />
+                </div>
+
+                <div className="space-y-2 pt-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Sparkles className="size-3.5 text-amber-400" /> Thư Viện Ảnh Phòng VIP & Không Gian Tiệc
+                    </Label>
+                    <span className="text-[11px] text-muted-foreground">Tối đa 6 ảnh</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {(partyProfile.party_gallery || []).map((imgUrl: string, idx: number) => (
+                      <div key={idx} className="aspect-[4/3] relative rounded-xl overflow-hidden group border border-border">
+                        <img src={imgUrl} alt={`Party Gallery ${idx}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = (partyProfile.party_gallery || []).filter((_: any, i: number) => i !== idx);
+                            handlePartyProfileChange('party_gallery', next);
+                          }}
+                          className="absolute top-1.5 right-1.5 bg-red-600/90 hover:bg-red-700 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Xóa ảnh này"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                    {(partyProfile.party_gallery || []).length < 6 && (
+                      <div className="aspect-[4/3]">
+                        <ImageUpload
+                          value=""
+                          onChange={(url) => {
+                            if (url) {
+                              const cur = partyProfile.party_gallery || [];
+                              handlePartyProfileChange('party_gallery', [...cur, url]);
+                            }
+                          }}
+                          className="w-full h-full aspect-[4/3]"
+                          label="+ Tải ảnh phòng VIP"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {/* Danh sách Set Menu động */}
               <div>
                 <div className="flex items-center justify-between mb-3">
@@ -905,6 +967,14 @@ export default function BusinessProfilePage() {
                   )}
                   {(partyProfile.set_menus || []).map((menu: any, idx: number) => (
                     <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-xl border bg-muted/30">
+                      <div className="w-16 h-16 shrink-0">
+                        <ImageUpload
+                          value={menu.image_url || ''}
+                          onChange={(url) => updateSetMenu(idx, 'image_url', url)}
+                          className="w-16 h-16"
+                          label="Ảnh"
+                        />
+                      </div>
                       <div className="flex-1 space-y-1 w-full sm:w-auto">
                         <Label className="text-[11px]">Tên Set Menu</Label>
                         <Input

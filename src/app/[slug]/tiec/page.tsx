@@ -115,7 +115,7 @@ export default async function PartyVenuePage({ params }: { params: Promise<{ slu
   // Xác định banner và avatar
   const firstGalleryItem = business.page_content?.gallery?.[0];
   const galleryUrl = typeof firstGalleryItem === 'string' ? firstGalleryItem : firstGalleryItem?.url;
-  const bannerImg = business.page_content?.banners?.[0] || galleryUrl || null;
+  const bannerImg = partyProfile?.party_banner_url || business.page_content?.banners?.[0] || galleryUrl || null;
   const fallbackLetter = (business.name || 'A').charAt(0).toUpperCase();
   const avatar = business.page_content?.logo_url || `https://placehold.co/100x100/gold/white?text=${encodeURIComponent(fallbackLetter)}`;
 

@@ -75,7 +75,7 @@ export function createPinElement(
   const priceFormatted = `${Math.round(venue.price_min / 1000)}k`;
 
   el.innerHTML = `
-    <div class="relative group cursor-pointer transition-all duration-300 ${
+    <div class="venue-pin-inner relative group cursor-pointer transition-all duration-300 ${
       isDimmed ? 'opacity-30 scale-90' : 'opacity-100 scale-100 hover:scale-110'
     }">
       ${

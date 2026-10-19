@@ -349,6 +349,16 @@ export default function PartyVenueClient({
                     className="bg-[#0d1733] border border-zinc-800 hover:border-amber-500/40 rounded-2xl p-5 transition-all hover:bg-[#101c3d] flex flex-col justify-between space-y-4 group"
                   >
                     <div>
+                      {menu.image_url && (
+                        <div className="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-zinc-950">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={menu.image_url}
+                            alt={menu.name || 'Set menu'}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
                       <div className="flex justify-between items-start gap-2 mb-2">
                         <h4 className="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
                           {menu.name || `Set Tiệc #${idx + 1}`}
@@ -374,6 +384,27 @@ export default function PartyVenueClient({
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* Thư viện hình ảnh Sảnh Tiệc & Phòng VIP */}
+        {Array.isArray(partyProfile.party_gallery) && partyProfile.party_gallery.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-xl font-black text-white flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-400" /> Không Gian Sảnh Tiệc & Phòng VIP
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {partyProfile.party_gallery.map((imgUrl, idx) => (
+                <div key={idx} className="aspect-[4/3] rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-950 group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imgUrl}
+                    alt={`Không gian sảnh tiệc ${idx + 1}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         )}

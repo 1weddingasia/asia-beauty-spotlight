@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UploadCloud, X, Loader2 } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import Image from "next/image";
 
 interface ImageUploadProps {
   value?: string;
@@ -13,57 +11,60 @@ interface ImageUploadProps {
   bucket?: string;
   folder?: string;
   className?: string;
+  label?: string;
 }
 
-export function ImageUpload({ value, onChange, bucket = "media", folder = "uploads", className }: ImageUploadProps) {
+export function ImageUpload({
+  value,
+  onChange,
+  bucket = "media",
+  folder = "uploads",
+  className,
+  label,
+}: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const supabase = createClient();
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.includes("image/")) {
-      toast.error("Vui lòng chọn file hình ảnh!");
+      toast.error("Vui lòng chọn file hình ảnh (JPG, PNG, WEBP)!");
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Kích thước file không được vượt quá 5MB!");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Kích thước ảnh không được vượt quá 10MB!");
       return;
     }
 
     setIsUploading(true);
 
     try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = `${folder}/${fileName}`;
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", bucket);
+      formData.append("folder", folder);
 
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (uploadError) {
-        throw uploadError;
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Không thể tải ảnh lên máy chủ");
       }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(filePath);
-
-      onChange(publicUrl);
-      toast.success("Tải ảnh lên thành công!");
+      onChange(data.url);
+      toast.success("Tải ảnh từ thiết bị thành công!");
     } catch (error: any) {
-      console.error(error);
+      console.error("[ImageUpload Error]:", error);
       toast.error("Lỗi khi tải ảnh: " + error.message);
     } finally {
       setIsUploading(false);
-      // reset input
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
@@ -71,42 +72,50 @@ export function ImageUpload({ value, onChange, bucket = "media", folder = "uploa
   const containerClass = className || defaultSize;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       {value ? (
-        <div className={`relative rounded-xl border-2 border-border overflow-hidden group bg-white flex items-center justify-center ${containerClass}`}>
-          <img 
-            src={value} 
-            alt="Uploaded" 
-            className="max-w-full max-h-full object-contain p-2"
+        <div
+          className={`relative rounded-xl border-2 border-border overflow-hidden group bg-white flex items-center justify-center ${containerClass}`}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={value}
+            alt="Uploaded"
+            className="max-w-full max-h-full object-contain p-1"
           />
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <Button 
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <Button
               type="button"
-              variant="destructive" 
-              size="icon" 
-              className="rounded-full"
+              variant="destructive"
+              size="icon"
+              className="rounded-full shadow-lg"
               onClick={() => onChange("")}
+              title="Xóa ảnh"
             >
               <X className="size-4" />
             </Button>
           </div>
         </div>
       ) : (
-        <label className={`relative flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl cursor-pointer bg-muted/30 hover:bg-muted transition-colors ${containerClass}`}>
-          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+        <label
+          className={`relative flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl cursor-pointer bg-muted/30 hover:bg-muted/70 transition-colors ${containerClass}`}
+        >
+          <div className="flex flex-col items-center justify-center p-3 text-center">
             {isUploading ? (
-              <Loader2 className="size-8 text-gold animate-spin mb-2" />
+              <Loader2 className="size-7 text-amber-500 animate-spin mb-1.5" />
             ) : (
-              <UploadCloud className="size-8 text-muted-foreground mb-2" />
+              <UploadCloud className="size-7 text-muted-foreground mb-1.5" />
             )}
-            <p className="text-xs text-muted-foreground text-center px-2">
-              {isUploading ? "Đang tải..." : "Click hoặc kéo thả ảnh (Tối đa 5MB)"}
+            <p className="text-[11px] text-muted-foreground font-medium px-1 leading-tight">
+              {isUploading
+                ? "Đang tải ảnh..."
+                : label || "Tải ảnh từ thiết bị (Tối đa 10MB)"}
             </p>
           </div>
-          <input 
-            type="file" 
-            className="hidden" 
-            accept="image/*" 
+          <input
+            type="file"
+            className="hidden"
+            accept="image/*"
             onChange={handleUpload}
             disabled={isUploading}
           />

@@ -45,8 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// Bắt buộc render động để dữ liệu sảnh tiệc luôn cập nhật tức thời
-export const dynamic = 'force-dynamic';
+// Tối ưu hóa tải trang cực nhanh với ISR revalidate 30 giây (phục vụ hàng nghìn lượt truy cập đồng thời trên di động mượt mà)
+export const revalidate = 30;
 
 export default async function TatNienPage() {
   const supabase = createStaticClient();
@@ -78,6 +78,8 @@ export default async function TatNienPage() {
         party_perks,
         party_deal_highlight,
         party_description,
+        party_banner_url,
+        party_gallery,
         set_menus,
         is_vip,
         is_active
@@ -122,6 +124,8 @@ export default async function TatNienPage() {
       party_perks: profile?.party_perks ?? [],
       party_description: profile?.party_description ?? null,
       party_deal_highlight: profile?.party_deal_highlight ?? null,
+      party_banner_url: profile?.party_banner_url ?? null,
+      party_gallery: profile?.party_gallery ?? [],
       set_menus: profile?.set_menus ?? [],
       is_vip: Boolean(profile?.is_vip),
       is_active: Boolean(profile?.is_active),

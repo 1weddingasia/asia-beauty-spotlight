@@ -21,6 +21,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { PartyDistrictItem } from '@/types/party';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 const SAMPLE_PHOTOS = [
   {
@@ -511,34 +512,49 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
             </div>
 
             {/* 6. Ảnh sảnh tiệc */}
-            <div>
-              <label className="block text-xs font-bold text-zinc-200 uppercase mb-1.5 flex items-center gap-1.5">
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-zinc-200 uppercase mb-1 flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
                 Ảnh Sảnh Tiệc / Bàn Tiệc Đẹp Nhất
               </label>
-              <input
-                type="text"
-                value={photoUrl}
-                onChange={(e) => setPhotoUrl(e.target.value)}
-                placeholder="Nhập đường link ảnh hoặc chọn mẫu bên dưới..."
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 transition-colors"
-              />
 
-              <div className="mt-2.5 flex flex-wrap gap-2">
-                {SAMPLE_PHOTOS.map((sample, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setPhotoUrl(sample.url)}
-                    className={`text-[11px] px-2.5 py-1.5 rounded-lg border transition-all ${
-                      photoUrl === sample.url
-                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 font-bold'
-                        : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:text-zinc-200'
-                    }`}
-                  >
-                    📷 {sample.title}
-                  </button>
-                ))}
+              {/* Upload trực tiếp từ điện thoại / máy tính */}
+              <div className="w-full">
+                <ImageUpload
+                  value={photoUrl}
+                  onChange={(url) => setPhotoUrl(url)}
+                  className="w-full h-36 aspect-[16/9]"
+                  label="Tải ảnh sảnh tiệc từ thiết bị (Điện thoại / Máy tính)"
+                />
+              </div>
+
+              {/* Hoặc nhập link ảnh / chọn ảnh mẫu */}
+              <div className="space-y-1.5 pt-1">
+                <div className="text-[11px] text-zinc-400 font-medium">Hoặc chọn ảnh mẫu / nhập liên kết ảnh:</div>
+                <input
+                  type="text"
+                  value={photoUrl}
+                  onChange={(e) => setPhotoUrl(e.target.value)}
+                  placeholder="https://... (hoặc chọn mẫu bên dưới)"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 transition-colors"
+                />
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {SAMPLE_PHOTOS.map((sample, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setPhotoUrl(sample.url)}
+                      className={`text-[11px] px-2.5 py-1.5 rounded-lg border transition-all ${
+                        photoUrl === sample.url
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 font-bold'
+                          : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:text-zinc-200'
+                      }`}
+                    >
+                      📷 {sample.title}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

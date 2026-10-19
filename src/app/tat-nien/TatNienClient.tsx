@@ -241,13 +241,13 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
         </div>
 
         {/* Controls: Dual View Mode Toggle + B2B Registration */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Dual View Mode Toggle */}
-          <div className="flex items-center gap-1.5 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800">
+          <div className="flex items-center gap-1 bg-zinc-900/90 p-0.5 sm:p-1 rounded-xl border border-zinc-800">
             <button
               type="button"
               onClick={() => setViewMode('map')}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
                 viewMode === 'map'
                   ? 'bg-amber-500 text-black shadow-md shadow-amber-950'
                   : 'text-zinc-400 hover:text-white'
@@ -259,7 +259,7 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
             <button
               type="button"
               onClick={() => setViewMode('list')}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
                 viewMode === 'list'
                   ? 'bg-amber-500 text-black shadow-md shadow-amber-950'
                   : 'text-zinc-400 hover:text-white'
@@ -267,24 +267,27 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
             >
               <ListIcon className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Danh Sách ({filteredVenues.length})</span>
+              <span className="sm:hidden text-[10px] font-extrabold bg-black/40 text-amber-300 px-1 rounded-full">
+                {filteredVenues.length}
+              </span>
             </button>
           </div>
 
-          {/* 🏷️ B2B CTA: Đăng ký điểm tiệc 500k */}
+          {/* 🏷️ B2B CTA: Đăng ký điểm tiệc */}
           <Link
             href="/tat-nien/dang-ky"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black shadow-md shadow-amber-950/40 transition-all active:scale-95 shrink-0"
-            title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc 500k để sáng đèn neon trên bản đồ"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black shadow-md shadow-amber-950/40 transition-all active:scale-95 shrink-0"
+            title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc 500k để sáng đèn trên bản đồ"
           >
-            <Sparkles className="w-3.5 h-3.5 fill-black" />
+            <Sparkles className="w-3.5 h-3.5 fill-black shrink-0" />
             <span className="hidden md:inline">Chủ Quán Đăng Tiệc 500k</span>
-            <span className="md:hidden">Đăng Tiệc 500k</span>
+            <span className="md:hidden text-[11px] whitespace-nowrap">+ Đăng Tiệc</span>
           </Link>
         </div>
       </header>
 
       {/* 1.1 Quick District & Near Me Floating Bar */}
-      <div className="relative z-20 bg-zinc-950/95 border-b border-zinc-800/80 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none backdrop-blur-md">
+      <div className="relative z-20 bg-zinc-950/95 border-b border-zinc-800/80 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none overscroll-x-contain touch-pan-x backdrop-blur-md">
         {/* Nút 📍 Gần tôi */}
         <button
           type="button"
@@ -349,8 +352,12 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
           </div>
         )}
 
-        {/* 3. Floating Bottom Controls: Filter Widget */}
-        <div className="absolute bottom-5 inset-x-0 z-30 flex justify-center pointer-events-none px-4">
+        {/* 3. Floating Bottom Controls: Filter Widget (ẩn khi mở BottomSheet để không va chạm giao diện mobile) */}
+        <div
+          className={`absolute bottom-5 inset-x-0 z-30 flex justify-center pointer-events-none px-4 transition-all duration-300 ${
+            selectedVenue ? 'opacity-0 translate-y-12 pointer-events-none' : 'opacity-100 translate-y-0'
+          }`}
+        >
           <div className="pointer-events-auto">
             <PartyFilterWidget
               filter={filter}

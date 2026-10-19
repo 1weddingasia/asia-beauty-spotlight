@@ -3,6 +3,7 @@ export interface SetMenu {
   price: number;
   pax: number;
   dishes?: string[];
+  image_url?: string;
 }
 
 export interface BusinessPartyProfile {
@@ -17,6 +18,8 @@ export interface BusinessPartyProfile {
   party_perks: string[];
   party_description: string | null;
   party_deal_highlight: string | null;
+  party_banner_url?: string | null;
+  party_gallery?: string[];
   set_menus: SetMenu[];
   is_vip: boolean;
   is_active: boolean;
@@ -59,6 +62,8 @@ export interface PartyVenue {
   party_perks: string[];
   party_description: string | null;
   party_deal_highlight: string | null;
+  party_banner_url?: string | null;
+  party_gallery?: string[];
   set_menus: SetMenu[];
   is_vip: boolean;
   is_active: boolean;

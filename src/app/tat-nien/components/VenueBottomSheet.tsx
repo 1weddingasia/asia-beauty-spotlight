@@ -139,6 +139,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
   const banners = venue.page_content?.banners || [];
   const gallery = venue.page_content?.gallery || [];
   const heroImage =
+    venue.party_banner_url ||
     banners[0] ||
     (typeof gallery[0] === 'string' ? gallery[0] : (gallery[0] as any)?.url) ||
     venue.page_content?.hero_image ||
