@@ -141,26 +141,37 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const supabase = createClient();
-      supabase.auth.getUser().then(async ({ data: { user } }) => {
-        if (user) {
-          const { data: biz } = await supabase
-            .from('businesses')
-            .select('id, name, slug')
-            .eq('owner_id', user.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          if (biz) {
-            setUserBusiness(biz);
-            setTargetSlug(biz.slug);
-          }
+    let cancelled = false;
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: biz, error } = await supabase
+          .from('businesses')
+          .select('id, name, slug')
+          .eq('owner_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error fetching user business in BangGiaClient:', error);
+          return;
         }
-      });
-    } catch (e) {
-      console.error('Error fetching user business in BangGiaClient:', e);
-    }
+
+        if (biz && !cancelled) {
+          setUserBusiness(biz);
+          setTargetSlug(biz.slug);
+        }
+      } catch (e) {
+        console.error('Error in BangGiaClient auth check:', e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Map plans từ database nếu có, fallback an toàn về danh sách mặc định nếu chưa có
@@ -223,13 +234,13 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
   };
 
   const planPrefix = selectedPlan ? getSyntaxPrefix(selectedPlan) : 'UDAI';
-  const effectiveSlug = (userBusiness?.slug || targetSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-'));
-  const cleanPhone = phone ? phone.replace(/\D/g, '') : '';
-  const transferCode = effectiveSlug 
-    ? `${planPrefix} ${effectiveSlug.toUpperCase()}` 
-    : cleanPhone 
-    ? `${planPrefix} ${cleanPhone}` 
-    : `${planPrefix} BIZ`;
+  const normalizedSlug = targetSlug.trim().toLowerCase().replace(/^-+|-+$/g, '');
+  const effectiveSlug = userBusiness?.slug || normalizedSlug;
+  const isValidSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(effectiveSlug);
+
+  const transferCode = isValidSlug
+    ? `${planPrefix} ${effectiveSlug.toUpperCase()}`
+    : `${planPrefix} 1BOOKING`;
 
   const qrUrl = selectedPlan
     ? `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${selectedPlan.price}&des=${encodeURIComponent(
@@ -257,8 +268,8 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
   };
 
   const handleCheckStatus = async () => {
-    if (!effectiveSlug && !cleanPhone) {
-      setCheckMessage('Vui lòng nhập đường link slug quán của bạn để hệ thống kiểm tra tự động!');
+    if (!isValidSlug) {
+      setCheckMessage('Vui lòng nhập đúng đường link slug quán (ví dụ: nha-hang-que-nha) để kiểm tra tự động!');
       return;
     }
 
@@ -269,17 +280,28 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
       const res = await fetch('/api/payment/check-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: effectiveSlug, phone: cleanPhone }),
+        body: JSON.stringify({ slug: effectiveSlug }),
       });
       const data = await res.json();
 
-      if (data.activated) {
-        setPaymentSuccess(true);
-      } else {
-        setCheckMessage(
-          'Hệ thống đang chờ giao dịch từ ngân hàng. Nếu bạn vừa chuyển, vui lòng chờ 30-60 giây và bấm lại!'
-        );
+      if (data.success && data.business) {
+        // Kiểm tra đúng gói đang mua đã được kích hoạt chưa
+        let isPlanActive = false;
+        if (selectedPlan?.pageType === 'party') {
+          isPlanActive = selectedPlan.tier === 'vip' ? Boolean(data.business.is_party_vip) : Boolean(data.business.is_party_active);
+        } else {
+          isPlanActive = selectedPlan?.tier === 'vip' ? Boolean(data.business.is_deal_vip) : Boolean(data.business.is_deal_active);
+        }
+
+        if (isPlanActive) {
+          setPaymentSuccess(true);
+          return;
+        }
       }
+
+      setCheckMessage(
+        'Hệ thống đang chờ giao dịch từ ngân hàng. Nếu bạn vừa chuyển, vui lòng chờ 30-60 giây và bấm lại!'
+      );
     } catch {
       setCheckMessage('Có lỗi kết nối mạng. Vui lòng thử lại sau giây lát!');
     } finally {

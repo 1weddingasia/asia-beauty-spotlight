@@ -78,20 +78,45 @@ export async function POST(request: Request) {
     }
 
     // 2. Kiểm tra trạng thái kích hoạt gói từ bảng memberships và party profiles
-    const { data: activeMems } = await supabase
+    const { data: activeMems, error: memError } = await supabase
       .from('memberships')
       .select('id, status, starts_at, expires_at, plans(code, plan_type, tier, name)')
       .eq('business_id', business.id)
       .eq('status', 'active')
+      .lte('starts_at', new Date().toISOString())
       .gt('expires_at', new Date().toISOString());
+
+    if (memError) {
+      console.error('[CheckPaymentStatus] Memberships query error:', memError);
+      return NextResponse.json({ success: false, error: 'Lỗi truy vấn dữ liệu' }, { status: 500 });
+    }
 
     const partyProfile = Array.isArray(business.business_party_profiles)
       ? business.business_party_profiles[0]
       : business.business_party_profiles;
 
-    const isPartyActive = Boolean(partyProfile?.is_active) || activeMems?.some((m: any) => m.plans?.plan_type === 'party');
-    const isPartyVip = Boolean(partyProfile?.is_vip) || activeMems?.some((m: any) => m.plans?.plan_type === 'party' && m.plans?.tier === 'vip');
-    const isDealActive = activeMems?.some((m: any) => m.plans?.plan_type === 'deal');
+    const getPlan = (m: any) => (Array.isArray(m.plans) ? m.plans[0] : m.plans);
+
+    const isPartyActive = Boolean(partyProfile?.is_active) || Boolean(activeMems?.some((m: any) => {
+      const p = getPlan(m);
+      return p?.plan_type === 'party' || p?.name?.includes('Tiệc');
+    }));
+
+    const isPartyVip = Boolean(partyProfile?.is_vip) || Boolean(activeMems?.some((m: any) => {
+      const p = getPlan(m);
+      return (p?.plan_type === 'party' || p?.name?.includes('Tiệc')) && (p?.tier === 'vip' || p?.code === 'tiec_vip');
+    }));
+
+    const isDealActive = Boolean(activeMems?.some((m: any) => {
+      const p = getPlan(m);
+      return p?.plan_type === 'deal' || p?.name?.includes('Ưu Đãi');
+    }));
+
+    const isDealVip = Boolean(activeMems?.some((m: any) => {
+      const p = getPlan(m);
+      return (p?.plan_type === 'deal' || p?.name?.includes('Ưu Đãi')) && (p?.tier === 'vip' || p?.code === 'udai_vip');
+    }));
+
     const isPremium = business.plan_tier === 'premium';
     const isActivated = Boolean((activeMems && activeMems.length > 0) || isPartyActive || isPremium);
 
@@ -105,6 +130,7 @@ export async function POST(request: Request) {
         slug: business.slug,
         plan_tier: business.plan_tier,
         is_deal_active: isDealActive,
+        is_deal_vip: isDealVip,
         is_party_active: isPartyActive,
         is_party_vip: isPartyVip,
       },
