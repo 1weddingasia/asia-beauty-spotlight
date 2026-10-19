@@ -315,11 +315,11 @@ export default function BusinessProfilePage() {
         }
       }
 
-      await revalidatePagePath(`/${business.slug}`);
+      const revalPaths = [`/${business.slug}`];
       if (isFnB) {
-        await revalidatePagePath(`/${business.slug}/tiec`);
-        await revalidatePagePath(`/tat-nien`);
+        revalPaths.push(`/${business.slug}/tiec`, `/tat-nien`);
       }
+      await Promise.all(revalPaths.map((p) => revalidatePagePath(p)));
       toast.success("Đã lưu thông tin doanh nghiệp");
     } catch (error: any) {
       toast.error("Lỗi khi lưu: " + error.message);

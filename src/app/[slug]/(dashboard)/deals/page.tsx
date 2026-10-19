@@ -257,12 +257,14 @@ export default function DealsManagementPage() {
           <p className="text-muted-foreground text-sm mt-1">Cài đặt bảng giá dịch vụ, các gói ưu đãi và cấu hình mua kèm.</p>
         </div>
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-          <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
-            <Link href={`/${slug}`} target="_blank">
-              <Store className="mr-2 size-4" />
-              Xem Trang Ưu Đãi
-            </Link>
-          </Button>
+          {typeof slug === 'string' && (
+            <Button asChild variant="outline" className="border-gold text-gold hover:bg-gold/10 hidden md:flex">
+              <Link href={`/${slug}`} target="_blank">
+                <Store className="mr-2 size-4" />
+                Xem Trang Ưu Đãi
+              </Link>
+            </Button>
+          )}
           <Button onClick={handleSave} disabled={saving} className="bg-gold text-ink hover:bg-gold/90 w-full md:w-auto">
             <Save className="mr-2 size-4" />
             {saving ? "Đang lưu..." : "Lưu thay đổi"}

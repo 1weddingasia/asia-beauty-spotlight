@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { LogOut, Sparkles, LayoutDashboard, Store, Ticket, Users, Settings, AlertTriangle } from "lucide-react";
 import SidebarNav from "./SidebarNav";
 import MobileBottomNav from "./MobileBottomNav";
@@ -51,7 +52,7 @@ export default async function BusinessDashboardLayout({
     redirect("/dashboard");
   }
 
-  const isFnB = isFnBCategory(business?.category_slug);
+  const isFnB = isFnBCategory(business.category_slug);
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
@@ -61,7 +62,7 @@ export default async function BusinessDashboardLayout({
         </Link>
         <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
           <Button variant="ghost" size="sm" asChild className="px-2 sm:px-3 text-zinc-700 hover:text-black">
-            <Link href={business ? `/${business.slug}` : "/"} target="_blank">
+            <Link href={`/${business.slug}`} target="_blank">
               <Store className="size-4 sm:mr-1.5 text-gold" />
               <span className="hidden sm:inline">Xem Trang Ưu Đãi</span>
             </Link>
@@ -94,7 +95,9 @@ export default async function BusinessDashboardLayout({
               {business?.name || "Chưa có doanh nghiệp"}
             </h3>
           </div>
-          <SidebarNav slug={slug} categorySlug={business.category_slug} />
+          <Suspense fallback={<div className="flex-1 px-4 py-2" />}>
+            <SidebarNav slug={slug} categorySlug={business.category_slug} />
+          </Suspense>
           <div className="p-4 mt-auto">
             {(() => {
               const bizStatus = business?.status || 'trial';
@@ -155,7 +158,9 @@ export default async function BusinessDashboardLayout({
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <MobileBottomNav slug={slug} categorySlug={business?.category_slug} />
+      <Suspense fallback={null}>
+        <MobileBottomNav slug={slug} categorySlug={business.category_slug} />
+      </Suspense>
     </div>
   );
 }
