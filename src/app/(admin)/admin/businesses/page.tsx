@@ -13,6 +13,7 @@ export default async function AdminBusinessesPage() {
       memberships(id, status, starts_at, expires_at, plan_id, plans(name, price_yearly))
     `)
     .order("created_at", { ascending: false })
+    .order("expires_at", { ascending: false, referencedTable: "memberships" })
     .limit(250);
 
   if (error) {

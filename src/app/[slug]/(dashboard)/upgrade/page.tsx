@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Check, Loader2, Sparkles, Building2, Utensils, ArrowRight, Clock, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Check, Loader2, Sparkles, Building2, Utensils, Clock, CheckCircle2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { activateMembershipAction } from "@/app/actions/membership";
 import { toast } from "sonner";

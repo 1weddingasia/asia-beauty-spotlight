@@ -30,6 +30,9 @@ export async function activateMembershipAction(payload: {
     const { businessId, planId, durationYears = 1, amount = 0, provider = "VietQR-SePay", transactionRef } = payload;
     if (!businessId) return { success: false, error: "Thiếu mã định danh doanh nghiệp." };
 
+    // Validate bounds on duration
+    const validDurationYears = Math.min(5, Math.max(1, Math.round(Number(durationYears) || 1)));
+
     const supabaseAdmin = getSupabaseAdmin();
 
     // 1. Kiểm tra plan
@@ -54,6 +57,9 @@ export async function activateMembershipAction(payload: {
       return { success: false, error: "Không tìm thấy doanh nghiệp." };
     }
 
+    // Derive effective financial amount from plan unless specifically overridden
+    const effectiveAmount = amount > 0 ? Number(amount) : Number(plan.price_yearly) || 0;
+
     // 3. Tính toán thời hạn gói mới (Cộng dồn nếu gói hiện tại chưa hết hạn)
     const { data: currentMem } = await supabaseAdmin
       .from("memberships")
@@ -72,7 +78,7 @@ export async function activateMembershipAction(payload: {
       }
     }
 
-    const durationMs = durationYears * 365 * 24 * 60 * 60 * 1000;
+    const durationMs = validDurationYears * 365 * 24 * 60 * 60 * 1000;
     const newExpiresAt = new Date(baseTime + durationMs);
 
     // 4. Cập nhật hoặc thêm mới membership
@@ -130,7 +136,7 @@ export async function activateMembershipAction(payload: {
       await supabaseAdmin.from("payments").insert({
         business_id: business.id,
         membership_id: membershipId,
-        amount: amount || Number(plan.price_yearly) || 0,
+        amount: effectiveAmount,
         provider,
         transaction_id: transactionRef || `TXN-${Date.now()}`,
         status: "completed",
@@ -193,32 +199,70 @@ export async function adminManageMembershipAction(payload: {
 
     const now = new Date();
 
+    // Tìm membership hiện tại của quán
+    const { data: currentMem } = await supabaseAdmin
+      .from("memberships")
+      .select("id, status, expires_at, plan_id")
+      .eq("business_id", business.id)
+      .order("expires_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
     if (action === "extend_trial_30") {
-      const newExpiry = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-      await supabaseAdmin.from("memberships").upsert(
-        {
+      let baseTime = now.getTime();
+      if (currentMem?.expires_at) {
+        const curExp = new Date(currentMem.expires_at).getTime();
+        if (curExp > now.getTime()) {
+          baseTime = curExp; // Cộng thêm 30 ngày nối tiếp
+        }
+      }
+      const newExpiry = new Date(baseTime + 30 * 24 * 60 * 60 * 1000);
+
+      if (currentMem) {
+        await supabaseAdmin.from("memberships").update({
+          status: "trial",
+          expires_at: newExpiry.toISOString(),
+        }).eq("id", currentMem.id);
+      } else {
+        await supabaseAdmin.from("memberships").insert({
           business_id: business.id,
           plan_id: business.plan_id || udaiPlan?.id,
           status: "trial",
           starts_at: now.toISOString(),
           expires_at: newExpiry.toISOString(),
-        },
-        { onConflict: "id" }
-      );
+        });
+      }
 
       await supabaseAdmin.from("businesses").update({
         status: "published",
         plan_tier: "trial",
       }).eq("id", business.id);
+
     } else if (action === "activate_udai_1year" && udaiPlan) {
-      const newExpiry = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
-      await supabaseAdmin.from("memberships").insert({
-        business_id: business.id,
-        plan_id: udaiPlan.id,
-        status: "active",
-        starts_at: now.toISOString(),
-        expires_at: newExpiry.toISOString(),
-      });
+      let baseTime = now.getTime();
+      if (currentMem?.expires_at) {
+        const curExp = new Date(currentMem.expires_at).getTime();
+        if (curExp > now.getTime()) {
+          baseTime = curExp; // Cộng nối tiếp 365 ngày
+        }
+      }
+      const newExpiry = new Date(baseTime + 365 * 24 * 60 * 60 * 1000);
+
+      if (currentMem) {
+        await supabaseAdmin.from("memberships").update({
+          plan_id: udaiPlan.id,
+          status: "active",
+          expires_at: newExpiry.toISOString(),
+        }).eq("id", currentMem.id);
+      } else {
+        await supabaseAdmin.from("memberships").insert({
+          business_id: business.id,
+          plan_id: udaiPlan.id,
+          status: "active",
+          starts_at: now.toISOString(),
+          expires_at: newExpiry.toISOString(),
+        });
+      }
 
       await supabaseAdmin.from("businesses").update({
         plan_id: udaiPlan.id,
@@ -226,15 +270,32 @@ export async function adminManageMembershipAction(payload: {
         status: "published",
         is_featured: true,
       }).eq("id", business.id);
+
     } else if (action === "activate_tiec_1year" && tiecPlan) {
-      const newExpiry = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
-      await supabaseAdmin.from("memberships").insert({
-        business_id: business.id,
-        plan_id: tiecPlan.id,
-        status: "active",
-        starts_at: now.toISOString(),
-        expires_at: newExpiry.toISOString(),
-      });
+      let baseTime = now.getTime();
+      if (currentMem?.expires_at) {
+        const curExp = new Date(currentMem.expires_at).getTime();
+        if (curExp > now.getTime()) {
+          baseTime = curExp; // Cộng nối tiếp 365 ngày
+        }
+      }
+      const newExpiry = new Date(baseTime + 365 * 24 * 60 * 60 * 1000);
+
+      if (currentMem) {
+        await supabaseAdmin.from("memberships").update({
+          plan_id: tiecPlan.id,
+          status: "active",
+          expires_at: newExpiry.toISOString(),
+        }).eq("id", currentMem.id);
+      } else {
+        await supabaseAdmin.from("memberships").insert({
+          business_id: business.id,
+          plan_id: tiecPlan.id,
+          status: "active",
+          starts_at: now.toISOString(),
+          expires_at: newExpiry.toISOString(),
+        });
+      }
 
       await supabaseAdmin.from("businesses").update({
         plan_id: tiecPlan.id,
@@ -242,18 +303,31 @@ export async function adminManageMembershipAction(payload: {
         status: "published",
         is_featured: true,
       }).eq("id", business.id);
+
     } else if (action === "suspend") {
       await supabaseAdmin.from("businesses").update({
         status: "suspended",
       }).eq("id", business.id);
 
-      await supabaseAdmin.from("memberships").update({
-        status: "suspended",
-      }).eq("business_id", business.id);
+      if (currentMem) {
+        await supabaseAdmin.from("memberships").update({
+          status: "suspended",
+        }).eq("id", currentMem.id);
+      }
+
     } else if (action === "activate") {
       await supabaseAdmin.from("businesses").update({
         status: "published",
       }).eq("id", business.id);
+
+      if (currentMem && currentMem.status === "suspended") {
+        const isStillValid = new Date(currentMem.expires_at) > now;
+        await supabaseAdmin.from("memberships").update({
+          status: isStillValid ? "active" : "expired",
+        }).eq("id", currentMem.id);
+      }
+    } else {
+      return { success: false, error: "Hành động không hợp lệ." };
     }
 
     revalidatePath("/admin/businesses");
