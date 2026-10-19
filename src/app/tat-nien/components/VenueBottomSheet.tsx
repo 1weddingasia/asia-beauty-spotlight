@@ -161,6 +161,8 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     .map((p) => PARTY_PERKS.find((item) => item.id === p)?.label || p)
     .filter(Boolean);
 
+  const venueMenuUrl = venue.party_menu_url || venue.page_content?.menu_url || null;
+
   return (
     <Drawer open={!!venue} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent className="bg-zinc-950/98 border-t border-amber-500/30 text-zinc-100 max-h-[88dvh] rounded-t-3xl overflow-hidden shadow-2xl flex flex-col backdrop-blur-xl">
@@ -517,6 +519,25 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
               {venue.party_description && (
                 <div className="bg-zinc-900/60 rounded-xl p-3 border border-zinc-800/80 text-xs text-zinc-300 leading-relaxed mb-4 text-left">
                   {venue.party_description}
+                </div>
+              )}
+
+              {/* Menu link Google Drive */}
+              {venueMenuUrl && (
+                <div className="mb-3.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-left">
+                  <div className="flex items-center gap-2">
+                    <Wine className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span className="text-xs font-bold text-white">Thực đơn &amp; Báo giá tiệc chi tiết</span>
+                  </div>
+                  <a
+                    href={venueMenuUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shrink-0"
+                  >
+                    <span>Mở Menu Drive</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
               )}
 

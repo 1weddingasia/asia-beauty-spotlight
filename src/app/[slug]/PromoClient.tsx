@@ -339,6 +339,7 @@ export default function PromoClient({
   const partySpaces = Array.isArray(partyProfile?.spaces_and_amenities) ? partyProfile.spaces_and_amenities : [];
   const partyPerks = Array.isArray(partyProfile?.party_perks) ? partyProfile.party_perks : [];
   const partyMenus = Array.isArray(partyProfile?.set_menus) ? partyProfile.set_menus : [];
+  const menuLink = business.page_content?.menu_url || partyProfile?.party_menu_url || null;
 
   return (
     <div className="min-h-screen relative transition-colors duration-300 pb-24 md:pb-16 bg-[#FCFAF5] text-ink">
@@ -451,6 +452,17 @@ export default function PromoClient({
             >
               <ActionIcon className="size-5" /> {actionNameUpper}
             </button>
+            {menuLink && (
+              <a
+                href={menuLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-white/95 hover:bg-white text-ink font-bold px-7 py-3.5 md:py-3 rounded-full shadow-lg border border-gold/40 hover:scale-105 transition-all w-64 sm:w-auto"
+              >
+                <Utensils className="size-5 text-amber-600" />
+                <span>Xem Menu Món Ăn</span>
+              </a>
+            )}
           </div>
           
           {views && (
@@ -489,6 +501,41 @@ export default function PromoClient({
                 <span>Khám Phá Sảnh Tiệc</span>
                 <ChevronRight className="w-4 h-4" />
               </Link>
+            </div>
+          </div>
+        )}
+
+        {/* 📋 BANNER THỰC ĐƠN / MENU MÓN ĂN GOOGLE DRIVE */}
+        {menuLink && (
+          <div className="mb-8 bg-gradient-to-r from-amber-50 via-white to-orange-50/70 rounded-3xl p-5 md:p-6 border border-amber-300/80 shadow-lg shadow-amber-500/5 text-left relative overflow-hidden backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-black flex items-center justify-center shrink-0 shadow-md">
+                  <Utensils className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-bold text-base md:text-lg text-ink font-display">
+                      Thực Đơn &amp; Bảng Giá Món Ăn Chi Tiết
+                    </h3>
+                    <span className="text-[10px] font-bold bg-amber-500/20 text-amber-900 border border-amber-400/50 px-2.5 py-0.5 rounded-full">
+                      Google Drive
+                    </span>
+                  </div>
+                  <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
+                    Xem trọn bộ danh sách món ăn, set combo và thực đơn đồ uống được nhà hàng cập nhật trực tiếp.
+                  </p>
+                </div>
+              </div>
+              <a
+                href={menuLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all shrink-0 w-full sm:w-auto"
+              >
+                <Utensils className="w-4 h-4" />
+                <span>Mở Xem Menu ↗</span>
+              </a>
             </div>
           </div>
         )}
@@ -1223,14 +1270,26 @@ export default function PromoClient({
       </div>
 
       {/* 🌟 NÚT BẤM DÍNH ĐÁY MÀN HÌNH (FIXED BOTTOM CTA CHO MOBILE) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-3 flex gap-3 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-3 flex gap-2 md:hidden">
+        {menuLink && (
+          <a
+            href={menuLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3.5 py-3 rounded-xl flex items-center justify-center gap-1.5 shadow-sm active:scale-95 shrink-0"
+            title="Xem menu món ăn trên Google Drive"
+          >
+            <Utensils className="size-4 text-amber-600" />
+            <span className="font-black">Menu</span>
+          </a>
+        )}
         <button
           onClick={() => {
             document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
           }}
           className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 transition-all duration-200 active:scale-95 active:opacity-90 hover:bg-gold hover:text-white"
         >
-          <span className="flex items-center justify-center gap-2"><Gift className="size-4" /> Nhận Ưu Đãi</span>
+          <span className="flex items-center justify-center gap-1.5"><Gift className="size-4" /> Nhận Ưu Đãi</span>
         </button>
         <button
           onClick={() => {
@@ -1240,7 +1299,7 @@ export default function PromoClient({
           }}
           className="flex-1 bg-ink text-white font-bold text-sm py-3 rounded-xl transition-all duration-200 shadow-lg active:scale-95 active:opacity-90 hover:bg-gold"
         >
-          <span className="flex items-center justify-center gap-2"><ActionIcon className="size-4" /> {actionName} Ngay</span>
+          <span className="flex items-center justify-center gap-1.5"><ActionIcon className="size-4" /> {actionName}</span>
         </button>
       </div>
 

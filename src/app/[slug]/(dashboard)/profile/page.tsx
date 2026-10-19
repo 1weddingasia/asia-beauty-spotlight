@@ -58,6 +58,7 @@ export default function BusinessProfilePage() {
     party_banner_url: null,
     party_gallery: [],
     set_menus: [],
+    party_menu_url: "",
     is_vip: false,
   });
 
@@ -96,6 +97,7 @@ export default function BusinessProfilePage() {
     amenities: [],
     map_embed: "",
     booking_url: "",
+    menu_url: "",
     price_range: "",
     working_hours: [
       { day: "Thứ 2", hours: "09:00 - 20:00" },
@@ -140,6 +142,7 @@ export default function BusinessProfilePage() {
                   deals: Array.isArray(parsed.deals) ? parsed.deals : prev.deals,
                   amenities: Array.isArray(parsed.amenities) ? parsed.amenities : prev.amenities,
                   banners: Array.isArray(parsed.banners) ? parsed.banners : prev.banners,
+                  menu_url: parsed.menu_url || "",
                 }));
               } catch (e) { console.error(e); }
             } else {
@@ -179,6 +182,7 @@ export default function BusinessProfilePage() {
                     party_banner_url: pData.party_banner_url || null,
                     party_gallery: Array.isArray(pData.party_gallery) ? pData.party_gallery : [],
                     set_menus: Array.isArray(pData.set_menus) ? pData.set_menus : [],
+                    party_menu_url: pData.party_menu_url || "",
                     is_vip: Boolean(pData.is_vip),
                   });
                 }
@@ -305,6 +309,9 @@ export default function BusinessProfilePage() {
               ? partyProfile.party_gallery.filter((u: any) => typeof u === 'string' && /^https?:\/\//.test(u))
               : [],
             set_menus: partyProfile.set_menus || [],
+            party_menu_url: typeof partyProfile.party_menu_url === 'string' && partyProfile.party_menu_url.trim().length > 0
+              ? partyProfile.party_menu_url.trim()
+              : null,
             is_vip: Boolean(partyProfile.is_vip),
             is_active: Boolean(partyProfile.is_active),
             updated_at: new Date().toISOString(),
@@ -448,6 +455,32 @@ export default function BusinessProfilePage() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Link Google Drive Menu Món Ăn */}
+            <div className="space-y-3 pt-6 border-t">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <Label className="text-base font-semibold flex items-center gap-2">
+                    <Utensils className="size-5 text-gold" /> Link Thực Đơn / Menu Món Ăn (Google Drive / PDF)
+                  </Label>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    Dán đường link Google Drive (chế độ công khai &quot;Bất kỳ ai có đường liên kết đều có thể xem&quot;) để khách hàng mở xem chi tiết thực đơn món ăn & đồ uống.
+                  </p>
+                </div>
+                {pageContent.menu_url && /^https?:\/\//.test(pageContent.menu_url) && (
+                  <Button asChild variant="outline" size="sm" className="border-gold text-gold hover:bg-gold/10 shrink-0">
+                    <a href={pageContent.menu_url} target="_blank" rel="noopener noreferrer">
+                      Xem thử link ↗
+                    </a>
+                  </Button>
+                )}
+              </div>
+              <Input
+                value={pageContent.menu_url || ""}
+                onChange={(e) => handlePageContentChange("menu_url", e.target.value)}
+                placeholder="https://drive.google.com/file/d/... hoặc link thực đơn trực tuyến"
+              />
             </div>
           </div>
         </TabsContent>
@@ -965,6 +998,32 @@ export default function BusinessProfilePage() {
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* Link Google Drive Thực Đơn Tiệc & Báo Giá Chi Tiết */}
+              <div className="space-y-3 pt-4 border-t border-amber-500/20 bg-amber-500/5 p-4 md:p-5 rounded-2xl border">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <Label className="text-sm font-bold text-amber-500 flex items-center gap-1.5">
+                      <Wine className="size-4" /> Link Thực Đơn Tiệc & Báo Giá Trọn Gói (Google Drive / Brochure PDF)
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Dán link Google Drive chứa file PDF hoặc ảnh trọn bộ thực đơn tiệc tất niên, các gói set menu và bảng giá đồ uống để khách tham khảo chi tiết.
+                    </p>
+                  </div>
+                  {partyProfile.party_menu_url && /^https?:\/\//.test(partyProfile.party_menu_url) && (
+                    <Button asChild variant="outline" size="sm" className="border-amber-500 text-amber-600 hover:bg-amber-50 shrink-0">
+                      <a href={partyProfile.party_menu_url} target="_blank" rel="noopener noreferrer">
+                        Xem thử link tiệc ↗
+                      </a>
+                    </Button>
+                  )}
+                </div>
+                <Input
+                  value={partyProfile.party_menu_url || ""}
+                  onChange={(e) => handlePartyProfileChange("party_menu_url", e.target.value)}
+                  placeholder="https://drive.google.com/file/d/... hoặc https://drive.google.com/drive/folders/..."
+                />
               </div>
 
               {/* Danh sách Set Menu động */}

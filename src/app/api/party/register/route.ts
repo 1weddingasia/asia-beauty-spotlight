@@ -74,6 +74,7 @@ const RegisterSchema = z
     min_guests: z.number().int().min(1).max(2000).default(15),
     max_guests: z.number().int().min(1).max(5000).default(200),
     photo_url: z.string().optional(),
+    party_menu_url: z.string().optional(),
   })
   .refine((data) => data.min_guests <= data.max_guests, {
     message: 'Số khách tối thiểu không được lớn hơn sức chứa tối đa',
@@ -109,6 +110,7 @@ export async function POST(req: NextRequest) {
       min_guests,
       max_guests,
       photo_url,
+      party_menu_url,
     } = parsed.data;
 
     const supabase = await createAdminClient();
@@ -233,6 +235,7 @@ export async function POST(req: NextRequest) {
             action_name: 'Đặt Bàn Ngay',
             party_deal: party_deal.trim(),
             contact_person: contact_name || 'Chủ quán',
+            menu_url: party_menu_url && party_menu_url.trim().length > 0 ? party_menu_url.trim() : prevContent.menu_url || null,
           },
           updated_at: new Date().toISOString(),
         })
@@ -282,6 +285,7 @@ export async function POST(req: NextRequest) {
             action_name: 'Đặt Bàn Ngay',
             party_deal: party_deal.trim(),
             contact_person: contact_name || 'Chủ quán',
+            menu_url: party_menu_url && party_menu_url.trim().length > 0 ? party_menu_url.trim() : null,
           },
         })
         .select('id')
@@ -310,6 +314,7 @@ export async function POST(req: NextRequest) {
           party_perks: ['tang_bia', 'free_karaoke'],
           party_deal_highlight: party_deal.trim(),
           party_description: `Sảnh tiệc tất niên sang trọng tại ${name.trim()}. Nhận tiệc từ ${min_guests} đến ${max_guests} khách với ưu đãi độc quyền: ${party_deal.trim()}.`,
+          party_menu_url: party_menu_url && party_menu_url.trim().length > 0 ? party_menu_url.trim() : null,
           set_menus: [
             { name: 'Set Tiệc Thịnh Vượng (10 người)', price: priceMin * 10, pax: 10 },
             { name: 'Set Tiệc Thượng Hạng (10 người)', price: priceMax * 10, pax: 10 },

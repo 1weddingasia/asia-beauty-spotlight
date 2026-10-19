@@ -53,6 +53,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
   const [minGuests, setMinGuests] = useState<number | ''>(20);
   const [maxGuests, setMaxGuests] = useState<number | ''>(250);
   const [photoUrl, setPhotoUrl] = useState('/images/demo/nha-hang/que-nha-banquet-luxury.jpg');
+  const [partyMenuUrl, setPartyMenuUrl] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -147,6 +148,7 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
           min_guests: minG,
           max_guests: maxG,
           photo_url: photoUrl.trim(),
+          party_menu_url: partyMenuUrl.trim(),
         }),
       });
 
@@ -556,6 +558,24 @@ export default function DangKyClient({ districts = [] }: DangKyClientProps) {
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* 7. Link Google Drive Thực Đơn / Menu Món Ăn (Tùy chọn) */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-zinc-200 uppercase mb-1 flex items-center gap-1.5">
+                <Utensils className="w-3.5 h-3.5 text-amber-400" />
+                Link Thực Đơn / Menu Món Ăn (Google Drive - Tùy chọn)
+              </label>
+              <input
+                type="text"
+                value={partyMenuUrl}
+                onChange={(e) => setPartyMenuUrl(e.target.value)}
+                placeholder="VD: https://drive.google.com/file/d/... (chế độ công khai ai có link đều xem được)"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 transition-colors"
+              />
+              <p className="text-[11px] text-zinc-400">
+                Dán đường link Google Drive menu để khách hàng xem chi tiết trọn bộ các món ăn và báo giá khi bấm vào nhà hàng.
+              </p>
             </div>
 
             {/* Quy trình & Cam kết */}

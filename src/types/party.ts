@@ -20,6 +20,7 @@ export interface BusinessPartyProfile {
   party_deal_highlight: string | null;
   party_banner_url?: string | null;
   party_gallery?: string[];
+  party_menu_url?: string | null;
   set_menus: SetMenu[];
   is_vip: boolean;
   is_active: boolean;
@@ -45,6 +46,7 @@ export interface PartyVenue {
     phone?: string;
     zalo?: string;
     telegram_chat_id?: string;
+    menu_url?: string;
   };
   plan_tier: string | null;
   status: string;
@@ -64,6 +66,7 @@ export interface PartyVenue {
   party_deal_highlight: string | null;
   party_banner_url?: string | null;
   party_gallery?: string[];
+  party_menu_url?: string | null;
   set_menus: SetMenu[];
   is_vip: boolean;
   is_active: boolean;

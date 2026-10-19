@@ -158,6 +158,7 @@ export default function PartyVenueClient({
   const activeSpaces = PARTY_SPACES.filter((s) => (partyProfile.spaces_and_amenities || []).includes(s.id));
   const activeCuisines = PARTY_CUISINES.filter((c) => (partyProfile.cuisines || []).includes(c.id));
   const activePerks = PARTY_PERKS.filter((p) => (partyProfile.party_perks || []).includes(p.id));
+  const partyMenuLink = partyProfile.party_menu_url || (b.page_content as any)?.menu_url || null;
 
   return (
     <div className="min-h-screen bg-[#070b16] text-slate-100 selection:bg-amber-500 selection:text-black">
@@ -267,8 +268,20 @@ export default function PartyVenueClient({
               className="px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-black text-sm shadow-xl shadow-amber-950/50 transition-all hover:scale-105 flex items-center gap-2"
             >
               <CalendarCheck className="w-4 h-4" />
-              <span>ĐẶT BÀN TIỆC & GIỮ CHỖ VIP</span>
+              <span>ĐẶT BÀN TIỆC &amp; GIỮ CHỖ VIP</span>
             </button>
+
+            {partyMenuLink && (
+              <a
+                href={partyMenuLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-600/30 hover:from-amber-500/30 hover:to-amber-600/40 text-amber-300 hover:text-white font-bold text-sm border border-amber-500/50 transition-all hover:scale-105 flex items-center gap-2 shadow-lg"
+              >
+                <Wine className="w-4 h-4 text-amber-400" />
+                <span>Thực Đơn Chi Tiết (Google Drive)</span>
+              </a>
+            )}
 
             {b.phone && (
               <a
@@ -284,7 +297,7 @@ export default function PartyVenueClient({
       </section>
 
       {/* 3. Main Content: Sảnh tiệc, Ưu đãi, Thực đơn & Tiện ích */}
-      <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">
+      <main className="max-w-6xl mx-auto px-4 py-10 pb-24 md:pb-12 space-y-10">
         {/* Ưu đãi tiệc đặc quyền nổi bật */}
         {partyProfile.party_deal_highlight && (
           <div className="bg-gradient-to-r from-amber-500/15 via-yellow-500/20 to-amber-500/15 border-2 border-amber-500/40 rounded-3xl p-6 sm:p-8 relative overflow-hidden backdrop-blur-md">
@@ -329,7 +342,7 @@ export default function PartyVenueClient({
         {/* Thực Đơn Set Menu Tiệc */}
         {Array.isArray(partyProfile.set_menus) && partyProfile.set_menus.length > 0 && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-xl font-black text-white flex items-center gap-2">
                   <Wine className="w-5 h-5 text-amber-400" /> Thực Đơn Set Menu Tất Niên
@@ -338,6 +351,18 @@ export default function PartyVenueClient({
                   Thực đơn phong phú được thiết kế chuẩn cho bàn tiệc 10 người
                 </p>
               </div>
+
+              {partyMenuLink && (
+                <a
+                  href={partyMenuLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-white border border-amber-500/40 text-xs font-bold transition-all w-fit shrink-0"
+                >
+                  <Wine className="w-4 h-4 text-amber-400" />
+                  <span>Xem File Thực Đơn Đầy Đủ (Google Drive) ↗</span>
+                </a>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -385,6 +410,31 @@ export default function PartyVenueClient({
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* Thực đơn tiệc trên Google Drive nếu quán chưa cấu hình từng món lẻ */}
+        {(!Array.isArray(partyProfile.set_menus) || partyProfile.set_menus.length === 0) && partyMenuLink && (
+          <div className="bg-gradient-to-r from-[#0d1733] to-[#121f45] border border-amber-500/30 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5 text-center sm:text-left">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold">
+                <Wine className="w-3.5 h-3.5 text-amber-400" /> THỰC ĐƠN TIỆC TRỌN GÓI
+              </div>
+              <h3 className="text-xl font-black text-white">
+                Thực Đơn &amp; Báo Giá Tiệc Chi Tiết (Google Drive)
+              </h3>
+              <p className="text-xs sm:text-sm text-zinc-300 max-w-2xl leading-relaxed">
+                Nhà hàng đã cập nhật file brochure thực đơn tiệc, gói đồ uống và dịch vụ chi tiết trên Google Drive để quý khách và quý công ty thuận tiện lựa chọn.
+              </p>
+            </div>
+            <a
+              href={partyMenuLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase shadow-lg shadow-amber-950/50 hover:scale-105 active:scale-95 transition-all shrink-0 w-full sm:w-auto text-center"
+            >
+              Mở Thực Đơn Trên Google Drive ↗
+            </a>
           </div>
         )}
 
@@ -606,6 +656,41 @@ export default function PartyVenueClient({
           )}
         </DialogContent>
       </Dialog>
+
+      {/* 🌟 NÚT BẤM DÍNH ĐÁY MÀN HÌNH (FIXED BOTTOM CTA CHO MOBILE) */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#091024]/95 backdrop-blur-md border-t border-amber-500/20 p-3 flex gap-2 md:hidden">
+        {partyMenuLink && (
+          <a
+            href={partyMenuLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3.5 py-3 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold text-xs flex items-center justify-center gap-1.5 shrink-0"
+            title="Xem thực đơn tiệc chi tiết trên Google Drive"
+          >
+            <Wine className="w-4 h-4 text-amber-400" />
+            <span>Menu</span>
+          </a>
+        )}
+        <button
+          onClick={() => {
+            setSelectedSetMenu('');
+            setIsBookingOpen(true);
+          }}
+          className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs py-3 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5 uppercase"
+        >
+          <CalendarCheck className="w-4 h-4" />
+          <span>Đặt Bàn Tiệc VIP</span>
+        </button>
+        {b.phone && (
+          <a
+            href={`tel:${b.phone.replace(/\D/g, '')}`}
+            className="px-3.5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center shrink-0"
+            title="Gọi hotline"
+          >
+            <Phone className="w-4 h-4" />
+          </a>
+        )}
+      </div>
     </div>
   );
 }
