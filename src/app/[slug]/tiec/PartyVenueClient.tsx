@@ -27,6 +27,7 @@ import {
   Building2,
   FileText,
   CheckCircle,
+  Info,
 } from 'lucide-react';
 import {
   Dialog,
@@ -220,16 +221,30 @@ export default function PartyVenueClient({
                 ⭐ Điểm Tiệc Đề Xuất TOP 1
               </span>
             )}
+            {partyProfile.is_demo && (
+              <span className="px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/30 text-xs font-semibold flex items-center gap-1">
+                <Info className="w-3.5 h-3.5 text-sky-400" /> Bản xem trước (Demo)
+              </span>
+            )}
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-3">
             {b.name}
           </h1>
 
-          <p className="text-zinc-300 text-xs sm:text-sm flex items-center gap-1.5 max-w-2xl mb-6">
+          <p className="text-zinc-300 text-xs sm:text-sm flex items-center gap-1.5 max-w-2xl mb-4">
             <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
             <span>{b.address || 'Đang cập nhật địa chỉ'}</span>
           </p>
+
+          {partyProfile.is_demo && (
+            <div className="bg-amber-500/10 border border-amber-500/25 text-amber-200/90 text-xs px-3.5 py-2.5 rounded-xl flex items-center gap-2.5 max-w-2xl mb-6">
+              <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>
+                <strong>Hồ sơ mẫu tham khảo:</strong> Dữ liệu thực đơn và thông số sảnh tiệc đang ở chế độ xem trước minh họa. Vui lòng liên hệ trực tiếp nhà hàng để nhận báo giá và tư vấn chính xác nhất.
+              </span>
+            </div>
+          )}
 
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mb-8">

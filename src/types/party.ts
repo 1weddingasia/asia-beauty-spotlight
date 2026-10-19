@@ -43,6 +43,7 @@ export interface BusinessPartyProfile {
   party_specifications?: PartySpecification[];
   is_vip: boolean;
   is_active: boolean;
+  is_demo?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -71,6 +72,7 @@ export interface PartyVenue {
   status: string;
   category_slug: string | null;
   location_slug?: string | null;
+  is_demo?: boolean;
 
   // Từ bảng business_party_profiles
   min_guests: number;

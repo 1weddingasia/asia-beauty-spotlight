@@ -232,6 +232,7 @@ export async function POST(req: NextRequest) {
           location_slug: districtRow.slug,
           map_coordinates: mapCoordinates,
           plan_tier: 'vip',
+          is_demo: false,
           page_content: {
             ...prevContent,
             hero_image: finalPhoto,
@@ -280,6 +281,7 @@ export async function POST(req: NextRequest) {
           location_slug: districtRow.slug,
           status: 'active',
           plan_tier: 'vip',
+          is_demo: false,
           claim_token: activeClaimToken,
           map_coordinates: mapCoordinates,
           page_content: {
@@ -320,6 +322,9 @@ export async function POST(req: NextRequest) {
           party_deal_highlight: party_deal.trim(),
           party_description: `Sảnh tiệc tất niên sang trọng tại ${name.trim()}. Nhận tiệc từ ${min_guests} đến ${max_guests} khách với ưu đãi độc quyền: ${party_deal.trim()}.`,
           party_menu_url: normalizedMenuUrl,
+          is_active: true,
+          is_demo: false,
+          updated_at: new Date().toISOString(),
           party_halls: [
             {
               id: 'hall-1',
@@ -377,8 +382,6 @@ export async function POST(req: NextRequest) {
             },
           ],
           is_vip: true,
-          is_active: true, // Kích hoạt ngay để quán sẵn sàng hiển thị trên Bản Đồ Phố Tiệc
-          updated_at: new Date().toISOString(),
         },
         { onConflict: 'business_id' }
       );

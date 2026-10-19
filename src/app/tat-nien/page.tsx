@@ -85,7 +85,8 @@ export default async function TatNienPage() {
         party_halls,
         party_specifications,
         is_vip,
-        is_active
+        is_active,
+        is_demo
       )
     `)
     .in('status', ['published', 'active'])
@@ -98,8 +99,19 @@ export default async function TatNienPage() {
   // 2. 📍 TRUY VẤN DANH SÁCH QUẬN / HUYỆN TỪ DATABASE THẬT (directory_locations)
   const districts = await getHcmcPartyDistricts(supabase);
 
+  // Biến môi trường tùy chọn: Nếu đặt NEXT_PUBLIC_HIDE_DEMO_PARTY=true thì chỉ hiện quán thật
+  const hideDemoEnv = process.env.NEXT_PUBLIC_HIDE_DEMO_PARTY === 'true';
+
   // Chuyển đổi dữ liệu chuẩn hóa
-  const venues: PartyVenue[] = (businesses || []).map((b: any) => {
+  const venues: PartyVenue[] = (businesses || [])
+    .filter((b: any) => {
+      if (!hideDemoEnv) return true;
+      const profile = Array.isArray(b.business_party_profiles)
+        ? b.business_party_profiles[0]
+        : b.business_party_profiles;
+      return !b.is_demo && !profile?.is_demo;
+    })
+    .map((b: any) => {
     const profile = Array.isArray(b.business_party_profiles)
       ? b.business_party_profiles[0]
       : b.business_party_profiles;
@@ -117,6 +129,7 @@ export default async function TatNienPage() {
       status: b.status,
       category_slug: b.category_slug,
       location_slug: b.location_slug || null,
+      is_demo: Boolean(b.is_demo || profile?.is_demo),
       min_guests: profile?.min_guests ?? 10,
       max_guests: profile?.max_guests ?? 200,
       num_vip_rooms: profile?.num_vip_rooms ?? 0,

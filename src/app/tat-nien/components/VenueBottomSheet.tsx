@@ -199,6 +199,11 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                   {venue.num_vip_rooms} Phòng VIP riêng
                 </span>
               )}
+              {venue.is_demo && (
+                <span className="bg-sky-950/80 text-sky-300 border border-sky-500/40 text-xs font-medium px-2 py-0.5 rounded-full backdrop-blur-md">
+                  Mẫu tham khảo
+                </span>
+              )}
             </div>
 
             <div className="absolute bottom-3 left-3 right-3 text-left">
@@ -217,6 +222,14 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
           <DrawerHeader className="p-0 text-left mb-3">
             <DrawerTitle className="sr-only">{venue.name}</DrawerTitle>
             <DrawerDescription className="sr-only">Hồ sơ đặt tiệc tất niên của {venue.name}</DrawerDescription>
+
+            {/* Disclaimer for demo venues */}
+            {venue.is_demo && (
+              <div className="bg-sky-950/40 border border-sky-500/30 text-sky-200/90 text-[11px] rounded-xl p-2.5 flex items-start gap-2 shadow-sm">
+                <span className="text-sky-400 text-sm">ℹ️</span>
+                <span><strong>Hồ sơ mẫu tham khảo:</strong> Thông số tiệc và thực đơn đang hiển thị dưới dạng bản xem trước minh họa. Vui lòng liên hệ quán để nhận báo giá chính xác.</span>
+              </div>
+            )}
 
             {/* Highlight Banner Deal */}
             {venue.party_deal_highlight && (
