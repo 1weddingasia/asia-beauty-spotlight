@@ -109,17 +109,43 @@ async function syncToStandby() {
         const totalRows = parseInt(countRes.rows[0].count, 10);
         if (totalRows === 0) continue;
 
+        // Lấy thông tin các cột và kiểu dữ liệu thực tế tại Standby Database
+        const sColsRes = await standbyClient.query(
+          "SELECT column_name, udt_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = $1;",
+          [tableName]
+        );
+        if (sColsRes.rows.length === 0) {
+          console.log(` ⚠️ Bảng ${tableName} chưa tồn tại trên Standby, bỏ qua.`);
+          continue;
+        }
+
+        const sColMap = new Map(sColsRes.rows.map(r => [r.column_name, r.udt_name]));
+
         const dataRes = await primaryClient.query(`SELECT * FROM public."${tableName}";`);
         const rows = dataRes.rows;
-        const columns = Object.keys(rows[0]);
-        const colList = columns.map(c => `"${c}"`).join(', ');
+        if (rows.length === 0) continue;
+
+        // Chỉ đồng bộ những cột mà CẢ HAI database đều đang sở hữu
+        const rawColumns = Object.keys(rows[0]);
+        const commonColumns = rawColumns.filter(c => sColMap.has(c));
+        if (commonColumns.length === 0) continue;
+
+        const colList = commonColumns.map(c => `"${c}"`).join(', ');
 
         await standbyClient.query('BEGIN');
         await standbyClient.query(`TRUNCATE TABLE public."${tableName}" CASCADE;`);
 
         for (const row of rows) {
-          const values = columns.map(c => row[c]);
-          const placeholders = columns.map((_, idx) => `$${idx + 1}`).join(', ');
+          const values = commonColumns.map(c => {
+            const val = row[c];
+            const udt = sColMap.get(c);
+            // Chuẩn hóa JSON/JSONB khi node-postgres trả về JS Object / Array
+            if ((udt === 'json' || udt === 'jsonb') && val !== null && typeof val === 'object') {
+              return JSON.stringify(val);
+            }
+            return val;
+          });
+          const placeholders = commonColumns.map((_, idx) => `$${idx + 1}`).join(', ');
           await standbyClient.query(
             `INSERT INTO public."${tableName}" (${colList}) VALUES (${placeholders});`,
             values
