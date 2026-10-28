@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 const slides = [
@@ -13,13 +13,12 @@ export function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
 
-  const currentRef = useRef(0);
-  currentRef.current = current;
-
   useEffect(() => {
     const timer = setInterval(() => {
-      setPrevIndex(currentRef.current);
-      setCurrent((c) => (c + 1) % slides.length);
+      setCurrent((c) => {
+        setPrevIndex(c);
+        return (c + 1) % slides.length;
+      });
     }, 5500);
     return () => clearInterval(timer);
   }, []);

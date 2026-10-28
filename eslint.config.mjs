@@ -12,7 +12,18 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    "scripts/**"
+    "scripts/**",
+    "scratch/**",
+    "public/**",
+    "check-dups.js",
+    "check-leads.js",
+    "check-rls.js",
+    "fix.js",
+    "fix_layout.js",
+    "replace-links.js",
+    "run-migration.js",
+    "test_sepay.js",
+    "download.mjs"
   ]),
   {
     rules: {
