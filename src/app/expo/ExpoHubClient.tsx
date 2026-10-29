@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -18,6 +18,13 @@ import {
   ArrowUpDown,
 } from 'lucide-react';
 import { CountryFlag } from './CountryFlag';
+
+export type SortKey = 'booth_asc' | 'booth_desc' | 'name_asc' | 'name_desc';
+
+export function getZone(boothNumber: string): string {
+  const match = (boothNumber || '').match(/^([A-Za-z]+)/);
+  return match ? match[1].toUpperCase() : 'OTHER';
+}
 
 interface BoothItem {
   id: string;
@@ -79,6 +86,8 @@ const HUB_I18N: Record<HubLang, {
   prevPage: string;
   nextPage: string;
   resetFilter: string;
+  pageWord: string;
+  totalWord: string;
 }> = {
   vi: {
     eventTag: 'TRIỂN LÃM QUỐC TẾ NHƯỢNG QUYỀN • SECC TP.HCM',
@@ -111,6 +120,8 @@ const HUB_I18N: Record<HubLang, {
     prevPage: 'Trước',
     nextPage: 'Sau',
     resetFilter: 'Đặt lại',
+    pageWord: 'Trang',
+    totalWord: 'Tổng cộng',
   },
   en: {
     eventTag: 'INTERNATIONAL FRANCHISE EXHIBITION • SECC HCMC',
@@ -143,6 +154,8 @@ const HUB_I18N: Record<HubLang, {
     prevPage: 'Prev',
     nextPage: 'Next',
     resetFilter: 'Reset',
+    pageWord: 'Page',
+    totalWord: 'Total',
   },
   ko: {
     eventTag: '국제 프랜차이즈 박람회 • 호치민 SECC',
@@ -175,6 +188,8 @@ const HUB_I18N: Record<HubLang, {
     prevPage: '이전',
     nextPage: '다음',
     resetFilter: '초기화',
+    pageWord: '페이지',
+    totalWord: '총',
   },
   zh: {
     eventTag: '国际特许加盟展览会 • 胡志明市 SECC',
@@ -207,6 +222,8 @@ const HUB_I18N: Record<HubLang, {
     prevPage: '上一页',
     nextPage: '下一页',
     resetFilter: '重置',
+    pageWord: '第',
+    totalWord: '共',
   },
 };
 
@@ -214,9 +231,10 @@ export function ExpoHubClient({ initialBooths }: Props) {
   const [hubLang, setHubLang] = useState<HubLang>('vi');
   const [search, setSearch] = useState('');
   const [selectedZone, setSelectedZone] = useState<string>('ALL');
-  const [sortBy, setSortBy] = useState<'booth_asc' | 'booth_desc' | 'name_asc' | 'name_desc'>('booth_asc');
+  const [sortBy, setSortBy] = useState<SortKey>('booth_asc');
   const [pageSize, setPageSize] = useState<number>(24);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const mainRef = useRef<HTMLElement>(null);
 
   const t = HUB_I18N[hubLang];
 
@@ -224,8 +242,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
   const zoneCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     initialBooths.forEach((b) => {
-      const match = (b.booth_number || '').match(/^([A-Za-z]+)/);
-      const zone = match ? match[1].toUpperCase() : 'OTHER';
+      const zone = getZone(b.booth_number);
       counts[zone] = (counts[zone] || 0) + 1;
     });
     return counts;
@@ -247,8 +264,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
     const filtered = initialBooths.filter((item) => {
       // 1. Lọc theo Zone
       if (selectedZone !== 'ALL') {
-        const match = (item.booth_number || '').match(/^([A-Za-z]+)/);
-        const itemZone = match ? match[1].toUpperCase() : 'OTHER';
+        const itemZone = getZone(item.booth_number);
         if (itemZone !== selectedZone) return false;
       }
 
@@ -313,7 +329,9 @@ export function ExpoHubClient({ initialBooths }: Props) {
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    if (typeof window !== 'undefined') {
+    if (mainRef.current) {
+      mainRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else if (typeof window !== 'undefined') {
       const el = document.getElementById('expo-directory-section');
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
@@ -321,12 +339,14 @@ export function ExpoHubClient({ initialBooths }: Props) {
     }
   };
 
-  const isFilterActive = search.trim() !== '' || selectedZone !== 'ALL' || sortBy !== 'booth_asc';
+  const isFilterActive = search.trim() !== '' || selectedZone !== 'ALL' || sortBy !== 'booth_asc' || pageSize !== 24;
 
   const handleResetFilters = () => {
     setSearch('');
     setSelectedZone('ALL');
     setSortBy('booth_asc');
+    setPageSize(24);
+    setCurrentPage(1);
   };
 
   return (
@@ -405,13 +425,13 @@ export function ExpoHubClient({ initialBooths }: Props) {
       </section>
 
       {/* 2. GRID GIAN HÀNG & BỘ LỌC + PHÂN TRANG */}
-      <main id="expo-directory-section" className="max-w-6xl mx-auto w-full px-4 py-8 flex-1 scroll-mt-6">
+      <main ref={mainRef} id="expo-directory-section" className="max-w-6xl mx-auto w-full px-4 py-8 flex-1 scroll-mt-6">
         {/* BỘ LỌC DÃY / KHU VỰC BOOTH (HORIZONTAL TABS) */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2.5">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <SlidersHorizontal className="w-3.5 h-3.5 text-amber-400" />
-              <span>{t.zonePrefix} Triển Lãm ({availableZones.length} Dãy)</span>
+              <span>{t.zonePrefix} ({availableZones.length})</span>
             </span>
 
             {isFilterActive && (
@@ -505,7 +525,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
               <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as SortKey)}
                 aria-label={t.sortByLabel}
                 className="bg-transparent text-slate-200 text-xs font-medium focus:outline-none cursor-pointer pr-1"
               >
@@ -673,7 +693,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
         {!isViewAll && totalPages > 1 && (
           <div className="mt-10 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="text-xs text-slate-400">
-              Trang <strong className="text-white font-mono">{safeCurrentPage}</strong> / {totalPages} (Tổng cộng {totalBooths} {t.boothUnit})
+              {t.pageWord} <strong className="text-white font-mono">{safeCurrentPage}</strong> / {totalPages} ({t.totalWord} {totalBooths} {t.boothUnit})
             </span>
 
             <div className="flex items-center gap-1.5">
@@ -729,6 +749,13 @@ export function ExpoHubClient({ initialBooths }: Props) {
             </div>
           </div>
         )}
+
+        {/* ĐỊNH VỊ ĐỘC LẬP / INDEPENDENT DIRECTORY DISCLAIMER */}
+        <div className="mt-16 pt-6 border-t border-slate-900 text-center text-[11px] text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          <p>
+            1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập phục vụ các doanh nghiệp & khách tham quan tại SECC TP.HCM. Nền tảng hoạt động độc lập, không phải và không đại diện cho Ban Tổ Chức sự kiện. Mọi tên thương hiệu thuộc về chủ sở hữu hợp pháp.
+          </p>
+        </div>
       </main>
     </div>
   );

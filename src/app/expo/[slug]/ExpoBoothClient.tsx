@@ -158,7 +158,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
           <div className="flex flex-col items-center text-center mb-6">
             <div className="mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40 tracking-wider uppercase">
               <Building2 className="w-3.5 h-3.5" />
-              {t.booth}: {profile.booth_number}
+              {profile.booth_number}
             </div>
 
             {business.logo_url ? (

@@ -89,9 +89,9 @@ export function ExpoStandeeClient({ business, profile }: Props) {
           {profile.event_name}
         </div>
 
-        {/* Booth Number */}
-        <div className="text-sm font-mono font-black text-slate-700 uppercase tracking-widest mb-4">
-          GIAN HÀNG / BOOTH: <span className="text-amber-600 text-base">{profile.booth_number}</span>
+        {/* Booth Location Number */}
+        <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-lg text-sm font-mono font-black bg-amber-500/10 text-amber-700 border border-amber-500/30 uppercase tracking-widest mb-4">
+          <span>{profile.booth_number}</span>
         </div>
 
         {/* Brand Logo & Name */}

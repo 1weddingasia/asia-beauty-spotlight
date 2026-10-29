@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/server';
+import { z } from 'zod';
 
 export async function POST(req: Request) {
   try {
@@ -131,8 +132,6 @@ export async function DELETE(req: Request) {
   }
 }
 
-import { z } from 'zod';
-
 const ChangePinSchema = z.object({
   slug: z.string().trim().min(1, 'Thiếu thông tin gian hàng').max(200),
   oldPin: z.string().trim().min(1, 'Vui lòng nhập mã PIN hiện tại (pass cũ)').max(10),
@@ -146,6 +145,13 @@ const ChangePinSchema = z.object({
 const pinAttemptCounts = new Map<string, { count: number; resetAt: number }>();
 function checkPinRateLimit(key: string): boolean {
   const now = Date.now();
+  // Dọn dẹp bộ nhớ nếu map vượt 300 entries
+  if (pinAttemptCounts.size > 300) {
+    for (const [k, v] of pinAttemptCounts.entries()) {
+      if (v.resetAt < now) pinAttemptCounts.delete(k);
+    }
+  }
+
   const record = pinAttemptCounts.get(key);
   if (!record || record.resetAt < now) {
     pinAttemptCounts.set(key, { count: 1, resetAt: now + 60 * 1000 });
@@ -241,6 +247,9 @@ export async function PATCH(req: Request) {
       console.error('[Update Expo PIN Error]:', updateErr);
       return NextResponse.json({ error: 'Lỗi cập nhật mã PIN vào hệ thống' }, { status: 500 });
     }
+
+    // Xóa bộ đếm rate limit sau khi đổi PIN thành công
+    pinAttemptCounts.delete(rateLimitKey);
 
     return NextResponse.json({
       success: true,
