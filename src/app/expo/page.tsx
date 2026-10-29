@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: '1Booking Expo Pass | Danh Bạ Số Hóa Doanh Nghiệp & Kết Nối B2B Triển Lãm',
-  description: 'Nền tảng danh bạ số hóa và giải pháp kết nối B2B độc lập cho các kỳ triển lãm quốc tế tại TP.HCM. Tra cứu vị trí gian hàng, quét mã kết nối, Standee để bàn và CRM Live.',
+  description: 'Nền tảng danh bạ số hóa và giải pháp kết nối B2B độc lập cho các kỳ triển lãm quốc tế. Tra cứu vị trí gian hàng, quét mã kết nối, Standee để bàn và CRM Live.',
 };
 
 export default async function ExpoHubPage() {
