@@ -27,9 +27,17 @@ import {
   EyeOff,
   ShieldCheck,
   X,
+  Globe,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getExpoBrandName } from '@/types/expo';
+import {
+  getExpoBrandName,
+  getExpoEventName,
+  getStoredExpoLanguage,
+  setStoredExpoLanguage,
+  CRM_TRANSLATIONS,
+  type ExpoLanguage,
+} from '@/types/expo';
 import { CountryFlag } from '../../CountryFlag';
 
 interface Lead {
@@ -60,10 +68,36 @@ interface Props {
     access_pin?: string;
     company_name_vi?: string | null;
     company_name_en?: string | null;
+    languages_enabled?: ExpoLanguage[] | string[];
+    default_language?: ExpoLanguage | string;
   };
 }
 
+const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; countryName: string }> = [
+  { code: 'vi', label: 'Tiếng Việt', countryName: 'Việt Nam' },
+  { code: 'en', label: 'English', countryName: 'International / English' },
+  { code: 'ko', label: '한국어', countryName: '대한민국 (Korea)' },
+  { code: 'zh', label: '中文', countryName: '中国 (China)' },
+];
+
 export function ExpoCrmClient({ business, profile }: Props) {
+  const [lang, setLang] = useState<ExpoLanguage>((profile.default_language as ExpoLanguage) || 'vi');
+
+  // 0. Khởi tạo và đồng bộ ngôn ngữ từ URL query param (?lang=) hoặc localStorage
+  useEffect(() => {
+    const detected = getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi');
+    if (detected && ['vi', 'en', 'ko', 'zh'].includes(detected)) {
+      setLang(detected);
+    }
+  }, [profile.default_language]);
+
+  const handleSwitchLang = (newLang: ExpoLanguage) => {
+    setLang(newLang);
+    setStoredExpoLanguage(newLang);
+  };
+
+  const t = CRM_TRANSLATIONS[lang] || CRM_TRANSLATIONS.vi;
+
   const [pin, setPin] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -85,12 +119,37 @@ export function ExpoCrmClient({ business, profile }: Props) {
   const [submittingPin, setSubmittingPin] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
 
-  const nameVi = getExpoBrandName(business, profile, 'vi');
-  const nameEn = getExpoBrandName(business, profile, 'en');
+  const brandName = getExpoBrandName(business, profile, lang);
+  const eventName = getExpoEventName(profile, lang);
 
   const supabase = createClient();
   const leadsRef = useRef<Lead[]>([]);
   leadsRef.current = leads;
+
+  // Language switcher component
+  const LanguageSwitcher = () => (
+    <div className="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-full border border-slate-700/80 shadow-inner shrink-0">
+      {LANGUAGE_CONFIG.map((item) => {
+        const isActive = lang === item.code;
+        return (
+          <button
+            key={item.code}
+            type="button"
+            onClick={() => handleSwitchLang(item.code)}
+            className={`relative p-1 rounded-full transition-all flex items-center justify-center cursor-pointer ${
+              isActive
+                ? 'bg-amber-400/20 ring-2 ring-amber-400 scale-105 shadow-md shadow-amber-400/20'
+                : 'hover:bg-slate-800 opacity-60 hover:opacity-100'
+            }`}
+            title={`${item.label} (${item.countryName})`}
+            aria-label={item.label}
+          >
+            <CountryFlag country={item.code} size="md" className="rounded-full overflow-hidden object-cover" />
+          </button>
+        );
+      })}
+    </div>
+  );
 
   // 1. Kiểm tra cache PIN từ localStorage khi vào trang
   useEffect(() => {
@@ -113,15 +172,15 @@ export function ExpoCrmClient({ business, profile }: Props) {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Mã PIN không đúng');
+        throw new Error(t.pinIncorrect);
       }
 
       setIsUnlocked(true);
       setLeads(data.leads || []);
       localStorage.setItem(`expo_pin_${business.slug}`, inputPin.trim());
-      toast.success('Mở khóa CRM thành công!');
-    } catch (err: any) {
-      toast.error(err.message || 'Mã PIN không đúng');
+      toast.success(t.pinSuccess);
+    } catch {
+      toast.error(t.pinIncorrect);
       localStorage.removeItem(`expo_pin_${business.slug}`);
     } finally {
       setVerifying(false);
@@ -147,7 +206,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
           if (audioEnabled) {
             playChimeSound();
           }
-          toast.success(`🎯 Khách mới: ${newest.customer_name} (${newest.customer_phone})`);
+          toast.success(`🎯 ${t.newCustomer}: ${newest.customer_name} (${newest.customer_phone})`);
         }
         setLeads(data);
       }
@@ -181,7 +240,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
           if (audioEnabled) {
             playChimeSound();
           }
-          toast.success(`🎯 Khách mới vừa quét: ${newLead.customer_name}!`);
+          toast.success(`🎯 ${t.newScan}: ${newLead.customer_name}!`);
         }
       )
       .subscribe();
@@ -200,25 +259,25 @@ export function ExpoCrmClient({ business, profile }: Props) {
   // 4. Xuất File Excel 1-chạm
   const handleExportExcel = () => {
     if (leads.length === 0) {
-      toast.error('Chưa có dữ liệu khách hàng để xuất');
+      toast.error(t.exportEmpty);
       return;
     }
 
     try {
       const excelRows = leads.map((item, index) => ({
-        STT: index + 1,
-        'Thời Gian': new Date(item.created_at).toLocaleString('vi-VN'),
-        'Họ Và Tên': item.customer_name,
-        'Số Điện Thoại': item.customer_phone,
+        [t.xlNo]: index + 1,
+        [t.xlTime]: new Date(item.created_at).toLocaleString('vi-VN'),
+        [t.xlName]: item.customer_name,
+        [t.xlPhone]: item.customer_phone,
         Email: item.customer_email || '',
-        'Tên Công Ty': item.company_name || '',
-        'Nhu Cầu Quan Tâm': item.interests || '',
-        'Ngôn Ngữ': (item.preferred_lang || 'vi').toUpperCase(),
+        [t.xlCompany]: item.company_name || '',
+        [t.xlInterest]: item.interests || '',
+        [t.xlLang]: (item.preferred_lang || 'vi').toUpperCase(),
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(excelRows);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'KhachHangExpo');
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
 
       // Tự động căn chỉnh độ rộng cột
       worksheet['!cols'] = [
@@ -232,12 +291,12 @@ export function ExpoCrmClient({ business, profile }: Props) {
         { wch: 10 }, // Ngôn Ngữ
       ];
 
-      const fileName = `Danh-sach-Lead-Expo-${business.slug}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const fileName = `Leads-Expo-${business.slug}-${new Date().toISOString().slice(0, 10)}.xlsx`;
       XLSX.writeFile(workbook, fileName);
-      toast.success('Đã tải xuống file Excel thành công!');
+      toast.success(t.exportSuccess);
     } catch (err) {
       console.error('[Export Excel Error]:', err);
-      toast.error('Lỗi khi xuất file Excel');
+      toast.error(t.exportError);
     }
   };
 
@@ -283,10 +342,10 @@ export function ExpoCrmClient({ business, profile }: Props) {
   // Tự động tắt nhấp nháy highlight sau 8 giây
   useEffect(() => {
     if (!highlightedId) return;
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       setHighlightedId(null);
     }, 8000);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [highlightedId]);
 
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -299,7 +358,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
       setCopiedId(id);
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
       copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
-      toast.success(`Đã sao chép ${label}: ${text}`);
+      toast.success(`${t.copiedLabel} ${label}: ${text}`);
     } catch {
       toast.info(`${label}: ${text}`);
     }
@@ -315,23 +374,23 @@ export function ExpoCrmClient({ business, profile }: Props) {
     const confirmP = confirmPinInput.trim();
 
     if (!oldP) {
-      setPinError('Vui lòng nhập mã PIN hiện tại (pass cũ)');
+      setPinError(t.errOldPinRequired);
       return;
     }
     if (!newP) {
-      setPinError('Vui lòng nhập mã PIN mới (pass mới)');
+      setPinError(t.errNewPinRequired);
       return;
     }
     if (!/^[A-Za-z0-9]{4,10}$/.test(newP)) {
-      setPinError('Mã PIN mới phải từ 4 đến 10 ký tự chữ hoặc số');
+      setPinError(t.errPinFormat);
       return;
     }
     if (newP !== confirmP) {
-      setPinError('Mã PIN mới và xác nhận mã PIN không trùng khớp');
+      setPinError(t.errPinMismatch);
       return;
     }
     if (newP === oldP) {
-      setPinError('Mã PIN mới phải khác mã PIN cũ hiện tại');
+      setPinError(t.errPinSame);
       return;
     }
 
@@ -349,19 +408,19 @@ export function ExpoCrmClient({ business, profile }: Props) {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Đổi mã PIN thất bại');
+        throw new Error(data.error || t.changePinFail);
       }
 
       setPin(newP);
       localStorage.setItem(`expo_pin_${business.slug}`, newP);
-      toast.success('🎉 Đổi mã PIN CRM thành công! Hãy ghi nhớ mã PIN mới.');
+      toast.success(t.changePinSuccess);
       setIsChangePinOpen(false);
       setOldPinInput('');
       setNewPinInput('');
       setConfirmPinInput('');
     } catch (err: any) {
-      setPinError(err.message || 'Lỗi đổi mã PIN');
-      toast.error(err.message || 'Lỗi đổi mã PIN');
+      setPinError(err.message || t.changePinFail);
+      toast.error(err.message || t.changePinFail);
     } finally {
       setSubmittingPin(false);
     }
@@ -383,9 +442,9 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 <KeyRound className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Đổi Mã PIN CRM</h3>
+                <h3 className="text-sm font-bold text-white">{t.changePinTitle}</h3>
                 <p className="text-[11px] text-slate-400">
-                  Gian hàng: {profile.booth_number} • {nameVi}
+                  {t.boothLabel}: {profile.booth_number} • {brandName}
                 </p>
               </div>
             </div>
@@ -411,14 +470,14 @@ export function ExpoCrmClient({ business, profile }: Props) {
             {/* 1. Mã PIN cũ */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Mã PIN hiện tại (Pass cũ) <span className="text-rose-400">*</span>
+                {t.oldPinLabel} <span className="text-rose-400">*</span>
               </label>
               <input
                 type={showPinPassword ? 'text' : 'password'}
                 maxLength={10}
                 value={oldPinInput}
                 onChange={(e) => setOldPinInput(e.target.value)}
-                placeholder="Nhập mã PIN đang sử dụng..."
+                placeholder={t.oldPinPlaceholder}
                 required
                 autoFocus
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
@@ -428,33 +487,33 @@ export function ExpoCrmClient({ business, profile }: Props) {
             {/* 2. Mã PIN mới */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Mã PIN mới (Pass mới) <span className="text-rose-400">*</span>
+                {t.newPinLabel} <span className="text-rose-400">*</span>
               </label>
               <input
                 type={showPinPassword ? 'text' : 'password'}
                 maxLength={10}
                 value={newPinInput}
                 onChange={(e) => setNewPinInput(e.target.value)}
-                placeholder="Nhập mã PIN mới (4 - 10 ký tự)..."
+                placeholder={t.newPinPlaceholder}
                 required
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
               />
               <p className="text-[10px] text-slate-500 mt-1">
-                Độ dài từ 4 đến 10 số hoặc ký tự bảo mật.
+                {t.pinLengthHint}
               </p>
             </div>
 
             {/* 3. Xác nhận mã PIN mới */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Xác nhận mã PIN mới <span className="text-rose-400">*</span>
+                {t.confirmPinLabel} <span className="text-rose-400">*</span>
               </label>
               <input
                 type={showPinPassword ? 'text' : 'password'}
                 maxLength={10}
                 value={confirmPinInput}
                 onChange={(e) => setConfirmPinInput(e.target.value)}
-                placeholder="Nhập lại mã PIN mới để xác nhận..."
+                placeholder={t.confirmPinPlaceholder}
                 required
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
               />
@@ -470,12 +529,12 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 {showPinPassword ? (
                   <>
                     <EyeOff className="w-3.5 h-3.5" />
-                    <span>Ẩn ký tự</span>
+                    <span>{t.hideChars}</span>
                   </>
                 ) : (
                   <>
                     <Eye className="w-3.5 h-3.5" />
-                    <span>Hiện ký tự</span>
+                    <span>{t.showChars}</span>
                   </>
                 )}
               </button>
@@ -489,7 +548,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 disabled={submittingPin}
                 className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
               >
-                Hủy bỏ
+                {t.cancelBtn}
               </button>
 
               <button
@@ -500,12 +559,12 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 {submittingPin ? (
                   <>
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>Đang cập nhật...</span>
+                    <span>{t.updatingBtn}</span>
                   </>
                 ) : (
                   <>
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>XÁC NHẬN ĐỔI PIN</span>
+                    <span>{t.confirmChangePinBtn}</span>
                   </>
                 )}
               </button>
@@ -517,24 +576,29 @@ export function ExpoCrmClient({ business, profile }: Props) {
   };
 
   // ═══════════════════════════════════════════════
-  // GIAO DIỆN KHÓA: NHẬP MÃ PIN 6 SỐ
+  // GIAO DIỆN KHÓA: NHẬP MÃ PIN
   // ═══════════════════════════════════════════════
   if (!isUnlocked) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 selection:bg-amber-500 font-sans">
         <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden">
+          {/* Language Switcher on PIN screen */}
+          <div className="absolute top-4 right-4">
+            <LanguageSwitcher />
+          </div>
+
           <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/10">
             <Lock className="w-8 h-8" />
           </div>
 
           <h1 className="text-xl font-black text-white mb-1">
-            CRM GIAN HÀNG
+            {t.pinTitle}
           </h1>
           <p className="text-xs text-amber-400 font-semibold mb-1">
-            {nameVi} {nameEn && nameEn.toLowerCase() !== nameVi.toLowerCase() ? `(${nameEn})` : ''} • {profile.booth_number}
+            {brandName} • {profile.booth_number}
           </p>
           <p className="text-xs text-slate-400 mb-6">
-            Nhập mã PIN bảo mật (4 - 10 ký tự) để mở bảng danh sách khách hàng trực tiếp
+            {t.pinDesc}
           </p>
 
           <form
@@ -550,7 +614,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 maxLength={10}
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
-                placeholder="Nhập mã PIN..."
+                placeholder={t.pinPlaceholder}
                 autoFocus
                 className="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-3.5 text-center text-xl font-mono tracking-[0.25em] text-amber-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
               />
@@ -564,12 +628,12 @@ export function ExpoCrmClient({ business, profile }: Props) {
               {verifying ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Đang mở khóa...</span>
+                  <span>{t.pinUnlocking}</span>
                 </>
               ) : (
                 <>
                   <KeyRound className="w-4 h-4" />
-                  <span>MỞ KHÓA CRM LIVE</span>
+                  <span>{t.pinUnlockBtn}</span>
                 </>
               )}
             </button>
@@ -578,17 +642,17 @@ export function ExpoCrmClient({ business, profile }: Props) {
           <div className="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-400 flex flex-col items-center gap-2">
             <div className="flex items-center gap-1.5 text-slate-400 font-medium">
               <Lock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Khu vực bảo mật dành riêng cho đại diện gian hàng</span>
+              <span>{t.pinSecurityNote}</span>
             </div>
             <p className="text-[10px] text-slate-500 max-w-xs leading-relaxed">
-              Vui lòng nhập mã PIN được cấp khi bàn giao gian hàng để mở khóa dữ liệu khách hàng.
+              {t.pinSecurityDesc}
             </p>
             <Link
-              href="/expo"
+              href={`/expo?lang=${lang}`}
               className="mt-1 inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors py-1 px-3 rounded-lg hover:bg-slate-800"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Về Danh Bạ Expo</span>
+              <span>{t.backToExpo}</span>
             </Link>
           </div>
         </div>
@@ -611,12 +675,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-bold text-white line-clamp-1">
-                  {nameVi}
-                  {nameEn && nameEn.toLowerCase() !== nameVi.toLowerCase() && (
-                    <span className="text-xs text-slate-400 font-normal ml-1.5">
-                      ({nameEn})
-                    </span>
-                  )}
+                  {brandName}
                 </h1>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -624,21 +683,24 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Vị trí: <span className="text-amber-300 font-mono font-bold">{profile.booth_number}</span> • {profile.event_name}
+                {t.location}: <span className="text-amber-300 font-mono font-bold">{profile.booth_number}</span> • {eventName}
               </p>
             </div>
           </div>
 
           {/* Action buttons */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+
             {/* Test Sound button */}
             <button
               type="button"
               onClick={() => {
                 playChimeSound();
-                toast.info('Chuông Ting-Ting đang hoạt động tốt!');
+                toast.info(t.soundOk);
               }}
-              title="Thử âm thanh chuông Ting-Ting"
+              title={t.soundOk}
               className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition-colors"
             >
               <Volume2 className="w-4 h-4" />
@@ -654,42 +716,42 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 setConfirmPinInput('');
                 setIsChangePinOpen(true);
               }}
-              title="Đổi mã PIN quản trị CRM"
+              title={t.changePinTitle}
               className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-400/50 transition-colors cursor-pointer"
             >
               <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-              <span>Đổi PIN</span>
+              <span>{t.changePin}</span>
             </button>
 
             {/* Standee QR download link */}
             <Link
-              href={`/expo/${business.slug}/qr`}
+              href={`/expo/${business.slug}/qr?lang=${lang}`}
               className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-amber-400/40 transition-colors"
-              title="Tải ảnh Standee để bàn mang đi in"
+              title={t.downloadStandee}
             >
               <Download className="w-3.5 h-3.5 text-amber-400" />
-              <span>Tải Standee</span>
+              <span>{t.downloadStandee}</span>
             </Link>
 
             {/* Back to Expo Hub */}
             <Link
-              href="/expo"
+              href={`/expo?lang=${lang}`}
               className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-colors"
-              title="Về danh bạ 1Booking Expo Pass"
+              title={t.backToExpo}
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Về Expo</span>
+              <span className="hidden sm:inline">{t.backExpo}</span>
             </Link>
 
             {/* Open Form link */}
             <Link
-              href={`/expo/${business.slug}`}
+              href={`/expo/${business.slug}?lang=${lang}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
-              <span className="hidden sm:inline">Trang Quét</span>
+              <span className="hidden sm:inline">{t.scanPage}</span>
             </Link>
 
             {/* Export Excel Button */}
@@ -699,7 +761,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
               className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>XUẤT EXCEL</span>
+              <span>{t.exportExcel}</span>
             </button>
           </div>
         </div>
@@ -712,7 +774,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
             <span className="text-xs text-slate-400 flex items-center gap-1.5">
               <UserCheck className="w-3.5 h-3.5 text-amber-400" />
-              Tổng Khách Đã Quét
+              {t.totalScanned}
             </span>
             <span className="text-3xl font-black text-amber-400 mt-2 font-mono">
               {leads.length}
@@ -722,21 +784,19 @@ export function ExpoCrmClient({ business, profile }: Props) {
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
             <span className="text-xs text-slate-400 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-emerald-400" />
-              Khách Gần Nhất
+              {t.latestCustomer}
             </span>
             <span className="text-sm font-semibold text-slate-200 mt-2 line-clamp-1">
-              {leads.length > 0 ? leads[0].customer_name : 'Chưa có khách'}
+              {leads.length > 0 ? leads[0].customer_name : t.noCustomerYet}
             </span>
           </div>
 
           <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-amber-500/10 to-slate-900 border border-amber-500/20 rounded-2xl p-4 flex flex-col justify-between">
             <span className="text-xs text-amber-300 flex items-center gap-1.5 font-bold">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Thông Báo Realtime
+              {t.realtimeAlert}
             </span>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Khách quét mã QR tại gian hàng, dữ liệu lập tức cập nhật và chuông <b>Ting!</b> sẽ vang lên.
-            </p>
+            <p className="text-[11px] text-slate-400 mt-1" dangerouslySetInnerHTML={{ __html: t.realtimeDesc }} />
           </div>
         </div>
 
@@ -748,23 +808,23 @@ export function ExpoCrmClient({ business, profile }: Props) {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Tìm theo tên khách, số điện thoại, công ty..."
+              placeholder={t.searchPlaceholder}
               className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400"
             />
           </div>
 
           {/* Page Size Selector */}
           <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300">
-            <span className="text-[11px] text-slate-500 hidden sm:inline">Hiển thị:</span>
+            <span className="text-[11px] text-slate-500 hidden sm:inline">{t.show}:</span>
             <select
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
               className="bg-transparent text-amber-400 font-bold focus:outline-none cursor-pointer text-xs"
             >
-              <option value={10} className="bg-slate-900 text-slate-200">10 / trang</option>
-              <option value={20} className="bg-slate-900 text-slate-200">20 / trang</option>
-              <option value={50} className="bg-slate-900 text-slate-200">50 / trang</option>
-              <option value={100} className="bg-slate-900 text-slate-200">100 / trang</option>
+              <option value={10} className="bg-slate-900 text-slate-200">10 {t.perPage}</option>
+              <option value={20} className="bg-slate-900 text-slate-200">20 {t.perPage}</option>
+              <option value={50} className="bg-slate-900 text-slate-200">50 {t.perPage}</option>
+              <option value={100} className="bg-slate-900 text-slate-200">100 {t.perPage}</option>
             </select>
           </div>
 
@@ -773,7 +833,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
             onClick={() => fetchFreshLeads(false)}
             disabled={loadingLeads}
             className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition-colors cursor-pointer"
-            title="Làm mới danh sách"
+            title={t.refreshList}
           >
             <RefreshCw className={`w-4 h-4 ${loadingLeads ? 'animate-spin text-amber-400' : ''}`} />
           </button>
@@ -784,18 +844,18 @@ export function ExpoCrmClient({ business, profile }: Props) {
           <div className="text-center py-16 px-4 bg-slate-900/50 border border-slate-800/80 rounded-2xl">
             <UserCheck className="w-12 h-12 text-slate-600 mx-auto mb-3" />
             <h3 className="text-sm font-bold text-slate-300">
-              {search ? 'Không tìm thấy khách hàng phù hợp' : 'Chưa có lượt quét nào'}
+              {search ? t.noMatchFound : t.noScansYet}
             </h3>
             <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1 mb-4">
-              Mời khách quét mã QR tại quầy để nhận danh sách khách hàng tự động tại đây.
+              {t.inviteScanDesc}
             </p>
             <Link
-              href={`/expo/${business.slug}`}
+              href={`/expo/${business.slug}?lang=${lang}`}
               target="_blank"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-950 bg-amber-500 px-4 py-2 rounded-xl shadow-md"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              <span>Mở trang liên hệ</span>
+              <span>{t.openContactPage}</span>
             </Link>
           </div>
         ) : (
@@ -805,13 +865,13 @@ export function ExpoCrmClient({ business, profile }: Props) {
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold text-[11px]">
-                    <th className="py-2.5 px-3 w-12 text-center">STT</th>
-                    <th className="py-2.5 px-3">Khách Hàng</th>
-                    <th className="py-2.5 px-3">Công Ty</th>
-                    <th className="py-2.5 px-3">Số Điện Thoại</th>
-                    <th className="py-2.5 px-3">Email</th>
-                    <th className="py-2.5 px-3">Nhu Cầu Kết Nối</th>
-                    <th className="py-2.5 px-3 w-28 text-right">Thời Gian</th>
+                    <th className="py-2.5 px-3 w-12 text-center">{t.thNo}</th>
+                    <th className="py-2.5 px-3">{t.thCustomer}</th>
+                    <th className="py-2.5 px-3">{t.thCompany}</th>
+                    <th className="py-2.5 px-3">{t.thPhone}</th>
+                    <th className="py-2.5 px-3">{t.thEmail}</th>
+                    <th className="py-2.5 px-3">{t.thInterest}</th>
+                    <th className="py-2.5 px-3 w-28 text-right">{t.thTime}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
@@ -842,7 +902,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
                             </span>
                             {isHighlight && (
                               <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 animate-pulse">
-                                MỚI
+                                {t.newBadge}
                               </span>
                             )}
                           </div>
@@ -863,9 +923,9 @@ export function ExpoCrmClient({ business, profile }: Props) {
                         <td className="py-2.5 px-3">
                           <button
                             type="button"
-                            onClick={() => handleCopy(item.customer_phone, item.id, 'SĐT')}
+                            onClick={() => handleCopy(item.customer_phone, item.id, t.thPhone)}
                             className="inline-flex items-center gap-1.5 font-mono font-bold text-amber-300 hover:text-amber-200 transition-colors group cursor-pointer"
-                            title="Bấm để sao chép số điện thoại"
+                            title={t.copiedLabel}
                           >
                             <span>{item.customer_phone}</span>
                             {copiedId === item.id ? (
@@ -939,7 +999,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
                         </span>
                         {isHighlight && (
                           <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 animate-pulse">
-                            MỚI
+                            {t.newBadge}
                           </span>
                         )}
                       </div>
@@ -953,9 +1013,9 @@ export function ExpoCrmClient({ business, profile }: Props) {
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
                       <button
                         type="button"
-                        onClick={() => handleCopy(item.customer_phone, item.id, 'SĐT')}
+                        onClick={() => handleCopy(item.customer_phone, item.id, t.thPhone)}
                         className="font-mono font-bold text-amber-300 hover:text-amber-200 inline-flex items-center gap-1 cursor-pointer"
-                        title="Bấm để sao chép"
+                        title={t.copiedLabel}
                       >
                         <span>{item.customer_phone}</span>
                         {copiedId === item.id ? (
@@ -992,7 +1052,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
             {totalPages > 1 && (
               <div className="px-4 py-3 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                 <div className="text-slate-400 text-center sm:text-left">
-                  Hiển thị <span className="font-bold text-amber-400">{startIndex + 1} - {endIndex}</span> trong tổng số <span className="font-bold text-white">{totalLeads}</span> khách quét
+                  {t.showingRange} <span className="font-bold text-amber-400">{startIndex + 1} - {endIndex}</span> {t.inTotal} <span className="font-bold text-white">{totalLeads}</span> {t.scanned}
                 </div>
 
                 <div className="flex items-center gap-1">
@@ -1001,7 +1061,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={safeCurrentPage <= 1}
                     className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                    title="Trang trước"
+                    title={t.prevPage}
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
@@ -1032,7 +1092,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={safeCurrentPage >= totalPages}
                     className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                    title="Trang sau"
+                    title={t.nextPage}
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

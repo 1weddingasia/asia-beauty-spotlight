@@ -14,33 +14,29 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { CONTACT_MODAL_TRANSLATIONS, type ExpoLanguage } from '@/types/expo';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   defaultBusinessName?: string;
   source?: string;
+  lang?: ExpoLanguage;
 }
-
-const SERVICE_OPTIONS = [
-  'Số hóa gian hàng mới',
-  'Làm Standee để bàn & QR',
-  'Hệ thống Mini-CRM lưu khách',
-  'Hợp tác & Kết nối B2B',
-  'Tư vấn báo giá giải pháp',
-];
 
 export function ExpoContactModal({
   isOpen,
   onClose,
   defaultBusinessName = '',
   source = '1Booking Expo Pass',
+  lang = 'vi',
 }: Props) {
+  const t = CONTACT_MODAL_TRANSLATIONS[lang] || CONTACT_MODAL_TRANSLATIONS.vi;
   const [contactName, setContactName] = useState('');
   const [phone, setPhone] = useState('');
   const [businessName, setBusinessName] = useState(defaultBusinessName);
   const [email, setEmail] = useState('');
-  const [selectedService, setSelectedService] = useState(SERVICE_OPTIONS[0]);
+  const [selectedService, setSelectedService] = useState(t.services[0]);
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -48,8 +44,9 @@ export function ExpoContactModal({
   useEffect(() => {
     if (isOpen) {
       setBusinessName(defaultBusinessName);
+      setSelectedService(t.services[0]);
     }
-  }, [isOpen, defaultBusinessName]);
+  }, [isOpen, defaultBusinessName, t.services]);
 
   const handleResetAndClose = () => {
     if (isSubmitting) return;
@@ -58,7 +55,7 @@ export function ExpoContactModal({
     setPhone('');
     setEmail('');
     setMessage('');
-    setSelectedService(SERVICE_OPTIONS[0]);
+    setSelectedService(t.services[0]);
     onClose();
   };
 
@@ -78,7 +75,7 @@ export function ExpoContactModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactName.trim() || !phone.trim()) {
-      toast.error('Vui lòng điền Họ tên và Số điện thoại liên hệ');
+      toast.error(t.errRequired);
       return;
     }
 
@@ -100,14 +97,14 @@ export function ExpoContactModal({
 
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
-        throw new Error(data.error || 'Có lỗi xảy ra, vui lòng thử lại');
+        throw new Error(data.error || t.errGeneral);
       }
 
       setIsSuccess(true);
-      toast.success('Đã gửi yêu cầu tư vấn thành công!');
+      toast.success(t.successTitle);
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
-      toast.error(msg || 'Không thể gửi yêu cầu lúc này. Vui lòng thử lại.');
+      toast.error(msg || t.errGeneral);
     } finally {
       setIsSubmitting(false);
     }
@@ -145,12 +142,11 @@ export function ExpoContactModal({
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-2">
-              Gửi Yêu Cầu Thành Công!
+              {t.successTitle}
             </h3>
 
             <p className="text-xs sm:text-sm text-slate-300 max-w-md mb-6 leading-relaxed">
-              Cảm ơn Quý doanh nghiệp đã quan tâm đến giải pháp{' '}
-              <span className="text-amber-400 font-bold">1Booking Expo Pass</span>. Đội ngũ chuyên viên tư vấn sẽ liên hệ lại qua Số điện thoại / Zalo trong vòng 15 phút!
+              {t.successDesc}
             </p>
 
             <button
@@ -158,7 +154,7 @@ export function ExpoContactModal({
               onClick={handleResetAndClose}
               className="w-full px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-xl shadow-amber-500/20 transition-all cursor-pointer"
             >
-              Hoàn Tất &amp; Đóng
+              {t.finishBtn}
             </button>
           </div>
         ) : (
@@ -166,21 +162,21 @@ export function ExpoContactModal({
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              1Booking Expo Pass
+              {t.badge}
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-1">
-              Liên Hệ 1Booking Expo Pass
+              {t.title}
             </h3>
             <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-              Để lại thông tin để được tư vấn số hóa gian hàng, cấp Standee thông minh &amp; kích hoạt Mini-CRM Live thời gian thực.
+              {t.desc}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Họ tên */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Họ và tên <span className="text-amber-400">*</span>
+                  {t.nameLabel} <span className="text-amber-400">*</span>
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
@@ -189,7 +185,7 @@ export function ExpoContactModal({
                     required
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
-                    placeholder="Ví dụ: Nguyễn Văn A"
+                    placeholder={t.namePlaceholder}
                     className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
@@ -198,7 +194,7 @@ export function ExpoContactModal({
               {/* Số điện thoại / Zalo */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Số điện thoại / Zalo <span className="text-amber-400">*</span>
+                  {t.phoneLabel} <span className="text-amber-400">*</span>
                 </label>
                 <div className="relative">
                   <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
@@ -207,7 +203,7 @@ export function ExpoContactModal({
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="0918 731 411..."
+                    placeholder={t.phonePlaceholder}
                     className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
@@ -216,7 +212,7 @@ export function ExpoContactModal({
               {/* Tên doanh nghiệp / Gian hàng */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Tên Doanh nghiệp / Vị trí Gian hàng
+                  {t.businessLabel}
                 </label>
                 <div className="relative">
                   <Building2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
@@ -224,7 +220,7 @@ export function ExpoContactModal({
                     type="text"
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="Ví dụ: Công ty TNHH Kawaii Beauty (Vị trí A12)"
+                    placeholder={t.businessPlaceholder}
                     className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
@@ -233,10 +229,10 @@ export function ExpoContactModal({
               {/* Dịch vụ quan tâm */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                  Nhu cầu quan tâm
+                  {t.serviceLabel}
                 </label>
                 <div className="flex flex-wrap gap-1.5">
-                  {SERVICE_OPTIONS.map((opt) => {
+                  {t.services.map((opt) => {
                     const isSelected = selectedService === opt;
                     return (
                       <button
@@ -259,7 +255,7 @@ export function ExpoContactModal({
               {/* Lời nhắn */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Nội dung chi tiết (Tùy chọn)
+                  {t.messageLabel}
                 </label>
                 <div className="relative">
                   <MessageSquare className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
@@ -267,7 +263,7 @@ export function ExpoContactModal({
                     rows={2}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Mô tả nhu cầu cần tư vấn hoặc câu hỏi của bạn..."
+                    placeholder={t.messagePlaceholder}
                     className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 resize-none"
                   />
                 </div>
@@ -282,19 +278,19 @@ export function ExpoContactModal({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Đang gửi thông tin...</span>
+                    <span>{t.submittingBtn}</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>GỬI YÊU CẦU TƯ VẤN</span>
+                    <span>{t.submitBtn}</span>
                   </>
                 )}
               </button>
 
               <div className="flex items-center justify-center gap-1.5 pt-2 text-[11px] text-slate-400">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>Cam kết bảo mật thông tin doanh nghiệp • Phản hồi trong 15 phút</span>
+                <span>1Booking Expo Pass • Realtime B2B Platform</span>
               </div>
             </form>
           </div>

@@ -3,8 +3,11 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { ExpoBoothClient } from './ExpoBoothClient';
 import type { Metadata } from 'next';
 
+import type { ExpoLanguage } from '@/types/expo';
+
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -37,8 +40,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ExpoBoothPage({ params }: Props) {
+export default async function ExpoBoothPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const sp = searchParams ? await searchParams : {};
+  const requestedLang = sp.lang && ['vi', 'en', 'ko', 'zh'].includes(sp.lang) ? (sp.lang as ExpoLanguage) : null;
+
   const supabase = await createAdminClient();
 
   // 1. Lấy thông tin gian hàng
@@ -65,15 +71,17 @@ export default async function ExpoBoothPage({ params }: Props) {
     .eq('business_id', business.id)
     .maybeSingle();
 
-  const profile = expoProfile || {
-    id: 'default',
+  const profile = {
+    id: expoProfile?.id || 'default',
     business_id: business.id,
-    event_name: '1Booking Expo Pass',
-    event_name_en: '1Booking Expo Pass',
-    booth_number: 'Gian Hàng Tiêu Chuẩn',
-    languages_enabled: ['vi', 'en', 'ko', 'zh'],
-    default_language: 'vi',
-    is_active: true,
+    event_name: expoProfile?.event_name || '1Booking Expo Pass',
+    event_name_en: expoProfile?.event_name_en || '1Booking Expo Pass',
+    booth_number: expoProfile?.booth_number || 'Gian Hàng Tiêu Chuẩn',
+    languages_enabled: (expoProfile?.languages_enabled as ExpoLanguage[]) || ['vi', 'en', 'ko', 'zh'],
+    company_name_vi: expoProfile?.company_name_vi || null,
+    company_name_en: expoProfile?.company_name_en || null,
+    default_language: requestedLang || (expoProfile?.default_language as ExpoLanguage) || 'vi',
+    is_active: expoProfile?.is_active ?? true,
   };
 
   return (

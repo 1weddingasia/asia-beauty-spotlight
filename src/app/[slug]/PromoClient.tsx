@@ -18,7 +18,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SiteHeader, SiteFooter, useSiteConfig } from "@/components/site/Layout";
 import { PARTY_SPACES, PARTY_PERKS, type BusinessPartyProfile, isFnBCategory } from "@/types/party";
-import { getExpoEventName } from "@/types/expo";
+import { getExpoEventName, getStoredExpoLanguage, type ExpoLanguage } from "@/types/expo";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -97,6 +97,11 @@ export default function PromoClient({
   const [partyNotes, setPartyNotes] = useState("");
   const [copiedShare, setCopiedShare] = useState(false);
   const shareTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [expoLang, setExpoLang] = useState<ExpoLanguage>('vi');
+  useEffect(() => {
+    setExpoLang(getStoredExpoLanguage('vi'));
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -442,18 +447,18 @@ export default function PromoClient({
           {expoProfile && (
             <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
               <Link
-                href={`/expo/${business.slug}`}
+                href={`/expo/${business.slug}?lang=${expoLang}`}
                 className="inline-flex items-center gap-1.5 bg-amber-500/25 border border-amber-400 text-amber-200 hover:text-white text-xs font-bold px-3.5 py-1.5 rounded-full hover:bg-amber-500/40 transition-all backdrop-blur-md shadow-lg"
               >
                 <Sparkles className="size-3.5 text-amber-400" />
-                <span>{expoProfile.booth_number ? `${expoProfile.booth_number} • ` : ''}{getExpoEventName(expoProfile, 'vi')}</span>
+                <span>{expoProfile.booth_number ? `${expoProfile.booth_number} • ` : ''}{getExpoEventName(expoProfile, expoLang)}</span>
               </Link>
               <Link
-                href="/expo"
+                href={`/expo?lang=${expoLang}`}
                 className="inline-flex items-center gap-1.5 bg-black/40 border border-white/20 text-white/90 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full hover:bg-black/60 transition-all backdrop-blur-md"
               >
                 <ChevronLeft className="size-3.5" />
-                <span>Về Danh Bạ Expo</span>
+                <span>{expoLang === 'vi' ? 'Về Danh Bạ Expo' : 'Back to Expo Hub'}</span>
               </Link>
             </div>
           )}

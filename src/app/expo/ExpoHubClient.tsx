@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { CountryFlag } from './CountryFlag';
 import { ExpoContactModal } from './ExpoContactModal';
+import { getStoredExpoLanguage, setStoredExpoLanguage, type ExpoLanguage } from '@/types/expo';
 
 export type SortKey = 'booth_asc' | 'booth_desc' | 'name_asc' | 'name_desc';
 
@@ -250,6 +251,19 @@ export function ExpoHubClient({ initialBooths }: Props) {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
 
+  // Đồng bộ ngôn ngữ từ URL query hoặc localStorage
+  useEffect(() => {
+    const detected = getStoredExpoLanguage('vi') as HubLang;
+    if (detected && ['vi', 'en', 'ko', 'zh'].includes(detected)) {
+      setHubLang(detected);
+    }
+  }, []);
+
+  const handleSelectLang = (code: HubLang) => {
+    setHubLang(code);
+    setStoredExpoLanguage(code as ExpoLanguage);
+  };
+
   const t = HUB_I18N[hubLang];
 
   // Trích xuất thống kê các Zone/Dãy Booth (A, B, C, D, E, F, G, Q, R...)
@@ -382,7 +396,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                 <button
                   key={l.code}
                   type="button"
-                  onClick={() => setHubLang(l.code)}
+                  onClick={() => handleSelectLang(l.code)}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     isActive
                       ? 'bg-amber-400/20 text-amber-300 ring-2 ring-amber-400 shadow-md scale-105'
@@ -681,7 +695,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                   {/* 3 Action Buttons */}
                   <div className="pt-2 border-t border-slate-800/80 grid grid-cols-3 gap-1.5 text-center">
                     <Link
-                      href={`/expo/${booth.slug}`}
+                      href={`/expo/${booth.slug}?lang=${hubLang}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 transition-colors text-[10px] font-medium"
@@ -691,7 +705,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                     </Link>
 
                     <Link
-                      href={`/expo/${booth.slug}/crm`}
+                      href={`/expo/${booth.slug}/crm?lang=${hubLang}`}
                       className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-colors text-[10px] font-bold"
                     >
                       <BarChart3 className="w-3.5 h-3.5 text-amber-400 mb-1" />
@@ -699,7 +713,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                     </Link>
 
                     <Link
-                      href={`/expo/${booth.slug}/qr`}
+                      href={`/expo/${booth.slug}/qr?lang=${hubLang}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 transition-colors text-[10px] font-medium"
@@ -818,6 +832,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
         source="1Booking Expo Pass - Hub"
+        lang={hubLang as ExpoLanguage}
       />
     </div>
   );

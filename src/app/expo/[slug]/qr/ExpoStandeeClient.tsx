@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import { Download, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getExpoBrandName } from '@/types/expo';
+import { getExpoBrandName, getStoredExpoLanguage, type ExpoLanguage } from '@/types/expo';
 
 interface Props {
   business: {
@@ -27,7 +27,13 @@ interface Props {
 
 export function ExpoStandeeClient({ business, profile }: Props) {
   const [isDownloading, setIsDownloading] = useState(false);
+  const [lang, setLang] = useState<ExpoLanguage>('vi');
   const standeeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const current = getStoredExpoLanguage('vi');
+    setLang(current);
+  }, []);
 
   const nameVi = getExpoBrandName(business, profile, 'vi');
   const nameEn = getExpoBrandName(business, profile, 'en');
@@ -96,14 +102,14 @@ export function ExpoStandeeClient({ business, profile }: Props) {
       <div className="max-w-xl w-full flex items-center justify-between mb-8 print:hidden gap-2">
         <div className="flex items-center gap-2">
           <Link
-            href="/expo"
+            href={`/expo?lang=${lang}`}
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Về Expo</span>
           </Link>
           <Link
-            href={`/expo/${business.slug}/crm`}
+            href={`/expo/${business.slug}/crm?lang=${lang}`}
             className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors"
           >
             <BarChart3 className="w-3.5 h-3.5 text-amber-400" />
@@ -113,7 +119,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
 
         <div className="flex items-center gap-2">
           <Link
-            href={`/expo/${business.slug}`}
+            href={`/expo/${business.slug}?lang=${lang}`}
             target="_blank"
             className="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 transition-colors"
           >
@@ -225,7 +231,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
         {/* Standee Footer */}
         <div className="mt-auto pt-3 border-t border-slate-200 w-full flex items-center justify-between text-[10px] text-slate-500 font-medium">
           <span>1Booking Expo Pass</span>
-          <span>1booking.asia</span>
+          <span>1booking.asia/expo</span>
         </div>
       </div>
     </div>

@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { EXPO_TRANSLATIONS, ExpoLanguage, getExpoBrandName, getExpoEventName } from '@/types/expo';
+import {
+  EXPO_TRANSLATIONS,
+  ExpoLanguage,
+  getExpoBrandName,
+  getExpoEventName,
+  getStoredExpoLanguage,
+  setStoredExpoLanguage,
+} from '@/types/expo';
 import { Globe, CheckCircle2, Building2, Handshake, Lock, ArrowLeft, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { CountryFlag } from '../CountryFlag';
@@ -44,6 +51,20 @@ const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; countryName: s
 
 export function ExpoBoothClient({ business, profile }: Props) {
   const [lang, setLang] = useState<ExpoLanguage>((profile.default_language as ExpoLanguage) || 'vi');
+
+  // Đồng bộ ngôn ngữ từ URL query hoặc localStorage
+  useEffect(() => {
+    const detected = getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi');
+    if (detected && ['vi', 'en', 'ko', 'zh'].includes(detected)) {
+      setLang(detected);
+    }
+  }, [profile.default_language]);
+
+  const handleSwitchLang = (newLang: ExpoLanguage) => {
+    setLang(newLang);
+    setStoredExpoLanguage(newLang);
+  };
+
   const t = EXPO_TRANSLATIONS[lang] || EXPO_TRANSLATIONS.vi;
 
   const brandName = getExpoBrandName(business, profile, lang);
@@ -111,7 +132,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
         <div className="max-w-md mx-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <Link
-              href="/expo"
+              href={`/expo?lang=${lang}`}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 hover:text-white hover:bg-amber-500/30 border border-amber-500/40 transition-all shrink-0 cursor-pointer shadow-sm active:scale-95"
               title={t.expoDirectory}
             >
@@ -131,7 +152,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
                 <button
                   key={item.code}
                   type="button"
-                  onClick={() => setLang(item.code)}
+                  onClick={() => handleSwitchLang(item.code)}
                   className={`relative p-1 rounded-full transition-all flex items-center justify-center cursor-pointer ${
                     isActive
                       ? 'bg-amber-400/20 ring-2 ring-amber-400 scale-105 shadow-md shadow-amber-400/20'
@@ -321,7 +342,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
         {/* 4. DISCREET FOOTER & LINKS */}
         <div className="mt-8 flex flex-col items-center gap-3 text-center">
           <Link
-            href="/expo"
+            href={`/expo?lang=${lang}`}
             className="inline-flex items-center gap-2 text-xs font-semibold text-amber-300 hover:text-white py-2.5 px-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/40 transition-all shadow-md active:scale-[0.98]"
           >
             <Building2 className="w-3.5 h-3.5 text-amber-400" />
@@ -329,7 +350,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
           </Link>
 
           <Link
-            href={`/expo/${business.slug}/crm`}
+            href={`/expo/${business.slug}/crm?lang=${lang}`}
             className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-amber-400 transition-colors py-1 px-3 rounded-full hover:bg-slate-900 border border-transparent hover:border-slate-800"
           >
             <Lock className="w-3 h-3" />
@@ -357,6 +378,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
         onClose={() => setIsContactOpen(false)}
         defaultBusinessName={brandName}
         source={`1Booking Expo Pass - Gian Hàng ${brandName}`}
+        lang={lang}
       />
     </div>
   );
