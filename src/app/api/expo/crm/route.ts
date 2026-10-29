@@ -143,6 +143,7 @@ const ChangePinSchema = z.object({
 
 // Rate limiting theo IP và slug (tối đa 5 lần thử/phút để chống brute-force)
 const PIN_RATE_LIMIT_MAX_ENTRIES = 300;
+const PIN_RATE_LIMIT_CLEANUP_THRESHOLD = 50;
 const pinAttemptCounts = new Map<string, { count: number; resetAt: number }>();
 
 function cleanupPinRateLimits(now: number): void {
@@ -150,8 +151,8 @@ function cleanupPinRateLimits(now: number): void {
   for (const [k, v] of pinAttemptCounts.entries()) {
     if (v.resetAt < now) pinAttemptCounts.delete(k);
   }
-  // 2. Nếu vẫn vượt ngưỡng tối đa, loại bỏ key cũ nhất theo thứ tự chèn (FIFO)
-  while (pinAttemptCounts.size > PIN_RATE_LIMIT_MAX_ENTRIES) {
+  // 2. Nếu vẫn chạm ngưỡng tối đa, loại bỏ key cũ nhất theo thứ tự chèn (FIFO)
+  while (pinAttemptCounts.size >= PIN_RATE_LIMIT_MAX_ENTRIES) {
     const oldestKey = pinAttemptCounts.keys().next().value;
     if (!oldestKey) break;
     pinAttemptCounts.delete(oldestKey);
@@ -160,16 +161,14 @@ function cleanupPinRateLimits(now: number): void {
 
 function checkPinRateLimit(key: string): boolean {
   const now = Date.now();
-  if (pinAttemptCounts.size > 50) {
+  if (pinAttemptCounts.size > PIN_RATE_LIMIT_CLEANUP_THRESHOLD) {
     cleanupPinRateLimits(now);
   }
 
   const record = pinAttemptCounts.get(key);
   if (!record || record.resetAt < now) {
-    while (pinAttemptCounts.size >= PIN_RATE_LIMIT_MAX_ENTRIES) {
-      const oldestKey = pinAttemptCounts.keys().next().value;
-      if (!oldestKey) break;
-      pinAttemptCounts.delete(oldestKey);
+    if (pinAttemptCounts.size >= PIN_RATE_LIMIT_MAX_ENTRIES) {
+      cleanupPinRateLimits(now);
     }
     pinAttemptCounts.set(key, { count: 1, resetAt: now + 60 * 1000 });
     return false;
