@@ -139,7 +139,7 @@ export async function POST(request: Request) {
       if (targetSlug) {
         const { data, error } = await supabase
           .from('businesses')
-          .select('id, name, slug, phone, email, owner_id, category_slug')
+          .select('id, name, slug, phone, email, owner_id, category_slug, plan_tier')
           .eq('slug', targetSlug)
           .maybeSingle();
         if (error) console.error("Error finding business by slug:", error);
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
           const cleanTarget = targetSlug.replace(/[^a-z0-9]/g, '');
           const { data: allBizs } = await supabase
             .from('businesses')
-            .select('id, name, slug, phone, email, owner_id, category_slug');
+            .select('id, name, slug, phone, email, owner_id, category_slug, plan_tier');
           
           if (allBizs && allBizs.length > 0) {
             business = allBizs.find((b: any) => {
@@ -165,7 +165,7 @@ export async function POST(request: Request) {
           const cleanTarget = targetSlug.replace(/[^a-z0-9]/g, '');
           const { data: expoBizs } = await supabase
             .from('business_expo_profiles')
-            .select('business_id, booth_number, businesses(id, name, slug, phone, email, owner_id, category_slug)');
+            .select('business_id, booth_number, businesses(id, name, slug, phone, email, owner_id, category_slug, plan_tier)');
           
           if (expoBizs && expoBizs.length > 0) {
             const matchedExpo = expoBizs.find((ep: any) => {
@@ -183,7 +183,7 @@ export async function POST(request: Request) {
       if (!business && targetPhone) {
         const { data, error } = await supabase
           .from('businesses')
-          .select('id, name, slug, phone, email, owner_id, category_slug')
+          .select('id, name, slug, phone, email, owner_id, category_slug, plan_tier')
           .eq('phone', targetPhone)
           .maybeSingle();
         if (error) console.error("Error finding business by phone:", error);
