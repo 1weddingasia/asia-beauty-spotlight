@@ -145,13 +145,12 @@ Gõ <code>/pending</code> để xem danh sách chờ duyệt.
             const helpMsg = `
 🤖 <b>LỆNH BOT QUẢN TRỊ VIÊN 1BOOKING:</b>
 ━━━━━━━━━━━━━━━━━━━━
+• <code>EXPO: Tên Gian Hàng | Số Booth | SĐT | Tên Triển Lãm</code>: Tạo gian hàng Expo tức thì!
 • <code>/status</code>: Xem tình trạng tổng thể hệ thống
 • <code>/pending</code>: Xem danh sách các tiệm đang chờ duyệt
 • <code>/start [slug]</code>: Liên kết thông báo đặt lịch với gian hàng
 ━━━━━━━━━━━━━━━━━━━━
-Các biểu mẫu gửi thông tin trực tuyến:
-• Ưu Đãi: <code>https://1booking.asia/gui-thong-tin/uu-dai</code>
-• Tiệc: <code>https://1booking.asia/gui-thong-tin/tiec</code>
+Danh bạ Expo: <code>https://1booking.asia/expo</code>
             `.trim();
 
             await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -159,6 +158,147 @@ Các biểu mẫu gửi thông tin trực tuyến:
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ chat_id: chatId, text: helpMsg, parse_mode: 'HTML' }),
             }).catch(console.error);
+          }
+        }
+      } else if (text.startsWith('/expo') || text.toUpperCase().startsWith('EXPO:') || text.startsWith('/create_expo')) {
+        const token = resolveBotToken(req.url);
+        const adminId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
+
+        if (token && adminId && String(chatId) === String(adminId)) {
+          const rawContent = text
+            .replace(/^\/(expo|create_expo)\s*/i, '')
+            .replace(/^EXPO:\s*/i, '')
+            .trim();
+
+          if (!rawContent) {
+            const guideMsg = `
+💡 <b>HƯỚNG DẪN TẠO GIAN HÀNG EXPO SIÊU TỐC TRONG 3 GIÂY:</b>
+━━━━━━━━━━━━━━━━━━━━
+Anh chỉ cần nhắn cú pháp:
+<code>EXPO: [Tên Gian Hàng] | [Số Booth] | [SĐT] | [Tên Triển Lãm]</code>
+
+<i>Ví dụ:</i>
+<code>EXPO: Mỹ Phẩm Deoproce Korea | A-12 | 0901234567 | Cosmobeauté 2026</code>
+━━━━━━━━━━━━━━━━━━━━
+Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link in Standee gửi lại cho anh ngay lập tức!
+            `.trim();
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ chat_id: chatId, text: guideMsg, parse_mode: 'HTML' }),
+            }).catch(console.error);
+            return NextResponse.json({ success: true });
+          }
+
+          const parts = rawContent.split('|').map((s: string) => s.trim());
+          const name = parts[0] || 'Gian Hàng Triển Lãm Mới';
+          const booth = parts[1] || 'A-01';
+          const phone = parts[2] || '0900000000';
+          const eventName = parts[3] || 'Triển Lãm Quốc Tế';
+
+          const baseSlug = name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '') || `expo-${Date.now().toString().slice(-4)}`;
+
+          const pin = Math.floor(100000 + Math.random() * 900000).toString();
+          const supabase = await createAdminClient();
+
+          try {
+            const { data: existingBiz } = await supabase
+              .from('businesses')
+              .select('id, slug, name')
+              .eq('slug', baseSlug)
+              .maybeSingle();
+
+            let businessId: string;
+            let finalSlug = baseSlug;
+
+            if (existingBiz) {
+              businessId = existingBiz.id;
+              finalSlug = existingBiz.slug;
+            } else {
+              const { data: newBiz, error: bizErr } = await supabase
+                .from('businesses')
+                .insert({
+                  name,
+                  slug: finalSlug,
+                  phone,
+                  status: 'published',
+                  is_featured: true,
+                  category_slug: 'expo',
+                  page_content: { event_name: eventName, booth_number: booth },
+                })
+                .select('id, slug')
+                .single();
+
+              if (bizErr || !newBiz) throw new Error(bizErr?.message || 'Lỗi tạo gian hàng');
+              businessId = newBiz.id;
+              finalSlug = newBiz.slug;
+            }
+
+            await supabase
+              .from('business_expo_profiles')
+              .upsert({
+                business_id: businessId,
+                event_name: eventName,
+                booth_number: booth,
+                access_pin: pin,
+                is_active: true,
+                updated_at: new Date().toISOString(),
+              }, { onConflict: 'business_id' });
+
+            const boothUrl = `https://1booking.asia/expo/${finalSlug}`;
+            const crmUrl = `https://1booking.asia/expo/${finalSlug}/crm`;
+            const qrUrl = `https://1booking.asia/expo/${finalSlug}/qr`;
+
+            const successMsg = `
+🎉 <b>ĐÃ TẠO GIAN HÀNG EXPO THÀNH CÔNG TRONG 3 GIÂY!</b>
+━━━━━━━━━━━━━━━━━━━━
+🏢 <b>Gian hàng:</b> ${name}
+📍 <b>Vị trí Booth:</b> ${booth}
+🎪 <b>Sự kiện:</b> ${eventName}
+🔑 <b>Mã PIN Quản Trị CRM:</b> <code>${pin}</code>
+━━━━━━━━━━━━━━━━━━━━
+🔗 <b>1. Link Khách Quét (4 Ngôn Ngữ):</b>
+${boothUrl}
+
+📊 <b>2. Link Web CRM Trực Tiếp:</b>
+${crmUrl}
+
+🖨️ <b>3. Link In Standee QR Để Bàn:</b>
+${qrUrl}
+━━━━━━━━━━━━━━━━━━━━
+👉 Anh có thể mở máy của chủ gian hàng, truy cập link CRM và nhập mã PIN <code>${pin}</code> là chốt deal thu tiền ngay tại chỗ!
+            `.trim();
+
+            const replyKeyboard = {
+              inline_keyboard: [
+                [
+                  { text: '👁️ Trang Quét Thử', url: boothUrl },
+                  { text: '📊 Vào CRM Live', url: crmUrl },
+                ],
+                [
+                  { text: '🖨️ Mở In Standee QR', url: qrUrl },
+                ],
+              ],
+            };
+
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: chatId,
+                text: successMsg,
+                parse_mode: 'HTML',
+                reply_markup: replyKeyboard,
+              }),
+            });
+          } catch (err: any) {
+            console.error('[Telegram Webhook Create Expo Error]:', err);
           }
         }
       }

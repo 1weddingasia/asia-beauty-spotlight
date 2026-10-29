@@ -196,20 +196,150 @@ async function handleMessage(msg) {
     const helpMsg = `
 🤖 <b>TRUNG TÂM ĐIỀU KHIỂN & GIAO VIỆC TỪ XA (1BOOKING / 1BEAUTY)</b>
 ━━━━━━━━━━━━━━━━━━━━
-<b>1. Giao Việc Lập Trình Cho AI Agent:</b>
-• <code>/code &lt;nhiệm vụ&gt;</code> hoặc <code>/task &lt;nhiệm vụ&gt;</code>: Ra lệnh cho AI Agent tự động đọc mã nguồn, sửa code, test và commit lên Git!
-<i>Ví dụ:</i> <code>/code Sửa màu nút xem thử trên trang tiệc sang màu vàng gold</code>
+<b>1. Tạo Nhanh Gian Hàng Expo (Sự Kiện / Hội Chợ):</b>
+• <code>EXPO: Tên Gian Hàng | Số Booth | SĐT | Tên Triển Lãm</code>
+<i>Ví dụ:</i> <code>EXPO: Mỹ Phẩm Deoproce Korea | A-12 | 0901234567 | Cosmobeauté 2026</code>
+⚡ <i>Tự động sinh link khách quét 4 thứ tiếng, link CRM mã PIN và link In Standee QR chỉ trong 3 giây!</i>
 
-<b>2. Quản Trị Gian Hàng & Duyệt Nhanh:</b>
+<b>2. Giao Việc Lập Trình Cho AI Agent:</b>
+• <code>/code &lt;nhiệm vụ&gt;</code> hoặc <code>/task &lt;nhiệm vụ&gt;</code>: Ra lệnh cho AI Agent tự động sửa code, test và commit lên Git!
+
+<b>3. Quản Trị Gian Hàng & Duyệt Nhanh:</b>
 • <code>/pending</code>: Xem danh sách các tiệm đang chờ duyệt kèm nút bấm Duyệt ngay.
 • <code>/status</code>: Báo cáo số lượng gian hàng, commit Git mới nhất.
-
-<b>3. Tạo Trang Tức Thì:</b>
-• <code>/create &lt;tên tiệm&gt;</code>: Tạo nhanh một gian hàng mẫu.
 ━━━━━━━━━━━━━━━━━━━━
 👉 Anh có thể gõ lệnh trực tiếp tại đây!
 `.trim();
     await sendTelegram(chatId, helpMsg);
+    return;
+  }
+
+  // TẠO GIAN HÀNG EXPO NHANH TỨC THÌ QUA TELEGRAM
+  if (text.startsWith('/expo') || text.toUpperCase().startsWith('EXPO:') || text.startsWith('/create_expo')) {
+    const rawContent = text
+      .replace(/^\/(expo|create_expo)\s*/i, '')
+      .replace(/^EXPO:\s*/i, '')
+      .trim();
+
+    if (!rawContent) {
+      const guideMsg = `
+💡 <b>HƯỚNG DẪN TẠO GIAN HÀNG EXPO SIÊU TỐC TRONG 3 GIÂY:</b>
+━━━━━━━━━━━━━━━━━━━━
+Anh chỉ cần nhắn cú pháp:
+<code>EXPO: [Tên Gian Hàng] | [Số Booth] | [SĐT] | [Tên Triển Lãm]</code>
+
+<i>Ví dụ:</i>
+<code>EXPO: Mỹ Phẩm Deoproce Korea | A-12 | 0901234567 | Cosmobeauté 2026</code>
+━━━━━━━━━━━━━━━━━━━━
+Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link in Standee gửi lại cho anh ngay lập tức!
+`.trim();
+      await sendTelegram(chatId, guideMsg);
+      return;
+    }
+
+    const parts = rawContent.split('|').map(s => s.trim());
+    const name = parts[0] || 'Gian Hàng Triển Lãm Mới';
+    const booth = parts[1] || 'A-01';
+    const phone = parts[2] || '0900000000';
+    const eventName = parts[3] || 'Triển Lãm Quốc Tế';
+
+    let baseSlug = name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || `expo-${Date.now().toString().slice(-4)}`;
+
+    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+
+    try {
+      let { data: existingBiz } = await supabase
+        .from('businesses')
+        .select('id, slug, name')
+        .eq('slug', baseSlug)
+        .maybeSingle();
+
+      let businessId;
+      let finalSlug = baseSlug;
+
+      if (existingBiz) {
+        businessId = existingBiz.id;
+        finalSlug = existingBiz.slug;
+      } else {
+        const { data: newBiz, error: bizErr } = await supabase
+          .from('businesses')
+          .insert({
+            name,
+            slug: finalSlug,
+            phone,
+            status: 'published',
+            is_featured: true,
+            category_slug: 'expo',
+            page_content: { event_name: eventName, booth_number: booth }
+          })
+          .select('id, slug')
+          .single();
+
+        if (bizErr || !newBiz) throw new Error(bizErr?.message || 'Lỗi tạo gian hàng');
+        businessId = newBiz.id;
+        finalSlug = newBiz.slug;
+      }
+
+      const { error: profileErr } = await supabase
+        .from('business_expo_profiles')
+        .upsert({
+          business_id: businessId,
+          event_name: eventName,
+          booth_number: booth,
+          access_pin: pin,
+          is_active: true,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'business_id' });
+
+      if (profileErr) throw new Error(profileErr.message);
+
+      const boothUrl = `https://1booking.asia/expo/${finalSlug}`;
+      const crmUrl = `https://1booking.asia/expo/${finalSlug}/crm`;
+      const qrUrl = `https://1booking.asia/expo/${finalSlug}/qr`;
+
+      const successMsg = `
+🎉 <b>ĐÃ TẠO GIAN HÀNG EXPO THÀNH CÔNG TRONG 3 GIÂY!</b>
+━━━━━━━━━━━━━━━━━━━━
+🏢 <b>Gian hàng:</b> ${name}
+📍 <b>Vị trí Booth:</b> ${booth}
+🎪 <b>Sự kiện:</b> ${eventName}
+🔑 <b>Mã PIN Quản Trị CRM:</b> <code>${pin}</code>
+━━━━━━━━━━━━━━━━━━━━
+🔗 <b>1. Link Khách Quét (4 Ngôn Ngữ):</b>
+${boothUrl}
+
+📊 <b>2. Link Web CRM Trực Tiếp:</b>
+${crmUrl}
+
+🖨️ <b>3. Link In Standee QR Để Bàn:</b>
+${qrUrl}
+━━━━━━━━━━━━━━━━━━━━
+👉 Anh có thể mở máy của chủ gian hàng, truy cập link CRM và nhập mã PIN <code>${pin}</code> là chốt deal thu tiền ngay tại chỗ!
+`.trim();
+
+      const replyKeyboard = {
+        inline_keyboard: [
+          [
+            { text: '👁️ Trang Quét Thử', url: boothUrl },
+            { text: '📊 Vào CRM Live', url: crmUrl },
+          ],
+          [
+            { text: '🖨️ Mở In Standee QR', url: qrUrl },
+          ]
+        ]
+      };
+
+      await sendTelegram(chatId, successMsg, replyKeyboard);
+    } catch (err) {
+      console.error('[Telegram Create Expo Error]:', err);
+      await sendTelegram(chatId, `❌ Lỗi tạo gian hàng Expo: ${err.message}`);
+    }
     return;
   }
 
