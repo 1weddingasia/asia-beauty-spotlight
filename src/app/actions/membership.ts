@@ -293,16 +293,22 @@ export async function adminManageMembershipAction(payload: {
       // Nếu là gói tiệc VIP Neon (700k): Bật hiệu ứng Neon trên bản đồ
       if (targetPlan.plan_type === 'party') {
         const isVipParty = targetPlan.code === 'tiec_vip' || targetPlan.tier === 'vip';
+        const { data: existingParty } = await supabaseAdmin
+          .from("business_party_profiles")
+          .select("min_guests, max_guests, num_vip_rooms, price_min, price_max, party_deal_highlight, is_vip")
+          .eq("business_id", business.id)
+          .maybeSingle();
+
         await supabaseAdmin.from("business_party_profiles").upsert({
           business_id: business.id,
-          min_guests: DEFAULT_PARTY_PROFILE_VALUES.min_guests,
-          max_guests: DEFAULT_PARTY_PROFILE_VALUES.max_guests,
-          num_vip_rooms: DEFAULT_PARTY_PROFILE_VALUES.num_vip_rooms,
-          price_min: DEFAULT_PARTY_PROFILE_VALUES.price_min,
-          price_max: DEFAULT_PARTY_PROFILE_VALUES.price_max,
-          is_vip: isVipParty,
+          min_guests: existingParty?.min_guests ?? DEFAULT_PARTY_PROFILE_VALUES.min_guests,
+          max_guests: existingParty?.max_guests ?? DEFAULT_PARTY_PROFILE_VALUES.max_guests,
+          num_vip_rooms: existingParty?.num_vip_rooms ?? DEFAULT_PARTY_PROFILE_VALUES.num_vip_rooms,
+          price_min: existingParty?.price_min ?? DEFAULT_PARTY_PROFILE_VALUES.price_min,
+          price_max: existingParty?.price_max ?? DEFAULT_PARTY_PROFILE_VALUES.price_max,
+          is_vip: Boolean(existingParty?.is_vip || isVipParty),
           is_active: true,
-          party_deal_highlight: isVipParty ? DEFAULT_PARTY_PROFILE_VALUES.party_deal_vip_highlight : DEFAULT_PARTY_PROFILE_VALUES.party_deal_highlight,
+          party_deal_highlight: existingParty?.party_deal_highlight || (isVipParty ? DEFAULT_PARTY_PROFILE_VALUES.party_deal_vip_highlight : DEFAULT_PARTY_PROFILE_VALUES.party_deal_highlight),
           updated_at: new Date().toISOString(),
         }, { onConflict: "business_id" });
       }

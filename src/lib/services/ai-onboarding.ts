@@ -605,27 +605,84 @@ export async function handleTelegramCallback(callbackData: string, fromChatId: s
   }
 
   if (action === 'pub') {
-    // Duyệt & Publish
+    const isParty = business.category_slug === 'nha-hang-am-thuc' || business.category_slug === 'dining' || business.category_slug === 'tiec-cuoi';
+    const planCode = isParty ? 'tiec_standard' : 'udai_standard';
+
+    // 1. Tìm gói tương ứng trong bảng plans
+    const { data: targetPlan } = await supabase
+      .from('plans')
+      .select('id, code, name, plan_type, tier, price_yearly')
+      .eq('code', planCode)
+      .maybeSingle();
+
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+
+    // 2. Cấp hoặc gia hạn gói hội viên 1 năm
+    if (targetPlan) {
+      const { data: existingMems } = await supabase
+        .from('memberships')
+        .select('id, expires_at')
+        .eq('business_id', business.id)
+        .order('expires_at', { ascending: false })
+        .limit(1);
+
+      if (existingMems && existingMems.length > 0) {
+        await supabase
+          .from('memberships')
+          .update({
+            plan_id: targetPlan.id,
+            status: 'active',
+            starts_at: now.toISOString(),
+            expires_at: expiresAt.toISOString(),
+          })
+          .eq('id', existingMems[0].id);
+      } else {
+        await supabase
+          .from('memberships')
+          .insert({
+            business_id: business.id,
+            plan_id: targetPlan.id,
+            status: 'active',
+            starts_at: now.toISOString(),
+            expires_at: expiresAt.toISOString(),
+          });
+      }
+    }
+
+    // 3. Nếu là Nhà hàng: Đảm bảo hồ sơ tiệc is_active = true
+    if (isParty) {
+      await supabase
+        .from('business_party_profiles')
+        .update({
+          is_active: true,
+          updated_at: now.toISOString(),
+        })
+        .eq('business_id', business.id);
+    }
+
+    // 4. Duyệt & Publish Business
     await supabase
       .from('businesses')
       .update({
         status: 'published',
         is_featured: true,
-        updated_at: new Date().toISOString(),
+        plan_id: targetPlan?.id || null,
+        plan_tier: targetPlan?.tier || 'standard',
+        updated_at: now.toISOString(),
       })
       .eq('id', business.id);
 
-    // Cập nhật onboarding_submissions
+    // 5. Cập nhật onboarding_submissions
     await supabase
       .from('onboarding_submissions')
-      .update({ status: 'approved', updated_at: new Date().toISOString() })
+      .update({ status: 'approved', updated_at: now.toISOString() })
       .eq('business_id', business.id);
 
-    const isParty = business.category_slug === 'nha-hang-am-thuc' || business.category_slug === 'dining' || business.category_slug === 'tiec-cuoi';
     const publicUrl = isParty ? `https://1booking.asia/${business.slug}/tiec` : `https://1booking.asia/${business.slug}`;
 
     return {
-      text: `✅ ĐÃ DUYỆT CÔNG KHAI!\n\nGian hàng "${business.name}" đã chính thức hiển thị trên 1Booking/1Beauty.\n🔗 Link công khai: ${publicUrl}`,
+      text: `✅ ĐÃ DUYỆT CÔNG KHAI!\n\nGian hàng "${business.name}" đã được kích hoạt Gói ${targetPlan?.name || 'Chuẩn'} (1 năm) và chính thức hiển thị trên 1Booking.\n🔗 Link công khai: ${publicUrl}`,
     };
   }
 
