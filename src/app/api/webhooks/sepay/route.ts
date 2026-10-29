@@ -169,9 +169,9 @@ export async function POST(request: Request) {
           
           if (expoBizs && expoBizs.length > 0) {
             const matchedExpo = expoBizs.find((ep: any) => {
-              if (!ep.businesses) return false;
-              const boothClean = (ep.booth_number || '').replace(/[^a-z0-9]/g, '').toLowerCase();
-              return boothClean && (boothClean === cleanTarget || cleanTarget.includes(boothClean));
+              if (!ep.businesses || !ep.booth_number) return false;
+              const booths = ep.booth_number.split(',').map((b: string) => b.replace(/[^a-z0-9]/g, '').toLowerCase());
+              return booths.includes(cleanTarget);
             });
             if (matchedExpo?.businesses) {
               business = matchedExpo.businesses;
@@ -272,7 +272,7 @@ export async function POST(request: Request) {
             }
           }
           let durationDays = 365;
-          if (targetPlanCode === 'expo_pass_event') {
+          if (plan.code === 'expo_pass_event' || targetPlanCode === 'expo_pass_event') {
             durationDays = 30;
           }
           const expiresAt = new Date(baseTime + durationDays * 24 * 60 * 60 * 1000);
@@ -351,13 +351,14 @@ export async function POST(request: Request) {
             }
           }
 
-          // 5. Cập nhật Business sang published và plan_tier
+          // 5. Cập nhật Business sang published và giữ nguyên VIP nếu đã VIP
+          const newPlanTier = (business.plan_tier === 'vip' || plan.tier === 'vip') ? 'vip' : 'premium';
           await supabase.from('businesses')
             .update({ 
               status: 'published',
               is_featured: true, 
               plan_id: plan.id, 
-              plan_tier: plan.tier === 'vip' ? 'vip' : 'premium',
+              plan_tier: newPlanTier,
               updated_at: new Date().toISOString(),
             })
             .eq('id', business.id);
@@ -396,7 +397,8 @@ export async function POST(request: Request) {
                 planTag = isVipParty ? '🌟 Kích hoạt VIP Neon' : '✅ Kích hoạt Phố Tiệc';
               }
 
-              const crmLink = isExpoPayment ? `https://1booking.asia/expo/${business.slug}/crm` : `https://1booking.asia/${business.slug}`;
+              const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://1booking.asia';
+              const crmLink = isExpoPayment ? `${siteUrl}/expo/${business.slug}/crm` : `${siteUrl}/${business.slug}`;
               const msg = `🎉 <b>[1BOOKING.ASIA] NỔ ĐƠN KÍCH HOẠT TỰ ĐỘNG!</b>\n━━━━━━━━━━━━━━━━━━━━\n🏛️ <b>Quán / Gian hàng:</b> ${business.name}\n🔗 <b>Đường dẫn:</b> ${crmLink}\n📞 <b>SĐT:</b> ${business.phone || 'Không rõ'}\n💰 <b>Số tiền:</b> ${payload.transferAmount.toLocaleString('vi-VN')} đ\n📦 <b>Gói:</b> ${plan.name || targetPlanCode}\n✨ <b>Phân loại:</b> ${planTag}\n📝 <b>Nội dung CK:</b> ${payload.content}\n━━━━━━━━━━━━━━━━━━━━\n⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
               await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',

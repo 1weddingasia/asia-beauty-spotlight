@@ -390,6 +390,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
   activateCheckBtn: string;
   activateChecking: string;
   activateConfirmed: string;
+  activateSelected: string;
 }> = {
   vi: {
     pinTitle: 'CRM GIAN HÀNG',
@@ -489,6 +490,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     activateCheckBtn: 'Tôi Đã Chuyển Khoản',
     activateChecking: 'Đang kiểm tra giao dịch...',
     activateConfirmed: '🎉 Kích hoạt bản quyền thành công!',
+    activateSelected: 'Đang chọn',
   },
   en: {
     pinTitle: 'BOOTH CRM',
@@ -588,6 +590,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     activateCheckBtn: 'I Have Transferred',
     activateChecking: 'Verifying transaction...',
     activateConfirmed: '🎉 License activated successfully!',
+    activateSelected: 'Selected',
   },
   ko: {
     pinTitle: '부스 CRM',
@@ -687,6 +690,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     activateCheckBtn: '송금을 완료했습니다',
     activateChecking: '거래 확인 중...',
     activateConfirmed: '🎉 라이선스가 성공적으로 활성화되었습니다!',
+    activateSelected: '선택됨',
   },
   zh: {
     pinTitle: '展位 CRM',
@@ -786,6 +790,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     activateCheckBtn: '我已完成转账',
     activateChecking: '正在查询转账记录...',
     activateConfirmed: '🎉 授权激活成功！',
+    activateSelected: '当前选择',
   },
 };
 

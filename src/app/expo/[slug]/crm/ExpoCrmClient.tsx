@@ -660,9 +660,10 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
           {/* 2 Gói Lựa Chọn Duy Nhất */}
           <div className="mb-5 space-y-2.5">
             {/* Gói 1: Sự Kiện 30 Ngày */}
-            <div
+            <button
+              type="button"
               onClick={() => setSelectedPlanAmount(300000)}
-              className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+              className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                 selectedPlanAmount === 300000
                   ? 'bg-amber-500/15 border-amber-500/70 shadow-md ring-1 ring-amber-500/50'
                   : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
@@ -675,7 +676,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                     <h4 className="text-sm font-bold text-white">{t.activateEventPlan}</h4>
                     {selectedPlanAmount === 300000 && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950">
-                        Đang chọn
+                        {t.activateSelected}
                       </span>
                     )}
                   </div>
@@ -687,12 +688,13 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
               <div className="text-right shrink-0">
                 <span className="text-sm font-mono font-black text-amber-400">300.000đ</span>
               </div>
-            </div>
+            </button>
 
             {/* Gói 2: Toàn Niên 365 Ngày */}
-            <div
+            <button
+              type="button"
               onClick={() => setSelectedPlanAmount(600000)}
-              className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+              className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                 selectedPlanAmount === 600000
                   ? 'bg-amber-500/15 border-amber-500/70 shadow-md ring-1 ring-amber-500/50'
                   : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
@@ -705,7 +707,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                     <h4 className="text-sm font-bold text-white">{t.activateYearlyPlan}</h4>
                     {selectedPlanAmount === 600000 && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950">
-                        Đang chọn
+                        {t.activateSelected}
                       </span>
                     )}
                   </div>
@@ -717,7 +719,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
               <div className="text-right shrink-0">
                 <span className="text-sm font-mono font-black text-amber-400">600.000đ</span>
               </div>
-            </div>
+            </button>
           </div>
 
           {/* QR Code Container */}
