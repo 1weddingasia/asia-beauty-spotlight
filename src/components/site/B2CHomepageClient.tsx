@@ -505,6 +505,25 @@ function B2BBanner() {
   );
 }
 
+// --- Phố Tiệc Highlights Data -----------------------------------------------
+const PHO_TIEC_HIGHLIGHTS = [
+  {
+    icon: MapPin,
+    title: "Định vị gần bạn",
+    subtitle: "Bản đồ trực quan 1-chạm",
+  },
+  {
+    icon: Users,
+    title: "Phòng VIP & Đoàn đông",
+    subtitle: "Sức chứa 15 - 500 khách",
+  },
+  {
+    icon: Gift,
+    title: "Ưu đãi độc quyền",
+    subtitle: "Tặng bia & gói âm thanh",
+  },
+];
+
 // --- Phố Tiệc Banner Section ------------------------------------------------
 function PhoTiecBannerSection() {
   return (
@@ -515,11 +534,11 @@ function PhoTiecBannerSection() {
 
       <div className="mx-auto max-w-6xl px-4 relative z-10">
         <div className="relative rounded-3xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-zinc-900/90 via-slate-900/90 to-amber-950/40 p-6 sm:p-8 md:p-10 shadow-2xl backdrop-blur-sm">
-          {/* Subtle background image overlay */}
-          <div className="absolute inset-0 opacity-15 mix-blend-luminosity pointer-events-none">
+          {/* Subtle decorative background image overlay */}
+          <div aria-hidden className="absolute inset-0 opacity-15 mix-blend-luminosity pointer-events-none">
             <Image
               src="/images/tat-nien-og.jpg"
-              alt="Phố Tiệc Background"
+              alt=""
               fill
               className="object-cover"
               sizes="100vw"
@@ -548,35 +567,20 @@ function PhoTiecBannerSection() {
 
               {/* 3 Key Highlights */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                  <div className="size-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                    <MapPin className="size-4" />
-                  </div>
-                  <div className="text-xs">
-                    <div className="font-bold text-white">Định vị gần bạn</div>
-                    <div className="text-zinc-400 text-[11px]">Bản đồ trực quan 1-chạm</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                  <div className="size-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                    <Users className="size-4" />
-                  </div>
-                  <div className="text-xs">
-                    <div className="font-bold text-white">Phòng VIP & Đoàn đông</div>
-                    <div className="text-zinc-400 text-[11px]">Sức chứa 15 - 500 khách</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                  <div className="size-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                    <Gift className="size-4" />
-                  </div>
-                  <div className="text-xs">
-                    <div className="font-bold text-white">Ưu đãi độc quyền</div>
-                    <div className="text-zinc-400 text-[11px]">Tặng bia & gói âm thanh</div>
-                  </div>
-                </div>
+                {PHO_TIEC_HIGHLIGHTS.map((item, idx) => {
+                  const IconComponent = item.icon;
+                  return (
+                    <div key={idx} className="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                      <div className="size-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                        <IconComponent className="size-4" />
+                      </div>
+                      <div className="text-xs">
+                        <div className="font-bold text-white">{item.title}</div>
+                        <div className="text-zinc-400 text-[11px]">{item.subtitle}</div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* CTA Action Buttons */}
@@ -591,7 +595,7 @@ function PhoTiecBannerSection() {
                 </Link>
 
                 <Link
-                  href="/tat-nien/dang-ky"
+                  href="/pho-tiec/dang-ky"
                   className="inline-flex items-center gap-2 border border-amber-500/40 text-amber-300 hover:text-white hover:border-amber-400 hover:bg-amber-500/10 px-5 py-3 rounded-2xl text-xs sm:text-sm font-semibold transition-all"
                 >
                   <UtensilsCrossed className="size-4" />
