@@ -1,6 +1,15 @@
 import { createAdminClient } from '@/utils/supabase/server';
 import { OpenAI } from 'openai';
 
+export type OnboardingDealItem = {
+  id?: string;
+  title: string;
+  originalPrice?: string;
+  promoPrice?: string;
+  note?: string;
+  badge?: string;
+};
+
 export type OnboardingDealPayload = {
   type: 'deal';
   brandName: string;
@@ -18,13 +27,8 @@ export type OnboardingDealPayload = {
   logoUrl?: string;
   bannerUrls?: string[];
   galleryUrls?: string[];
-  mainDeal: {
-    title: string;
-    originalPrice?: string;
-    promoPrice?: string;
-    note?: string;
-    badge?: string;
-  };
+  deals?: OnboardingDealItem[];
+  mainDeal?: OnboardingDealItem;
   services?: Array<{
     name: string;
     price?: number | string;
@@ -57,7 +61,8 @@ export type OnboardingPartyPayload = {
     max: number;
   };
   partyPerks?: string[];
-  partyDealHighlight: string;
+  partyDealHighlight?: string;
+  partyDeals?: OnboardingDealItem[];
   setMenus?: Array<{
     name: string;
     price: number;
@@ -137,6 +142,9 @@ export async function enhanceCopywritingWithAI(payload: OnboardingInput): Promis
     });
 
     const isParty = payload.type === 'party';
+    const firstDeal = isParty
+      ? ((payload as OnboardingPartyPayload).partyDeals?.[0]?.title || (payload as OnboardingPartyPayload).partyDealHighlight || '')
+      : ((payload as OnboardingDealPayload).deals?.[0]?.title || (payload as OnboardingDealPayload).mainDeal?.title || '');
 
     const prompt = `
 Bạn là Giám đốc Sáng tạo & Copywriter chuyên nghiệp cho nền tảng 1Booking.Asia và 1Beauty.Asia.
@@ -144,7 +152,7 @@ Hãy trau chuốt và tối ưu hóa nội dung tiếp thị cho cơ sở kinh d
 Tên cơ sở: "${payload.brandName}"
 Địa chỉ: "${payload.address}"
 Loại hình: ${isParty ? 'Nhà hàng / Trung tâm tổ chức Tiệc Tất Niên & Sự Kiện' : 'Cơ sở Dịch vụ & Làm đẹp'}
-${isParty ? `Ưu đãi tiệc khách đưa: "${(payload as OnboardingPartyPayload).partyDealHighlight}"` : `Ưu đãi chính khách đưa: "${(payload as OnboardingDealPayload).mainDeal?.title || ''}"`}
+${isParty ? `Ưu đãi tiệc khách đưa: "${firstDeal}"` : `Ưu đãi chính khách đưa: "${firstDeal}"`}
 
 Yêu cầu trả về DUY NHẤT một chuỗi JSON chuẩn (không dùng markdown code fence, không giải thích gì thêm), có cấu trúc sau:
 {
@@ -267,27 +275,62 @@ export async function processOnboardingSubmission(payload: OnboardingInput) {
   let services: any[] = [];
 
   if (isParty && partyPayload) {
-    deals = [
-      {
-        id: `deal-party-${Date.now()}`,
-        title: aiResult.dealHighlight || partyPayload.partyDealHighlight || 'Ưu Đãi Đặt Tiệc Tất Niên',
-        promo_price: partyPayload.priceRange ? `Từ ${(partyPayload.priceRange.min).toLocaleString('vi-VN')}đ` : 'Ưu đãi',
-        original_price: partyPayload.priceRange ? `Đến ${(partyPayload.priceRange.max).toLocaleString('vi-VN')}đ` : '',
-        note: 'Áp dụng cho đoàn đặt tiệc liên hoan, tất niên cuối năm.',
-        badge: 'TIỆC TẤT NIÊN',
-      },
-    ];
+    if (Array.isArray(partyPayload.partyDeals) && partyPayload.partyDeals.length > 0) {
+      deals = partyPayload.partyDeals
+        .filter((d) => d && d.title && d.title.trim())
+        .map((d, idx) => ({
+          id: d.id || `deal-party-${idx + 1}-${Date.now()}`,
+          title: d.title.trim(),
+          promo_price: d.promoPrice?.trim() || (partyPayload.priceRange ? `Từ ${(partyPayload.priceRange.min).toLocaleString('vi-VN')}đ` : 'Ưu đãi'),
+          original_price: d.originalPrice?.trim() || (partyPayload.priceRange ? `Đến ${(partyPayload.priceRange.max).toLocaleString('vi-VN')}đ` : ''),
+          note: d.note?.trim() || 'Áp dụng cho đoàn đặt tiệc liên hoan, tất niên cuối năm.',
+          badge: d.badge?.trim() || (idx === 0 ? 'TIỆC TẤT NIÊN' : 'ƯU ĐÃI'),
+          status: 'active',
+        }));
+    }
+
+    if (deals.length === 0) {
+      deals = [
+        {
+          id: `deal-party-${Date.now()}`,
+          title: aiResult.dealHighlight || partyPayload.partyDealHighlight || 'Ưu Đãi Đặt Tiệc Tất Niên',
+          promo_price: partyPayload.priceRange ? `Từ ${(partyPayload.priceRange.min).toLocaleString('vi-VN')}đ` : 'Ưu đãi',
+          original_price: partyPayload.priceRange ? `Đến ${(partyPayload.priceRange.max).toLocaleString('vi-VN')}đ` : '',
+          note: 'Áp dụng cho đoàn đặt tiệc liên hoan, tất niên cuối năm.',
+          badge: 'TIỆC TẤT NIÊN',
+          status: 'active',
+        },
+      ];
+    }
   } else if (dealPayload) {
-    deals = [
-      {
-        id: `deal-${Date.now()}`,
-        title: dealPayload.mainDeal.title,
-        promo_price: dealPayload.mainDeal.promoPrice || '0đ',
-        original_price: dealPayload.mainDeal.originalPrice || '',
-        note: dealPayload.mainDeal.note || 'Áp dụng khi đăng ký nhận mã ưu đãi trực tuyến.',
-        badge: dealPayload.mainDeal.badge || 'HOT',
-      },
-    ];
+    const now = Date.now();
+    if (Array.isArray(dealPayload.deals) && dealPayload.deals.length > 0) {
+      deals = dealPayload.deals
+        .filter((d) => d && d.title && d.title.trim())
+        .map((d, idx) => ({
+          id: d.id || `deal-${now}-${idx + 1}`,
+          title: d.title.trim(),
+          promo_price: d.promoPrice?.trim() || 'Ưu đãi',
+          original_price: d.originalPrice?.trim() || '',
+          note: d.note?.trim() || 'Áp dụng khi đăng ký nhận mã ưu đãi trực tuyến.',
+          badge: d.badge?.trim() || (idx === 0 ? 'HOT' : ''),
+          status: 'active',
+        }));
+    }
+
+    if (deals.length === 0 && dealPayload.mainDeal?.title) {
+      deals = [
+        {
+          id: `deal-${now}-1`,
+          title: dealPayload.mainDeal.title.trim(),
+          promo_price: dealPayload.mainDeal.promoPrice?.trim() || 'Ưu đãi',
+          original_price: dealPayload.mainDeal.originalPrice?.trim() || '',
+          note: dealPayload.mainDeal.note?.trim() || 'Áp dụng khi đăng ký nhận mã ưu đãi trực tuyến.',
+          badge: dealPayload.mainDeal.badge?.trim() || 'HOT',
+          status: 'active',
+        },
+      ];
+    }
 
     if (Array.isArray(dealPayload.services) && dealPayload.services.length > 0) {
       services = dealPayload.services.map((s, idx) => ({
@@ -301,8 +344,12 @@ export async function processOnboardingSubmission(payload: OnboardingInput) {
 
   const pageContent = {
     logo_url: payload.logoUrl || null,
-    banners: Array.isArray(payload.bannerUrls) && payload.bannerUrls.length > 0 ? payload.bannerUrls : [],
-    gallery: Array.isArray(payload.galleryUrls) && payload.galleryUrls.length > 0 ? payload.galleryUrls : [],
+    banners: Array.isArray(payload.bannerUrls)
+      ? payload.bannerUrls.map((b) => typeof b === 'string' ? b.trim() : '').filter(Boolean).slice(0, 3)
+      : [],
+    gallery: Array.isArray(payload.galleryUrls)
+      ? payload.galleryUrls.map((g) => typeof g === 'string' ? g.trim() : '').filter(Boolean).slice(0, 8)
+      : [],
     tagline: aiResult.tagline,
     description: aiResult.description,
     address: payload.address,
@@ -373,7 +420,7 @@ export async function processOnboardingSubmission(payload: OnboardingInput) {
         spaces_and_amenities: partyPayload.spacesAndAmenities || [],
         cuisines: partyPayload.cuisines || [],
         party_perks: partyPayload.partyPerks || [],
-        party_deal_highlight: aiResult.dealHighlight || partyPayload.partyDealHighlight,
+        party_deal_highlight: aiResult.dealHighlight || partyPayload.partyDealHighlight || deals[0]?.title || 'Ưu Đãi Đặt Tiệc Tất Niên',
         party_description: aiResult.partyDescription || aiResult.description,
         party_banner_url: partyPayload.bannerUrls?.[0] || null,
         party_gallery: partyPayload.galleryUrls || [],
@@ -435,7 +482,9 @@ export async function processOnboardingSubmission(payload: OnboardingInput) {
     email: cleanEmail,
     address: payload.address,
     tagline: aiResult.tagline,
-    dealHighlight: isParty ? (aiResult.dealHighlight || partyPayload?.partyDealHighlight) : dealPayload?.mainDeal.title,
+    dealHighlight: isParty
+      ? (aiResult.dealHighlight || partyPayload?.partyDealHighlight || deals[0]?.title || 'Ưu Đãi Đặt Tiệc Tất Niên')
+      : (deals[0]?.title || dealPayload?.mainDeal?.title || 'Ưu Đãi Đặc Biệt'),
     menuDriveUrl: partyPayload?.menuDriveUrl,
   });
 

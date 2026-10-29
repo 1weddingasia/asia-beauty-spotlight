@@ -21,18 +21,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (body.type === 'deal' && !(body as any).mainDeal?.title) {
-      return NextResponse.json(
-        { success: false, error: 'Vui lòng cung cấp tiêu đề chương trình ưu đãi chính.' },
-        { status: 400 }
-      );
+    if (body.type === 'deal') {
+      const hasMainDeal = typeof (body as any).mainDeal?.title === 'string' && (body as any).mainDeal.title.trim().length > 0;
+      const hasDealsArray = Array.isArray((body as any).deals) && (body as any).deals.some((d: any) => typeof d?.title === 'string' && d.title.trim().length > 0);
+      if (!hasMainDeal && !hasDealsArray) {
+        return NextResponse.json(
+          { success: false, error: 'Vui lòng cung cấp ít nhất một tiêu đề chương trình ưu đãi.' },
+          { status: 400 }
+        );
+      }
     }
 
-    if (body.type === 'party' && !(body as any).partyDealHighlight) {
-      return NextResponse.json(
-        { success: false, error: 'Vui lòng cung cấp gói ưu đãi tiệc tâm điểm.' },
-        { status: 400 }
-      );
+    if (body.type === 'party') {
+      const hasPartyHighlight = typeof (body as any).partyDealHighlight === 'string' && (body as any).partyDealHighlight.trim().length > 0;
+      const hasPartyDealsArray = Array.isArray((body as any).partyDeals) && (body as any).partyDeals.some((d: any) => typeof d?.title === 'string' && d.title.trim().length > 0);
+      if (!hasPartyHighlight && !hasPartyDealsArray) {
+        return NextResponse.json(
+          { success: false, error: 'Vui lòng cung cấp ít nhất một gói ưu đãi tiệc.' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Helper whitelist và giới hạn độ dài chuỗi để bảo vệ an toàn CSDL
+    const sanitizeDealList = (list: unknown) =>
+      Array.isArray(list)
+        ? list.slice(0, 10).map((d: any) => ({
+            id: typeof d?.id === 'string' ? d.id.slice(0, 100) : undefined,
+            title: typeof d?.title === 'string' ? d.title.trim().slice(0, 255) : '',
+            promoPrice: typeof d?.promoPrice === 'string' ? d.promoPrice.trim().slice(0, 100) : undefined,
+            originalPrice: typeof d?.originalPrice === 'string' ? d.originalPrice.trim().slice(0, 100) : undefined,
+            note: typeof d?.note === 'string' ? d.note.trim().slice(0, 500) : undefined,
+            badge: typeof d?.badge === 'string' ? d.badge.trim().slice(0, 50) : undefined,
+          }))
+        : undefined;
+
+    if (Array.isArray((body as any).deals)) {
+      (body as any).deals = sanitizeDealList((body as any).deals);
+    }
+
+    if (Array.isArray((body as any).partyDeals)) {
+      (body as any).partyDeals = sanitizeDealList((body as any).partyDeals);
     }
 
     // Helper validate URL an toàn

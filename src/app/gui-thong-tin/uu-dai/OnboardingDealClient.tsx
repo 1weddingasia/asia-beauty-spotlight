@@ -34,6 +34,23 @@ interface ServiceItem {
   desc: string;
 }
 
+interface DealItem {
+  id: string;
+  title: string;
+  promoPrice: string;
+  originalPrice: string;
+  note: string;
+  badge: string;
+}
+
+const BANNER_SLOT_COUNT = 3;
+const SLIDE_HINTS = [
+  "Mặt tiền hoặc sảnh tiếp khách",
+  "Không gian dịch vụ / phòng vip",
+  "Khuyến mãi hoặc dịch vụ hot",
+];
+const DEFAULT_DEAL_BADGES = ["HOT", "GIẢM 50%", "COMBO", "ƯU ĐÃI", "QUÀ TẶNG", "ĐẶC BIỆT"];
+
 export function OnboardingDealClient() {
   const [loading, setLoading] = useState(false);
   const [successData, setSuccessData] = useState<{
@@ -57,20 +74,75 @@ export function OnboardingDealClient() {
   const [facebook, setFacebook] = useState("");
   const [hours, setHours] = useState("09:00 - 21:00");
 
-  // Media
+  // Media: Hỗ trợ 3 Banner Slider
   const [logoUrl, setLogoUrl] = useState("");
-  const [bannerUrl, setBannerUrl] = useState("");
+  const [banners, setBanners] = useState<string[]>(Array(BANNER_SLOT_COUNT).fill(""));
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
   const [tempGalleryInput, setTempGalleryInput] = useState("");
 
-  // Deals & Services
-  const [dealTitle, setDealTitle] = useState("");
-  const [promoPrice, setPromoPrice] = useState("");
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [dealNote, setDealNote] = useState("");
+  // Deals: Hỗ trợ nhiều gói ưu đãi linh hoạt
+  const [deals, setDeals] = useState<DealItem[]>([
+    {
+      id: "deal-1",
+      title: "",
+      promoPrice: "",
+      originalPrice: "",
+      note: "",
+      badge: "HOT",
+    },
+  ]);
+
   const [services, setServices] = useState<ServiceItem[]>([
     { name: "", price: "", desc: "" },
   ]);
+
+  const updateBanner = (index: number, url: string) => {
+    setBanners((prev) => {
+      const next = [...prev];
+      next[index] = url;
+      return next;
+    });
+  };
+
+  const addDeal = () => {
+    setDeals((prev) => {
+      if (prev.length >= 6) {
+        toast.info("Tối đa 6 gói ưu đãi để trang hiển thị tối ưu và đẹp mắt nhất.");
+        return prev;
+      }
+      return [
+        ...prev,
+        {
+          id: `deal-${Date.now()}-${prev.length}`,
+          title: "",
+          promoPrice: "",
+          originalPrice: "",
+          note: "",
+          badge: DEFAULT_DEAL_BADGES[prev.length] ?? "ƯU ĐÃI",
+        },
+      ];
+    });
+  };
+
+  const removeDeal = (index: number) => {
+    setDeals((prev) => {
+      if (prev.length <= 1) {
+        toast.error("Phải có ít nhất 1 chương trình ưu đãi!");
+        return prev;
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const updateDeal = (index: number, field: keyof DealItem, value: string) => {
+    setDeals((prev) => {
+      const updated = [...prev];
+      if (updated[index]) {
+        updated[index] = { ...updated[index], [field]: value };
+      }
+      return updated;
+    });
+  };
 
   const addService = () => {
     setServices((prev) => {
@@ -141,14 +213,16 @@ export function OnboardingDealClient() {
       toast.error("Vui lòng nhập Địa chỉ cơ sở!");
       return;
     }
-    if (!dealTitle.trim()) {
-      toast.error("Vui lòng nhập Tên chương trình ưu đãi chính!");
+    const validDeals = deals.filter((d) => d.title.trim());
+    if (validDeals.length === 0) {
+      toast.error("Vui lòng nhập tên chương trình ưu đãi (ít nhất 1 gói)!");
       return;
     }
 
     setLoading(true);
 
     try {
+      const cleanBanners = banners.filter((b) => b && b.trim() !== "");
       const payload = {
         type: "deal" as const,
         brandName: brandName.trim(),
@@ -163,13 +237,21 @@ export function OnboardingDealClient() {
         facebook: facebook.trim() || undefined,
         hours: hours.trim() || "09:00 - 21:00",
         logoUrl: logoUrl || undefined,
-        bannerUrls: bannerUrl ? [bannerUrl] : [],
+        bannerUrls: cleanBanners,
         galleryUrls: galleryUrls,
+        deals: validDeals.map((d) => ({
+          title: d.title.trim(),
+          promoPrice: d.promoPrice.trim() || undefined,
+          originalPrice: d.originalPrice.trim() || undefined,
+          note: d.note.trim() || undefined,
+          badge: d.badge.trim() || undefined,
+        })),
         mainDeal: {
-          title: dealTitle.trim(),
-          promoPrice: promoPrice.trim() || undefined,
-          originalPrice: originalPrice.trim() || undefined,
-          note: dealNote.trim() || undefined,
+          title: validDeals[0].title.trim(),
+          promoPrice: validDeals[0].promoPrice.trim() || undefined,
+          originalPrice: validDeals[0].originalPrice.trim() || undefined,
+          note: validDeals[0].note.trim() || undefined,
+          badge: validDeals[0].badge.trim() || undefined,
         },
         services: services
           .filter((s) => s.name.trim())
@@ -493,7 +575,7 @@ export function OnboardingDealClient() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
             {/* Logo */}
             <div className="p-4 rounded-xl border border-dashed border-border bg-muted/20 space-y-3">
               <label className="text-sm font-semibold block">
@@ -513,21 +595,46 @@ export function OnboardingDealClient() {
               </div>
             </div>
 
-            {/* Banner chính */}
-            <div className="p-4 rounded-xl border border-dashed border-border bg-muted/20 space-y-3">
-              <label className="text-sm font-semibold block">
-                Ảnh Bìa / Banner Chính (Tỷ lệ ngang 16:9)
-              </label>
-              <div className="space-y-2">
-                <ImageUpload
-                  value={bannerUrl}
-                  onChange={(url) => setBannerUrl(url)}
-                  className="w-full h-32 rounded-lg"
-                  folder="onboarding/banners"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Ảnh mặt tiền tiệm hoặc không gian phòng dịch vụ đẹp mắt nhất
-                </p>
+            {/* Bộ 3 Banner Slider */}
+            <div className="space-y-3 pt-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <label className="text-sm font-semibold block">
+                  Bộ 3 Banner Slider Trang Chủ (Tỷ lệ ngang 16:9)
+                </label>
+                <span className="text-xs text-gold font-medium">Hệ thống tự động chạy slider chuyển tiếp 3 ảnh</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Tải lên tối đa 3 ảnh ngang để gian hàng hiển thị slider động 3 slide bắt mắt nhất khi khách ghé thăm trang.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {Array.from({ length: BANNER_SLOT_COUNT }).map((_, idx) => (
+                  <div key={idx} className="p-3.5 rounded-xl border border-dashed border-border bg-muted/20 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-foreground">
+                        {idx === 0 ? "Slide 1 (Chính) *" : `Slide ${idx + 1} (Tùy chọn)`}
+                      </span>
+                      {banners[idx] && (
+                        <button
+                          type="button"
+                          onClick={() => updateBanner(idx, "")}
+                          className="text-xs text-destructive hover:underline flex items-center gap-1"
+                        >
+                          <Trash2 className="size-3" /> Xóa
+                        </button>
+                      )}
+                    </div>
+                    <ImageUpload
+                      value={banners[idx]}
+                      onChange={(url) => updateBanner(idx, url)}
+                      className="w-full h-28 rounded-lg"
+                      folder="onboarding/banners"
+                    />
+                    <p className="text-[11px] text-muted-foreground line-clamp-1">
+                      {SLIDE_HINTS[idx] || "Ảnh không gian cơ sở"}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -569,59 +676,117 @@ export function OnboardingDealClient() {
           </div>
         </div>
 
-        {/* KHỐI 4: GÓI ƯU ĐÃI CHÍNH & DỊCH VỤ TIÊU BIỂU */}
+        {/* KHỐI 4: GÓI ƯU ĐÃI & DỊCH VỤ TIÊU BIỂU */}
         <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-border">
-            <div className="p-2.5 rounded-xl bg-gold/15 text-gold">
-              <Gift className="size-5" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-gold/15 text-gold">
+                <Gift className="size-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-foreground">4. Danh Sách Gói Ưu Đãi ({deals.length} gói) & Dịch Vụ</h2>
+                <p className="text-xs text-muted-foreground">Thêm nhiều gói khuyến mãi để thu hút khách hàng nhận voucher trực tuyến</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-foreground">4. Gói Ưu Đãi Trọng Tâm & Dịch Vụ Tiêu Biểu</h2>
-              <p className="text-xs text-muted-foreground">Chương trình khuyến mãi thu hút khách hàng nhận voucher trực tuyến</p>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addDeal}
+              className="gap-1.5 border-gold/40 text-gold hover:bg-gold/10 self-start sm:self-auto"
+            >
+              <Plus className="size-3.5" />
+              <span>Thêm gói ưu đãi</span>
+            </Button>
           </div>
 
-          <div className="p-5 rounded-xl bg-muted/30 border border-border space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold flex items-center gap-1.5">
-                Tên chương trình ưu đãi chính <span className="text-destructive">*</span>
-              </label>
-              <Input
-                placeholder="VD: Trọn Gói Chăm Sóc Da Chuyên Sâu 9 Bước Trị Nám - Sáng Mịn"
-                value={dealTitle}
-                onChange={(e) => setDealTitle(e.target.value)}
-                required
-              />
-            </div>
+          {/* Danh sách deals */}
+          <div className="space-y-4">
+            {deals.map((deal, idx) => (
+              <div key={deal.id || idx} className="p-5 rounded-xl bg-muted/30 border border-border space-y-4 relative group">
+                <div className="flex items-center justify-between pb-2 border-b border-border/60">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gold px-2 py-0.5 rounded bg-gold/15">
+                      Gói Ưu Đãi #{idx + 1} {idx === 0 && "(Chính)"}
+                    </span>
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <span className="text-muted-foreground">Huy hiệu:</span>
+                      <Input
+                        placeholder="VD: HOT, GIẢM 50%, COMBO"
+                        value={deal.badge}
+                        onChange={(e) => updateDeal(idx, "badge", e.target.value)}
+                        className="h-7 text-xs w-32 py-0"
+                      />
+                    </div>
+                  </div>
+                  {deals.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeDeal(idx)}
+                      className="text-muted-foreground hover:text-destructive p-1 rounded-lg hover:bg-destructive/10 transition-colors"
+                      title="Xóa gói ưu đãi này"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  )}
+                </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Giá ưu đãi (Khuyến mãi)</label>
-                <Input
-                  placeholder="VD: 199.000đ hoặc Giảm 50%"
-                  value={promoPrice}
-                  onChange={(e) => setPromoPrice(e.target.value)}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold flex items-center gap-1.5">
+                    Tên gói ưu đãi {idx === 0 && <span className="text-destructive">*</span>}
+                  </label>
+                  <Input
+                    placeholder={idx === 0 
+                      ? "VD: Trọn Gói Chăm Sóc Da Chuyên Sâu 9 Bước Trị Nám - Sáng Mịn" 
+                      : `VD: Ưu Đãi #${idx + 1} - Gội Đầu Dưỡng Sinh Thảo Dược Chuẩn Trung Hoa`}
+                    value={deal.title}
+                    onChange={(e) => updateDeal(idx, "title", e.target.value)}
+                    required={idx === 0}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Giá ưu đãi (Khuyến mãi)</label>
+                    <Input
+                      placeholder="VD: 199.000đ hoặc Giảm 50%"
+                      value={deal.promoPrice}
+                      onChange={(e) => updateDeal(idx, "promoPrice", e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Giá gốc (nếu có)</label>
+                    <Input
+                      placeholder="VD: 600.000đ"
+                      value={deal.originalPrice}
+                      onChange={(e) => updateDeal(idx, "originalPrice", e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold">Điều kiện hoặc Ghi chú áp dụng</label>
+                  <Input
+                    placeholder="VD: Áp dụng từ thứ 2 - thứ 6, vui lòng đặt lịch trước 2 tiếng"
+                    value={deal.note}
+                    onChange={(e) => updateDeal(idx, "note", e.target.value)}
+                  />
+                </div>
               </div>
+            ))}
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Giá gốc (nếu có)</label>
-                <Input
-                  placeholder="VD: 600.000đ"
-                  value={originalPrice}
-                  onChange={(e) => setOriginalPrice(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold">Điều kiện hoặc Ghi chú áp dụng</label>
-              <Input
-                placeholder="VD: Áp dụng từ thứ 2 - thứ 6, vui lòng đặt lịch trước 2 tiếng"
-                value={dealNote}
-                onChange={(e) => setDealNote(e.target.value)}
-              />
-            </div>
+            {deals.length < 6 && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addDeal}
+                className="w-full py-4 border-dashed border-gold/40 text-gold hover:bg-gold/10 gap-2 text-xs sm:text-sm"
+              >
+                <Plus className="size-4" />
+                <span>Thêm chương trình ưu đãi khác ({deals.length}/6)</span>
+              </Button>
+            )}
           </div>
 
           {/* Dịch vụ tiêu biểu */}
