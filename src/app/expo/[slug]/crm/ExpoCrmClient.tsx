@@ -44,7 +44,7 @@ interface Props {
     id: string;
     name: string;
     slug: string;
-    phone: string;
+    phone?: string | null;
     is_demo?: boolean;
     page_content?: any;
   };
