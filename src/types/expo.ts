@@ -36,7 +36,7 @@ export function splitBilingualName(rawName?: string | null): { vi: string; en: s
   if (!rawName) return { vi: '', en: '' };
   const trimmed = rawName.trim();
   if (trimmed.includes('/') || trimmed.includes('|')) {
-    const parts = trimmed.split(/[/|]/);
+    const parts = trimmed.split(/[/|]/, 2);
     const vi = parts[0]?.trim() || '';
     const en = parts[1]?.trim() || stripAccents(vi);
     return { vi, en };

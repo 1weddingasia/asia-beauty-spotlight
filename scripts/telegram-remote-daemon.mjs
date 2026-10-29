@@ -226,7 +226,7 @@ async function handleMessage(msg) {
   // XÓA GIAN HÀNG EXPO HOẶC XÓA GIAN HÀNG DEMO
   if (/^\/delete_(expo|demo)([:\s]|$)/i.test(text)) {
     let slugToDelete = text.replace(/^\/delete_(expo|demo)[:\s]*/i, '').trim();
-    if (!slugToDelete || text.toLowerCase().startsWith('/delete_demo')) {
+    if (!slugToDelete) {
       slugToDelete = 'deoproce-korea';
     }
 

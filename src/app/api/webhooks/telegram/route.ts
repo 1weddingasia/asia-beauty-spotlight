@@ -175,7 +175,7 @@ Danh bạ Expo: <code>https://1booking.asia/expo</code>
 
         if (token && adminId && String(chatId) === String(adminId)) {
           let slugToDelete = text.replace(/^\/delete_(expo|demo)[:\s]*/i, '').trim();
-          if (!slugToDelete || text.toLowerCase().startsWith('/delete_demo')) {
+          if (!slugToDelete) {
             slugToDelete = 'deoproce-korea';
           }
 
