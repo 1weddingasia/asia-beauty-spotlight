@@ -146,28 +146,31 @@ const PIN_RATE_LIMIT_MAX_ENTRIES = 300;
 const pinAttemptCounts = new Map<string, { count: number; resetAt: number }>();
 
 function cleanupPinRateLimits(now: number): void {
-  // 1. Dọn dẹp các bản ghi đã hết hạn
+  // 1. Dọn dẹp tất cả các key đã hết hạn
   for (const [k, v] of pinAttemptCounts.entries()) {
     if (v.resetAt < now) pinAttemptCounts.delete(k);
   }
-  // 2. Nếu vẫn vượt ngưỡng tối đa, loại bỏ các bản ghi sắp hết hạn trước
-  if (pinAttemptCounts.size > PIN_RATE_LIMIT_MAX_ENTRIES) {
-    const entries = [...pinAttemptCounts.entries()].sort((a, b) => a[1].resetAt - b[1].resetAt);
-    const overflow = entries.length - PIN_RATE_LIMIT_MAX_ENTRIES;
-    for (let i = 0; i < overflow; i += 1) {
-      pinAttemptCounts.delete(entries[i][0]);
-    }
+  // 2. Nếu vẫn vượt ngưỡng tối đa, loại bỏ key cũ nhất theo thứ tự chèn (FIFO)
+  while (pinAttemptCounts.size > PIN_RATE_LIMIT_MAX_ENTRIES) {
+    const oldestKey = pinAttemptCounts.keys().next().value;
+    if (!oldestKey) break;
+    pinAttemptCounts.delete(oldestKey);
   }
 }
 
 function checkPinRateLimit(key: string): boolean {
   const now = Date.now();
-  if (pinAttemptCounts.size > PIN_RATE_LIMIT_MAX_ENTRIES) {
+  if (pinAttemptCounts.size > 50) {
     cleanupPinRateLimits(now);
   }
 
   const record = pinAttemptCounts.get(key);
   if (!record || record.resetAt < now) {
+    while (pinAttemptCounts.size >= PIN_RATE_LIMIT_MAX_ENTRIES) {
+      const oldestKey = pinAttemptCounts.keys().next().value;
+      if (!oldestKey) break;
+      pinAttemptCounts.delete(oldestKey);
+    }
     pinAttemptCounts.set(key, { count: 1, resetAt: now + 60 * 1000 });
     return false;
   }
