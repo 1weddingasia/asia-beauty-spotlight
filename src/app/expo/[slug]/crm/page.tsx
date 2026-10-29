@@ -22,7 +22,7 @@ export default async function ExpoCrmPage({ params }: Props) {
   // 1. Lấy thông tin gian hàng
   const { data: business } = await supabase
     .from('businesses')
-    .select('id, name, slug, phone, email, address, logo_url')
+    .select('id, name, slug, phone, email, address, page_content, is_demo')
     .eq('slug', slug)
     .maybeSingle();
 
