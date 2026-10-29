@@ -1348,7 +1348,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                           type="button"
                           onClick={() => handleCopy(item.customer_phone, item.id, t.thPhone)}
                           className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 text-[11px] font-medium transition-colors cursor-pointer"
-                          title={t.copiedLabel}
+                          title={copiedId === item.id ? t.copiedLabel : t.copyLabel}
                         >
                           {copiedId === item.id ? (
                             <Check className="w-3 h-3 text-emerald-400" />
@@ -1371,7 +1371,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                         )}
                         {item.customer_email && (
                           <a
-                            href={`mailto:${encodeURIComponent(item.customer_email)}`}
+                            href={`mailto:${encodeURI(item.customer_email.trim())}`}
                             className="inline-flex items-center gap-1 text-slate-400 hover:text-amber-300 transition-colors"
                           >
                             <span>✉️</span>
