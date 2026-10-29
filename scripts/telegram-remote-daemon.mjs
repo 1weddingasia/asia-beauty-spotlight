@@ -59,6 +59,15 @@ async function sendTelegram(chatId, text, replyMarkup = null) {
   }
 }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 // Trả lời Callback Query
 async function answerCallbackQuery(callbackQueryId, text = '') {
   try {
@@ -214,19 +223,10 @@ async function handleMessage(msg) {
     return;
   }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
   // XÓA GIAN HÀNG EXPO HOẶC XÓA GIAN HÀNG DEMO
-  if (/^\/delete_(expo|demo)(\s|$)/i.test(text)) {
-    let slugToDelete = text.replace(/^\/delete_(expo|demo)\s*/i, '').trim();
-    if (!slugToDelete || text.toLowerCase() === '/delete_demo') {
+  if (/^\/delete_(expo|demo)([:\s]|$)/i.test(text)) {
+    let slugToDelete = text.replace(/^\/delete_(expo|demo)[:\s]*/i, '').trim();
+    if (!slugToDelete || text.toLowerCase().startsWith('/delete_demo')) {
       slugToDelete = 'deoproce-korea';
     }
 
@@ -259,9 +259,9 @@ function escapeHtml(str) {
   }
 
   // TẠO GIAN HÀNG EXPO NHANH TỨC THÌ QUA TELEGRAM
-  if (/^\/(expo|create_expo)(\s|$)/i.test(text) || text.toUpperCase().startsWith('EXPO:')) {
+  if (/^\/(expo|create_expo)([:\s]|$)/i.test(text) || text.toUpperCase().startsWith('EXPO:')) {
     const rawContent = text
-      .replace(/^\/(expo|create_expo)\s*/i, '')
+      .replace(/^\/(expo|create_expo)[:\s]*/i, '')
       .replace(/^EXPO:\s*/i, '')
       .trim();
 

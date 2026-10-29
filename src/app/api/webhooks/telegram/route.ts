@@ -9,6 +9,15 @@ function resolveBotToken(reqUrl: string): string | undefined {
     : (process.env.TELEGRAM_BOT_TOKEN_1BEAUTY || process.env.TELEGRAM_BOT_TOKEN);
 }
 
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 // Telegram Webhook Handler
 export async function POST(req: Request) {
   try {
@@ -160,13 +169,13 @@ Danh bạ Expo: <code>https://1booking.asia/expo</code>
             }).catch(console.error);
           }
         }
-      } else if (/^\/delete_(expo|demo)(\s|$)/i.test(text)) {
+      } else if (/^\/delete_(expo|demo)([:\s]|$)/i.test(text)) {
         const token = resolveBotToken(req.url);
         const adminId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 
         if (token && adminId && String(chatId) === String(adminId)) {
-          let slugToDelete = text.replace(/^\/delete_(expo|demo)\s*/i, '').trim();
-          if (!slugToDelete || text.toLowerCase() === '/delete_demo') {
+          let slugToDelete = text.replace(/^\/delete_(expo|demo)[:\s]*/i, '').trim();
+          if (!slugToDelete || text.toLowerCase().startsWith('/delete_demo')) {
             slugToDelete = 'deoproce-korea';
           }
 
@@ -184,7 +193,7 @@ Danh bạ Expo: <code>https://1booking.asia/expo</code>
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   chat_id: chatId,
-                  text: `⚠️ Không tìm thấy gian hàng có slug: <code>${slugToDelete}</code>`,
+                  text: `⚠️ Không tìm thấy gian hàng có slug: <code>${escapeHtml(slugToDelete)}</code>`,
                   parse_mode: 'HTML',
                 }),
               });
@@ -200,22 +209,31 @@ Danh bạ Expo: <code>https://1booking.asia/expo</code>
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 chat_id: chatId,
-                text: `🗑️ <b>ĐÃ XÓA GIAN HÀNG THÀNH CÔNG!</b>\n\n• <b>Gian hàng:</b> ${b.name} (<code>${slugToDelete}</code>)\n• Đã dọn dẹp sạch sẽ toàn bộ dữ liệu mẫu.`,
+                text: `🗑️ <b>ĐÃ XÓA GIAN HÀNG THÀNH CÔNG!</b>\n\n• <b>Gian hàng:</b> ${escapeHtml(b.name)} (<code>${escapeHtml(slugToDelete)}</code>)\n• Đã dọn dẹp toàn bộ dữ liệu mẫu, hệ thống sạch 100% dữ liệu thật.`,
                 parse_mode: 'HTML',
               }),
             });
           } catch (delErr: any) {
             console.error('[Delete Expo Webhook Error]:', delErr);
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: chatId,
+                text: `⚠️ Lỗi khi xóa gian hàng: ${escapeHtml(delErr?.message || String(delErr))}`,
+                parse_mode: 'HTML',
+              }),
+            }).catch(console.error);
           }
           return NextResponse.json({ success: true });
         }
-      } else if (/^\/(expo|create_expo)(\s|$)/i.test(text) || text.toUpperCase().startsWith('EXPO:')) {
+      } else if (/^\/(expo|create_expo)([:\s]|$)/i.test(text) || text.toUpperCase().startsWith('EXPO:')) {
         const token = resolveBotToken(req.url);
         const adminId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 
         if (token && adminId && String(chatId) === String(adminId)) {
           const rawContent = text
-            .replace(/^\/(expo|create_expo)\s*/i, '')
+            .replace(/^\/(expo|create_expo)[:\s]*/i, '')
             .replace(/^EXPO:\s*/i, '')
             .trim();
 

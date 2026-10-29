@@ -18,24 +18,30 @@ export interface BusinessExpoProfile {
 }
 
 /**
+ * Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu
+ */
+export function stripAccents(str: string): string {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .trim();
+}
+
+/**
  * Bóc tách tên song ngữ (nếu người dùng nhập dạng: "Tên Việt / English Name" hoặc "Tên Việt | English Name")
  */
 export function splitBilingualName(rawName?: string | null): { vi: string; en: string } {
   if (!rawName) return { vi: '', en: '' };
   const trimmed = rawName.trim();
-  if (trimmed.includes('/')) {
-    const parts = trimmed.split('/');
+  if (trimmed.includes('/') || trimmed.includes('|')) {
+    const parts = trimmed.split(/[/|]/);
     const vi = parts[0]?.trim() || '';
-    const en = parts[1]?.trim() || '';
-    return { vi, en: en || deriveEnglishName(vi) };
+    const en = parts[1]?.trim() || stripAccents(vi);
+    return { vi, en };
   }
-  if (trimmed.includes('|')) {
-    const parts = trimmed.split('|');
-    const vi = parts[0]?.trim() || '';
-    const en = parts[1]?.trim() || '';
-    return { vi, en: en || deriveEnglishName(vi) };
-  }
-  return { vi: trimmed, en: deriveEnglishName(trimmed) };
+  return { vi: trimmed, en: stripAccents(trimmed) };
 }
 
 /**
@@ -43,21 +49,7 @@ export function splitBilingualName(rawName?: string | null): { vi: string; en: s
  */
 export function deriveEnglishName(rawName?: string | null): string {
   if (!rawName) return '';
-  const trimmed = rawName.trim();
-  if (trimmed.includes('/')) {
-    return trimmed.split('/')[1]?.trim() || '';
-  }
-  if (trimmed.includes('|')) {
-    return trimmed.split('|')[1]?.trim() || '';
-  }
-
-  // Chuyển ngữ không dấu chuẩn quốc tế, bảo toàn trọn vẹn tên doanh nghiệp
-  return trimmed
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-    .trim();
+  return splitBilingualName(rawName).en;
 }
 
 /**
