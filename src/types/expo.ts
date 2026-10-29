@@ -9,7 +9,7 @@ export interface BusinessExpoProfile {
   access_pin: string;
   languages_enabled: ExpoLanguage[];
   default_language: ExpoLanguage;
-  lead_gift_title: Record<ExpoLanguage, string>;
+  lead_gift_title?: Record<ExpoLanguage, string> | null;
   company_name_vi?: string | null;
   company_name_en?: string | null;
   is_active: boolean;

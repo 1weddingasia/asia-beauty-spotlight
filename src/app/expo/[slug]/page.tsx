@@ -73,12 +73,6 @@ export default async function ExpoBoothPage({ params }: Props) {
     access_pin: '123456',
     languages_enabled: ['vi', 'en', 'ko', 'zh'],
     default_language: 'vi',
-    lead_gift_title: {
-      vi: 'Trao Đổi Thông Tin Liên Hệ',
-      en: 'Exchange Business Contact',
-      ko: '비즈니스 연락처 교환',
-      zh: '商务联系与信息交换',
-    },
     is_active: true,
   };
 

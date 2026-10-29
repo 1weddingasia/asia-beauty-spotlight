@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { EXPO_TRANSLATIONS, ExpoLanguage, getExpoBrandName, getExpoEventName } from '@/types/expo';
-import { Globe, CheckCircle2, Building2, Handshake, Lock, Mail } from 'lucide-react';
+import { Globe, CheckCircle2, Building2, Handshake, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Props {
