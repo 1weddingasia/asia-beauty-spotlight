@@ -330,6 +330,8 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
   thInterest: string;
   thTime: string;
   newBadge: string;
+  callLabel: string;
+  copyLabel: string;
   // Toast
   newCustomer: string;
   newScan: string;
@@ -435,6 +437,8 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     thInterest: 'Nhu Cầu Kết Nối',
     thTime: 'Thời Gian',
     newBadge: 'MỚI',
+    callLabel: 'Gọi',
+    copyLabel: 'Chép',
     newCustomer: 'Khách mới',
     newScan: 'Khách mới vừa quét',
     copiedLabel: 'Đã sao chép',
@@ -535,6 +539,8 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     thInterest: 'Interest',
     thTime: 'Time',
     newBadge: 'NEW',
+    callLabel: 'Call',
+    copyLabel: 'Copy',
     newCustomer: 'New customer',
     newScan: 'New visitor scanned',
     copiedLabel: 'Copied',
@@ -635,6 +641,8 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     thInterest: '관심사항',
     thTime: '시간',
     newBadge: 'NEW',
+    callLabel: '통화',
+    copyLabel: '복사',
     newCustomer: '신규 고객',
     newScan: '새 방문자 스캔',
     copiedLabel: '복사됨',
@@ -735,6 +743,8 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     thInterest: '需求',
     thTime: '时间',
     newBadge: 'NEW',
+    callLabel: '呼叫',
+    copyLabel: '复制',
     newCustomer: '新客户',
     newScan: '新访客扫描',
     copiedLabel: '已复制',
