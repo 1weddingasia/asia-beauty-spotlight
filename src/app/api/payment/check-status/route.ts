@@ -117,8 +117,32 @@ export async function POST(request: Request) {
       return (p?.plan_type === 'deal' || p?.name?.includes('Ưu Đãi')) && (p?.tier === 'vip' || p?.code === 'udai_vip');
     }));
 
+    const isExpoActive = Boolean(activeMems?.some((m: any) => {
+      const p = getPlan(m);
+      return p?.plan_type === 'expo' || p?.code?.includes('expo');
+    }));
+
+    const isExpoYearly = Boolean(activeMems?.some((m: any) => {
+      const p = getPlan(m);
+      return p?.code === 'expo_pass_yearly';
+    }));
+
+    let hasExpoTx = false;
+    if (!isExpoActive && business.slug) {
+      const cleanSlug = business.slug.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+      const rawSlug = business.slug.toUpperCase();
+      const { data: tx } = await supabase
+        .from('transactions')
+        .select('id, transfer_amount')
+        .or(`content.ilike.%EXPO%${cleanSlug}%,content.ilike.%EXPO%${rawSlug}%`)
+        .order('id', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (tx) hasExpoTx = true;
+    }
+
     const isPremium = business.plan_tier === 'premium';
-    const isActivated = Boolean((activeMems && activeMems.length > 0) || isPartyActive || isPremium);
+    const isActivated = Boolean((activeMems && activeMems.length > 0) || isPartyActive || isPremium || isExpoActive || hasExpoTx);
 
     return NextResponse.json({
       success: true,
@@ -133,6 +157,8 @@ export async function POST(request: Request) {
         is_deal_vip: isDealVip,
         is_party_active: isPartyActive,
         is_party_vip: isPartyVip,
+        is_expo_active: isExpoActive || hasExpoTx,
+        is_expo_yearly: isExpoYearly,
       },
     });
   } catch (err: any) {

@@ -71,6 +71,7 @@ interface Props {
     languages_enabled?: ExpoLanguage[] | string[];
     default_language?: ExpoLanguage | string;
   };
+  initialIsActivated?: boolean;
 }
 
 const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; countryName: string }> = [
@@ -80,7 +81,7 @@ const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; countryName: s
   { code: 'zh', label: '中文', countryName: '中国 (China)' },
 ];
 
-export function ExpoCrmClient({ business, profile }: Props) {
+export function ExpoCrmClient({ business, profile, initialIsActivated = false }: Props) {
   const [lang, setLang] = useState<ExpoLanguage>((profile.default_language as ExpoLanguage) || 'vi');
 
   // 0. Khởi tạo và đồng bộ ngôn ngữ từ URL query param (?lang=) hoặc localStorage
@@ -119,9 +120,34 @@ export function ExpoCrmClient({ business, profile }: Props) {
   const [submittingPin, setSubmittingPin] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
 
-  // State Donate / Mời cà phê
-  const [isDonateOpen, setIsDonateOpen] = useState(false);
-  const [selectedDonateAmount, setSelectedDonateAmount] = useState<number>(0);
+  // State Kích hoạt bản quyền 2 Gói (300k sự kiện / 600k cả năm)
+  const [isActivated, setIsActivated] = useState<boolean>(Boolean(initialIsActivated));
+  const [isActivateOpen, setIsActivateOpen] = useState(false);
+  const [selectedPlanAmount, setSelectedPlanAmount] = useState<number>(300000);
+  const [checkingPayment, setCheckingPayment] = useState(false);
+
+  const handleCheckPayment = async () => {
+    setCheckingPayment(true);
+    try {
+      const res = await fetch('/api/payment/check-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: business.slug }),
+      });
+      const data = await res.json();
+      if (data.success && (data.activated || data.business?.is_expo_active)) {
+        setIsActivated(true);
+        setIsActivateOpen(false);
+        toast.success(t.activateConfirmed);
+      } else {
+        toast.info(t.activateChecking);
+      }
+    } catch {
+      toast.error('Lỗi khi kiểm tra trạng thái thanh toán.');
+    } finally {
+      setCheckingPayment(false);
+    }
+  };
 
   const brandName = getExpoBrandName(business, profile, lang);
   const eventName = getExpoEventName(profile, lang);
@@ -579,28 +605,26 @@ export function ExpoCrmClient({ business, profile }: Props) {
     );
   };
 
-  const renderDonateModal = () => {
-    if (!isDonateOpen) return null;
+  const renderActivateModal = () => {
+    if (!isActivateOpen) return null;
 
     const BANK_ACC = '00003554020';
     const BANK_NAME = 'TPBank';
     const BANK_OWNER = '1BOOKING.ASIA';
-    const transferMessage = `DONATE ${(business.slug || 'EXPO').replace(/[^a-zA-Z0-9]/g, '').toUpperCase()}`;
-    const qrUrl = `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}${
-      selectedDonateAmount > 0 ? `&amount=${selectedDonateAmount}` : ''
-    }&des=${encodeURIComponent(transferMessage)}`;
+    const cleanSlug = (business.slug || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'EXPO';
+    const transferMessage = `EXPO ${cleanSlug}`;
+    const qrUrl = `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}&amount=${selectedPlanAmount}&des=${encodeURIComponent(transferMessage)}`;
 
-    const donateOptions = [
-      { amount: 0, label: t.donateCustom, icon: '✨' },
-      { amount: 30000, label: t.donateCoffee, icon: '☕' },
-      { amount: 300000, label: t.donateEventPlan, icon: '🎪' },
-      { amount: 600000, label: t.donateYearlyPlan, icon: '🌟' },
-    ];
-
-    const copyText = (val: string, label: string) => {
-      if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard.writeText(val);
-        toast.success(`${label}: ${t.donateCopied}`);
+    const copyText = async (val: string, label: string) => {
+      try {
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+          await navigator.clipboard.writeText(val);
+          toast.success(`${label}: ${t.activateCopied}`);
+          return;
+        }
+        toast.info(`${label}: ${val}`);
+      } catch {
+        toast.info(`${label}: ${val}`);
       }
     };
 
@@ -613,50 +637,86 @@ export function ExpoCrmClient({ business, profile }: Props) {
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl shadow-inner">
-                ☕
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl shadow-inner font-black">
+                ⚡
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">{t.donateModalTitle}</h3>
+                <h3 className="text-base font-bold text-white">{t.activateModalTitle}</h3>
                 <p className="text-[11px] text-slate-400">
-                  {t.donateModalSubtitle}
+                  {t.activateModalSubtitle}
                 </p>
               </div>
             </div>
 
             <button
               type="button"
-              onClick={() => setIsDonateOpen(false)}
+              onClick={() => setIsActivateOpen(false)}
               className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Amount options */}
-          <div className="mb-5">
-            <p className="text-xs font-semibold text-slate-300 mb-2.5">
-              Chọn mức ủng hộ (hoặc tùy tâm):
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {donateOptions.map((opt) => {
-                const isSelected = selectedDonateAmount === opt.amount;
-                return (
-                  <button
-                    key={opt.amount}
-                    type="button"
-                    onClick={() => setSelectedDonateAmount(opt.amount)}
-                    className={`flex items-center gap-2 p-2.5 rounded-xl text-left border text-xs font-semibold transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-amber-500/20 border-amber-500/60 text-amber-300 shadow-sm'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
-                    }`}
-                  >
-                    <span className="text-base">{opt.icon}</span>
-                    <span className="line-clamp-1">{opt.label}</span>
-                  </button>
-                );
-              })}
+          {/* 2 Gói Lựa Chọn Duy Nhất */}
+          <div className="mb-5 space-y-2.5">
+            {/* Gói 1: Sự Kiện 30 Ngày */}
+            <div
+              onClick={() => setSelectedPlanAmount(300000)}
+              className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                selectedPlanAmount === 300000
+                  ? 'bg-amber-500/15 border-amber-500/70 shadow-md ring-1 ring-amber-500/50'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🎪</span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-white">{t.activateEventPlan}</h4>
+                    {selectedPlanAmount === 300000 && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950">
+                        Đang chọn
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    {t.activateEventPlanDesc}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="text-sm font-mono font-black text-amber-400">300.000đ</span>
+              </div>
+            </div>
+
+            {/* Gói 2: Toàn Niên 365 Ngày */}
+            <div
+              onClick={() => setSelectedPlanAmount(600000)}
+              className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                selectedPlanAmount === 600000
+                  ? 'bg-amber-500/15 border-amber-500/70 shadow-md ring-1 ring-amber-500/50'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🌟</span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-white">{t.activateYearlyPlan}</h4>
+                    {selectedPlanAmount === 600000 && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950">
+                        Đang chọn
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    {t.activateYearlyPlanDesc}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="text-sm font-mono font-black text-amber-400">600.000đ</span>
+              </div>
             </div>
           </div>
 
@@ -665,36 +725,30 @@ export function ExpoCrmClient({ business, profile }: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrUrl}
-              alt="VietQR Donate"
+              alt="VietQR Kích Hoạt"
               className="w-56 h-auto max-w-full rounded-xl object-contain shadow-sm"
             />
             <p className="text-[11px] text-slate-600 font-medium mt-2">
-              Mở App ngân hàng quét mã VietQR chuyển khoản nhanh 24/7
+              Mở App ngân hàng quét mã VietQR thanh toán tự động 24/7
             </p>
-            {selectedDonateAmount > 0 ? (
-              <p className="text-xs font-bold text-amber-700 mt-0.5">
-                Số tiền: {selectedDonateAmount.toLocaleString('vi-VN')} VNĐ
-              </p>
-            ) : (
-              <p className="text-[11px] font-medium text-emerald-700 mt-0.5">
-                ✨ Số tiền tùy tâm (nhập tùy ý trên App ngân hàng của bạn)
-              </p>
-            )}
+            <p className="text-xs font-bold text-amber-700 mt-0.5">
+              Số tiền: {selectedPlanAmount.toLocaleString('vi-VN')} VNĐ
+            </p>
           </div>
 
           {/* Bank Details Table */}
           <div className="space-y-2 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-xs mb-5">
             <div className="flex items-center justify-between py-1 border-b border-slate-800/80">
-              <span className="text-slate-400">{t.donateBankLabel}:</span>
+              <span className="text-slate-400">{t.activateBankLabel}:</span>
               <span className="font-bold text-white font-mono">{BANK_NAME} (Ngân hàng Tiên Phong)</span>
             </div>
             <div className="flex items-center justify-between py-1 border-b border-slate-800/80">
-              <span className="text-slate-400">{t.donateAccNumLabel}:</span>
+              <span className="text-slate-400">{t.activateAccNumLabel}:</span>
               <div className="flex items-center gap-1.5">
                 <span className="font-mono font-bold text-amber-400 text-sm">{BANK_ACC}</span>
                 <button
                   type="button"
-                  onClick={() => copyText(BANK_ACC, t.donateAccNumLabel)}
+                  onClick={() => copyText(BANK_ACC, t.activateAccNumLabel)}
                   className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
                   title="Sao chép số tài khoản"
                 >
@@ -703,16 +757,16 @@ export function ExpoCrmClient({ business, profile }: Props) {
               </div>
             </div>
             <div className="flex items-center justify-between py-1 border-b border-slate-800/80">
-              <span className="text-slate-400">{t.donateAccOwnerLabel}:</span>
+              <span className="text-slate-400">{t.activateAccOwnerLabel}:</span>
               <span className="font-bold text-white font-mono">{BANK_OWNER}</span>
             </div>
             <div className="flex items-center justify-between py-1">
-              <span className="text-slate-400">{t.donateSyntaxLabel}:</span>
+              <span className="text-slate-400">{t.activateSyntaxLabel}:</span>
               <div className="flex items-center gap-1.5">
                 <span className="font-mono font-bold text-emerald-400">{transferMessage}</span>
                 <button
                   type="button"
-                  onClick={() => copyText(transferMessage, t.donateSyntaxLabel)}
+                  onClick={() => copyText(transferMessage, t.activateSyntaxLabel)}
                   className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
                   title="Sao chép nội dung"
                 >
@@ -722,17 +776,33 @@ export function ExpoCrmClient({ business, profile }: Props) {
             </div>
           </div>
 
-          {/* Footer note & Close button */}
+          {/* Footer with Check Payment & Close */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-            <p className="text-[11px] text-slate-400 text-center sm:text-left">
-              Hỗ trợ kỹ thuật: <span className="text-amber-400 font-semibold font-mono">0918 731 411</span>
-            </p>
             <button
               type="button"
-              onClick={() => setIsDonateOpen(false)}
+              disabled={checkingPayment}
+              onClick={handleCheckPayment}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
+            >
+              {checkingPayment ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>{t.activateChecking}</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>{t.activateCheckBtn}</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsActivateOpen(false)}
               className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors cursor-pointer text-center"
             >
-              {t.donateClose}
+              {t.activateClose}
             </button>
           </div>
         </div>
@@ -812,16 +882,23 @@ export function ExpoCrmClient({ business, profile }: Props) {
             <p className="text-[10px] text-slate-500 max-w-xs leading-relaxed">
               {t.pinSecurityDesc}
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedDonateAmount(0);
-                setIsDonateOpen(true);
-              }}
-              className="mt-2 text-[11px] font-semibold text-amber-400 hover:text-amber-300 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <span>☕ {t.donateBannerTitle}</span>
-            </button>
+            {isActivated ? (
+              <div className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400">
+                <Check className="w-3.5 h-3.5" />
+                <span>{t.activateSuccessBadge}</span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedPlanAmount(300000);
+                  setIsActivateOpen(true);
+                }}
+                className="mt-2 text-[11px] font-semibold text-amber-400 hover:text-amber-300 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>{t.activateBtn}</span>
+              </button>
+            )}
             <Link
               href={`/expo?lang=${lang}`}
               className="mt-1 inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors py-1 px-3 rounded-lg hover:bg-slate-800"
@@ -832,7 +909,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
           </div>
         </div>
 
-        {renderDonateModal()}
+        {renderActivateModal()}
       </div>
     );
   }
@@ -946,32 +1023,54 @@ export function ExpoCrmClient({ business, profile }: Props) {
 
       {/* 2. MAIN BODY */}
       <main className="max-w-4xl mx-auto w-full px-4 py-6 flex-1">
-        {/* BANNER MỜI CÀ PHÊ / DONATE TÙY TÂM */}
-        <div className="mb-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-900 to-amber-500/10 border border-amber-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-3 text-center sm:text-left">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0 text-xl shadow-inner">
-              ☕
+        {/* BANNER KÍCH HOẠT BẢN QUYỀN HOẶC TRẠNG THÁI ĐÃ KÍCH HOẠT */}
+        {isActivated ? (
+          <div className="mb-6 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-slate-900 to-emerald-500/10 border border-emerald-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-3 text-center sm:text-left">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0 text-xl shadow-inner">
+                <Check className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm font-bold text-emerald-300">
+                  {t.activateSuccessBadge}
+                </p>
+                <p className="text-[11px] text-slate-300 leading-snug">
+                  {t.activateSuccessDesc}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs sm:text-sm font-bold text-amber-300">
-                {t.donateBannerTitle}
-              </p>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                {t.donateBannerSubtitle}
-              </p>
-            </div>
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>VIP Expo Pass</span>
+            </span>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedDonateAmount(0);
-              setIsDonateOpen(true);
-            }}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer whitespace-nowrap active:scale-95"
-          >
-            <span>{t.donateBtn}</span>
-          </button>
-        </div>
+        ) : (
+          <div className="mb-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-900 to-amber-500/10 border border-amber-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-3 text-center sm:text-left">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0 text-xl shadow-inner font-black">
+                ⚡
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm font-bold text-amber-300">
+                  {t.activateBannerTitle}
+                </p>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  {t.activateBannerSubtitle}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedPlanAmount(300000);
+                setIsActivateOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer whitespace-nowrap active:scale-95"
+            >
+              <span>{t.activateBtn}</span>
+            </button>
+          </div>
+        )}
 
         {/* STATS BANNER */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
@@ -1308,7 +1407,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
       </main>
 
       {renderChangePinModal()}
-      {renderDonateModal()}
+      {renderActivateModal()}
     </div>
   );
 }

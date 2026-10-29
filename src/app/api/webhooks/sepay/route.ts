@@ -109,9 +109,12 @@ export async function POST(request: Request) {
     // 2. Hoặc chỉ cần chứa Số điện thoại (10 số, bắt đầu bằng số 0)
     const contentUpper = payload.content.toUpperCase();
     
-    // Tìm Slug (hỗ trợ TIECVIP, UDAIVIP, UPGRADE, TIEC, UDAI theo sau bởi slug)
-    const slugMatch = contentUpper.match(/^(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP)[\s_]+([A-Z0-9-]+)/) 
-      || contentUpper.match(/(?<![A-Z])(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP)[\s_]+([A-Z0-9-]*[A-Z][A-Z0-9-]*)/);
+    // Hỗ trợ nhận diện đơn EXPO Pass: EXPO, EXPO30, EXPO365, DONATE
+    const isExpoOrder = contentUpper.includes('EXPO') || contentUpper.includes('DONATE');
+
+    // Tìm Slug (hỗ trợ TIECVIP, UDAIVIP, UPGRADE, TIEC, UDAI, VIP, EXPO365, EXPO30, EXPO, DONATE theo sau bởi slug)
+    const slugMatch = contentUpper.match(/^(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP|EXPO365|EXPO30|EXPO|DONATE)[\s_]+([A-Z0-9-]+)/) 
+      || contentUpper.match(/(?<![A-Z])(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP|EXPO365|EXPO30|EXPO|DONATE)[\s_]+([A-Z0-9-]*[A-Z][A-Z0-9-]*)/);
     
     let targetSlug = slugMatch ? slugMatch[1].toLowerCase() : null;
     // Bỏ qua nếu token là 'biz' hoặc toàn chữ số (toàn chữ số để xử lý qua targetPhone bên dưới)
@@ -124,9 +127,10 @@ export async function POST(request: Request) {
     const targetPhone = phoneMatch ? phoneMatch[1] : null;
 
     if (targetSlug || targetPhone) {
-      if (payload.transferAmount < 500000) {
-        console.log(`SePay webhook ignored: Transfer amount ${payload.transferAmount} is less than 500000`);
-        return NextResponse.json({ success: true, message: 'Transfer amount too small for upgrade' });
+      const minAmount = isExpoOrder ? 300000 : 500000;
+      if (payload.transferAmount < minAmount) {
+        console.log(`SePay webhook ignored: Transfer amount ${payload.transferAmount} is less than ${minAmount}`);
+        return NextResponse.json({ success: true, message: 'Transfer amount too small for activation' });
       }
 
       let business: any = null;
@@ -140,6 +144,40 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (error) console.error("Error finding business by slug:", error);
         business = data;
+
+        // Nếu chưa tìm thấy (do khách gõ không có dấu gạch ngang hoặc mã QR chuẩn hóa ký tự)
+        if (!business) {
+          const cleanTarget = targetSlug.replace(/[^a-z0-9]/g, '');
+          const { data: allBizs } = await supabase
+            .from('businesses')
+            .select('id, name, slug, phone, email, owner_id, category_slug');
+          
+          if (allBizs && allBizs.length > 0) {
+            business = allBizs.find((b: any) => {
+              const bClean = (b.slug || '').replace(/[^a-z0-9]/g, '').toLowerCase();
+              return bClean === cleanTarget;
+            });
+          }
+        }
+
+        // Nếu vẫn chưa tìm thấy và là đơn Expo, kiểm tra theo số booth trong business_expo_profiles
+        if (!business && isExpoOrder) {
+          const cleanTarget = targetSlug.replace(/[^a-z0-9]/g, '');
+          const { data: expoBizs } = await supabase
+            .from('business_expo_profiles')
+            .select('business_id, booth_number, businesses(id, name, slug, phone, email, owner_id, category_slug)');
+          
+          if (expoBizs && expoBizs.length > 0) {
+            const matchedExpo = expoBizs.find((ep: any) => {
+              if (!ep.businesses) return false;
+              const boothClean = (ep.booth_number || '').replace(/[^a-z0-9]/g, '').toLowerCase();
+              return boothClean && (boothClean === cleanTarget || cleanTarget.includes(boothClean));
+            });
+            if (matchedExpo?.businesses) {
+              business = matchedExpo.businesses;
+            }
+          }
+        }
       }
       
       if (!business && targetPhone) {
@@ -154,14 +192,27 @@ export async function POST(request: Request) {
 
       if (business) {
         // 2. Xác định gói dịch vụ tương ứng dựa trên nội dung CK và số tiền
-        // Có 2 dòng sản phẩm độc lập:
+        // Có 3 dòng sản phẩm độc lập:
+        // - 1Booking Expo Pass (expo): EXPO30 / 300k (30 ngày) hoặc EXPO365 / 600k (365 ngày)
         // - Trang Đặt Tiệc (party): TIEC (500k) hoặc TIECVIP / NEON (700k)
         // - Trang Ưu Đãi (deal): UDAI (500k) hoặc UDAIVIP / VIP (1.5tr)
         const isPartyKeyword = contentUpper.includes('TIEC') || contentUpper.includes('TAT-NIEN') || contentUpper.includes('NEON');
-        const isPartyOrder = isPartyKeyword || (isFnBCategory(business.category_slug) && !contentUpper.includes('UDAI'));
+        const isPartyOrder = !isExpoOrder && (isPartyKeyword || (isFnBCategory(business.category_slug) && !contentUpper.includes('UDAI')));
 
         let targetPlanCode: string;
-        if (isPartyOrder) {
+        let isPartyPayment = false;
+        let isExpoPayment = false;
+
+        if (isExpoOrder) {
+          isExpoPayment = true;
+          // Gói Expo: 600k là 365 ngày (expo_pass_yearly), 300k là 30 ngày (expo_pass_event)
+          if (payload.transferAmount >= 600000 || contentUpper.includes('EXPO365')) {
+            targetPlanCode = 'expo_pass_yearly';
+          } else {
+            targetPlanCode = 'expo_pass_event';
+          }
+        } else if (isPartyOrder) {
+          isPartyPayment = true;
           // Gói tiệc: 700k là VIP Neon, 500k là Chuẩn
           if (payload.transferAmount >= 700000 || contentUpper.includes('TIECVIP') || contentUpper.includes('NEON')) {
             targetPlanCode = 'tiec_vip';
@@ -187,7 +238,7 @@ export async function POST(request: Request) {
 
         // Fallback theo plan_type nếu code chưa match
         if (!plan) {
-          const expectedType = isPartyOrder ? 'party' : 'deal';
+          const expectedType = isExpoPayment ? 'expo' : (isPartyOrder ? 'party' : 'deal');
           const { data: fallbackPlan } = await supabase
             .from('plans')
             .select('id, code, name, plan_type, tier, features, price_yearly')
@@ -220,7 +271,11 @@ export async function POST(request: Request) {
               startsAt = currentMem.starts_at ? new Date(currentMem.starts_at) : now;
             }
           }
-          const expiresAt = new Date(baseTime + 365 * 24 * 60 * 60 * 1000); // 1 năm
+          let durationDays = 365;
+          if (targetPlanCode === 'expo_pass_event') {
+            durationDays = 30;
+          }
+          const expiresAt = new Date(baseTime + durationDays * 24 * 60 * 60 * 1000);
 
           let membershipId: string;
           if (currentMem) {
@@ -254,7 +309,6 @@ export async function POST(request: Request) {
           // 4. Nếu là gói Tiệc: Kích hoạt business_party_profiles
           // Nếu là tiec_vip (700k): Bật is_vip = true (Đèn neon phát sáng trên bản đồ)
           const isPartyVIP = plan.code === 'tiec_vip' || plan.tier === 'vip' || payload.transferAmount >= 700000;
-          const isPartyPayment = plan.plan_type === 'party' || isPartyOrder;
           const isVipParty = isPartyVIP;
           if (isPartyPayment) {
             try {
@@ -279,6 +333,21 @@ export async function POST(request: Request) {
               console.log(`[SePay Webhook] Activated business_party_profiles for ${business.name} (VIP Neon: ${isPartyVIP})`);
             } catch (partyErr) {
               console.error('[SePay Webhook] Error activating party profile:', partyErr);
+            }
+          }
+
+          // 4.1. Nếu là gói Expo: Kích hoạt business_expo_profiles
+          if (isExpoPayment) {
+            try {
+              await supabase.from('business_expo_profiles')
+                .update({
+                  is_active: true,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('business_id', business.id);
+              console.log(`[SePay Webhook] Activated business_expo_profiles for ${business.name}`);
+            } catch (expoErr) {
+              console.error('[SePay Webhook] Error activating expo profile:', expoErr);
             }
           }
 
@@ -313,14 +382,22 @@ export async function POST(request: Request) {
             .update({ processed: true, user_id: business.owner_id })
             .eq('transaction_id', payload.id.toString());
 
-          console.log(`Successfully upgraded business ${business.name} to VIP via SePay transaction ${payload.id}`);
+          console.log(`Successfully upgraded business ${business.name} via SePay transaction ${payload.id}`);
 
           // 5.1. Bắn thông báo nổ chuông Telegram cho Admin
           try {
             const botToken = process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN;
             const chatId = process.env.TELEGRAM_CHAT_ID;
             if (botToken && chatId) {
-              const msg = `🎉 <b>[1BOOKING.ASIA] NỔ ĐƠN THANH TOÁN TỰ ĐỘNG!</b>\n━━━━━━━━━━━━━━━━━━━━\n🏛️ <b>Quán / Doanh nghiệp:</b> ${business.name}\n🔗 <b>Slug:</b> /${business.slug}\n📞 <b>SĐT:</b> ${business.phone || 'Không rõ'}\n💰 <b>Số tiền:</b> ${payload.transferAmount.toLocaleString('vi-VN')} đ\n📦 <b>Gói:</b> ${plan.name || 'Gói Thành Viên VIP'}\n✨ <b>Phố Tiệc Tất Niên:</b> ${isPartyPayment ? (isVipParty ? '🌟 Kích hoạt VIP Neon' : '✅ Kích hoạt Phố Tiệc') : 'Gian hàng Doanh nghiệp'}\n📝 <b>Nội dung CK:</b> ${payload.content}\n━━━━━━━━━━━━━━━━━━━━\n⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
+              let planTag = 'Gian hàng Doanh nghiệp';
+              if (isExpoPayment) {
+                planTag = `🎪 1Booking Expo Pass (${targetPlanCode === 'expo_pass_yearly' ? 'Gói Toàn Niên 365 Ngày' : 'Gói Sự Kiện 30 Ngày'})`;
+              } else if (isPartyPayment) {
+                planTag = isVipParty ? '🌟 Kích hoạt VIP Neon' : '✅ Kích hoạt Phố Tiệc';
+              }
+
+              const crmLink = isExpoPayment ? `https://1booking.asia/expo/${business.slug}/crm` : `https://1booking.asia/${business.slug}`;
+              const msg = `🎉 <b>[1BOOKING.ASIA] NỔ ĐƠN KÍCH HOẠT TỰ ĐỘNG!</b>\n━━━━━━━━━━━━━━━━━━━━\n🏛️ <b>Quán / Gian hàng:</b> ${business.name}\n🔗 <b>Đường dẫn:</b> ${crmLink}\n📞 <b>SĐT:</b> ${business.phone || 'Không rõ'}\n💰 <b>Số tiền:</b> ${payload.transferAmount.toLocaleString('vi-VN')} đ\n📦 <b>Gói:</b> ${plan.name || targetPlanCode}\n✨ <b>Phân loại:</b> ${planTag}\n📝 <b>Nội dung CK:</b> ${payload.content}\n━━━━━━━━━━━━━━━━━━━━\n⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
               await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

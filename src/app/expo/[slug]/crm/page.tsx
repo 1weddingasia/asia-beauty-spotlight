@@ -38,7 +38,7 @@ export default async function ExpoCrmPage({ params, searchParams }: Props) {
   // 2. Lấy hồ sơ Expo (bảo mật: không select access_pin gửi về client)
   const { data: expoProfile } = await supabase
     .from('business_expo_profiles')
-    .select('id, business_id, event_name, event_name_en, booth_number, company_name_vi, company_name_en, languages_enabled, default_language')
+    .select('id, business_id, event_name, event_name_en, booth_number, company_name_vi, company_name_en, languages_enabled, default_language, is_active')
     .eq('business_id', business.id)
     .maybeSingle();
 
@@ -54,10 +54,24 @@ export default async function ExpoCrmPage({ params, searchParams }: Props) {
     default_language: requestedLang || (expoProfile?.default_language as ExpoLanguage) || 'vi',
   };
 
+  // 3. Kiểm tra trạng thái kích hoạt bản quyền
+  const { data: expoMembership } = await supabase
+    .from('memberships')
+    .select('id, status, expires_at, plans!inner(plan_type, code)')
+    .eq('business_id', business.id)
+    .eq('plans.plan_type', 'expo')
+    .eq('status', 'active')
+    .gt('expires_at', new Date().toISOString())
+    .limit(1)
+    .maybeSingle();
+
+  const isActivated = Boolean(expoMembership || (business as any).plan_tier === 'vip');
+
   return (
     <ExpoCrmClient
       business={business}
       profile={profile}
+      initialIsActivated={isActivated}
     />
   );
 }
