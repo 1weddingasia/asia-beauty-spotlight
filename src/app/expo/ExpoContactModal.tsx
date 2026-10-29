@@ -1,0 +1,305 @@
+"use client";
+
+import { useState } from 'react';
+import {
+  X,
+  Sparkles,
+  Phone,
+  User,
+  Building2,
+  MessageSquare,
+  Mail,
+  Send,
+  Loader2,
+  CheckCircle2,
+  ExternalLink,
+} from 'lucide-react';
+import { toast } from 'sonner';
+
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+  defaultBusinessName?: string;
+  source?: string;
+}
+
+const SERVICE_OPTIONS = [
+  'Số hóa gian hàng mới',
+  'Làm Standee để bàn & QR',
+  'Hệ thống Mini-CRM lưu khách',
+  'Hợp tác & Kết nối B2B',
+  'Tư vấn báo giá giải pháp',
+];
+
+export function ExpoContactModal({
+  isOpen,
+  onClose,
+  defaultBusinessName = '',
+  source = '1Booking Expo Pass',
+}: Props) {
+  const [contactName, setContactName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [businessName, setBusinessName] = useState(defaultBusinessName);
+  const [email, setEmail] = useState('');
+  const [selectedService, setSelectedService] = useState(SERVICE_OPTIONS[0]);
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contactName.trim() || !phone.trim()) {
+      toast.error('Vui lòng điền Họ tên và Số điện thoại liên hệ');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/expo/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contact_name: contactName.trim(),
+          phone: phone.trim(),
+          business_name: businessName.trim() || null,
+          email: email.trim() || null,
+          service_type: selectedService,
+          message: message.trim() || null,
+          source,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Có lỗi xảy ra, vui lòng thử lại');
+      }
+
+      setIsSuccess(true);
+      toast.success('Đã gửi yêu cầu liên hệ thành công!');
+    } catch (err: any) {
+      toast.error(err.message || 'Không thể gửi yêu cầu lúc này. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResetAndClose = () => {
+    setIsSuccess(false);
+    setContactName('');
+    setPhone('');
+    setEmail('');
+    setMessage('');
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={handleResetAndClose}
+    >
+      <div
+        className="relative w-full max-w-lg bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-100 overflow-hidden max-h-[92vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Decorative Top Accent Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-24 bg-amber-500/20 rounded-full blur-2xl pointer-events-none" />
+
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={handleResetAndClose}
+          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+          aria-label="Đóng"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {isSuccess ? (
+          /* SUCCESS STATE */
+          <div className="flex flex-col items-center text-center py-6">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/10 animate-in zoom-in-75">
+              <CheckCircle2 className="w-9 h-9" />
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-2">
+              Gửi Yêu Cầu Thành Công!
+            </h3>
+
+            <p className="text-xs sm:text-sm text-slate-300 max-w-md mb-6 leading-relaxed">
+              Thông tin của bạn đã được chuyển <b>ngay lập tức đến Telegram</b> của đội ngũ điều hành{' '}
+              <span className="text-amber-400 font-bold">1Booking Expo Pass</span>. Chúng tôi sẽ liên hệ lại với bạn trong ít phút!
+            </p>
+
+            <div className="w-full space-y-2.5">
+              <a
+                href="https://t.me/bookingasia_bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs sm:text-sm shadow-lg shadow-sky-500/20 transition-all cursor-pointer"
+              >
+                <span>Chat Trực Tiếp Qua Telegram</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+
+              <button
+                type="button"
+                onClick={handleResetAndClose}
+                className="w-full px-5 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors cursor-pointer"
+              >
+                Hoàn tất & Đóng
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* FORM STATE */
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 mb-3">
+              <Sparkles className="w-3.5 h-3.5" />
+              1Booking Expo Pass • Hỗ Trợ 24/7
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-1">
+              Liên Hệ 1Booking Expo Pass
+            </h3>
+            <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+              Để lại thông tin để được tư vấn số hóa gian hàng, cấp Standee thông minh & kích hoạt Mini-CRM Live.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Họ tên */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Họ và tên <span className="text-amber-400">*</span>
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    required
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    placeholder="Ví dụ: Nguyễn Văn A"
+                    className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                  />
+                </div>
+              </div>
+
+              {/* Số điện thoại / Zalo */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Số điện thoại / Zalo <span className="text-amber-400">*</span>
+                </label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="0918 731 411..."
+                    className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                  />
+                </div>
+              </div>
+
+              {/* Tên doanh nghiệp / Gian hàng */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Tên Doanh nghiệp / Vị trí Gian hàng
+                </label>
+                <div className="relative">
+                  <Building2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    placeholder="Ví dụ: Công ty TNHH Kawaii Beauty (Vị trí A12)"
+                    className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                  />
+                </div>
+              </div>
+
+              {/* Dịch vụ quan tâm */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                  Nhu cầu quan tâm
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {SERVICE_OPTIONS.map((opt) => {
+                    const isSelected = selectedService === opt;
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => setSelectedService(opt)}
+                        className={`text-xs px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 font-bold'
+                            : 'bg-slate-800/60 text-slate-400 border-slate-700 hover:text-slate-200'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Lời nhắn */}
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Nội dung chi tiết (Tùy chọn)
+                </label>
+                <div className="relative">
+                  <MessageSquare className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                  <textarea
+                    rows={2}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Mô tả nhu cầu cần tư vấn hoặc câu hỏi của bạn..."
+                    className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Nút gửi */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm px-6 py-3.5 rounded-2xl shadow-xl shadow-amber-500/25 transition-all cursor-pointer disabled:opacity-50 mt-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Đang gửi đến Telegram...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    <span>GỬI YÊU CẦU CHO CHUYÊN VIÊN 1BOOKING</span>
+                  </>
+                )}
+              </button>
+
+              <div className="flex items-center justify-center gap-2 pt-1 text-[11px] text-slate-500">
+                <span>⚡ Phản hồi trực tiếp qua Telegram &amp; Zalo</span>
+                <span>•</span>
+                <a
+                  href="https://t.me/bookingasia_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-400 hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Chat bot @bookingasia_bot</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

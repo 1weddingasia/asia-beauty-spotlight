@@ -4,9 +4,10 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { EXPO_TRANSLATIONS, ExpoLanguage, getExpoBrandName, getExpoEventName } from '@/types/expo';
-import { Globe, CheckCircle2, Building2, Handshake, Lock, ArrowLeft } from 'lucide-react';
+import { Globe, CheckCircle2, Building2, Handshake, Lock, ArrowLeft, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { CountryFlag } from '../CountryFlag';
+import { ExpoContactModal } from '../ExpoContactModal';
 
 interface Props {
   business: {
@@ -55,6 +56,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
   const [interests, setInterests] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   // Mô tả theo ngôn ngữ
   const displayDescription = lang === 'vi' 
@@ -333,11 +335,29 @@ export function ExpoBoothClient({ business, profile }: Props) {
             <Lock className="w-3 h-3" />
             <span>Quản Trị Gian Hàng (CRM Live)</span>
           </Link>
+
+          <button
+            type="button"
+            onClick={() => setIsContactOpen(true)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400/90 hover:text-amber-300 transition-colors py-1.5 px-3.5 rounded-full hover:bg-slate-900 border border-amber-500/30 cursor-pointer"
+          >
+            <Sparkles className="w-3 h-3 text-amber-400" />
+            <span>Liên Hệ 1Booking Expo Pass</span>
+          </button>
+
           <p className="text-[10px] text-slate-600">
             Powered by 1Booking Expo Pass • Số hóa gian hàng triển lãm
           </p>
         </div>
       </main>
+
+      {/* POPUP MODAL LIÊN HỆ */}
+      <ExpoContactModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+        defaultBusinessName={brandName}
+        source={`1Booking Expo Pass - Gian Hàng ${brandName}`}
+      />
     </div>
   );
 }

@@ -8,7 +8,6 @@ import {
   Building2,
   ExternalLink,
   BarChart3,
-  Printer,
   Sparkles,
   Globe,
   ChevronLeft,
@@ -16,8 +15,12 @@ import {
   RotateCcw,
   SlidersHorizontal,
   ArrowUpDown,
+  PhoneCall,
+  MessageSquare,
+  Download,
 } from 'lucide-react';
 import { CountryFlag } from './CountryFlag';
+import { ExpoContactModal } from './ExpoContactModal';
 
 export type SortKey = 'booth_asc' | 'booth_desc' | 'name_asc' | 'name_desc';
 
@@ -89,6 +92,7 @@ const HUB_I18N: Record<HubLang, {
   pageWord: string;
   totalWord: string;
   disclaimer: string;
+  btnContactExpo: string;
 }> = {
   vi: {
     eventTag: '1BOOKING EXPO PASS • TP. HỒ CHÍ MINH',
@@ -102,6 +106,7 @@ const HUB_I18N: Record<HubLang, {
     btnScan: 'Liên hệ',
     btnCrm: 'CRM Live',
     btnStandee: 'In Standee',
+    btnContactExpo: 'Liên Hệ 1Booking Expo Pass',
     langSupport: 'Hỗ trợ 4 ngôn ngữ',
     emptyTitle: 'Không tìm thấy gian hàng nào',
     emptyDesc: 'Thử tìm kiếm với từ khóa khác hoặc số vị trí.',
@@ -137,6 +142,7 @@ const HUB_I18N: Record<HubLang, {
     btnScan: 'Contact',
     btnCrm: 'Live CRM',
     btnStandee: 'Standee',
+    btnContactExpo: 'Contact 1Booking Expo Pass',
     langSupport: '4 Languages Ready',
     emptyTitle: 'No exhibitors found',
     emptyDesc: 'Try searching with different keywords or booth number.',
@@ -172,6 +178,7 @@ const HUB_I18N: Record<HubLang, {
     btnScan: '문의하기',
     btnCrm: '실시간 CRM',
     btnStandee: '스탠디 인쇄',
+    btnContactExpo: '1Booking Expo Pass 문의하기',
     langSupport: '4개 국어 지원',
     emptyTitle: '검색된 부스가 없습니다',
     emptyDesc: '다른 검색어나 부스 번호로 다시 검색해보세요.',
@@ -207,6 +214,7 @@ const HUB_I18N: Record<HubLang, {
     btnScan: '商务联系',
     btnCrm: '实时CRM',
     btnStandee: '打印展架',
+    btnContactExpo: '联系 1Booking Expo Pass',
     langSupport: '支持4国语言',
     emptyTitle: '未找到匹配的展位',
     emptyDesc: '请尝试使用其他关键词或展位号搜索。',
@@ -239,6 +247,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
   const [sortBy, setSortBy] = useState<SortKey>('booth_asc');
   const [pageSize, setPageSize] = useState<number>(24);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isContactOpen, setIsContactOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
 
   const t = HUB_I18N[hubLang];
@@ -402,9 +411,21 @@ export function ExpoHubClient({ initialBooths }: Props) {
           <p className="text-sm font-bold text-amber-400 mb-1 max-w-xl mx-auto">
             {t.subtitle}
           </p>
-          <p className="text-xs text-slate-400 max-w-lg mx-auto mb-6 leading-relaxed">
+          <p className="text-xs text-slate-400 max-w-lg mx-auto mb-4 leading-relaxed">
             {t.desc}
           </p>
+
+          {/* NÚT LIÊN HỆ 1BOOKING EXPO PASS TẠI HERO */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+            <button
+              type="button"
+              onClick={() => setIsContactOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-amber-500/25 cursor-pointer transition-all hover:scale-105 active:scale-95"
+            >
+              <PhoneCall className="w-4 h-4 text-slate-950" />
+              <span>{t.btnContactExpo}</span>
+            </button>
+          </div>
 
           {/* SEARCH BAR CHÍNH */}
           <div className="relative max-w-lg mx-auto">
@@ -684,7 +705,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                       rel="noopener noreferrer"
                       className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 transition-colors text-[10px] font-medium"
                     >
-                      <Printer className="w-3.5 h-3.5 text-emerald-400 mb-1" />
+                      <Download className="w-3.5 h-3.5 text-amber-400 mb-1" />
                       <span>{t.btnStandee}</span>
                     </Link>
                   </div>
@@ -755,11 +776,50 @@ export function ExpoHubClient({ initialBooths }: Props) {
           </div>
         )}
 
+        {/* BANNER KÊU GỌI LIÊN HỆ 1BOOKING EXPO PASS */}
+        <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-500/10 via-slate-900 to-amber-500/10 border border-amber-500/30 text-center relative overflow-hidden">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 mb-3">
+            <Sparkles className="w-3.5 h-3.5" /> Giải Pháp Số Hóa Gian Hàng Triển Lãm
+          </span>
+          <h3 className="text-xl sm:text-2xl font-black text-white mb-2">
+            Bạn Muốn Số Hóa Gian Hàng Của Mình Tại Triển Lãm?
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mb-6">
+            Trang bị ngay Standee để bàn thông minh, mã QR nhận diện đa ngôn ngữ và hệ thống Mini-CRM lưu khách hàng tức thời từ 1Booking Expo Pass.
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsContactOpen(true)}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm shadow-xl shadow-amber-500/20 cursor-pointer transition-transform hover:scale-105 active:scale-95"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span>{t.btnContactExpo}</span>
+          </button>
+        </div>
+
         {/* ĐỊNH VỊ ĐỘC LẬP / INDEPENDENT DIRECTORY DISCLAIMER */}
         <div className="mt-16 pt-6 border-t border-slate-900 text-center text-[11px] text-slate-500 max-w-2xl mx-auto leading-relaxed">
           <p>{t.disclaimer}</p>
         </div>
       </main>
+
+      {/* NÚT NỔI LIÊN HỆ 1BOOKING EXPO PASS GÓC DƯỚI PHẢI */}
+      <button
+        type="button"
+        onClick={() => setIsContactOpen(true)}
+        className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-4 py-3 rounded-2xl shadow-2xl shadow-amber-500/40 border border-amber-400/50 cursor-pointer transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm"
+        title={t.btnContactExpo}
+      >
+        <Sparkles className="w-4 h-4 text-slate-950 fill-slate-950" />
+        <span>{t.btnContactExpo}</span>
+      </button>
+
+      {/* POPUP MODAL LIÊN HỆ */}
+      <ExpoContactModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+        source="1Booking Expo Pass - Hub"
+      />
     </div>
   );
 }
