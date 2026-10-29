@@ -11,7 +11,7 @@ import {
   Send,
   Loader2,
   CheckCircle2,
-  ExternalLink,
+  ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -21,8 +21,6 @@ interface Props {
   defaultBusinessName?: string;
   source?: string;
 }
-
-const TELEGRAM_BOT_URL = 'https://t.me/bookingasia_bot';
 
 const SERVICE_OPTIONS = [
   'Số hóa gian hàng mới',
@@ -106,7 +104,7 @@ export function ExpoContactModal({
       }
 
       setIsSuccess(true);
-      toast.success('Đã gửi yêu cầu liên hệ thành công!');
+      toast.success('Đã gửi yêu cầu tư vấn thành công!');
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
       toast.error(msg || 'Không thể gửi yêu cầu lúc này. Vui lòng thử lại.');
@@ -140,7 +138,7 @@ export function ExpoContactModal({
         </button>
 
         {isSuccess ? (
-          /* SUCCESS STATE */
+          /* SUCCESS STATE - 100% COMMERCIAL B2B LANGUAGE */
           <div className="flex flex-col items-center text-center py-6">
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/10 animate-in zoom-in-75">
               <CheckCircle2 className="w-9 h-9" />
@@ -151,43 +149,31 @@ export function ExpoContactModal({
             </h3>
 
             <p className="text-xs sm:text-sm text-slate-300 max-w-md mb-6 leading-relaxed">
-              Thông tin của bạn đã được chuyển <b>ngay lập tức đến Telegram</b> của đội ngũ điều hành{' '}
-              <span className="text-amber-400 font-bold">1Booking Expo Pass</span>. Chúng tôi sẽ liên hệ lại với bạn trong ít phút!
+              Cảm ơn Quý doanh nghiệp đã quan tâm đến giải pháp{' '}
+              <span className="text-amber-400 font-bold">1Booking Expo Pass</span>. Đội ngũ chuyên viên tư vấn sẽ liên hệ lại qua Số điện thoại / Zalo trong vòng 15 phút!
             </p>
 
-            <div className="w-full space-y-2.5">
-              <a
-                href={TELEGRAM_BOT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs sm:text-sm shadow-lg shadow-sky-500/20 transition-all cursor-pointer"
-              >
-                <span>Chat Trực Tiếp Qua Telegram</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-
-              <button
-                type="button"
-                onClick={handleResetAndClose}
-                className="w-full px-5 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors cursor-pointer"
-              >
-                Hoàn tất & Đóng
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleResetAndClose}
+              className="w-full px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-xl shadow-amber-500/20 transition-all cursor-pointer"
+            >
+              Hoàn Tất &amp; Đóng
+            </button>
           </div>
         ) : (
           /* FORM STATE */
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              1Booking Expo Pass • Hỗ Trợ 24/7
+              1Booking Expo Pass • Tư Vấn Giải Pháp
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-1">
               Liên Hệ 1Booking Expo Pass
             </h3>
             <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-              Để lại thông tin để được tư vấn số hóa gian hàng, cấp Standee thông minh & kích hoạt Mini-CRM Live.
+              Để lại thông tin để được tư vấn số hóa gian hàng, cấp Standee thông minh &amp; kích hoạt Mini-CRM Live thời gian thực.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -296,28 +282,19 @@ export function ExpoContactModal({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Đang gửi đến Telegram...</span>
+                    <span>Đang gửi thông tin...</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>GỬI YÊU CẦU CHO CHUYÊN VIÊN 1BOOKING</span>
+                    <span>GỬI YÊU CẦU TƯ VẤN</span>
                   </>
                 )}
               </button>
 
-              <div className="flex items-center justify-center gap-2 pt-1 text-[11px] text-slate-500">
-                <span>⚡ Phản hồi trực tiếp qua Telegram &amp; Zalo</span>
-                <span>•</span>
-                <a
-                  href={TELEGRAM_BOT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-amber-400 hover:underline inline-flex items-center gap-1"
-                >
-                  <span>Chat bot @bookingasia_bot</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+              <div className="flex items-center justify-center gap-1.5 pt-2 text-[11px] text-slate-400">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>Cam kết bảo mật thông tin doanh nghiệp • Phản hồi trong 15 phút</span>
               </div>
             </form>
           </div>
