@@ -131,25 +131,52 @@ export async function DELETE(req: Request) {
   }
 }
 
+import { z } from 'zod';
+
+const ChangePinSchema = z.object({
+  slug: z.string().trim().min(1, 'Thiếu thông tin gian hàng').max(200),
+  oldPin: z.string().trim().min(1, 'Vui lòng nhập mã PIN hiện tại (pass cũ)').max(10),
+  newPin: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9]{4,10}$/, 'Mã PIN mới phải từ 4 đến 10 ký tự chữ hoặc số'),
+});
+
+// Rate limiting theo IP và slug (tối đa 5 lần thử/phút để chống brute-force)
+const pinAttemptCounts = new Map<string, { count: number; resetAt: number }>();
+function checkPinRateLimit(key: string): boolean {
+  const now = Date.now();
+  const record = pinAttemptCounts.get(key);
+  if (!record || record.resetAt < now) {
+    pinAttemptCounts.set(key, { count: 1, resetAt: now + 60 * 1000 });
+    return false;
+  }
+  if (record.count >= 5) {
+    return true;
+  }
+  record.count += 1;
+  return false;
+}
+
 export async function PATCH(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
     const body = await req.json();
-    const { slug, oldPin, newPin } = body;
 
-    if (!slug || !oldPin || !newPin) {
-      return NextResponse.json(
-        { error: 'Vui lòng điền đầy đủ mã PIN cũ và mã PIN mới' },
-        { status: 400 }
-      );
+    const parsed = ChangePinSchema.safeParse(body);
+    if (!parsed.success) {
+      const msg = parsed.error.issues?.[0]?.message || 'Dữ liệu không hợp lệ';
+      return NextResponse.json({ error: msg }, { status: 400 });
     }
 
-    const trimmedOld = String(oldPin).trim();
-    const trimmedNew = String(newPin).trim();
+    const { slug, oldPin: trimmedOld, newPin: trimmedNew } = parsed.data;
 
-    if (trimmedNew.length < 4 || trimmedNew.length > 10) {
+    // Chặn brute-force PIN
+    const rateLimitKey = `${ip}:${slug}`;
+    if (checkPinRateLimit(rateLimitKey)) {
       return NextResponse.json(
-        { error: 'Mã PIN mới phải có từ 4 đến 10 ký tự' },
-        { status: 400 }
+        { error: 'Bạn đã thử đổi mã PIN quá nhiều lần. Vui lòng đợi 1 phút.' },
+        { status: 429 }
       );
     }
 
@@ -163,22 +190,32 @@ export async function PATCH(req: Request) {
     const supabase = await createAdminClient();
 
     // 1. Tìm gian hàng theo slug
-    const { data: business } = await supabase
+    const { data: business, error: businessErr } = await supabase
       .from('businesses')
       .select('id, slug')
       .eq('slug', slug)
       .maybeSingle();
+
+    if (businessErr) {
+      console.error('[Change PIN Lookup Business Error]:', businessErr);
+      return NextResponse.json({ error: 'Lỗi tra cứu gian hàng' }, { status: 500 });
+    }
 
     if (!business) {
       return NextResponse.json({ error: 'Không tìm thấy gian hàng này' }, { status: 404 });
     }
 
     // 2. Tìm hồ sơ expo & kiểm tra PIN cũ
-    const { data: profile } = await supabase
+    const { data: profile, error: profileErr } = await supabase
       .from('business_expo_profiles')
       .select('id, access_pin')
       .eq('business_id', business.id)
       .maybeSingle();
+
+    if (profileErr) {
+      console.error('[Change PIN Load Profile Error]:', profileErr);
+      return NextResponse.json({ error: 'Lỗi tải hồ sơ gian hàng' }, { status: 500 });
+    }
 
     if (!profile) {
       return NextResponse.json({ error: 'Không tìm thấy hồ sơ gian hàng' }, { status: 404 });
@@ -209,7 +246,7 @@ export async function PATCH(req: Request) {
       success: true,
       message: 'Đổi mã PIN quản trị CRM thành công!',
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[Change PIN API Error]:', err);
     return NextResponse.json({ error: 'Lỗi máy chủ khi đổi mã PIN' }, { status: 500 });
   }

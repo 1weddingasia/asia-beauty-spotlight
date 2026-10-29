@@ -24,7 +24,6 @@ import {
   Copy,
   Check,
   ArrowLeft,
-  Trash2,
   Eye,
   EyeOff,
   ShieldCheck,
@@ -69,7 +68,6 @@ export function ExpoCrmClient({ business, profile }: Props) {
   const [pin, setPin] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [verifying, setVerifying] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loadingLeads, setLoadingLeads] = useState(false);
   const [search, setSearch] = useState('');
@@ -90,7 +88,6 @@ export function ExpoCrmClient({ business, profile }: Props) {
 
   const nameVi = getExpoBrandName(business, profile, 'vi');
   const nameEn = getExpoBrandName(business, profile, 'en');
-  const isDemoBooth = business.slug === 'deoproce-korea' || business.is_demo;
 
   const supabase = createClient();
   const leadsRef = useRef<Lead[]>([]);
@@ -309,28 +306,6 @@ export function ExpoCrmClient({ business, profile }: Props) {
     }
   };
 
-  const handleDeleteDemo = async () => {
-    if (!confirm('Anh có chắc muốn XÓA gian hàng mẫu này? Sau khi xóa, trang demo và toàn bộ dữ liệu mẫu sẽ bị xóa vĩnh viễn.')) {
-      return;
-    }
-    setDeleting(true);
-    try {
-      const res = await fetch('/api/expo/crm', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: business.slug, pin }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Lỗi khi xóa');
-      localStorage.removeItem(`expo_pin_${business.slug}`);
-      toast.success('Đã xóa gian hàng mẫu thành công!');
-      window.location.href = '/expo';
-    } catch (err: any) {
-      toast.error(err.message || 'Lỗi khi xóa');
-      setDeleting(false);
-    }
-  };
-
   // Hàm xử lý đổi mã PIN
   const handleChangePin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -418,8 +393,9 @@ export function ExpoCrmClient({ business, profile }: Props) {
 
             <button
               type="button"
+              disabled={submittingPin}
               onClick={() => setIsChangePinOpen(false)}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -559,7 +535,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
             {nameVi} {nameEn && nameEn.toLowerCase() !== nameVi.toLowerCase() ? `(${nameEn})` : ''} • Booth {profile.booth_number}
           </p>
           <p className="text-xs text-slate-400 mb-6">
-            Nhập mã PIN 6 số để mở bảng danh sách khách hàng trực tiếp
+            Nhập mã PIN bảo mật (4 - 10 ký tự) để mở bảng danh sách khách hàng trực tiếp
           </p>
 
           <form
@@ -572,12 +548,12 @@ export function ExpoCrmClient({ business, profile }: Props) {
             <div>
               <input
                 type="password"
-                maxLength={6}
+                maxLength={10}
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
-                placeholder="Nhập 6 số PIN..."
+                placeholder="Nhập mã PIN..."
                 autoFocus
-                className="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-3.5 text-center text-2xl font-mono tracking-[0.3em] text-amber-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                className="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-3.5 text-center text-xl font-mono tracking-[0.25em] text-amber-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
               />
             </div>
 
@@ -771,41 +747,13 @@ export function ExpoCrmClient({ business, profile }: Props) {
           <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-amber-500/10 to-slate-900 border border-amber-500/20 rounded-2xl p-4 flex flex-col justify-between">
             <span className="text-xs text-amber-300 flex items-center gap-1.5 font-bold">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Kịch Bản Demo
+              Thông Báo Realtime
             </span>
             <p className="text-[11px] text-slate-400 mt-1">
-              Quét mã QR từ điện thoại khác, đúng 1 giây sau chuông <b>Ting!</b> sẽ vang lên.
+              Khách quét mã QR tại gian hàng, dữ liệu lập tức cập nhật và chuông <b>Ting!</b> sẽ vang lên.
             </p>
           </div>
         </div>
-
-        {/* DEMO NOTICE BANNER (Chỉ hiển thị cho gian hàng demo để user có thể xem mẫu và tự bấm xóa sau) */}
-        {isDemoBooth && (
-          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-amber-300">
-                  Gian Hàng Mẫu Thử Nghiệm (Demo Showcase)
-                </h4>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Đây là gian hàng mẫu riêng để anh thử nghiệm chuông và xuất Excel. Khi xem xong, anh có thể bấm nút xóa bên cạnh để dọn dẹp sạch sẽ.
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleDeleteDemo}
-              disabled={deleting}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all shrink-0 cursor-pointer disabled:opacity-50"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>{deleting ? 'Đang xóa...' : 'Xóa Gian Hàng Mẫu Này'}</span>
-            </button>
-          </div>
-        )}
 
         {/* SEARCH & PAGE SIZE BAR */}
         <div className="flex items-center gap-2 mb-4">
