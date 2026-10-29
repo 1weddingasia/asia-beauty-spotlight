@@ -355,11 +355,11 @@ Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link
 🎉 <b>ĐÃ TẠO GIAN HÀNG EXPO THÀNH CÔNG TRONG 3 GIÂY!</b>
 ━━━━━━━━━━━━━━━━━━━━
 🏢 <b>Gian hàng:</b> ${name}
-📍 <b>Vị trí Booth:</b> ${booth}
+📍 <b>Vị trí:</b> ${booth}
 🎪 <b>Sự kiện:</b> ${eventName}
 🔑 <b>Mã PIN Quản Trị CRM:</b> <code>${pin}</code>
 ━━━━━━━━━━━━━━━━━━━━
-🔗 <b>1. Link Khách Quét (4 Ngôn Ngữ):</b>
+🔗 <b>1. Link Khách Liên Hệ (4 Ngôn Ngữ):</b>
 ${boothUrl}
 
 📊 <b>2. Link Web CRM Trực Tiếp:</b>
