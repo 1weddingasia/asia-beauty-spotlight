@@ -36,8 +36,6 @@ export function ExpoHubClient({ initialBooths }: Props) {
       (item.name_vi && item.name_vi.toLowerCase().includes(q)) ||
       (item.name_en && item.name_en.toLowerCase().includes(q)) ||
       item.booth_number.toLowerCase().includes(q) ||
-      item.event_name.toLowerCase().includes(q) ||
-      (item.event_name_en && item.event_name_en.toLowerCase().includes(q)) ||
       (item.address && item.address.toLowerCase().includes(q)) ||
       (item.phone && item.phone.includes(q))
     );
