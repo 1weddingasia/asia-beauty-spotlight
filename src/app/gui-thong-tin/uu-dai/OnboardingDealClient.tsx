@@ -398,7 +398,7 @@ export function OnboardingDealClient() {
                 Họ và tên người quản lý / Chủ cơ sở <span className="text-destructive">*</span>
               </label>
               <Input
-                placeholder="VD: Nguyễn Văn Anh"
+                placeholder="VD: Nguyễn Văn A"
                 value={managerName}
                 onChange={(e) => setManagerName(e.target.value)}
                 required
@@ -412,7 +412,7 @@ export function OnboardingDealClient() {
               <div className="relative">
                 <Input
                   type="email"
-                  placeholder="VD: ngocspa@gmail.com"
+                  placeholder="VD: spahoanggia@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -449,7 +449,7 @@ export function OnboardingDealClient() {
               </label>
               <div className="relative">
                 <Input
-                  placeholder="VD: 0918731411"
+                  placeholder="VD: 0901234567"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
@@ -478,7 +478,7 @@ export function OnboardingDealClient() {
                 Tên thương hiệu / Cơ sở <span className="text-destructive">*</span>
               </label>
               <Input
-                placeholder="VD: Ngọc Dung Beauty Spa"
+                placeholder="VD: Viện Chăm Sóc Sắc Đẹp Á Đông"
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
                 required
@@ -510,7 +510,7 @@ export function OnboardingDealClient() {
               </label>
               <div className="relative">
                 <Input
-                  placeholder="VD: 123 Nguyễn Trãi, Phường Bến Thành, Quận 1, TP.HCM"
+                  placeholder="VD: 123 Đường Số 1, Phường Tân Định, Quận 1, TP.HCM"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
@@ -522,7 +522,7 @@ export function OnboardingDealClient() {
             <div className="space-y-2">
               <label className="text-sm font-semibold">Số Zalo nhận khách (nếu khác Hotline)</label>
               <Input
-                placeholder="VD: 0918731411"
+                placeholder="VD: 0901234567"
                 value={zalo}
                 onChange={(e) => setZalo(e.target.value)}
               />
@@ -543,7 +543,7 @@ export function OnboardingDealClient() {
             <div className="space-y-2">
               <label className="text-sm font-semibold">Link Fanpage Facebook (nếu có)</label>
               <Input
-                placeholder="VD: https://facebook.com/ngocdungspa"
+                placeholder="VD: https://facebook.com/spahoanggia"
                 value={facebook}
                 onChange={(e) => setFacebook(e.target.value)}
               />
@@ -553,7 +553,7 @@ export function OnboardingDealClient() {
               <label className="text-sm font-semibold">Link Website (nếu có)</label>
               <div className="relative">
                 <Input
-                  placeholder="VD: https://ngocdungspa.vn"
+                  placeholder="VD: https://spahoanggia.vn"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                 />
@@ -737,8 +737,8 @@ export function OnboardingDealClient() {
                   </label>
                   <Input
                     placeholder={idx === 0 
-                      ? "VD: Trọn Gói Chăm Sóc Da Chuyên Sâu 9 Bước Trị Nám - Sáng Mịn" 
-                      : `VD: Ưu Đãi #${idx + 1} - Gội Đầu Dưỡng Sinh Thảo Dược Chuẩn Trung Hoa`}
+                      ? "VD: Trọn Gói Chăm Sóc Da Mặt Chuyên Sâu 9 Bước Thư Giãn" 
+                      : `VD: Gói Dịch Vụ #${idx + 1} - Gội Đầu Dưỡng Sinh Thảo Mộc 60 Phút`}
                     value={deal.title}
                     onChange={(e) => updateDeal(idx, "title", e.target.value)}
                     required={idx === 0}

@@ -454,7 +454,7 @@ export function OnboardingPartyClient() {
                 Họ và tên Quản lý sảnh / Đại diện nhà hàng <span className="text-destructive">*</span>
               </label>
               <Input
-                placeholder="VD: Trần Hoàng Nam"
+                placeholder="VD: Nguyễn Văn A"
                 value={managerName}
                 onChange={(e) => setManagerName(e.target.value)}
                 required
@@ -468,7 +468,7 @@ export function OnboardingPartyClient() {
               <div className="relative">
                 <Input
                   type="email"
-                  placeholder="VD: nhahanghoanggia@gmail.com"
+                  placeholder="VD: nhahangsenvang@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -505,7 +505,7 @@ export function OnboardingPartyClient() {
               </label>
               <div className="relative">
                 <Input
-                  placeholder="VD: 0918731411"
+                  placeholder="VD: 0901234567"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
@@ -534,7 +534,7 @@ export function OnboardingPartyClient() {
                 Tên Nhà hàng / Trung tâm hội nghị tiệc <span className="text-destructive">*</span>
               </label>
               <Input
-                placeholder="VD: Nhà Hàng Ẩm Thực Sinh Thái Sông Quê"
+                placeholder="VD: Trung Tâm Hội Nghị & Sảnh Tiệc Sen Vàng"
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
                 required
@@ -547,7 +547,7 @@ export function OnboardingPartyClient() {
               </label>
               <div className="relative">
                 <Input
-                  placeholder="VD: 88 Ung Văn Khiêm, Phường 25, Quận Bình Thạnh, TP.HCM"
+                  placeholder="VD: 88 Đường Hoa Lan, Phường 2, Quận Phú Nhuận, TP.HCM"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
@@ -559,7 +559,7 @@ export function OnboardingPartyClient() {
             <div className="space-y-2">
               <label className="text-sm font-semibold">Số Zalo gửi báo giá thực đơn</label>
               <Input
-                placeholder="VD: 0918731411"
+                placeholder="VD: 0901234567"
                 value={zalo}
                 onChange={(e) => setZalo(e.target.value)}
               />
@@ -581,7 +581,7 @@ export function OnboardingPartyClient() {
               <label className="text-sm font-semibold">Link Website hoặc Fanpage Nhà Hàng (nếu có)</label>
               <div className="relative">
                 <Input
-                  placeholder="VD: https://nhahangriverside.com hoặc https://facebook.com/..."
+                  placeholder="VD: https://nhahangsenvang.vn hoặc https://facebook.com/senvangvenue"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                 />
