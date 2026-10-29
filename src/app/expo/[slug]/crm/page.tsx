@@ -40,8 +40,8 @@ export default async function ExpoCrmPage({ params }: Props) {
   const profile = expoProfile || {
     id: 'default',
     business_id: business.id,
-    event_name: '1Booking Expo Pass • Triển Lãm Quốc Tế',
-    event_name_en: '1Booking Expo Pass • International Expo',
+    event_name: '1Booking Expo Pass',
+    event_name_en: '1Booking Expo Pass',
     booth_number: 'Gian Hàng Tiêu Chuẩn',
   };
 

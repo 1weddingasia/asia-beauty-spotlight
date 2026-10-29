@@ -95,7 +95,7 @@ const HUB_I18N: Record<HubLang, {
   btnContactExpo: string;
 }> = {
   vi: {
-    eventTag: '1BOOKING EXPO PASS • TP. HỒ CHÍ MINH',
+    eventTag: '1BOOKING EXPO PASS',
     title: '1BOOKING EXPO PASS',
     subtitle: 'Danh Bạ Số Hóa Doanh Nghiệp & Kết Nối B2B Toàn Diện',
     desc: 'Nền tảng số hóa kết nối đối tác B2B, tra cứu vị trí gian hàng, Standee để bàn thông minh và hệ thống Mini-CRM Live thời gian thực tại các kỳ triển lãm quốc tế.',
@@ -131,7 +131,7 @@ const HUB_I18N: Record<HubLang, {
     disclaimer: '1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập phục vụ các doanh nghiệp & khách tham quan tại các trung tâm triển lãm quốc tế TP.HCM. Nền tảng hoạt động hoàn toàn độc lập, không trực thuộc và không đại diện cho Ban Tổ Chức bất kỳ triển lãm nào. Mọi tên thương hiệu và nhãn hiệu thuộc về chủ sở hữu hợp pháp.',
   },
   en: {
-    eventTag: '1BOOKING EXPO PASS • HO CHI MINH CITY',
+    eventTag: '1BOOKING EXPO PASS',
     title: '1BOOKING EXPO PASS',
     subtitle: 'Digitized B2B Business Directory & Smart Networking',
     desc: 'Digital B2B networking platform, booth location lookup, smart table standees, and live real-time CRM solutions for international trade exhibitions.',
@@ -167,7 +167,7 @@ const HUB_I18N: Record<HubLang, {
     disclaimer: '1Booking Expo Pass is an independent digital directory and B2B networking platform serving exhibitors and attendees at international trade exhibitions in Ho Chi Minh City. We operate completely independently and do not represent any exhibition organizer. All brand names and trademarks belong to their respective owners.',
   },
   ko: {
-    eventTag: '1BOOKING EXPO PASS • 호치민',
+    eventTag: '1BOOKING EXPO PASS',
     title: '1BOOKING EXPO PASS',
     subtitle: '참가기업 디지털 디렉토리 및 스마트 B2B 매칭',
     desc: '국제 박람회 참가기업 디지털 B2B 네트워킹, 부스 위치 검색, 스마트 탁상용 스탠디 및 실시간 CRM 솔루션.',
@@ -203,7 +203,7 @@ const HUB_I18N: Record<HubLang, {
     disclaimer: '1Booking Expo Pass는 호치민 국제 무역 박람회 참가기업 및 참관객을 위한 독립적인 디지털 디렉토리 및 B2B 네트워킹 플랫폼입니다. 당사는 특정 행사 주최측과 무관하게 독립적으로 운영되며, 모든 브랜드와 상표권은 해당 권리자에게 귀속됩니다.',
   },
   zh: {
-    eventTag: '1BOOKING EXPO PASS • 胡志明市',
+    eventTag: '1BOOKING EXPO PASS',
     title: '1BOOKING EXPO PASS',
     subtitle: '数字化企业商务名录与智能B2B对接',
     desc: '胡志明市国际博览会参展企业数字化商务对接平台、展位查询、智能桌面展架与实时CRM客户管理。',

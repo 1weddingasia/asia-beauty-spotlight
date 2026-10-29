@@ -43,8 +43,8 @@ export default async function ExpoQrStandeePage({ params }: Props) {
     .maybeSingle();
 
   const profile = expoProfile || {
-    event_name: '1Booking Expo Pass • Triển Lãm Quốc Tế',
-    event_name_en: '1Booking Expo Pass • International Expo',
+    event_name: '1Booking Expo Pass',
+    event_name_en: '1Booking Expo Pass',
     booth_number: 'Gian Hàng Tiêu Chuẩn',
   };
 

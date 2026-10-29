@@ -166,7 +166,7 @@ export function ExpoContactModal({
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              1Booking Expo Pass • Tư Vấn Giải Pháp
+              1Booking Expo Pass
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-1">

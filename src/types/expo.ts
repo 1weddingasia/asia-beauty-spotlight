@@ -90,9 +90,9 @@ export function getExpoEventName(
   lang: ExpoLanguage = 'vi'
 ): string {
   if (lang === 'vi') {
-    return profile?.event_name || 'Triển Lãm Quốc Tế';
+    return profile?.event_name || '1Booking Expo Pass';
   }
-  return profile?.event_name_en || profile?.event_name || 'International Expo';
+  return profile?.event_name_en || profile?.event_name || '1Booking Expo Pass';
 }
 
 export interface BusinessExpoLead {

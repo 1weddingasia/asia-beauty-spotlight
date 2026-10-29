@@ -346,7 +346,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
           </button>
 
           <p className="text-[10px] text-slate-600">
-            Powered by 1Booking Expo Pass • Số hóa gian hàng triển lãm
+            Powered by 1Booking Expo Pass
           </p>
         </div>
       </main>

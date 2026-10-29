@@ -281,7 +281,7 @@ Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link
           const name = nameVi;
           const booth = parts[1] || 'A-01';
           const phone = parts[2] || '0900000000';
-          const eventName = parts[3] || 'Triển Lãm Quốc Tế';
+          const eventName = parts[3] || '1Booking Expo Pass';
 
           const baseSlug = name
             .toLowerCase()

@@ -153,10 +153,10 @@ export function ExpoStandeeClient({ business, profile }: Props) {
         {/* Decorative Top Accent */}
         <div className="w-20 h-1.5 bg-amber-500 rounded-full mb-4 print:mb-3" />
 
-        {/* Event Name Tag */}
+        {/* Brand Tag */}
         <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 uppercase tracking-wider mb-2">
           <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-          {profile.event_name}
+          1Booking Expo Pass
         </div>
 
         {/* Booth Location Number */}
@@ -225,7 +225,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
         {/* Standee Footer */}
         <div className="mt-auto pt-3 border-t border-slate-200 w-full flex items-center justify-between text-[10px] text-slate-500 font-medium">
           <span>1Booking Expo Pass</span>
-          <span>Số Hóa Gian Hàng Triển Lãm</span>
+          <span>1booking.asia</span>
         </div>
       </div>
     </div>
