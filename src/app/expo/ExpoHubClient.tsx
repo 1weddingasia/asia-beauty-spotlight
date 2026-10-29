@@ -348,10 +348,9 @@ export function ExpoHubClient({ initialBooths }: Props) {
                         {t.langSupport}:
                       </span>
                       <div className="flex items-center gap-1.5" title="Hỗ trợ 4 ngôn ngữ: Tiếng Việt, English, 한국어, 中文">
-                        <CountryFlag country="vi" size="sm" />
-                        <CountryFlag country="en" size="sm" />
-                        <CountryFlag country="ko" size="sm" />
-                        <CountryFlag country="zh" size="sm" />
+                        {HUB_LANGUAGES.map((l) => (
+                          <CountryFlag key={l.code} country={l.code} size="sm" />
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -361,6 +360,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                     <Link
                       href={`/expo/${booth.slug}`}
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 transition-colors text-[10px] font-medium"
                     >
                       <ExternalLink className="w-3.5 h-3.5 text-blue-400 mb-1" />
@@ -378,6 +378,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                     <Link
                       href={`/expo/${booth.slug}/qr`}
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 transition-colors text-[10px] font-medium"
                     >
                       <Printer className="w-3.5 h-3.5 text-emerald-400 mb-1" />
