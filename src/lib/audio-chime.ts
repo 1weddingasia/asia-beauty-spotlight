@@ -3,25 +3,28 @@
  * Works 100% offline without external MP3 files or CORS issues
  */
 export function playChimeSound() {
+  let ctx: AudioContext | null = null;
+  let isClosed = false;
+  const safeClose = () => {
+    if (ctx && !isClosed && ctx.state !== 'closed') {
+      isClosed = true;
+      ctx.close().catch(() => {});
+    }
+  };
+
   try {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioContextClass) return;
 
-    const ctx = new AudioContextClass();
-    let isClosed = false;
-    const safeClose = () => {
-      if (!isClosed && ctx.state !== 'closed') {
-        isClosed = true;
-        ctx.close().catch(() => {});
-      }
-    };
-
+    ctx = new AudioContextClass();
     if (ctx.state === 'suspended') {
       ctx.resume().catch((err) => {
         console.warn('[Audio Chime] resume failed:', err);
         safeClose();
       });
     }
+
+    if (ctx.state === 'closed') return;
     const now = ctx.currentTime;
 
     // First Tone: G5 (784Hz)
@@ -64,5 +67,6 @@ export function playChimeSound() {
     };
   } catch (err) {
     console.warn('[Audio Chime Exception]:', err);
+    safeClose();
   }
 }
