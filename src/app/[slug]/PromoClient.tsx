@@ -445,7 +445,7 @@ export default function PromoClient({
                 className="inline-flex items-center gap-1.5 bg-amber-500/25 border border-amber-400 text-amber-200 hover:text-white text-xs font-bold px-3.5 py-1.5 rounded-full hover:bg-amber-500/40 transition-all backdrop-blur-md shadow-lg"
               >
                 <Sparkles className="size-3.5 text-amber-400" />
-                <span>Booth {expoProfile.booth_number} • VietFranchise Expo</span>
+                <span>Booth {expoProfile.booth_number} • {expoProfile.event_name || 'Triển Lãm Quốc Tế'}</span>
               </Link>
               <Link
                 href="/expo"

@@ -124,14 +124,19 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
   // Lấy thêm hồ sơ gian hàng triển lãm expo (nếu doanh nghiệp tham gia expo)
   let expoProfile: { booth_number: string; event_name: string } | null = null;
   try {
-    const { data: eData } = await supabase
+    const { data: eData, error: eErr } = await supabase
       .from('business_expo_profiles')
       .select('booth_number, event_name')
       .eq('business_id', business.id)
       .eq('is_active', true)
       .maybeSingle();
-    expoProfile = (eData as any) ?? null;
+
+    if (eErr) {
+      console.error('[PromoPage] Lỗi lấy expo profile:', eErr);
+    }
+    expoProfile = (eData as { booth_number: string; event_name: string } | null) ?? null;
   } catch (err) {
+    console.error('[PromoPage] Ngoại lệ lấy expo profile:', err);
     expoProfile = null;
   }
 

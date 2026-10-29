@@ -321,10 +321,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
         <div className="mt-8 flex flex-col items-center gap-3 text-center">
           <Link
             href="/expo"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-amber-300 hover:text-white py-2.5 px-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/40 transition-all shadow-md active:scale-98"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-amber-300 hover:text-white py-2.5 px-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/40 transition-all shadow-md active:scale-[0.98]"
           >
             <Building2 className="w-3.5 h-3.5 text-amber-400" />
-            <span>{t.expoDirectory}</span>
+            <span>{t.viewDirectoryBtn}</span>
           </Link>
 
           <Link
