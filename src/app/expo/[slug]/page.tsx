@@ -74,10 +74,10 @@ export default async function ExpoBoothPage({ params }: Props) {
     languages_enabled: ['vi', 'en', 'ko', 'zh'],
     default_language: 'vi',
     lead_gift_title: {
-      vi: 'Nhận Catalogue & Ưu Đãi Gian Hàng',
-      en: 'Get Catalogue & Booth Offers',
-      ko: '카탈로그 및 부스 혜택 받기',
-      zh: '获取产品目录与展位优惠',
+      vi: 'Trao Đổi Thông Tin Liên Hệ',
+      en: 'Exchange Business Contact',
+      ko: '비즈니스 연락처 교환',
+      zh: '商务联系与信息交换',
     },
     is_active: true,
   };

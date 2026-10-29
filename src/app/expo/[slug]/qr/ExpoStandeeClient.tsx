@@ -127,17 +127,17 @@ export function ExpoStandeeClient({ business, profile }: Props) {
         </div>
 
         {/* 4-Language Call To Action */}
-        <div className="space-y-1 w-full bg-amber-50/80 border border-amber-200/80 rounded-2xl py-3 px-4 mb-4">
+        <div className="space-y-1 w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 mb-4">
           <p className="text-sm font-black text-slate-950 tracking-tight">
-            QUÉT MÃ ĐỂ NHẬN CATALOGUE & QUÀ TẶNG
+            QUÉT MÃ ĐỂ KẾT NỐI & TRAO ĐỔI LIÊN HỆ
           </p>
           <p className="text-xs font-semibold text-slate-700">
-            SCAN FOR CATALOGUE & EXCLUSIVE GIFTS
+            SCAN TO CONNECT & EXCHANGE CONTACT INFO
           </p>
-          <div className="text-[11px] text-slate-600 flex items-center justify-center gap-3 pt-1 border-t border-amber-200/50 mt-1">
-            <span>카탈로그 및 부스 선물 받기</span>
+          <div className="text-[11px] text-slate-600 flex items-center justify-center gap-3 pt-1 border-t border-slate-200 mt-1">
+            <span>비즈니스 연락처 교환 스캔</span>
             <span>•</span>
-            <span>扫码领取产品资料与精美礼品</span>
+            <span>扫码交换名片与商务咨询</span>
           </div>
         </div>
 

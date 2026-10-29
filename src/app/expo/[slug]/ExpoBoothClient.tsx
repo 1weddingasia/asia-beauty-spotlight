@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { EXPO_TRANSLATIONS, ExpoLanguage, getExpoBrandName, getExpoEventName } from '@/types/expo';
-import { Phone, MessageCircle, Globe, CheckCircle2, Building2, MapPin, Sparkles, ShieldCheck, Lock } from 'lucide-react';
+import { Globe, CheckCircle2, Building2, Handshake, Lock, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Props {
@@ -29,7 +29,6 @@ interface Props {
     access_pin: string;
     languages_enabled?: ExpoLanguage[];
     default_language?: ExpoLanguage;
-    lead_gift_title?: Record<string, string>;
     company_name_vi?: string | null;
     company_name_en?: string | null;
   };
@@ -46,9 +45,6 @@ export function ExpoBoothClient({ business, profile }: Props) {
   const [lang, setLang] = useState<ExpoLanguage>((profile.default_language as ExpoLanguage) || 'vi');
   const t = EXPO_TRANSLATIONS[lang] || EXPO_TRANSLATIONS.vi;
 
-  // Lấy tên công ty / gian hàng theo ngôn ngữ đang chọn:
-  // - Tiếng Việt ('vi'): Tên tiếng Việt
-  // - Ngôn ngữ khác ('en', 'ko', 'zh'): Tên tiếng Anh
   const brandName = getExpoBrandName(business, profile, lang);
   const eventName = getExpoEventName(profile, lang);
 
@@ -60,15 +56,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Lấy câu tiêu đề quà tặng tùy chỉnh nếu có
-  const customGiftTitle = profile.lead_gift_title?.[lang] || t.formTitle;
-
   // Mô tả theo ngôn ngữ
   const displayDescription = lang === 'vi' 
     ? (business.page_content?.description_vi || business.page_content?.description || business.address || t.welcome)
     : (business.page_content?.description_en || business.page_content?.description || business.address || t.welcome);
-
-  const cleanZalo = business.phone ? business.phone.replace(/\D/g, '') : '';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,7 +109,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
         <div className="max-w-md mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Handshake className="w-3.5 h-3.5" />
               {eventName}
             </span>
           </div>
@@ -184,45 +175,20 @@ export function ExpoBoothClient({ business, profile }: Props) {
             </p>
           </div>
 
-          {/* Quick Contact Chips */}
-          <div className="grid grid-cols-3 gap-2 mb-6 text-xs">
-            {business.phone && (
-              <a
-                href={`tel:${business.phone}`}
-                className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 text-slate-200 transition-colors"
-              >
-                <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{t.hotlineBtn}</span>
-              </a>
-            )}
-            {cleanZalo && (
-              <a
-                href={`https://zalo.me/${cleanZalo}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 text-slate-200 transition-colors"
-              >
-                <MessageCircle className="w-3.5 h-3.5 text-blue-400" />
-                <span>{t.zaloBtn}</span>
-              </a>
-            )}
-            {business.website ? (
+          {/* Business Website link (if available) - No Hotline / No Zalo */}
+          {business.website && (
+            <div className="flex justify-center mb-6">
               <a
                 href={business.website.startsWith('http') ? business.website : `https://${business.website}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 text-slate-200 transition-colors"
+                className="inline-flex items-center gap-2 py-2 px-4 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 text-amber-400 hover:text-amber-300 text-xs font-medium transition-colors"
               >
-                <Globe className="w-3.5 h-3.5 text-amber-400" />
+                <Globe className="w-3.5 h-3.5" />
                 <span>{t.websiteBtn}</span>
               </a>
-            ) : (
-              <div className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-800/40 border border-slate-800 text-slate-500">
-                <ShieldCheck className="w-3.5 h-3.5 text-slate-500" />
-                <span>Verified</span>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
 
           <hr className="border-slate-800 my-4" />
 
@@ -248,8 +214,8 @@ export function ExpoBoothClient({ business, profile }: Props) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="text-center mb-4">
                 <h2 className="text-base font-bold text-amber-300 flex items-center justify-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  {customGiftTitle}
+                  <Handshake className="w-4 h-4 text-amber-400" />
+                  {t.formTitle}
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
                   {t.formSubtitle}
