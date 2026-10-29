@@ -142,20 +142,28 @@ const ChangePinSchema = z.object({
 });
 
 // Rate limiting theo IP và slug (tối đa 5 lần thử/phút để chống brute-force)
+const PIN_RATE_LIMIT_MAX_ENTRIES = 300;
 const pinAttemptCounts = new Map<string, { count: number; resetAt: number }>();
+
+function cleanupPinRateLimits(now: number): void {
+  // 1. Dọn dẹp các bản ghi đã hết hạn
+  for (const [k, v] of pinAttemptCounts.entries()) {
+    if (v.resetAt < now) pinAttemptCounts.delete(k);
+  }
+  // 2. Nếu vẫn vượt ngưỡng tối đa, loại bỏ các bản ghi sắp hết hạn trước
+  if (pinAttemptCounts.size > PIN_RATE_LIMIT_MAX_ENTRIES) {
+    const entries = [...pinAttemptCounts.entries()].sort((a, b) => a[1].resetAt - b[1].resetAt);
+    const overflow = entries.length - PIN_RATE_LIMIT_MAX_ENTRIES;
+    for (let i = 0; i < overflow; i += 1) {
+      pinAttemptCounts.delete(entries[i][0]);
+    }
+  }
+}
+
 function checkPinRateLimit(key: string): boolean {
   const now = Date.now();
-  // Dọn dẹp bộ nhớ nếu map vượt 200 entries và hard-cap chống rò rỉ RAM
-  if (pinAttemptCounts.size > 200) {
-    for (const [k, v] of pinAttemptCounts.entries()) {
-      if (v.resetAt < now) pinAttemptCounts.delete(k);
-    }
-    if (pinAttemptCounts.size > 300) {
-      const entries = [...pinAttemptCounts.entries()].sort((a, b) => a[1].resetAt - b[1].resetAt);
-      for (let i = 0; i < entries.length - 300; i += 1) {
-        pinAttemptCounts.delete(entries[i][0]);
-      }
-    }
+  if (pinAttemptCounts.size > PIN_RATE_LIMIT_MAX_ENTRIES) {
+    cleanupPinRateLimits(now);
   }
 
   const record = pinAttemptCounts.get(key);
