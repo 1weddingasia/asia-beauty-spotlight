@@ -11,11 +11,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   return {
     title: `Tải Standee QR | ${slug} - 1Booking Expo Pass`,
-    description: 'Tải ảnh Standee mã QR để bàn dạng file PNG độ nét cao cho gian hàng triển lãm mang đi in ấn.',
+    description: 'Tải ảnh Standee mã QR để bàn dạng file PNG độ nét cao cho gian hàng triển lãm.',
   };
 }
 
-export default async function ExpoQrPrintPage({ params }: Props) {
+export default async function ExpoQrStandeePage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createAdminClient();
 

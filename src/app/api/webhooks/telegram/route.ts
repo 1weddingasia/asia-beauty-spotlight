@@ -247,7 +247,7 @@ Anh chỉ cần nhắn cú pháp:
 <i>Ví dụ (hỗ trợ tên tiếng Việt hoặc song ngữ Việt / Anh):</i>
 <code>EXPO: Mỹ Phẩm Deoproce Korea / Deoproce Korea Cosmetics | A-12 | 0901234567 | Cosmobeauté 2026</code>
 ━━━━━━━━━━━━━━━━━━━━
-Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link in Standee gửi lại cho anh ngay lập tức!
+Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link tải Standee gửi lại cho anh ngay lập tức!
             `.trim();
             await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
               method: 'POST',
@@ -365,7 +365,7 @@ ${boothUrl}
 📊 <b>2. Link Web CRM Trực Tiếp:</b>
 ${crmUrl}
 
-🖨️ <b>3. Link In Standee QR Để Bàn:</b>
+🖼️ <b>3. Link Tải Standee QR Để Bàn:</b>
 ${qrUrl}
 ━━━━━━━━━━━━━━━━━━━━
 👉 Anh có thể mở máy của chủ gian hàng, truy cập link CRM và nhập mã PIN <code>${pin}</code> là chốt deal thu tiền ngay tại chỗ!
@@ -378,7 +378,7 @@ ${qrUrl}
                   { text: '📊 Vào CRM Live', url: crmUrl },
                 ],
                 [
-                  { text: '🖨️ Mở In Standee QR', url: qrUrl },
+                  { text: '🖼️ Tải Standee QR', url: qrUrl },
                 ],
               ],
             };

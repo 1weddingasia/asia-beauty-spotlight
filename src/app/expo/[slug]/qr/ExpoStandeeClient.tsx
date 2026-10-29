@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
-import { Download, Printer, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2 } from 'lucide-react';
+import { Download, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getExpoBrandName } from '@/types/expo';
 
@@ -121,13 +121,13 @@ export function ExpoStandeeClient({ business, profile }: Props) {
             <span className="hidden md:inline">Trang Khách Quét</span>
           </Link>
 
-          {/* Nút chính: TẢI ẢNH STANDEE ĐỂ MANG ĐI IN */}
+          {/* Nút: TẢI ẢNH STANDEE */}
           <button
             type="button"
             onClick={handleDownloadImage}
             disabled={isDownloading}
             className="inline-flex items-center gap-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all cursor-pointer disabled:opacity-60"
-            title="Tải ảnh Standee chất lượng cao để mang đi in ấn"
+            title="Tải ảnh Standee chất lượng cao"
           >
             {isDownloading ? (
               <>
@@ -137,20 +137,9 @@ export function ExpoStandeeClient({ business, profile }: Props) {
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>TẢI ẢNH STANDEE (ĐỂ IN)</span>
+                <span>TẢI ẢNH STANDEE</span>
               </>
             )}
-          </button>
-
-          {/* Nút phụ: In trực tiếp nếu có máy in kết nối sẵn */}
-          <button
-            type="button"
-            onClick={() => window.print()}
-            title="In trực tiếp ra máy in"
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors cursor-pointer"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">In ngay</span>
           </button>
         </div>
       </div>
@@ -243,10 +232,10 @@ export function ExpoStandeeClient({ business, profile }: Props) {
       {/* Helpful Hint */}
       <div className="max-w-md text-center mt-6 text-xs text-slate-400 space-y-1 print:hidden">
         <p>
-          💡 <b>Mẹo in ấn:</b> Bấm nút <b>Tải Ảnh Standee (Để In)</b> để lưu file ảnh chất lượng cao (300 DPI).
+          💡 <b>Lưu Standee:</b> Bấm nút <b>Tải Ảnh Standee</b> để lưu file ảnh chất lượng cao (300 DPI).
         </p>
         <p className="text-slate-500 text-[11px]">
-          Bạn có thể gửi file ảnh qua Zalo/Email cho xưởng in chọn in màu khổ <b>A5 (chuẩn để bàn)</b> hoặc <b>A4</b>, sau đó lồng vào khung mica đặt tại quầy lễ tân gian hàng.
+          Bạn có thể dùng file ảnh này để làm biển bảng hoặc lồng vào khung mica đặt tại quầy lễ tân gian hàng.
         </p>
       </div>
     </div>
