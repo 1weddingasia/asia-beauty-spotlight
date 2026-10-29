@@ -151,7 +151,10 @@ function checkPinRateLimit(key: string): boolean {
       if (v.resetAt < now) pinAttemptCounts.delete(k);
     }
     if (pinAttemptCounts.size > 300) {
-      pinAttemptCounts.clear();
+      const entries = [...pinAttemptCounts.entries()].sort((a, b) => a[1].resetAt - b[1].resetAt);
+      for (let i = 0; i < entries.length - 300; i += 1) {
+        pinAttemptCounts.delete(entries[i][0]);
+      }
     }
   }
 
