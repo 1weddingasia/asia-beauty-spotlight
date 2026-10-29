@@ -6,7 +6,7 @@ export interface BusinessExpoProfile {
   event_name: string;
   event_name_en?: string | null;
   booth_number: string;
-  access_pin: string;
+  access_pin?: string;
   languages_enabled: ExpoLanguage[];
   default_language: ExpoLanguage;
   lead_gift_title?: Record<ExpoLanguage, string> | null;

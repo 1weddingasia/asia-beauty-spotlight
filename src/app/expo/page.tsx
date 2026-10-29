@@ -18,7 +18,6 @@ export default async function ExpoHubPage() {
       event_name,
       event_name_en,
       booth_number,
-      access_pin,
       company_name_vi,
       company_name_en,
       is_active,

@@ -27,9 +27,8 @@ interface Props {
     event_name: string;
     event_name_en?: string | null;
     booth_number: string;
-    access_pin: string;
-    languages_enabled?: ExpoLanguage[];
-    default_language?: ExpoLanguage;
+    languages_enabled?: ExpoLanguage[] | string[];
+    default_language?: ExpoLanguage | string;
     company_name_vi?: string | null;
     company_name_en?: string | null;
   };

@@ -72,10 +72,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Lỗi tải danh sách khách hàng' }, { status: 500 });
     }
 
+    // Bảo mật: Loại bỏ access_pin khỏi payload phản hồi về trình duyệt
+    const { access_pin: _discardedPin, ...safeExpoProfile } = expoProfile;
+
     return NextResponse.json({
       success: true,
       business: normalizedBusiness,
-      expoProfile,
+      expoProfile: safeExpoProfile,
       leads: leads || [],
     });
   } catch (err: any) {

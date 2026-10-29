@@ -58,10 +58,10 @@ export default async function ExpoBoothPage({ params }: Props) {
     banner_url: business.page_content?.banner_url || null,
   };
 
-  // 2. Lấy thông tin hồ sơ Expo
+  // 2. Lấy thông tin hồ sơ Expo (bảo mật: không select access_pin gửi về client)
   const { data: expoProfile } = await supabase
     .from('business_expo_profiles')
-    .select('*')
+    .select('id, business_id, event_name, event_name_en, booth_number, company_name_vi, company_name_en, languages_enabled, default_language, is_active')
     .eq('business_id', business.id)
     .maybeSingle();
 
@@ -71,7 +71,6 @@ export default async function ExpoBoothPage({ params }: Props) {
     event_name: '1Booking Expo Pass • Triển Lãm Quốc Tế',
     event_name_en: '1Booking Expo Pass • International Expo',
     booth_number: 'Gian Hàng Tiêu Chuẩn',
-    access_pin: '123456',
     languages_enabled: ['vi', 'en', 'ko', 'zh'],
     default_language: 'vi',
     is_active: true,

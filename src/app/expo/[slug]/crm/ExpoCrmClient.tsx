@@ -58,7 +58,7 @@ interface Props {
     id?: string;
     event_name: string;
     booth_number: string;
-    access_pin: string;
+    access_pin?: string;
     company_name_vi?: string | null;
     company_name_en?: string | null;
   };
@@ -576,38 +576,23 @@ export function ExpoCrmClient({ business, profile }: Props) {
             </button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-500 flex flex-col gap-2.5">
-            <div>
-              Mã PIN mặc định ban đầu: <span className="font-mono text-amber-300 font-bold">123456</span>
+          <div className="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-400 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-1.5 text-slate-400 font-medium">
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Khu vực bảo mật dành riêng cho đại diện gian hàng</span>
             </div>
-            <div className="flex items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setPinError(null);
-                  setOldPinInput('');
-                  setNewPinInput('');
-                  setConfirmPinInput('');
-                  setIsChangePinOpen(true);
-                }}
-                className="inline-flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors py-1 px-2.5 rounded-lg hover:bg-slate-800 cursor-pointer"
-              >
-                <KeyRound className="w-3.5 h-3.5" />
-                <span>Đổi Mã PIN</span>
-              </button>
-              <span className="text-slate-700">•</span>
-              <Link
-                href="/expo"
-                className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors py-1 px-2.5"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Về Danh Bạ Expo</span>
-              </Link>
-            </div>
+            <p className="text-[10px] text-slate-500 max-w-xs leading-relaxed">
+              Vui lòng nhập mã PIN được cấp khi bàn giao gian hàng để mở khóa dữ liệu khách hàng.
+            </p>
+            <Link
+              href="/expo"
+              className="mt-1 inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors py-1 px-3 rounded-lg hover:bg-slate-800"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Về Danh Bạ Expo</span>
+            </Link>
           </div>
         </div>
-
-        {renderChangePinModal()}
       </div>
     );
   }
@@ -660,7 +645,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
               <Volume2 className="w-4 h-4" />
             </button>
 
-            {/* Change PIN button */}
+            {/* Change PIN button (Inside CRM) */}
             <button
               type="button"
               onClick={() => {
@@ -671,10 +656,10 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 setIsChangePinOpen(true);
               }}
               title="Đổi mã PIN quản trị CRM"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-amber-300 border border-slate-700 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-400/50 transition-colors cursor-pointer"
             >
               <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden sm:inline">Đổi PIN</span>
+              <span>Đổi PIN</span>
             </button>
 
             {/* Standee QR print link */}

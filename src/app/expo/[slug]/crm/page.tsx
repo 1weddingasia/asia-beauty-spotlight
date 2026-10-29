@@ -30,10 +30,10 @@ export default async function ExpoCrmPage({ params }: Props) {
     notFound();
   }
 
-  // 2. Lấy hồ sơ Expo
+  // 2. Lấy hồ sơ Expo (bảo mật: không select access_pin gửi về client)
   const { data: expoProfile } = await supabase
     .from('business_expo_profiles')
-    .select('*')
+    .select('id, business_id, event_name, event_name_en, booth_number, company_name_vi, company_name_en')
     .eq('business_id', business.id)
     .maybeSingle();
 
@@ -43,7 +43,6 @@ export default async function ExpoCrmPage({ params }: Props) {
     event_name: '1Booking Expo Pass • Triển Lãm Quốc Tế',
     event_name_en: '1Booking Expo Pass • International Expo',
     booth_number: 'Gian Hàng Tiêu Chuẩn',
-    access_pin: '123456',
   };
 
   return (
