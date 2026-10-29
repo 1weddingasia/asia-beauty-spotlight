@@ -127,11 +127,15 @@ export async function activateMembershipAction(payload: {
     if (plan.plan_type === 'party') {
       const isVipParty = plan.code === 'tiec_vip' || plan.tier === 'vip';
       try {
-        const { data: existingParty } = await supabaseAdmin
+        const { data: existingParty, error: partyErr } = await supabaseAdmin
           .from("business_party_profiles")
           .select("business_id, min_guests, max_guests, num_vip_rooms, price_min, price_max, party_deal_highlight, is_vip")
           .eq("business_id", business.id)
           .maybeSingle();
+
+        if (partyErr) {
+          console.warn("Lỗi đọc hồ sơ tiệc:", partyErr.message);
+        }
 
         await supabaseAdmin.from("business_party_profiles").upsert({
           business_id: business.id,
@@ -156,6 +160,7 @@ export async function activateMembershipAction(payload: {
       .update({
         status: "published",
         is_featured: true,
+        plan_id: plan.id,
         plan_tier: plan.tier === 'vip' ? 'vip' : 'premium',
         updated_at: new Date().toISOString(),
       })
@@ -293,13 +298,17 @@ export async function adminManageMembershipAction(payload: {
       // Nếu là gói tiệc VIP Neon (700k): Bật hiệu ứng Neon trên bản đồ
       if (targetPlan.plan_type === 'party') {
         const isVipParty = targetPlan.code === 'tiec_vip' || targetPlan.tier === 'vip';
-        const { data: existingParty } = await supabaseAdmin
+        const { data: existingParty, error: partyErr } = await supabaseAdmin
           .from("business_party_profiles")
           .select("min_guests, max_guests, num_vip_rooms, price_min, price_max, party_deal_highlight, is_vip")
           .eq("business_id", business.id)
           .maybeSingle();
 
-        await supabaseAdmin.from("business_party_profiles").upsert({
+        if (partyErr) {
+          console.warn("Lỗi đọc hồ sơ tiệc khi kích hoạt plan:", partyErr.message);
+        }
+
+        const { error: upsertPartyErr } = await supabaseAdmin.from("business_party_profiles").upsert({
           business_id: business.id,
           min_guests: existingParty?.min_guests ?? DEFAULT_PARTY_PROFILE_VALUES.min_guests,
           max_guests: existingParty?.max_guests ?? DEFAULT_PARTY_PROFILE_VALUES.max_guests,
@@ -311,14 +320,20 @@ export async function adminManageMembershipAction(payload: {
           party_deal_highlight: existingParty?.party_deal_highlight || (isVipParty ? DEFAULT_PARTY_PROFILE_VALUES.party_deal_vip_highlight : DEFAULT_PARTY_PROFILE_VALUES.party_deal_highlight),
           updated_at: new Date().toISOString(),
         }, { onConflict: "business_id" });
+
+        if (upsertPartyErr) {
+          throw new Error("Lỗi cập nhật hồ sơ tiệc: " + upsertPartyErr.message);
+        }
       }
 
       // Cập nhật businesses
-      await supabaseAdmin.from("businesses").update({
+      const { error: bizErr } = await supabaseAdmin.from("businesses").update({
         status: "published",
         is_featured: true,
+        plan_id: targetPlan.id,
         plan_tier: targetPlan.tier === 'vip' ? 'vip' : 'premium',
       }).eq("id", business.id);
+      if (bizErr) throw new Error("Lỗi cập nhật thông tin doanh nghiệp: " + bizErr.message);
     };
 
     if (action === "activate_udai_standard") {

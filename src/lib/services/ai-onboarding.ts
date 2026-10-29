@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/utils/supabase/server';
 import { OpenAI } from 'openai';
+import { activateMembershipAction } from '@/app/actions/membership';
 
 export type OnboardingDealItem = {
   id?: string;
@@ -605,84 +606,63 @@ export async function handleTelegramCallback(callbackData: string, fromChatId: s
   }
 
   if (action === 'pub') {
-    const isParty = business.category_slug === 'nha-hang-am-thuc' || business.category_slug === 'dining' || business.category_slug === 'tiec-cuoi';
-    const planCode = isParty ? 'tiec_standard' : 'udai_standard';
-
-    // 1. Tìm gói tương ứng trong bảng plans
-    const { data: targetPlan } = await supabase
-      .from('plans')
-      .select('id, code, name, plan_type, tier, price_yearly')
-      .eq('code', planCode)
+    // 1. Kiểm tra loại hình từ onboarding_submissions hoặc category_slug
+    const { data: submission } = await supabase
+      .from('onboarding_submissions')
+      .select('type')
+      .eq('business_id', business.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
 
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+    const isParty = submission?.type === 'party'
+      || business.category_slug === 'nha-hang-am-thuc'
+      || business.category_slug === 'dining'
+      || business.category_slug === 'tiec-cuoi';
 
-    // 2. Cấp hoặc gia hạn gói hội viên 1 năm
-    if (targetPlan) {
-      const { data: existingMems } = await supabase
-        .from('memberships')
-        .select('id, expires_at')
-        .eq('business_id', business.id)
-        .order('expires_at', { ascending: false })
-        .limit(1);
+    const planCode = isParty ? 'tiec_standard' : 'udai_standard';
+    const planType = isParty ? 'party' : 'deal';
 
-      if (existingMems && existingMems.length > 0) {
-        await supabase
-          .from('memberships')
-          .update({
-            plan_id: targetPlan.id,
-            status: 'active',
-            starts_at: now.toISOString(),
-            expires_at: expiresAt.toISOString(),
-          })
-          .eq('id', existingMems[0].id);
-      } else {
-        await supabase
-          .from('memberships')
-          .insert({
-            business_id: business.id,
-            plan_id: targetPlan.id,
-            status: 'active',
-            starts_at: now.toISOString(),
-            expires_at: expiresAt.toISOString(),
-          });
-      }
+    // 2. Tìm gói tương ứng trong bảng plans
+    const { data: plans } = await supabase
+      .from('plans')
+      .select('id, code, name, plan_type, tier, price_yearly')
+      .eq('is_active', true);
+
+    const targetPlan = plans?.find(p => p.code === planCode)
+      || plans?.find(p => p.plan_type === planType);
+
+    if (!targetPlan) {
+      return { text: `❌ Không tìm thấy gói phù hợp (${planCode}) trong hệ thống để kích hoạt.` };
     }
 
-    // 3. Nếu là Nhà hàng: Đảm bảo hồ sơ tiệc is_active = true
-    if (isParty) {
-      await supabase
-        .from('business_party_profiles')
-        .update({
-          is_active: true,
-          updated_at: now.toISOString(),
-        })
-        .eq('business_id', business.id);
+    // 3. Kích hoạt hội viên 1 năm và cập nhật trạng thái đồng bộ
+    const activationRes = await activateMembershipAction({
+      businessId: business.id,
+      planId: targetPlan.id,
+      durationYears: 1,
+      provider: 'Telegram-Admin-Approve',
+      transactionRef: `TG-PUB-${Date.now()}`,
+    });
+
+    if (!activationRes.success) {
+      return { text: `❌ Lỗi kích hoạt hội viên: ${activationRes.error}` };
     }
 
-    // 4. Duyệt & Publish Business
-    await supabase
-      .from('businesses')
-      .update({
-        status: 'published',
-        is_featured: true,
-        plan_id: targetPlan?.id || null,
-        plan_tier: targetPlan?.tier || 'standard',
-        updated_at: now.toISOString(),
-      })
-      .eq('id', business.id);
-
-    // 5. Cập nhật onboarding_submissions
-    await supabase
+    // 4. Cập nhật onboarding_submissions sang approved
+    const { error: subErr } = await supabase
       .from('onboarding_submissions')
-      .update({ status: 'approved', updated_at: now.toISOString() })
+      .update({ status: 'approved', updated_at: new Date().toISOString() })
       .eq('business_id', business.id);
+
+    if (subErr) {
+      console.warn('[handleTelegramCallback] Cảnh báo cập nhật onboarding_submissions:', subErr.message);
+    }
 
     const publicUrl = isParty ? `https://1booking.asia/${business.slug}/tiec` : `https://1booking.asia/${business.slug}`;
 
     return {
-      text: `✅ ĐÃ DUYỆT CÔNG KHAI!\n\nGian hàng "${business.name}" đã được kích hoạt Gói ${targetPlan?.name || 'Chuẩn'} (1 năm) và chính thức hiển thị trên 1Booking.\n🔗 Link công khai: ${publicUrl}`,
+      text: `✅ ĐÃ DUYỆT CÔNG KHAI!\n\nGian hàng "${business.name}" đã được kích hoạt Gói ${targetPlan.name} (1 năm) và chính thức hiển thị trên 1Booking.\n🔗 Link công khai: ${publicUrl}`,
     };
   }
 
