@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { EXPO_TRANSLATIONS, ExpoLanguage } from '@/types/expo';
+import { EXPO_TRANSLATIONS, ExpoLanguage, getExpoBrandName, getExpoEventName } from '@/types/expo';
 import { Phone, MessageCircle, Globe, CheckCircle2, Building2, MapPin, Sparkles, ShieldCheck, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -24,11 +24,14 @@ interface Props {
   profile: {
     id?: string;
     event_name: string;
+    event_name_en?: string | null;
     booth_number: string;
     access_pin: string;
     languages_enabled?: ExpoLanguage[];
     default_language?: ExpoLanguage;
     lead_gift_title?: Record<string, string>;
+    company_name_vi?: string | null;
+    company_name_en?: string | null;
   };
 }
 
@@ -43,6 +46,12 @@ export function ExpoBoothClient({ business, profile }: Props) {
   const [lang, setLang] = useState<ExpoLanguage>((profile.default_language as ExpoLanguage) || 'vi');
   const t = EXPO_TRANSLATIONS[lang] || EXPO_TRANSLATIONS.vi;
 
+  // Lấy tên công ty / gian hàng theo ngôn ngữ đang chọn:
+  // - Tiếng Việt ('vi'): Tên tiếng Việt
+  // - Ngôn ngữ khác ('en', 'ko', 'zh'): Tên tiếng Anh
+  const brandName = getExpoBrandName(business, profile, lang);
+  const eventName = getExpoEventName(profile, lang);
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -53,6 +62,11 @@ export function ExpoBoothClient({ business, profile }: Props) {
 
   // Lấy câu tiêu đề quà tặng tùy chỉnh nếu có
   const customGiftTitle = profile.lead_gift_title?.[lang] || t.formTitle;
+
+  // Mô tả theo ngôn ngữ
+  const displayDescription = lang === 'vi' 
+    ? (business.page_content?.description_vi || business.page_content?.description || business.address || t.welcome)
+    : (business.page_content?.description_en || business.page_content?.description || business.address || t.welcome);
 
   const cleanZalo = business.phone ? business.phone.replace(/\D/g, '') : '';
 
@@ -105,7 +119,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
               <Sparkles className="w-3.5 h-3.5" />
-              {profile.event_name}
+              {eventName}
             </span>
           </div>
 
@@ -149,7 +163,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
               <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-white p-2 shadow-xl ring-2 ring-amber-500/30 mb-3">
                 <Image
                   src={business.logo_url}
-                  alt={business.name}
+                  alt={brandName}
                   fill
                   unoptimized
                   className="object-contain"
@@ -158,15 +172,15 @@ export function ExpoBoothClient({ business, profile }: Props) {
               </div>
             ) : (
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-black text-2xl flex items-center justify-center shadow-lg mb-3">
-                {business.name.slice(0, 2).toUpperCase()}
+                {brandName.slice(0, 2).toUpperCase()}
               </div>
             )}
 
             <h1 className="text-2xl font-black tracking-tight text-white mb-1">
-              {business.name}
+              {brandName}
             </h1>
-            <p className="text-xs text-slate-400 max-w-xs line-clamp-2">
-              {business.address || t.welcome}
+            <p className="text-xs text-slate-300 max-w-xs line-clamp-3">
+              {displayDescription}
             </p>
           </div>
 

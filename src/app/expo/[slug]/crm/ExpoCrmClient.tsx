@@ -22,8 +22,10 @@ import {
   Clock,
   UserCheck,
   Sparkles,
+  Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { getExpoBrandName } from '@/types/expo';
 
 interface Lead {
   id: string;
@@ -43,12 +45,16 @@ interface Props {
     name: string;
     slug: string;
     phone: string;
+    is_demo?: boolean;
+    page_content?: any;
   };
   profile: {
     id?: string;
     event_name: string;
     booth_number: string;
     access_pin: string;
+    company_name_vi?: string | null;
+    company_name_en?: string | null;
   };
 }
 
@@ -56,11 +62,16 @@ export function ExpoCrmClient({ business, profile }: Props) {
   const [pin, setPin] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loadingLeads, setLoadingLeads] = useState(false);
   const [search, setSearch] = useState('');
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+  const nameVi = getExpoBrandName(business, profile, 'vi');
+  const nameEn = getExpoBrandName(business, profile, 'en');
+  const isDemoBooth = business.slug === 'deoproce-korea' || business.is_demo;
 
   const supabase = createClient();
   const leadsRef = useRef<Lead[]>([]);
@@ -223,6 +234,28 @@ export function ExpoCrmClient({ business, profile }: Props) {
     );
   });
 
+  const handleDeleteDemo = async () => {
+    if (!confirm('Anh có chắc muốn XÓA gian hàng mẫu này? Sau khi xóa, trang demo và toàn bộ dữ liệu mẫu sẽ bị xóa vĩnh viễn.')) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      const res = await fetch('/api/expo/crm', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: business.slug, pin }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi xóa');
+      localStorage.removeItem(`expo_pin_${business.slug}`);
+      toast.success('Đã xóa gian hàng mẫu thành công!');
+      window.location.href = '/expo';
+    } catch (err: any) {
+      toast.error(err.message || 'Lỗi khi xóa');
+      setDeleting(false);
+    }
+  };
+
   // ═══════════════════════════════════════════════
   // GIAO DIỆN KHÓA: NHẬP MÃ PIN 6 SỐ
   // ═══════════════════════════════════════════════
@@ -238,7 +271,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
             CRM GIAN HÀNG
           </h1>
           <p className="text-xs text-amber-400 font-semibold mb-1">
-            {business.name} • Booth {profile.booth_number}
+            {nameVi} {nameEn && nameEn.toLowerCase() !== nameVi.toLowerCase() ? `(${nameEn})` : ''} • Booth {profile.booth_number}
           </p>
           <p className="text-xs text-slate-400 mb-6">
             Nhập mã PIN 6 số để mở bảng danh sách khách hàng trực tiếp
@@ -305,7 +338,12 @@ export function ExpoCrmClient({ business, profile }: Props) {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-bold text-white line-clamp-1">
-                  {business.name}
+                  {nameVi}
+                  {nameEn && nameEn.toLowerCase() !== nameVi.toLowerCase() && (
+                    <span className="text-xs text-slate-400 font-normal ml-1.5">
+                      ({nameEn})
+                    </span>
+                  )}
                 </h1>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -399,6 +437,34 @@ export function ExpoCrmClient({ business, profile }: Props) {
             </p>
           </div>
         </div>
+
+        {/* DEMO NOTICE BANNER (Chỉ hiển thị cho gian hàng demo để user có thể xem mẫu và tự bấm xóa sau) */}
+        {isDemoBooth && (
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-amber-300">
+                  Gian Hàng Mẫu Thử Nghiệm (Demo Showcase)
+                </h4>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Đây là gian hàng mẫu riêng để anh thử nghiệm chuông và xuất Excel. Khi xem xong, anh có thể bấm nút xóa bên cạnh để dọn dẹp sạch sẽ.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleDeleteDemo}
+              disabled={deleting}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-bold transition-all shrink-0 cursor-pointer disabled:opacity-50"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>{deleting ? 'Đang xóa...' : 'Xóa Gian Hàng Mẫu Này'}</span>
+            </button>
+          </div>
+        )}
 
         {/* SEARCH & REFRESH BAR */}
         <div className="flex items-center gap-2 mb-4">

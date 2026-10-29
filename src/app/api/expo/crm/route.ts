@@ -15,13 +15,18 @@ export async function POST(req: Request) {
     // 1. Tìm doanh nghiệp theo slug
     const { data: business } = await supabase
       .from('businesses')
-      .select('id, name, slug, phone, email, logo_url')
+      .select('id, name, slug, phone, email, page_content, is_demo')
       .eq('slug', slug)
       .maybeSingle();
 
     if (!business) {
       return NextResponse.json({ error: 'Không tìm thấy gian hàng này' }, { status: 404 });
     }
+
+    const normalizedBusiness = {
+      ...business,
+      logo_url: business.page_content?.logo_url || business.page_content?.logo || null,
+    };
 
     // 2. Kiểm tra hồ sơ expo & PIN
     const { data: profile } = await supabase
@@ -68,12 +73,55 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      business,
+      business: normalizedBusiness,
       expoProfile,
       leads: leads || [],
     });
   } catch (err: any) {
     console.error('[Expo CRM Route Error]:', err);
     return NextResponse.json({ error: 'Lỗi máy chủ' }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const body = await req.json();
+    const { slug, pin } = body;
+
+    if (!slug || !pin) {
+      return NextResponse.json({ error: 'Thiếu thông tin slug hoặc mã PIN' }, { status: 400 });
+    }
+
+    const supabase = await createAdminClient();
+
+    const { data: business } = await supabase
+      .from('businesses')
+      .select('id, slug, is_demo')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (!business) {
+      return NextResponse.json({ error: 'Không tìm thấy gian hàng' }, { status: 404 });
+    }
+
+    const { data: profile } = await supabase
+      .from('business_expo_profiles')
+      .select('access_pin')
+      .eq('business_id', business.id)
+      .maybeSingle();
+
+    if (profile?.access_pin !== pin.trim()) {
+      return NextResponse.json({ error: 'Mã PIN không đúng' }, { status: 401 });
+    }
+
+    // Xóa leads, profile, và business
+    await supabase.from('business_expo_leads').delete().eq('business_id', business.id);
+    await supabase.from('business_expo_profiles').delete().eq('business_id', business.id);
+    await supabase.from('businesses').delete().eq('id', business.id);
+
+    return NextResponse.json({ success: true, message: 'Đã xóa gian hàng thành công' });
+  } catch (err: any) {
+    console.error('[Delete Expo Error]:', err);
+    return NextResponse.json({ error: 'Lỗi máy chủ khi xóa gian hàng' }, { status: 500 });
   }
 }

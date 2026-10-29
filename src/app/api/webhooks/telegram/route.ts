@@ -160,6 +160,55 @@ Danh bạ Expo: <code>https://1booking.asia/expo</code>
             }).catch(console.error);
           }
         }
+      } else if (text.startsWith('/delete_expo') || text === '/delete_demo') {
+        const token = resolveBotToken(req.url);
+        const adminId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
+
+        if (token && adminId && String(chatId) === String(adminId)) {
+          let slugToDelete = text.replace(/^\/delete_expo\s*/i, '').trim();
+          if (text === '/delete_demo' || !slugToDelete) {
+            slugToDelete = 'deoproce-korea';
+          }
+
+          const supabase = await createAdminClient();
+          try {
+            const { data: b } = await supabase
+              .from('businesses')
+              .select('id, name, slug')
+              .eq('slug', slugToDelete)
+              .maybeSingle();
+
+            if (!b) {
+              await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  chat_id: chatId,
+                  text: `⚠️ Không tìm thấy gian hàng có slug: <code>${slugToDelete}</code>`,
+                  parse_mode: 'HTML',
+                }),
+              });
+              return NextResponse.json({ success: true });
+            }
+
+            await supabase.from('business_expo_leads').delete().eq('business_id', b.id);
+            await supabase.from('business_expo_profiles').delete().eq('business_id', b.id);
+            await supabase.from('businesses').delete().eq('id', b.id);
+
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: chatId,
+                text: `🗑️ <b>ĐÃ XÓA GIAN HÀNG THÀNH CÔNG!</b>\n\n• <b>Gian hàng:</b> ${b.name} (<code>${slugToDelete}</code>)\n• Đã dọn dẹp sạch sẽ toàn bộ dữ liệu mẫu.`,
+                parse_mode: 'HTML',
+              }),
+            });
+          } catch (delErr: any) {
+            console.error('[Delete Expo Webhook Error]:', delErr);
+          }
+          return NextResponse.json({ success: true });
+        }
       } else if (text.startsWith('/expo') || text.toUpperCase().startsWith('EXPO:') || text.startsWith('/create_expo')) {
         const token = resolveBotToken(req.url);
         const adminId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
@@ -177,8 +226,8 @@ Danh bạ Expo: <code>https://1booking.asia/expo</code>
 Anh chỉ cần nhắn cú pháp:
 <code>EXPO: [Tên Gian Hàng] | [Số Booth] | [SĐT] | [Tên Triển Lãm]</code>
 
-<i>Ví dụ:</i>
-<code>EXPO: Mỹ Phẩm Deoproce Korea | A-12 | 0901234567 | Cosmobeauté 2026</code>
+<i>Ví dụ (hỗ trợ tên tiếng Việt hoặc song ngữ Việt / Anh):</i>
+<code>EXPO: Mỹ Phẩm Deoproce Korea / Deoproce Korea Cosmetics | A-12 | 0901234567 | Cosmobeauté 2026</code>
 ━━━━━━━━━━━━━━━━━━━━
 Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link in Standee gửi lại cho anh ngay lập tức!
             `.trim();
@@ -191,7 +240,27 @@ Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link
           }
 
           const parts = rawContent.split('|').map((s: string) => s.trim());
-          const name = parts[0] || 'Gian Hàng Triển Lãm Mới';
+          let rawName = parts[0] || 'Gian Hàng Triển Lãm Mới';
+          let nameVi = rawName;
+          let nameEn = '';
+
+          if (rawName.includes('/')) {
+            const splitNames = rawName.split('/');
+            nameVi = splitNames[0].trim();
+            nameEn = splitNames[1].trim();
+          } else {
+            nameEn = nameVi
+              .replace(/^Mỹ Phẩm\s+/i, '')
+              .replace(/^Công Ty TNHH\s+/i, '')
+              .replace(/^Công Ty Cổ Phần\s+/i, '')
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .replace(/đ/g, 'd')
+              .replace(/Đ/g, 'D')
+              .trim();
+          }
+
+          const name = nameVi;
           const booth = parts[1] || 'A-01';
           const phone = parts[2] || '0900000000';
           const eventName = parts[3] || 'Triển Lãm Quốc Tế';
@@ -230,7 +299,12 @@ Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link
                   status: 'published',
                   is_featured: true,
                   category_slug: 'expo',
-                  page_content: { event_name: eventName, booth_number: booth },
+                  page_content: { 
+                    name_vi: nameVi,
+                    name_en: nameEn,
+                    event_name: eventName, 
+                    booth_number: booth 
+                  },
                 })
                 .select('id, slug')
                 .single();
@@ -240,16 +314,20 @@ Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link
               finalSlug = newBiz.slug;
             }
 
-            await supabase
+            const { error: profileErr } = await supabase
               .from('business_expo_profiles')
               .upsert({
                 business_id: businessId,
                 event_name: eventName,
                 booth_number: booth,
                 access_pin: pin,
+                company_name_vi: nameVi,
+                company_name_en: nameEn,
                 is_active: true,
                 updated_at: new Date().toISOString(),
               }, { onConflict: 'business_id' });
+
+            if (profileErr) throw new Error(profileErr.message);
 
             const boothUrl = `https://1booking.asia/expo/${finalSlug}`;
             const crmUrl = `https://1booking.asia/expo/${finalSlug}/crm`;

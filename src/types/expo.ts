@@ -4,14 +4,87 @@ export interface BusinessExpoProfile {
   id: string;
   business_id: string;
   event_name: string;
+  event_name_en?: string | null;
   booth_number: string;
   access_pin: string;
   languages_enabled: ExpoLanguage[];
   default_language: ExpoLanguage;
   lead_gift_title: Record<ExpoLanguage, string>;
+  company_name_vi?: string | null;
+  company_name_en?: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Suy luận tên tiếng Anh nếu không có trường tiếng Anh tường minh
+ */
+export function deriveEnglishName(rawName?: string | null): string {
+  if (!rawName) return '';
+  const trimmed = rawName.trim();
+  // Nếu có dấu gạch chéo: "Tên Việt / English Name"
+  if (trimmed.includes('/')) {
+    const parts = trimmed.split('/');
+    return parts[1]?.trim() || parts[0]?.trim() || '';
+  }
+  // Nếu có dấu sổ thẳng: "Tên Việt | English Name"
+  if (trimmed.includes('|')) {
+    const parts = trimmed.split('|');
+    return parts[1]?.trim() || parts[0]?.trim() || '';
+  }
+
+  // Chuyển đổi các tiền tố phổ biến sang tiếng Anh
+  let eng = trimmed;
+  eng = eng.replace(/^Mỹ Phẩm\s+/i, '');
+  eng = eng.replace(/^Công Ty TNHH\s+/i, '');
+  eng = eng.replace(/^Công Ty Cổ Phần\s+/i, '');
+  eng = eng.replace(/^Tập Đoàn\s+/i, '');
+
+  // Bỏ dấu tiếng Việt nếu cần
+  return eng.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').trim() || trimmed;
+}
+
+/**
+ * Trả về tên thương hiệu/gian hàng theo ngôn ngữ đang chọn:
+ * - 'vi': Tên tiếng Việt
+ * - 'en', 'ko', 'zh': Tên tiếng Anh đối với các ngôn ngữ khác
+ */
+export function getExpoBrandName(
+  business?: { name?: string | null; page_content?: any } | null,
+  profile?: { company_name_vi?: string | null; company_name_en?: string | null } | null,
+  lang: ExpoLanguage = 'vi'
+): string {
+  if (lang === 'vi') {
+    return (
+      profile?.company_name_vi ||
+      business?.page_content?.name_vi ||
+      (business?.name?.includes('/') ? business.name.split('/')[0].trim() : business?.name) ||
+      'Gian Hàng Triển Lãm'
+    );
+  }
+
+  // Đối với 'en', 'ko', 'zh': sử dụng tiếng Anh
+  return (
+    profile?.company_name_en ||
+    business?.page_content?.name_en ||
+    business?.page_content?.english_name ||
+    deriveEnglishName(business?.name) ||
+    'Expo Booth'
+  );
+}
+
+/**
+ * Trả về tên sự kiện/triển lãm theo ngôn ngữ
+ */
+export function getExpoEventName(
+  profile?: { event_name?: string | null; event_name_en?: string | null } | null,
+  lang: ExpoLanguage = 'vi'
+): string {
+  if (lang === 'vi') {
+    return profile?.event_name || 'Triển Lãm Quốc Tế';
+  }
+  return profile?.event_name_en || profile?.event_name || 'International Expo';
 }
 
 export interface BusinessExpoLead {

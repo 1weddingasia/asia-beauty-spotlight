@@ -10,14 +10,17 @@ export const metadata: Metadata = {
 export default async function ExpoHubPage() {
   const supabase = await createAdminClient();
 
-  // 1. Lấy danh sách gian hàng có hồ sơ Expo
+  // 1. Lấy danh sách gian hàng có hồ sơ Expo THẬT (không nạp dữ liệu giả)
   const { data: expoProfiles } = await supabase
     .from('business_expo_profiles')
     .select(`
       id,
       event_name,
+      event_name_en,
       booth_number,
       access_pin,
+      company_name_vi,
+      company_name_en,
       is_active,
       businesses!inner (
         id,
@@ -26,29 +29,26 @@ export default async function ExpoHubPage() {
         phone,
         address,
         page_content,
-        status
+        status,
+        is_demo
       )
     `)
     .eq('is_active', true)
     .order('created_at', { ascending: false });
 
-  // 2. Lấy thêm một số gian hàng mẫu nếu danh sách expo còn ít để anh demo phong phú
-  const { data: sampleBusinesses } = await supabase
-    .from('businesses')
-    .select('id, name, slug, phone, address, page_content, status')
-    .eq('status', 'published')
-    .limit(12);
-
-  // Gộp danh sách và tránh trùng lặp
   const expoList: Array<{
     id: string;
     name: string;
+    name_vi?: string | null;
+    name_en?: string | null;
     slug: string;
     phone: string;
     address?: string | null;
     logo_url?: string | null;
     event_name: string;
+    event_name_en?: string | null;
     booth_number: string;
+    is_demo?: boolean;
   }> = [];
 
   const seenIds = new Set<string>();
@@ -61,34 +61,17 @@ export default async function ExpoHubPage() {
         expoList.push({
           id: b.id,
           name: b.name,
+          name_vi: p.company_name_vi || b.page_content?.name_vi || b.name,
+          name_en: p.company_name_en || b.page_content?.name_en || null,
           slug: b.slug,
           phone: b.phone,
           address: b.address,
           logo_url: b.page_content?.logo_url || b.page_content?.logo || null,
           event_name: p.event_name,
+          event_name_en: p.event_name_en || null,
           booth_number: p.booth_number,
+          is_demo: Boolean(b.is_demo || b.slug === 'deoproce-korea'),
         });
-      }
-    }
-  }
-
-  // Bổ sung sample businesses gán mặc định profile expo
-  if (sampleBusinesses) {
-    let index = 1;
-    for (const b of sampleBusinesses) {
-      if (!seenIds.has(b.id)) {
-        seenIds.add(b.id);
-        expoList.push({
-          id: b.id,
-          name: b.name,
-          slug: b.slug,
-          phone: b.phone,
-          address: b.address,
-          logo_url: b.page_content?.logo_url || b.page_content?.logo || null,
-          event_name: 'Triển Lãm Quốc Tế 2026',
-          booth_number: `A-${String(index).padStart(2, '0')}`,
-        });
-        index++;
       }
     }
   }

@@ -8,12 +8,16 @@ import { Search, Building2, ExternalLink, BarChart3, Printer, Sparkles, Send } f
 interface BoothItem {
   id: string;
   name: string;
+  name_vi?: string | null;
+  name_en?: string | null;
   slug: string;
   phone: string;
   address?: string | null;
   logo_url?: string | null;
   event_name: string;
+  event_name_en?: string | null;
   booth_number: string;
+  is_demo?: boolean;
 }
 
 interface Props {
@@ -28,8 +32,11 @@ export function ExpoHubClient({ initialBooths }: Props) {
     const q = search.toLowerCase();
     return (
       item.name.toLowerCase().includes(q) ||
+      (item.name_vi && item.name_vi.toLowerCase().includes(q)) ||
+      (item.name_en && item.name_en.toLowerCase().includes(q)) ||
       item.booth_number.toLowerCase().includes(q) ||
       item.event_name.toLowerCase().includes(q) ||
+      (item.event_name_en && item.event_name_en.toLowerCase().includes(q)) ||
       (item.address && item.address.toLowerCase().includes(q)) ||
       (item.phone && item.phone.includes(q))
     );
@@ -110,9 +117,16 @@ export function ExpoHubClient({ initialBooths }: Props) {
                 <div>
                   {/* Top Bar of Card */}
                   <div className="flex items-center justify-between mb-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                      BOOTH: {booth.booth_number}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                        BOOTH: {booth.booth_number}
+                      </span>
+                      {booth.is_demo && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                          Mẫu Demo
+                        </span>
+                      )}
+                    </div>
                     <span className="text-[10px] text-slate-400 truncate max-w-[130px]">
                       {booth.event_name}
                     </span>
@@ -124,7 +138,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                       <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white p-1 border border-slate-700 shrink-0">
                         <Image
                           src={booth.logo_url}
-                          alt={booth.name}
+                          alt={booth.name_vi || booth.name}
                           fill
                           unoptimized
                           className="object-contain"
@@ -133,14 +147,19 @@ export function ExpoHubClient({ initialBooths }: Props) {
                       </div>
                     ) : (
                       <div className="w-12 h-12 rounded-xl bg-amber-500 text-slate-950 font-black text-sm flex items-center justify-center shrink-0">
-                        {booth.name.slice(0, 2).toUpperCase()}
+                        {(booth.name_vi || booth.name).slice(0, 2).toUpperCase()}
                       </div>
                     )}
 
                     <div className="min-w-0 flex-1">
                       <h3 className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors truncate">
-                        {booth.name}
+                        {booth.name_vi || booth.name}
                       </h3>
+                      {booth.name_en && booth.name_en.toLowerCase() !== (booth.name_vi || booth.name).toLowerCase() && (
+                        <p className="text-[11px] text-amber-400/90 font-medium truncate mt-0.5">
+                          {booth.name_en}
+                        </p>
+                      )}
                       <p className="text-[11px] text-slate-400 truncate mt-0.5">
                         {booth.address || 'Hội chợ triển lãm'}
                       </p>

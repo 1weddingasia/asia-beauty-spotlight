@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import { Printer, ArrowLeft, BarChart3, ExternalLink, Sparkles } from 'lucide-react';
+import { getExpoBrandName } from '@/types/expo';
 
 interface Props {
   business: {
@@ -12,14 +13,20 @@ interface Props {
     slug: string;
     phone: string;
     logo_url?: string | null;
+    page_content?: any;
   };
   profile: {
     event_name: string;
     booth_number: string;
+    company_name_vi?: string | null;
+    company_name_en?: string | null;
   };
 }
 
 export function ExpoStandeeClient({ business, profile }: Props) {
+  const nameVi = getExpoBrandName(business, profile, 'vi');
+  const nameEn = getExpoBrandName(business, profile, 'en');
+
   const boothUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/expo/${business.slug}`
     : `https://1booking.asia/expo/${business.slug}`;
@@ -84,7 +91,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
             <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white p-1 mb-2 border border-slate-200 shadow-sm">
               <Image
                 src={business.logo_url}
-                alt={business.name}
+                alt={nameVi}
                 fill
                 unoptimized
                 className="object-contain"
@@ -93,12 +100,17 @@ export function ExpoStandeeClient({ business, profile }: Props) {
             </div>
           ) : (
             <div className="w-16 h-16 rounded-xl bg-amber-500 text-slate-950 font-black text-xl flex items-center justify-center mb-2 shadow-md">
-              {business.name.slice(0, 2).toUpperCase()}
+              {nameVi.slice(0, 2).toUpperCase()}
             </div>
           )}
           <h2 className="text-2xl font-black text-slate-950 tracking-tight leading-tight">
-            {business.name}
+            {nameVi}
           </h2>
+          {nameEn && nameEn.toLowerCase() !== nameVi.toLowerCase() && (
+            <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mt-1">
+              {nameEn}
+            </p>
+          )}
         </div>
 
         {/* Large Crisp QR Code Frame */}

@@ -214,6 +214,41 @@ async function handleMessage(msg) {
     return;
   }
 
+  // XÓA GIAN HÀNG EXPO HOẶC XÓA GIAN HÀNG DEMO
+  if (text.startsWith('/delete_expo') || text === '/delete_demo') {
+    let slugToDelete = text.replace(/^\/delete_expo\s*/i, '').trim();
+    if (text === '/delete_demo' || !slugToDelete) {
+      slugToDelete = 'deoproce-korea';
+    }
+
+    try {
+      const { data: b } = await supabase
+        .from('businesses')
+        .select('id, name, slug')
+        .eq('slug', slugToDelete)
+        .maybeSingle();
+
+      if (!b) {
+        await sendTelegram(chatId, `⚠️ Không tìm thấy gian hàng có slug: <code>${slugToDelete}</code>`);
+        return;
+      }
+
+      await supabase.from('business_expo_leads').delete().eq('business_id', b.id);
+      await supabase.from('business_expo_profiles').delete().eq('business_id', b.id);
+      await supabase.from('businesses').delete().eq('id', b.id);
+
+      await sendTelegram(
+        chatId,
+        `🗑️ <b>ĐÃ XÓA GIAN HÀNG THÀNH CÔNG!</b>\n\n` +
+        `• <b>Gian hàng:</b> ${b.name} (<code>${slugToDelete}</code>)\n` +
+        `• Đã dọn dẹp toàn bộ dữ liệu mẫu, hệ thống sạch 100% dữ liệu thật.`
+      );
+    } catch (delErr) {
+      await sendTelegram(chatId, `⚠️ Lỗi khi xóa gian hàng: ${delErr.message}`);
+    }
+    return;
+  }
+
   // TẠO GIAN HÀNG EXPO NHANH TỨC THÌ QUA TELEGRAM
   if (text.startsWith('/expo') || text.toUpperCase().startsWith('EXPO:') || text.startsWith('/create_expo')) {
     const rawContent = text
@@ -228,8 +263,8 @@ async function handleMessage(msg) {
 Anh chỉ cần nhắn cú pháp:
 <code>EXPO: [Tên Gian Hàng] | [Số Booth] | [SĐT] | [Tên Triển Lãm]</code>
 
-<i>Ví dụ:</i>
-<code>EXPO: Mỹ Phẩm Deoproce Korea | A-12 | 0901234567 | Cosmobeauté 2026</code>
+<i>Ví dụ (hỗ trợ tên tiếng Việt hoặc song ngữ Việt / Anh):</i>
+<code>EXPO: Mỹ Phẩm Deoproce Korea / Deoproce Korea Cosmetics | A-12 | 0901234567 | Cosmobeauté 2026</code>
 ━━━━━━━━━━━━━━━━━━━━
 Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link in Standee gửi lại cho anh ngay lập tức!
 `.trim();
@@ -238,7 +273,28 @@ Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link
     }
 
     const parts = rawContent.split('|').map(s => s.trim());
-    const name = parts[0] || 'Gian Hàng Triển Lãm Mới';
+    let rawName = parts[0] || 'Gian Hàng Triển Lãm Mới';
+    let nameVi = rawName;
+    let nameEn = '';
+
+    if (rawName.includes('/')) {
+      const splitNames = rawName.split('/');
+      nameVi = splitNames[0].trim();
+      nameEn = splitNames[1].trim();
+    } else {
+      // Tự động suy luận tên tiếng Anh (bỏ dấu và tiền tố)
+      nameEn = nameVi
+        .replace(/^Mỹ Phẩm\s+/i, '')
+        .replace(/^Công Ty TNHH\s+/i, '')
+        .replace(/^Công Ty Cổ Phần\s+/i, '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .trim();
+    }
+
+    const name = nameVi;
     const booth = parts[1] || 'A-01';
     const phone = parts[2] || '0900000000';
     const eventName = parts[3] || 'Triển Lãm Quốc Tế';
@@ -276,7 +332,12 @@ Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link
             status: 'published',
             is_featured: true,
             category_slug: 'expo',
-            page_content: { event_name: eventName, booth_number: booth }
+            page_content: { 
+              name_vi: nameVi,
+              name_en: nameEn,
+              event_name: eventName, 
+              booth_number: booth 
+            }
           })
           .select('id, slug')
           .single();
@@ -293,6 +354,8 @@ Hệ thống sẽ tự động tạo trang đa ngôn ngữ, mã PIN CRM và link
           event_name: eventName,
           booth_number: booth,
           access_pin: pin,
+          company_name_vi: nameVi,
+          company_name_en: nameEn,
           is_active: true,
           updated_at: new Date().toISOString()
         }, { onConflict: 'business_id' });
