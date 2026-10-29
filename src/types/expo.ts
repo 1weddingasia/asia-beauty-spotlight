@@ -18,31 +18,46 @@ export interface BusinessExpoProfile {
 }
 
 /**
- * Suy luận tên tiếng Anh nếu không có trường tiếng Anh tường minh
+ * Bóc tách tên song ngữ (nếu người dùng nhập dạng: "Tên Việt / English Name" hoặc "Tên Việt | English Name")
+ */
+export function splitBilingualName(rawName?: string | null): { vi: string; en: string } {
+  if (!rawName) return { vi: '', en: '' };
+  const trimmed = rawName.trim();
+  if (trimmed.includes('/')) {
+    const parts = trimmed.split('/');
+    const vi = parts[0]?.trim() || '';
+    const en = parts[1]?.trim() || '';
+    return { vi, en: en || deriveEnglishName(vi) };
+  }
+  if (trimmed.includes('|')) {
+    const parts = trimmed.split('|');
+    const vi = parts[0]?.trim() || '';
+    const en = parts[1]?.trim() || '';
+    return { vi, en: en || deriveEnglishName(vi) };
+  }
+  return { vi: trimmed, en: deriveEnglishName(trimmed) };
+}
+
+/**
+ * Suy luận tên tiếng Anh nếu không có trường tiếng Anh tường minh (chuyển ngữ không dấu chuẩn quốc tế)
  */
 export function deriveEnglishName(rawName?: string | null): string {
   if (!rawName) return '';
   const trimmed = rawName.trim();
-  // Nếu có dấu gạch chéo: "Tên Việt / English Name"
   if (trimmed.includes('/')) {
-    const parts = trimmed.split('/');
-    return parts[1]?.trim() || parts[0]?.trim() || '';
+    return trimmed.split('/')[1]?.trim() || '';
   }
-  // Nếu có dấu sổ thẳng: "Tên Việt | English Name"
   if (trimmed.includes('|')) {
-    const parts = trimmed.split('|');
-    return parts[1]?.trim() || parts[0]?.trim() || '';
+    return trimmed.split('|')[1]?.trim() || '';
   }
 
-  // Chuyển đổi các tiền tố phổ biến sang tiếng Anh
-  let eng = trimmed;
-  eng = eng.replace(/^Mỹ Phẩm\s+/i, '');
-  eng = eng.replace(/^Công Ty TNHH\s+/i, '');
-  eng = eng.replace(/^Công Ty Cổ Phần\s+/i, '');
-  eng = eng.replace(/^Tập Đoàn\s+/i, '');
-
-  // Bỏ dấu tiếng Việt nếu cần
-  return eng.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').trim() || trimmed;
+  // Chuyển ngữ không dấu chuẩn quốc tế, bảo toàn trọn vẹn tên doanh nghiệp
+  return trimmed
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .trim();
 }
 
 /**
@@ -55,11 +70,12 @@ export function getExpoBrandName(
   profile?: { company_name_vi?: string | null; company_name_en?: string | null } | null,
   lang: ExpoLanguage = 'vi'
 ): string {
+  const parsed = splitBilingualName(business?.name);
   if (lang === 'vi') {
     return (
       profile?.company_name_vi ||
       business?.page_content?.name_vi ||
-      (business?.name?.includes('/') ? business.name.split('/')[0].trim() : business?.name) ||
+      parsed.vi ||
       'Gian Hàng Triển Lãm'
     );
   }
@@ -69,7 +85,7 @@ export function getExpoBrandName(
     profile?.company_name_en ||
     business?.page_content?.name_en ||
     business?.page_content?.english_name ||
-    deriveEnglishName(business?.name) ||
+    parsed.en ||
     'Expo Booth'
   );
 }

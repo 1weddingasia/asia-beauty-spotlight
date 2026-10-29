@@ -160,13 +160,13 @@ Danh bạ Expo: <code>https://1booking.asia/expo</code>
             }).catch(console.error);
           }
         }
-      } else if (text.startsWith('/delete_expo') || text === '/delete_demo') {
+      } else if (/^\/delete_(expo|demo)(\s|$)/i.test(text)) {
         const token = resolveBotToken(req.url);
         const adminId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 
         if (token && adminId && String(chatId) === String(adminId)) {
-          let slugToDelete = text.replace(/^\/delete_expo\s*/i, '').trim();
-          if (text === '/delete_demo' || !slugToDelete) {
+          let slugToDelete = text.replace(/^\/delete_(expo|demo)\s*/i, '').trim();
+          if (!slugToDelete || text.toLowerCase() === '/delete_demo') {
             slugToDelete = 'deoproce-korea';
           }
 
@@ -209,7 +209,7 @@ Danh bạ Expo: <code>https://1booking.asia/expo</code>
           }
           return NextResponse.json({ success: true });
         }
-      } else if (text.startsWith('/expo') || text.toUpperCase().startsWith('EXPO:') || text.startsWith('/create_expo')) {
+      } else if (/^\/(expo|create_expo)(\s|$)/i.test(text) || text.toUpperCase().startsWith('EXPO:')) {
         const token = resolveBotToken(req.url);
         const adminId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 

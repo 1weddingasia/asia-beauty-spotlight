@@ -214,10 +214,19 @@ async function handleMessage(msg) {
     return;
   }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
   // XÓA GIAN HÀNG EXPO HOẶC XÓA GIAN HÀNG DEMO
-  if (text.startsWith('/delete_expo') || text === '/delete_demo') {
-    let slugToDelete = text.replace(/^\/delete_expo\s*/i, '').trim();
-    if (text === '/delete_demo' || !slugToDelete) {
+  if (/^\/delete_(expo|demo)(\s|$)/i.test(text)) {
+    let slugToDelete = text.replace(/^\/delete_(expo|demo)\s*/i, '').trim();
+    if (!slugToDelete || text.toLowerCase() === '/delete_demo') {
       slugToDelete = 'deoproce-korea';
     }
 
@@ -229,7 +238,7 @@ async function handleMessage(msg) {
         .maybeSingle();
 
       if (!b) {
-        await sendTelegram(chatId, `⚠️ Không tìm thấy gian hàng có slug: <code>${slugToDelete}</code>`);
+        await sendTelegram(chatId, `⚠️ Không tìm thấy gian hàng có slug: <code>${escapeHtml(slugToDelete)}</code>`);
         return;
       }
 
@@ -240,17 +249,17 @@ async function handleMessage(msg) {
       await sendTelegram(
         chatId,
         `🗑️ <b>ĐÃ XÓA GIAN HÀNG THÀNH CÔNG!</b>\n\n` +
-        `• <b>Gian hàng:</b> ${b.name} (<code>${slugToDelete}</code>)\n` +
+        `• <b>Gian hàng:</b> ${escapeHtml(b.name)} (<code>${escapeHtml(slugToDelete)}</code>)\n` +
         `• Đã dọn dẹp toàn bộ dữ liệu mẫu, hệ thống sạch 100% dữ liệu thật.`
       );
     } catch (delErr) {
-      await sendTelegram(chatId, `⚠️ Lỗi khi xóa gian hàng: ${delErr.message}`);
+      await sendTelegram(chatId, `⚠️ Lỗi khi xóa gian hàng: ${escapeHtml(delErr.message)}`);
     }
     return;
   }
 
   // TẠO GIAN HÀNG EXPO NHANH TỨC THÌ QUA TELEGRAM
-  if (text.startsWith('/expo') || text.toUpperCase().startsWith('EXPO:') || text.startsWith('/create_expo')) {
+  if (/^\/(expo|create_expo)(\s|$)/i.test(text) || text.toUpperCase().startsWith('EXPO:')) {
     const rawContent = text
       .replace(/^\/(expo|create_expo)\s*/i, '')
       .replace(/^EXPO:\s*/i, '')

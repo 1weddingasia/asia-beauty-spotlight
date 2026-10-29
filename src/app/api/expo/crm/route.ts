@@ -104,6 +104,11 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Không tìm thấy gian hàng' }, { status: 404 });
     }
 
+    // Bảo vệ an toàn: chỉ cho phép xóa các gian hàng demo mẫu để tránh xóa nhầm dữ liệu khách hàng thật
+    if (!business.is_demo && slug !== 'deoproce-korea') {
+      return NextResponse.json({ error: 'Chỉ cho phép xóa các gian hàng mẫu thử nghiệm (demo).' }, { status: 403 });
+    }
+
     const { data: profile } = await supabase
       .from('business_expo_profiles')
       .select('access_pin')
