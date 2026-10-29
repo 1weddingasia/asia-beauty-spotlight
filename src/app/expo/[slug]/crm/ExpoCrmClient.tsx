@@ -11,7 +11,6 @@ import {
   KeyRound,
   Download,
   Search,
-  Printer,
   ExternalLink,
   Volume2,
   RefreshCw,

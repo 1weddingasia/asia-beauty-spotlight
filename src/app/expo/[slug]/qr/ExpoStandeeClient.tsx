@@ -36,6 +36,16 @@ export function ExpoStandeeClient({ business, profile }: Props) {
     ? `${window.location.origin}/expo/${business.slug}`
     : `https://1booking.asia/expo/${business.slug}`;
 
+  const triggerDownload = (dataUrl: string) => {
+    const fileName = `Standee-${business.slug || 'expo'}-1booking-pass.png`;
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   // Tải ảnh Standee độ phân giải cao để mang đi in ấn
   const handleDownloadImage = async () => {
     if (!standeeRef.current) return;
@@ -43,49 +53,34 @@ export function ExpoStandeeClient({ business, profile }: Props) {
     const toastId = toast.loading('Đang xử lý xuất ảnh Standee độ nét cao (A4/A5)...');
 
     try {
-      // 1. Thử dùng html-to-image (giữ nét vector SVG QR & phông chữ)
+      // 1. Thử dùng html-to-image (pixelRatio 4 cho độ phân giải siêu nét chuẩn in ấn 300 DPI)
       const { toPng } = await import('html-to-image');
       const dataUrl = await toPng(standeeRef.current, {
         quality: 1,
-        pixelRatio: 3, // Xuất ảnh 300 DPI siêu sắc nét cho in ấn
+        pixelRatio: 4,
         cacheBust: true,
         backgroundColor: '#ffffff',
       });
 
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = `Standee-${business.slug || 'expo'}-1booking-pass.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
+      triggerDownload(dataUrl);
       toast.success('Đã tải ảnh Standee thành công! Bạn có thể mang file này đi in.', {
         id: toastId,
       });
-    } catch (err) {
-      console.warn('html-to-image gặp sự cố, chuyển sang html2canvas fallback:', err);
+    } catch {
       try {
         const html2canvas = (await import('html2canvas')).default;
         const canvas = await html2canvas(standeeRef.current, {
-          scale: 3,
+          scale: 4,
           useCORS: true,
           backgroundColor: '#ffffff',
           logging: false,
         });
 
-        const dataUrl = canvas.toDataURL('image/png');
-        const a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = `Standee-${business.slug || 'expo'}-1booking-pass.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
+        triggerDownload(canvas.toDataURL('image/png'));
         toast.success('Đã tải ảnh Standee thành công! Bạn có thể mang file này đi in.', {
           id: toastId,
         });
-      } catch (fallbackErr) {
-        console.error('Lỗi khi xuất ảnh Standee:', fallbackErr);
+      } catch {
         toast.error('Không thể xuất ảnh tự động. Vui lòng thử lại hoặc chụp màn hình.', {
           id: toastId,
         });
