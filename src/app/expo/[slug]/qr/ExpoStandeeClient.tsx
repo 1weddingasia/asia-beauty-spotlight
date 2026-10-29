@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
-import { Download, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2 } from 'lucide-react';
+import { Download, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2, Printer, Share2, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { getExpoBrandName, getStoredExpoLanguage, type ExpoLanguage } from '@/types/expo';
 
@@ -26,8 +25,12 @@ interface Props {
 }
 
 export function ExpoStandeeClient({ business, profile }: Props) {
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [lang, setLang] = useState<ExpoLanguage>('vi');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const standeeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,65 +45,166 @@ export function ExpoStandeeClient({ business, profile }: Props) {
     ? `${window.location.origin}/expo/${business.slug}`
     : `https://1booking.asia/expo/${business.slug}`;
 
-  const triggerDownload = (dataUrl: string) => {
-    const fileName = `Standee-${business.slug || 'expo'}-1booking-pass.png`;
+  // Kích hoạt in ấn trực tiếp / Lưu PDF qua trình duyệt
+  const handlePrint = () => {
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  };
+
+  // Hàm chuyển Data URL sang Blob an toàn
+  const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
+    const res = await fetch(dataUrl);
+    return await res.blob();
+  };
+
+  // Kích hoạt tải file bằng Blob URL (hoạt động tốt trên Chrome, Safari, Edge, Firefox)
+  const triggerBlobDownload = (blob: Blob) => {
+    const fileName = `Standee-${business.slug || 'expo'}-1booking.png`;
+    const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = dataUrl;
+    a.href = blobUrl;
     a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
   };
 
-  // Tải ảnh Standee độ phân giải cao để mang đi in ấn
-  const handleDownloadImage = async () => {
-    if (!standeeRef.current) return;
-    setIsDownloading(true);
-    const toastId = toast.loading('Đang tạo ảnh Standee...');
+  // Tạo ảnh Standee chất lượng cao
+  const generateImage = async (): Promise<{ dataUrl: string; blob: Blob; file: File } | null> => {
+    if (!standeeRef.current) return null;
+    const fileName = `Standee-${business.slug || 'expo'}-1booking.png`;
+
+    const pixelRatio = typeof window !== 'undefined' && window.devicePixelRatio && window.devicePixelRatio > 2 
+      ? 2.5 
+      : 3;
 
     try {
       // 1. Thử dùng html-to-image
       const { toPng } = await import('html-to-image');
       const dataUrl = await toPng(standeeRef.current, {
         quality: 1,
-        pixelRatio: 4,
+        pixelRatio,
         cacheBust: true,
         backgroundColor: '#ffffff',
       });
-
-      triggerDownload(dataUrl);
-      toast.success('Đã tải ảnh Standee!', {
-        id: toastId,
-      });
-    } catch {
+      const blob = await dataUrlToBlob(dataUrl);
+      const file = new File([blob], fileName, { type: 'image/png' });
+      return { dataUrl, blob, file };
+    } catch (err) {
+      console.warn('[html-to-image failed, trying html2canvas fallback]:', err);
       try {
         const html2canvas = (await import('html2canvas')).default;
         const canvas = await html2canvas(standeeRef.current, {
-          scale: 4,
+          scale: pixelRatio,
           useCORS: true,
+          allowTaint: true,
           backgroundColor: '#ffffff',
           logging: false,
         });
-
-        triggerDownload(canvas.toDataURL('image/png'));
-        toast.success('Đã tải ảnh Standee!', {
-          id: toastId,
-        });
-      } catch {
-        toast.error('Không thể tải ảnh. Vui lòng thử lại.', {
-          id: toastId,
-        });
+        const dataUrl = canvas.toDataURL('image/png');
+        const blob = await dataUrlToBlob(dataUrl);
+        const file = new File([blob], fileName, { type: 'image/png' });
+        return { dataUrl, blob, file };
+      } catch (fallbackErr) {
+        console.error('[html2canvas fallback failed]:', fallbackErr);
+        return null;
       }
+    }
+  };
+
+  // Xử lý nút: TẢI ẢNH STANDEE / CHIA SẺ
+  const handleProcessStandee = async (action: 'download' | 'share') => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+    const toastId = toast.loading('Đang chuẩn bị ảnh Standee sắc nét...');
+
+    try {
+      const result = await generateImage();
+      if (!result) {
+        toast.error('Không thể tạo ảnh Standee. Bạn có thể dùng nút [In / Lưu PDF] để xuất file trực tiếp!', { id: toastId });
+        return;
+      }
+
+      setPreviewUrl(result.dataUrl);
+      setPreviewBlob(result.blob);
+
+      // Nếu người dùng chọn chia sẻ và trình duyệt hỗ trợ Web Share API (đặc biệt trên iOS/Android)
+      if (action === 'share' && typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [result.file] })) {
+        try {
+          await navigator.share({
+            title: `Standee Gian Hàng ${nameVi}`,
+            text: `Mã QR Standee gian hàng ${nameVi} (${profile.booth_number}) - 1Booking Expo Pass`,
+            files: [result.file],
+          });
+          toast.success('Đã mở menu chia sẻ!', { id: toastId });
+          return;
+        } catch (shareErr: any) {
+          if (shareErr.name === 'AbortError') {
+            toast.dismiss(toastId);
+            return;
+          }
+          console.warn('[navigator.share error]:', shareErr);
+        }
+      }
+
+      // Tự động kích hoạt tải về máy
+      triggerBlobDownload(result.blob);
+      toast.success('Đã tải ảnh Standee!', { id: toastId });
+
+      // Mở modal xem trước để người dùng điện thoại chạm giữ lưu ảnh hoặc gửi Zalo
+      setIsPreviewOpen(true);
+    } catch (e: any) {
+      console.error('[handleProcessStandee Error]:', e);
+      toast.error('Có lỗi xảy ra. Vui lòng bấm [In / Lưu PDF] để in hoặc lưu file!', { id: toastId });
     } finally {
-      setIsDownloading(false);
+      setIsProcessing(false);
+    }
+  };
+
+  // Chia sẻ từ trong Modal
+  const handleShareFromModal = async () => {
+    if (!previewBlob) return;
+    const fileName = `Standee-${business.slug || 'expo'}-1booking.png`;
+    const file = new File([previewBlob], fileName, { type: 'image/png' });
+
+    if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          title: `Standee Gian Hàng ${nameVi}`,
+          text: `Mã QR Standee gian hàng ${nameVi} (${profile.booth_number}) - 1Booking Expo Pass`,
+          files: [file],
+        });
+        return;
+      } catch (shareErr: any) {
+        if (shareErr.name === 'AbortError') return;
+      }
+    }
+
+    // Fallback: Tải file
+    triggerBlobDownload(previewBlob);
+    toast.success('Đã lưu file Standee vào thiết bị!');
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(boothUrl);
+        setCopiedLink(true);
+        toast.success('Đã sao chép đường link gian hàng!');
+        setTimeout(() => setCopiedLink(false), 2500);
+      }
+    } catch {
+      toast.info(`Link: ${boothUrl}`);
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start py-8 px-4 font-sans print:p-0 print:bg-white print:text-black">
       {/* ACTION BAR (Ẩn khi in ấn) */}
-      <div className="max-w-xl w-full flex items-center justify-between mb-8 print:hidden gap-2">
-        <div className="flex items-center gap-2">
+      <div className="max-w-xl w-full flex flex-col sm:flex-row items-center justify-between mb-8 print:hidden gap-3">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
           <Link
             href={`/expo?lang=${lang}`}
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 transition-colors"
@@ -113,37 +217,59 @@ export function ExpoStandeeClient({ business, profile }: Props) {
             className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors"
           >
             <BarChart3 className="w-3.5 h-3.5 text-amber-400" />
-            <span className="hidden sm:inline">CRM Gian Hàng</span>
+            <span>CRM Gian Hàng</span>
           </Link>
-        </div>
-
-        <div className="flex items-center gap-2">
           <Link
             href={`/expo/${business.slug}?lang=${lang}`}
             target="_blank"
-            className="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Trang Khách Quét</span>
+            <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
+            <span className="hidden sm:inline">Khách Quét</span>
           </Link>
+        </div>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          {/* Nút: IN / LƯU PDF */}
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="inline-flex items-center gap-1.5 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-sm"
+            title="In trực tiếp hoặc Lưu file PDF"
+          >
+            <Printer className="w-3.5 h-3.5 text-amber-400" />
+            <span>In / Lưu PDF</span>
+          </button>
+
+          {/* Nút: CHIA SẺ */}
+          <button
+            type="button"
+            onClick={() => handleProcessStandee('share')}
+            disabled={isProcessing}
+            className="inline-flex items-center gap-1.5 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 px-3.5 py-2 rounded-xl transition-all cursor-pointer disabled:opacity-60 shadow-sm"
+            title="Chia sẻ qua Zalo, AirDrop hoặc mạng xã hội"
+          >
+            <Share2 className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Chia Sẻ</span>
+          </button>
 
           {/* Nút: TẢI ẢNH STANDEE */}
           <button
             type="button"
-            onClick={handleDownloadImage}
-            disabled={isDownloading}
+            onClick={() => handleProcessStandee('download')}
+            disabled={isProcessing}
             className="inline-flex items-center gap-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all cursor-pointer disabled:opacity-60"
-            title="Tải ảnh Standee"
+            title="Tải ảnh Standee chất lượng cao"
           >
-            {isDownloading ? (
+            {isProcessing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Đang tải ảnh...</span>
+                <span>Đang xử lý...</span>
               </>
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>TẢI ẢNH STANDEE</span>
+                <span>TẢI ẢNH</span>
               </>
             )}
           </button>
@@ -175,14 +301,13 @@ export function ExpoStandeeClient({ business, profile }: Props) {
         {/* Brand Logo & Name */}
         <div className="flex flex-col items-center mb-6">
           {business.logo_url ? (
-            <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white p-1 mb-2 border border-slate-200 shadow-sm">
-              <Image
+            <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white p-1 mb-2 border border-slate-200 shadow-sm flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={business.logo_url}
                 alt={nameVi}
-                fill
-                unoptimized
-                className="object-contain"
-                sizes="80px"
+                crossOrigin="anonymous"
+                className="w-full h-full object-contain"
               />
             </div>
           ) : (
@@ -205,6 +330,8 @@ export function ExpoStandeeClient({ business, profile }: Props) {
           <QRCodeSVG
             value={boothUrl}
             size={240}
+            width={240}
+            height={240}
             level="H"
             includeMargin={true}
           />
@@ -233,6 +360,81 @@ export function ExpoStandeeClient({ business, profile }: Props) {
           <span>1Booking - Tiện ích số hóa gian hàng độc lập • Hỗ trợ: 0918 731 411</span>
         </div>
       </div>
+
+      {/* PREVIEW & MOBILE SAVE MODAL */}
+      {isPreviewOpen && previewUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-200 print:hidden">
+          <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🖼️</span>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white">Ảnh Standee Gian Hàng</h3>
+                  <p className="text-[11px] text-slate-400">Đã tạo xong file ảnh PNG độ nét cao</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPreviewOpen(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Mobile Long Press Tip */}
+            <div className="mb-3 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300 flex items-center gap-2">
+              <span className="text-base shrink-0">💡</span>
+              <p className="leading-snug">
+                <b>Trên điện thoại:</b> Chạm và giữ ngón tay vào ảnh bên dưới 1 giây để chọn <b>&ldquo;Lưu vào Ảnh&rdquo;</b> hoặc <b>&ldquo;Chia sẻ qua Zalo&rdquo;</b>.
+              </p>
+            </div>
+
+            {/* Image Preview Container */}
+            <div className="flex-1 overflow-y-auto min-h-0 flex items-center justify-center bg-slate-950/80 p-2 rounded-2xl border border-slate-800/80 mb-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewUrl}
+                alt="Standee Preview"
+                className="max-h-[50vh] w-auto rounded-xl object-contain shadow-lg"
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={handleShareFromModal}
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span>Chia Sẻ / Lưu</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (previewBlob) triggerBlobDownload(previewBlob);
+                }}
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-colors cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Tải File PNG</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-colors cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5 text-amber-400" />
+                <span>In / Lưu PDF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
