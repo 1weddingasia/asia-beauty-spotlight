@@ -25,6 +25,10 @@ import {
   Check,
   ArrowLeft,
   Trash2,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getExpoBrandName } from '@/types/expo';
@@ -74,6 +78,15 @@ export function ExpoCrmClient({ business, profile }: Props) {
   const [pageSize, setPageSize] = useState<number>(20);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // State đổi mã PIN
+  const [isChangePinOpen, setIsChangePinOpen] = useState(false);
+  const [oldPinInput, setOldPinInput] = useState('');
+  const [newPinInput, setNewPinInput] = useState('');
+  const [confirmPinInput, setConfirmPinInput] = useState('');
+  const [showPinPassword, setShowPinPassword] = useState(false);
+  const [submittingPin, setSubmittingPin] = useState(false);
+  const [pinError, setPinError] = useState<string | null>(null);
 
   const nameVi = getExpoBrandName(business, profile, 'vi');
   const nameEn = getExpoBrandName(business, profile, 'en');
@@ -318,6 +331,216 @@ export function ExpoCrmClient({ business, profile }: Props) {
     }
   };
 
+  // Hàm xử lý đổi mã PIN
+  const handleChangePin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPinError(null);
+
+    const oldP = oldPinInput.trim();
+    const newP = newPinInput.trim();
+    const confirmP = confirmPinInput.trim();
+
+    if (!oldP) {
+      setPinError('Vui lòng nhập mã PIN hiện tại (pass cũ)');
+      return;
+    }
+    if (!newP) {
+      setPinError('Vui lòng nhập mã PIN mới (pass mới)');
+      return;
+    }
+    if (newP.length < 4 || newP.length > 10) {
+      setPinError('Mã PIN mới phải có từ 4 đến 10 ký tự');
+      return;
+    }
+    if (newP !== confirmP) {
+      setPinError('Mã PIN mới và xác nhận mã PIN không trùng khớp');
+      return;
+    }
+    if (newP === oldP) {
+      setPinError('Mã PIN mới phải khác mã PIN cũ hiện tại');
+      return;
+    }
+
+    setSubmittingPin(true);
+    try {
+      const res = await fetch('/api/expo/crm', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: business.slug,
+          oldPin: oldP,
+          newPin: newP,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Đổi mã PIN thất bại');
+      }
+
+      setPin(newP);
+      localStorage.setItem(`expo_pin_${business.slug}`, newP);
+      toast.success('🎉 Đổi mã PIN CRM thành công! Hãy ghi nhớ mã PIN mới.');
+      setIsChangePinOpen(false);
+      setOldPinInput('');
+      setNewPinInput('');
+      setConfirmPinInput('');
+    } catch (err: any) {
+      setPinError(err.message || 'Lỗi đổi mã PIN');
+      toast.error(err.message || 'Lỗi đổi mã PIN');
+    } finally {
+      setSubmittingPin(false);
+    }
+  };
+
+  // Modal đổi mã PIN CRM
+  const renderChangePinModal = () => {
+    if (!isChangePinOpen) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl overflow-hidden text-left">
+          {/* Ambient glow */}
+          <div className="absolute -top-16 -right-16 w-36 h-36 bg-amber-500/15 rounded-full blur-2xl pointer-events-none" />
+
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+                <KeyRound className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">Đổi Mã PIN CRM</h3>
+                <p className="text-[11px] text-slate-400">
+                  Gian hàng: {profile.booth_number} • {nameVi}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsChangePinOpen(false)}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleChangePin} className="space-y-4">
+            {pinError && (
+              <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs">
+                ⚠️ {pinError}
+              </div>
+            )}
+
+            {/* 1. Mã PIN cũ */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Mã PIN hiện tại (Pass cũ) <span className="text-rose-400">*</span>
+              </label>
+              <input
+                type={showPinPassword ? 'text' : 'password'}
+                maxLength={10}
+                value={oldPinInput}
+                onChange={(e) => setOldPinInput(e.target.value)}
+                placeholder="Nhập mã PIN đang sử dụng..."
+                required
+                autoFocus
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+              />
+            </div>
+
+            {/* 2. Mã PIN mới */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Mã PIN mới (Pass mới) <span className="text-rose-400">*</span>
+              </label>
+              <input
+                type={showPinPassword ? 'text' : 'password'}
+                maxLength={10}
+                value={newPinInput}
+                onChange={(e) => setNewPinInput(e.target.value)}
+                placeholder="Nhập mã PIN mới (4 - 10 ký tự)..."
+                required
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+              />
+              <p className="text-[10px] text-slate-500 mt-1">
+                Độ dài từ 4 đến 10 số hoặc ký tự bảo mật.
+              </p>
+            </div>
+
+            {/* 3. Xác nhận mã PIN mới */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Xác nhận mã PIN mới <span className="text-rose-400">*</span>
+              </label>
+              <input
+                type={showPinPassword ? 'text' : 'password'}
+                maxLength={10}
+                value={confirmPinInput}
+                onChange={(e) => setConfirmPinInput(e.target.value)}
+                placeholder="Nhập lại mã PIN mới để xác nhận..."
+                required
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+              />
+            </div>
+
+            {/* Toggle show/hide */}
+            <div className="flex items-center justify-between text-xs pt-1">
+              <button
+                type="button"
+                onClick={() => setShowPinPassword(!showPinPassword)}
+                className="inline-flex items-center gap-1.5 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+              >
+                {showPinPassword ? (
+                  <>
+                    <EyeOff className="w-3.5 h-3.5" />
+                    <span>Ẩn ký tự</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Hiện ký tự</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Action buttons */}
+            <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setIsChangePinOpen(false)}
+                disabled={submittingPin}
+                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Hủy bỏ
+              </button>
+
+              <button
+                type="submit"
+                disabled={submittingPin || !oldPinInput || !newPinInput || !confirmPinInput}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50 cursor-pointer active:scale-[0.98]"
+              >
+                {submittingPin ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Đang cập nhật...</span>
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>XÁC NHẬN ĐỔI PIN</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
   // ═══════════════════════════════════════════════
   // GIAO DIỆN KHÓA: NHẬP MÃ PIN 6 SỐ
   // ═══════════════════════════════════════════════
@@ -381,15 +604,34 @@ export function ExpoCrmClient({ business, profile }: Props) {
             <div>
               Mã PIN mặc định ban đầu: <span className="font-mono text-amber-300 font-bold">123456</span>
             </div>
-            <Link
-              href="/expo"
-              className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 py-2 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 transition-colors"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Về Danh Bạ Expo</span>
-            </Link>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setPinError(null);
+                  setOldPinInput('');
+                  setNewPinInput('');
+                  setConfirmPinInput('');
+                  setIsChangePinOpen(true);
+                }}
+                className="inline-flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors py-1 px-2.5 rounded-lg hover:bg-slate-800 cursor-pointer"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Đổi Mã PIN</span>
+              </button>
+              <span className="text-slate-700">•</span>
+              <Link
+                href="/expo"
+                className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors py-1 px-2.5"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Về Danh Bạ Expo</span>
+              </Link>
+            </div>
           </div>
         </div>
+
+        {renderChangePinModal()}
       </div>
     );
   }
@@ -440,6 +682,23 @@ export function ExpoCrmClient({ business, profile }: Props) {
               className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition-colors"
             >
               <Volume2 className="w-4 h-4" />
+            </button>
+
+            {/* Change PIN button */}
+            <button
+              type="button"
+              onClick={() => {
+                setPinError(null);
+                setOldPinInput('');
+                setNewPinInput('');
+                setConfirmPinInput('');
+                setIsChangePinOpen(true);
+              }}
+              title="Đổi mã PIN quản trị CRM"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-amber-300 border border-slate-700 transition-colors cursor-pointer"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Đổi PIN</span>
             </button>
 
             {/* Standee QR print link */}
@@ -850,6 +1109,8 @@ export function ExpoCrmClient({ business, profile }: Props) {
           </div>
         )}
       </main>
+
+      {renderChangePinModal()}
     </div>
   );
 }

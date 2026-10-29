@@ -130,3 +130,87 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: 'Lỗi máy chủ khi xóa gian hàng' }, { status: 500 });
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json();
+    const { slug, oldPin, newPin } = body;
+
+    if (!slug || !oldPin || !newPin) {
+      return NextResponse.json(
+        { error: 'Vui lòng điền đầy đủ mã PIN cũ và mã PIN mới' },
+        { status: 400 }
+      );
+    }
+
+    const trimmedOld = String(oldPin).trim();
+    const trimmedNew = String(newPin).trim();
+
+    if (trimmedNew.length < 4 || trimmedNew.length > 10) {
+      return NextResponse.json(
+        { error: 'Mã PIN mới phải có từ 4 đến 10 ký tự' },
+        { status: 400 }
+      );
+    }
+
+    if (trimmedOld === trimmedNew) {
+      return NextResponse.json(
+        { error: 'Mã PIN mới phải khác mã PIN cũ hiện tại' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createAdminClient();
+
+    // 1. Tìm gian hàng theo slug
+    const { data: business } = await supabase
+      .from('businesses')
+      .select('id, slug')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (!business) {
+      return NextResponse.json({ error: 'Không tìm thấy gian hàng này' }, { status: 404 });
+    }
+
+    // 2. Tìm hồ sơ expo & kiểm tra PIN cũ
+    const { data: profile } = await supabase
+      .from('business_expo_profiles')
+      .select('id, access_pin')
+      .eq('business_id', business.id)
+      .maybeSingle();
+
+    if (!profile) {
+      return NextResponse.json({ error: 'Không tìm thấy hồ sơ gian hàng' }, { status: 404 });
+    }
+
+    if (profile.access_pin !== trimmedOld) {
+      return NextResponse.json(
+        { error: 'Mã PIN cũ không chính xác. Vui lòng kiểm tra lại!' },
+        { status: 401 }
+      );
+    }
+
+    // 3. Cập nhật mã PIN mới vào CSDL
+    const { error: updateErr } = await supabase
+      .from('business_expo_profiles')
+      .update({
+        access_pin: trimmedNew,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', profile.id);
+
+    if (updateErr) {
+      console.error('[Update Expo PIN Error]:', updateErr);
+      return NextResponse.json({ error: 'Lỗi cập nhật mã PIN vào hệ thống' }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Đổi mã PIN quản trị CRM thành công!',
+    });
+  } catch (err: any) {
+    console.error('[Change PIN API Error]:', err);
+    return NextResponse.json({ error: 'Lỗi máy chủ khi đổi mã PIN' }, { status: 500 });
+  }
+}
