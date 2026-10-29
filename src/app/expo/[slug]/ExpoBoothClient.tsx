@@ -151,6 +151,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
                   src={business.logo_url}
                   alt={business.name}
                   fill
+                  unoptimized
                   className="object-contain"
                   sizes="96px"
                 />

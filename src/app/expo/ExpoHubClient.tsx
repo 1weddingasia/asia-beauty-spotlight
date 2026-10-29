@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search, Building2, ExternalLink, BarChart3, Printer, Sparkles, Send, ShieldCheck } from 'lucide-react';
+import { Search, Building2, ExternalLink, BarChart3, Printer, Sparkles, Send } from 'lucide-react';
 
 interface BoothItem {
   id: string;
@@ -126,6 +126,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                           src={booth.logo_url}
                           alt={booth.name}
                           fill
+                          unoptimized
                           className="object-contain"
                           sizes="48px"
                         />

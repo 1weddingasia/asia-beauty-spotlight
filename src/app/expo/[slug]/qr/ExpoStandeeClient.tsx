@@ -86,6 +86,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
                 src={business.logo_url}
                 alt={business.name}
                 fill
+                unoptimized
                 className="object-contain"
                 sizes="80px"
               />

@@ -8,6 +8,9 @@ export function playChimeSound() {
     if (!AudioContextClass) return;
 
     const ctx = new AudioContextClass();
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
     const now = ctx.currentTime;
 
     // First Tone: G5 (784Hz)
@@ -24,6 +27,10 @@ export function playChimeSound() {
 
     osc1.start(now);
     osc1.stop(now + 0.25);
+    osc1.onended = () => {
+      osc1.disconnect();
+      gain1.disconnect();
+    };
 
     // Second Tone: C6 (1046.5Hz) - Chime higher note
     const osc2 = ctx.createOscillator();
@@ -39,6 +46,10 @@ export function playChimeSound() {
 
     osc2.start(now + 0.1);
     osc2.stop(now + 0.6);
+    osc2.onended = () => {
+      osc2.disconnect();
+      gain2.disconnect();
+    };
   } catch (err) {
     console.warn('[Audio Chime Exception]:', err);
   }
