@@ -28,6 +28,7 @@ import {
   ShieldCheck,
   X,
   Globe,
+  Phone,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -158,7 +159,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
 
   // Language switcher component
   const LanguageSwitcher = () => (
-    <div className="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-full border border-slate-700/80 shadow-inner shrink-0">
+    <div className="flex items-center gap-1 bg-slate-900/95 p-0.5 sm:p-1 rounded-full border border-slate-700/80 shadow-inner shrink-0">
       {LANGUAGE_CONFIG.map((item) => {
         const isActive = lang === item.code;
         return (
@@ -166,7 +167,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
             key={item.code}
             type="button"
             onClick={() => handleSwitchLang(item.code)}
-            className={`relative p-1 rounded-full transition-all flex items-center justify-center cursor-pointer ${
+            className={`relative p-0.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${
               isActive
                 ? 'bg-amber-400/20 ring-2 ring-amber-400 scale-105 shadow-md shadow-amber-400/20'
                 : 'hover:bg-slate-800 opacity-60 hover:opacity-100'
@@ -174,7 +175,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
             title={`${item.label} (${item.countryName})`}
             aria-label={item.label}
           >
-            <CountryFlag country={item.code} size="md" className="rounded-full overflow-hidden object-cover" />
+            <CountryFlag country={item.code} size="sm" className="rounded-full overflow-hidden object-cover" />
           </button>
         );
       })}
@@ -817,10 +818,10 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
   // ═══════════════════════════════════════════════
   if (!isUnlocked) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 selection:bg-amber-500 font-sans">
-        <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden">
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 selection:bg-amber-500 font-sans overflow-x-hidden max-w-full">
+        <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-center relative overflow-hidden">
           {/* Language Switcher on PIN screen */}
-          <div className="absolute top-4 right-4">
+          <div className="flex justify-center mb-5">
             <LanguageSwitcher />
           </div>
 
@@ -920,49 +921,74 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
   // GIAO DIỆN CRM MỞ KHÓA: LIVE DASHBOARD + EXCEL + CHUÔNG
   // ═══════════════════════════════════════════════
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 overflow-x-hidden max-w-full">
       {/* 1. TOP HEADER */}
-      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 py-3">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center shadow-md">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-white line-clamp-1">
-                  {brandName}
-                </h1>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  LIVE
-                </span>
+      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3 sm:px-4 py-2.5 sm:py-3 overflow-x-hidden">
+        <div className="max-w-4xl mx-auto flex flex-col gap-2.5">
+          {/* Row 1: Brand Info & Language Switcher */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center shadow-md shrink-0">
+                <Building2 className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <p className="text-xs text-slate-400">
-                {t.location}: <span className="text-amber-300 font-mono font-bold">{profile.booth_number}</span> • {eventName}
-              </p>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <h1 className="text-sm sm:text-base font-bold text-white truncate max-w-[170px] sm:max-w-md">
+                    {brandName}
+                  </h1>
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    LIVE
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-slate-400 truncate">
+                  {t.location}: <span className="text-amber-300 font-mono font-bold">{profile.booth_number}</span> • {eventName}
+                </p>
+              </div>
+            </div>
+
+            {/* Language Switcher */}
+            <div className="shrink-0">
+              <LanguageSwitcher />
             </div>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Language Switcher */}
-            <LanguageSwitcher />
-
-            {/* Test Sound button */}
+          {/* Row 2: Action Toolbar (Responsive, wrap/scroll cleanly on mobile) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+            {/* 1. Export Excel Button (Prominent) */}
             <button
               type="button"
-              onClick={() => {
-                playChimeSound();
-                toast.info(t.soundOk);
-              }}
-              title={t.soundOk}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition-colors"
+              onClick={handleExportExcel}
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all cursor-pointer shrink-0"
+              title={t.exportExcel}
             >
-              <Volume2 className="w-4 h-4" />
+              <Download className="w-3.5 h-3.5" />
+              <span>{t.exportExcel}</span>
             </button>
 
-            {/* Change PIN button (Inside CRM) */}
+            {/* 2. Standee QR download link */}
+            <Link
+              href={`/expo/${business.slug}/qr?lang=${lang}`}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-amber-400/40 transition-colors shrink-0"
+              title={t.downloadStandee}
+            >
+              <Download className="w-3.5 h-3.5 text-amber-400" />
+              <span>{t.downloadStandee}</span>
+            </Link>
+
+            {/* 3. Open Form link */}
+            <Link
+              href={`/expo/${business.slug}?lang=${lang}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors shrink-0"
+              title={t.scanPage}
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
+              <span>{t.scanPage}</span>
+            </Link>
+
+            {/* 4. Change PIN button */}
             <button
               type="button"
               onClick={() => {
@@ -973,66 +999,48 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                 setIsChangePinOpen(true);
               }}
               title={t.changePinTitle}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-400/50 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-400/50 transition-colors cursor-pointer shrink-0"
             >
               <KeyRound className="w-3.5 h-3.5 text-amber-400" />
               <span>{t.changePin}</span>
             </button>
 
-            {/* Standee QR download link */}
-            <Link
-              href={`/expo/${business.slug}/qr?lang=${lang}`}
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-amber-400/40 transition-colors"
-              title={t.downloadStandee}
+            {/* 5. Test Sound button */}
+            <button
+              type="button"
+              onClick={() => {
+                playChimeSound();
+                toast.info(t.soundOk);
+              }}
+              title={t.soundOk}
+              className="p-1.5 sm:p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition-colors shrink-0"
             >
-              <Download className="w-3.5 h-3.5 text-amber-400" />
-              <span>{t.downloadStandee}</span>
-            </Link>
+              <Volume2 className="w-4 h-4" />
+            </button>
 
-            {/* Back to Expo Hub */}
+            {/* 6. Back to Expo Hub */}
             <Link
               href={`/expo?lang=${lang}`}
-              className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-colors"
+              className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-colors shrink-0"
               title={t.backToExpo}
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t.backExpo}</span>
+              <span>{t.backExpo}</span>
             </Link>
-
-            {/* Open Form link */}
-            <Link
-              href={`/expo/${business.slug}?lang=${lang}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
-              <span className="hidden sm:inline">{t.scanPage}</span>
-            </Link>
-
-            {/* Export Excel Button */}
-            <button
-              type="button"
-              onClick={handleExportExcel}
-              className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition-all cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>{t.exportExcel}</span>
-            </button>
           </div>
         </div>
       </header>
 
       {/* 2. MAIN BODY */}
-      <main className="max-w-4xl mx-auto w-full px-4 py-6 flex-1">
+      <main className="max-w-4xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 flex-1 overflow-x-hidden">
         {/* BANNER KÍCH HOẠT BẢN QUYỀN HOẶC TRẠNG THÁI ĐÃ KÍCH HOẠT */}
         {isActivated ? (
-          <div className="mb-6 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-slate-900 to-emerald-500/10 border border-emerald-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
-            <div className="flex items-center gap-3 text-center sm:text-left">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0 text-xl shadow-inner">
+          <div className="mb-5 sm:mb-6 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-slate-900 to-emerald-500/10 border border-emerald-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-3 text-left w-full sm:w-auto">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0 text-xl shadow-inner">
                 <Check className="w-5 h-5 text-emerald-400" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-xs sm:text-sm font-bold text-emerald-300">
                   {t.activateSuccessBadge}
                 </p>
@@ -1041,18 +1049,18 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                 </p>
               </div>
             </div>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold shrink-0">
+            <span className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold shrink-0">
               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
               <span>VIP Expo Pass</span>
             </span>
           </div>
         ) : (
-          <div className="mb-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-900 to-amber-500/10 border border-amber-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
-            <div className="flex items-center gap-3 text-center sm:text-left">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0 text-xl shadow-inner font-black">
+          <div className="mb-5 sm:mb-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-900 to-amber-500/10 border border-amber-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-3 text-left w-full sm:w-auto">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0 text-xl shadow-inner font-black">
                 ⚡
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-xs sm:text-sm font-bold text-amber-300">
                   {t.activateBannerTitle}
                 </p>
@@ -1067,7 +1075,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                 setSelectedPlanAmount(300000);
                 setIsActivateOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer whitespace-nowrap active:scale-95"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer whitespace-nowrap active:scale-95"
             >
               <span>{t.activateBtn}</span>
             </button>
@@ -1075,51 +1083,51 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
         )}
 
         {/* STATS BANNER */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
-            <span className="text-xs text-slate-400 flex items-center gap-1.5">
-              <UserCheck className="w-3.5 h-3.5 text-amber-400" />
-              {t.totalScanned}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-5 sm:mb-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between min-w-0">
+            <span className="text-[11px] sm:text-xs text-slate-400 flex items-center gap-1.5 truncate">
+              <UserCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">{t.totalScanned}</span>
             </span>
-            <span className="text-3xl font-black text-amber-400 mt-2 font-mono">
+            <span className="text-2xl sm:text-3xl font-black text-amber-400 mt-2 font-mono">
               {leads.length}
             </span>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
-            <span className="text-xs text-slate-400 flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-emerald-400" />
-              {t.latestCustomer}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-col justify-between min-w-0">
+            <span className="text-[11px] sm:text-xs text-slate-400 flex items-center gap-1.5 truncate">
+              <Clock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span className="truncate">{t.latestCustomer}</span>
             </span>
-            <span className="text-sm font-semibold text-slate-200 mt-2 line-clamp-1">
+            <span className="text-xs sm:text-sm font-semibold text-slate-200 mt-2 truncate">
               {leads.length > 0 ? leads[0].customer_name : t.noCustomerYet}
             </span>
           </div>
 
-          <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-amber-500/10 to-slate-900 border border-amber-500/20 rounded-2xl p-4 flex flex-col justify-between">
+          <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-amber-500/10 to-slate-900 border border-amber-500/20 rounded-2xl p-3 sm:p-4 flex flex-col justify-between">
             <span className="text-xs text-amber-300 flex items-center gap-1.5 font-bold">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              {t.realtimeAlert}
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>{t.realtimeAlert}</span>
             </span>
-            <p className="text-[11px] text-slate-400 mt-1" dangerouslySetInnerHTML={{ __html: t.realtimeDesc }} />
+            <p className="text-[11px] text-slate-400 mt-1 leading-snug" dangerouslySetInnerHTML={{ __html: t.realtimeDesc }} />
           </div>
         </div>
 
         {/* SEARCH & PAGE SIZE BAR */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+        <div className="flex items-center gap-1.5 sm:gap-2 mb-4">
+          <div className="relative flex-1 min-w-0">
+            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 absolute left-3 top-2.5 sm:top-3" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 truncate"
             />
           </div>
 
           {/* Page Size Selector */}
-          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300">
+          <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-slate-300 shrink-0">
             <span className="text-[11px] text-slate-500 hidden sm:inline">{t.show}:</span>
             <select
               value={pageSize}
@@ -1137,10 +1145,10 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
             type="button"
             onClick={() => fetchFreshLeads(false)}
             disabled={loadingLeads}
-            className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition-colors cursor-pointer"
+            className="p-2 sm:p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition-colors cursor-pointer shrink-0"
             title={t.refreshList}
           >
-            <RefreshCw className={`w-4 h-4 ${loadingLeads ? 'animate-spin text-amber-400' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${loadingLeads ? 'animate-spin text-amber-400' : ''}`} />
           </button>
         </div>
 
@@ -1288,65 +1296,97 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                 return (
                   <div
                     key={item.id}
-                    className={`p-3 transition-colors ${
+                    className={`p-3.5 transition-colors ${
                       isHighlight
                         ? 'bg-amber-500/15 border-l-4 border-l-amber-400'
                         : 'hover:bg-slate-800/30'
                     }`}
                   >
-                    {/* Line 1: Header */}
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-1.5 truncate">
-                        <span className="text-xs font-mono font-bold text-amber-400">#{stt}</span>
+                    {/* Line 1: Header (STT + Name + Badge + Time) */}
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                        <span className="text-xs font-mono font-bold text-amber-400 shrink-0">#{stt}</span>
                         <CountryFlag country={item.preferred_lang || 'vi'} size="sm" />
-                        <span className="text-xs font-bold text-white truncate max-w-[140px]">
+                        <span className="text-sm font-bold text-white truncate">
                           {item.customer_name}
                         </span>
                         {isHighlight && (
-                          <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 animate-pulse">
+                          <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 animate-pulse shrink-0">
                             {t.newBadge}
                           </span>
                         )}
                       </div>
 
-                      <span className="text-[10px] font-mono text-slate-500 shrink-0">
+                      <span className="text-[11px] font-mono text-slate-400 shrink-0 bg-slate-950/70 px-2 py-0.5 rounded-md border border-slate-800">
                         {new Date(item.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
 
-                    {/* Line 2: Phone & Details */}
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(item.customer_phone, item.id, t.thPhone)}
-                        className="font-mono font-bold text-amber-300 hover:text-amber-200 inline-flex items-center gap-1 cursor-pointer"
-                        title={t.copiedLabel}
-                      >
-                        <span>{item.customer_phone}</span>
-                        {copiedId === item.id ? (
-                          <Check className="w-3 h-3 text-emerald-400" />
-                        ) : (
-                          <Copy className="w-2.5 h-2.5 text-slate-500" />
-                        )}
-                      </button>
+                    {/* Line 2: Phone Bar with Quick Call & Copy */}
+                    <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-950/70 border border-slate-800/80 mb-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="text-[11px] text-slate-400 shrink-0">SĐT:</span>
+                        <a
+                          href={`tel:${item.customer_phone.replace(/\s+/g, '')}`}
+                          className="font-mono font-bold text-amber-400 hover:text-amber-300 text-sm tracking-wide truncate"
+                        >
+                          {item.customer_phone}
+                        </a>
+                      </div>
 
-                      {item.company_name && (
-                        <span className="text-slate-400 truncate max-w-[160px]">
-                          • 🏢 {item.company_name}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <a
+                          href={`tel:${item.customer_phone.replace(/\s+/g, '')}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 text-[11px] font-bold transition-colors"
+                          title="Gọi điện"
+                        >
+                          <Phone className="w-3 h-3 text-emerald-400" />
+                          <span>Gọi</span>
+                        </a>
 
-                      {item.customer_email && (
-                        <span className="text-slate-500 truncate max-w-[140px]">
-                          • {item.customer_email}
-                        </span>
-                      )}
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(item.customer_phone, item.id, t.thPhone)}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 text-[11px] font-medium transition-colors cursor-pointer"
+                          title="Sao chép số"
+                        >
+                          {copiedId === item.id ? (
+                            <Check className="w-3 h-3 text-emerald-400" />
+                          ) : (
+                            <Copy className="w-3 h-3 text-slate-400" />
+                          )}
+                          <span>{copiedId === item.id ? 'Đã chép' : 'Chép'}</span>
+                        </button>
+                      </div>
                     </div>
 
+                    {/* Line 3: Company & Email */}
+                    {(item.company_name || item.customer_email) && (
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-300 mb-2">
+                        {item.company_name && (
+                          <div className="inline-flex items-center gap-1 text-slate-300 font-medium">
+                            <span>🏢</span>
+                            <span className="truncate max-w-[180px]">{item.company_name}</span>
+                          </div>
+                        )}
+                        {item.customer_email && (
+                          <a
+                            href={`mailto:${item.customer_email}`}
+                            className="inline-flex items-center gap-1 text-slate-400 hover:text-amber-300 transition-colors"
+                          >
+                            <span>✉️</span>
+                            <span className="truncate max-w-[160px]">{item.customer_email}</span>
+                          </a>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Line 4: Interests Note */}
                     {item.interests && (
-                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-1 bg-slate-950/40 px-2 py-0.5 rounded border border-slate-800/50">
-                        📝 {item.interests}
-                      </p>
+                      <div className="text-xs text-slate-300 p-2 rounded-xl bg-slate-950/50 border border-slate-800/80 leading-relaxed">
+                        <span className="text-amber-400/90 font-medium mr-1.5">📝 Nhu cầu:</span>
+                        <span>{item.interests}</span>
+                      </div>
                     )}
                   </div>
                 );
@@ -1355,12 +1395,12 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
 
             {/* Pagination Controls Footer */}
             {totalPages > 1 && (
-              <div className="px-4 py-3 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                <div className="text-slate-400 text-center sm:text-left">
+              <div className="px-3 sm:px-4 py-3 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs">
+                <div className="text-slate-400 text-center sm:text-left text-[11px] sm:text-xs">
                   {t.showingRange} <span className="font-bold text-amber-400">{startIndex + 1} - {endIndex}</span> {t.inTotal} <span className="font-bold text-white">{totalLeads}</span> {t.scanned}
                 </div>
 
-                <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center justify-center gap-1">
                   <button
                     type="button"
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -1373,7 +1413,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
 
                   {getPageNumbers().map((p, pIdx) => {
                     if (p === '...') {
-                      return <span key={`ellipsis-${pIdx}`} className="px-2 text-slate-600 font-mono">...</span>;
+                      return <span key={`ellipsis-${pIdx}`} className="px-1.5 text-slate-600 font-mono text-xs">...</span>;
                     }
                     const isCurrent = p === safeCurrentPage;
                     return (
