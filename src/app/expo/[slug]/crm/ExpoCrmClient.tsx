@@ -119,6 +119,10 @@ export function ExpoCrmClient({ business, profile }: Props) {
   const [submittingPin, setSubmittingPin] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
 
+  // State Donate / Mời cà phê
+  const [isDonateOpen, setIsDonateOpen] = useState(false);
+  const [selectedDonateAmount, setSelectedDonateAmount] = useState<number>(0);
+
   const brandName = getExpoBrandName(business, profile, lang);
   const eventName = getExpoEventName(profile, lang);
 
@@ -575,6 +579,167 @@ export function ExpoCrmClient({ business, profile }: Props) {
     );
   };
 
+  const renderDonateModal = () => {
+    if (!isDonateOpen) return null;
+
+    const BANK_ACC = '00003554020';
+    const BANK_NAME = 'TPBank';
+    const BANK_OWNER = '1BOOKING.ASIA';
+    const transferMessage = `DONATE ${(business.slug || 'EXPO').replace(/[^a-zA-Z0-9]/g, '').toUpperCase()}`;
+    const qrUrl = `https://qr.sepay.vn/img?acc=${BANK_ACC}&bank=${BANK_NAME}${
+      selectedDonateAmount > 0 ? `&amount=${selectedDonateAmount}` : ''
+    }&des=${encodeURIComponent(transferMessage)}`;
+
+    const donateOptions = [
+      { amount: 0, label: t.donateCustom, icon: '✨' },
+      { amount: 30000, label: t.donateCoffee, icon: '☕' },
+      { amount: 300000, label: t.donateEventPlan, icon: '🎪' },
+      { amount: 600000, label: t.donateYearlyPlan, icon: '🌟' },
+    ];
+
+    const copyText = (val: string, label: string) => {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(val);
+        toast.success(`${label}: ${t.donateCopied}`);
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-2xl overflow-hidden text-left max-h-[90vh] overflow-y-auto">
+          {/* Ambient glow */}
+          <div className="absolute -top-16 -right-16 w-40 h-40 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl shadow-inner">
+                ☕
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">{t.donateModalTitle}</h3>
+                <p className="text-[11px] text-slate-400">
+                  {t.donateModalSubtitle}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsDonateOpen(false)}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Amount options */}
+          <div className="mb-5">
+            <p className="text-xs font-semibold text-slate-300 mb-2.5">
+              Chọn mức ủng hộ (hoặc tùy tâm):
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {donateOptions.map((opt) => {
+                const isSelected = selectedDonateAmount === opt.amount;
+                return (
+                  <button
+                    key={opt.amount}
+                    type="button"
+                    onClick={() => setSelectedDonateAmount(opt.amount)}
+                    className={`flex items-center gap-2 p-2.5 rounded-xl text-left border text-xs font-semibold transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-amber-500/20 border-amber-500/60 text-amber-300 shadow-sm'
+                        : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                    }`}
+                  >
+                    <span className="text-base">{opt.icon}</span>
+                    <span className="line-clamp-1">{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* QR Code Container */}
+          <div className="p-4 bg-white rounded-2xl border border-slate-700 shadow-xl flex flex-col items-center mx-auto mb-5 text-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={qrUrl}
+              alt="VietQR Donate"
+              className="w-56 h-auto max-w-full rounded-xl object-contain shadow-sm"
+            />
+            <p className="text-[11px] text-slate-600 font-medium mt-2">
+              Mở App ngân hàng quét mã VietQR chuyển khoản nhanh 24/7
+            </p>
+            {selectedDonateAmount > 0 ? (
+              <p className="text-xs font-bold text-amber-700 mt-0.5">
+                Số tiền: {selectedDonateAmount.toLocaleString('vi-VN')} VNĐ
+              </p>
+            ) : (
+              <p className="text-[11px] font-medium text-emerald-700 mt-0.5">
+                ✨ Số tiền tùy tâm (nhập tùy ý trên App ngân hàng của bạn)
+              </p>
+            )}
+          </div>
+
+          {/* Bank Details Table */}
+          <div className="space-y-2 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-xs mb-5">
+            <div className="flex items-center justify-between py-1 border-b border-slate-800/80">
+              <span className="text-slate-400">{t.donateBankLabel}:</span>
+              <span className="font-bold text-white font-mono">{BANK_NAME} (Ngân hàng Tiên Phong)</span>
+            </div>
+            <div className="flex items-center justify-between py-1 border-b border-slate-800/80">
+              <span className="text-slate-400">{t.donateAccNumLabel}:</span>
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono font-bold text-amber-400 text-sm">{BANK_ACC}</span>
+                <button
+                  type="button"
+                  onClick={() => copyText(BANK_ACC, t.donateAccNumLabel)}
+                  className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Sao chép số tài khoản"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between py-1 border-b border-slate-800/80">
+              <span className="text-slate-400">{t.donateAccOwnerLabel}:</span>
+              <span className="font-bold text-white font-mono">{BANK_OWNER}</span>
+            </div>
+            <div className="flex items-center justify-between py-1">
+              <span className="text-slate-400">{t.donateSyntaxLabel}:</span>
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono font-bold text-emerald-400">{transferMessage}</span>
+                <button
+                  type="button"
+                  onClick={() => copyText(transferMessage, t.donateSyntaxLabel)}
+                  className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Sao chép nội dung"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer note & Close button */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+            <p className="text-[11px] text-slate-400 text-center sm:text-left">
+              Hỗ trợ kỹ thuật: <span className="text-amber-400 font-semibold font-mono">0918 731 411</span>
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsDonateOpen(false)}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors cursor-pointer text-center"
+            >
+              {t.donateClose}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // ═══════════════════════════════════════════════
   // GIAO DIỆN KHÓA: NHẬP MÃ PIN
   // ═══════════════════════════════════════════════
@@ -647,6 +812,16 @@ export function ExpoCrmClient({ business, profile }: Props) {
             <p className="text-[10px] text-slate-500 max-w-xs leading-relaxed">
               {t.pinSecurityDesc}
             </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedDonateAmount(0);
+                setIsDonateOpen(true);
+              }}
+              className="mt-2 text-[11px] font-semibold text-amber-400 hover:text-amber-300 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>☕ {t.donateBannerTitle}</span>
+            </button>
             <Link
               href={`/expo?lang=${lang}`}
               className="mt-1 inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors py-1 px-3 rounded-lg hover:bg-slate-800"
@@ -656,6 +831,8 @@ export function ExpoCrmClient({ business, profile }: Props) {
             </Link>
           </div>
         </div>
+
+        {renderDonateModal()}
       </div>
     );
   }
@@ -769,6 +946,33 @@ export function ExpoCrmClient({ business, profile }: Props) {
 
       {/* 2. MAIN BODY */}
       <main className="max-w-4xl mx-auto w-full px-4 py-6 flex-1">
+        {/* BANNER MỜI CÀ PHÊ / DONATE TÙY TÂM */}
+        <div className="mb-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-900 to-amber-500/10 border border-amber-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0 text-xl shadow-inner">
+              ☕
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-bold text-amber-300">
+                {t.donateBannerTitle}
+              </p>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                {t.donateBannerSubtitle}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedDonateAmount(0);
+              setIsDonateOpen(true);
+            }}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer whitespace-nowrap active:scale-95"
+          >
+            <span>{t.donateBtn}</span>
+          </button>
+        </div>
+
         {/* STATS BANNER */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
@@ -1104,6 +1308,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
       </main>
 
       {renderChangePinModal()}
+      {renderDonateModal()}
     </div>
   );
 }

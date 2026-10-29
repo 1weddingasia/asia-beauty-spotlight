@@ -369,6 +369,22 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
   xlCompany: string;
   xlInterest: string;
   xlLang: string;
+  // Donate modal & banner
+  donateBannerTitle: string;
+  donateBannerSubtitle: string;
+  donateBtn: string;
+  donateModalTitle: string;
+  donateModalSubtitle: string;
+  donateCoffee: string;
+  donateEventPlan: string;
+  donateYearlyPlan: string;
+  donateCustom: string;
+  donateBankLabel: string;
+  donateAccNumLabel: string;
+  donateAccOwnerLabel: string;
+  donateSyntaxLabel: string;
+  donateClose: string;
+  donateCopied: string;
 }> = {
   vi: {
     pinTitle: 'CRM GIAN HÀNG',
@@ -448,6 +464,21 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     xlCompany: 'Tên Công Ty',
     xlInterest: 'Nhu Cầu Quan Tâm',
     xlLang: 'Ngôn Ngữ',
+    donateBannerTitle: 'Thích 1Booking Expo? Mời team ly cà phê / Donate tùy tâm',
+    donateBannerSubtitle: 'Tiện ích số hóa độc lập phục vụ gian hàng • Ủng hộ team công nghệ phát triển',
+    donateBtn: '☕ Mời Cà Phê / Donate',
+    donateModalTitle: 'Mời Team Ly Cà Phê / Donate',
+    donateModalSubtitle: 'Quét mã VietQR chuyển khoản nhanh 3 giây qua mọi App ngân hàng',
+    donateCoffee: 'Ly cà phê (30k)',
+    donateEventPlan: 'Gói Sự Kiện 30 Ngày (300k)',
+    donateYearlyPlan: 'Gói Cả Năm 365 Ngày (600k)',
+    donateCustom: 'Tùy tâm (Tự nhập trên App ngân hàng)',
+    donateBankLabel: 'Ngân hàng',
+    donateAccNumLabel: 'Số tài khoản',
+    donateAccOwnerLabel: 'Chủ tài khoản',
+    donateSyntaxLabel: 'Nội dung chuyển khoản',
+    donateClose: 'Đóng',
+    donateCopied: 'Đã sao chép vào bộ nhớ tạm',
   },
   en: {
     pinTitle: 'BOOTH CRM',
@@ -527,6 +558,21 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     xlCompany: 'Company',
     xlInterest: 'Interest',
     xlLang: 'Language',
+    donateBannerTitle: 'Enjoy 1Booking Expo? Buy us a coffee / Donate',
+    donateBannerSubtitle: 'Independent digital booth platform • Support our engineering team',
+    donateBtn: '☕ Buy Coffee / Donate',
+    donateModalTitle: 'Buy Team a Coffee / Donate',
+    donateModalSubtitle: 'Scan VietQR to transfer instantly via any banking app',
+    donateCoffee: 'A coffee (30,000đ)',
+    donateEventPlan: 'Event Plan 30 Days (300,000đ)',
+    donateYearlyPlan: 'Yearly Plan 365 Days (600,000đ)',
+    donateCustom: 'Any amount (Enter in your banking app)',
+    donateBankLabel: 'Bank',
+    donateAccNumLabel: 'Account Number',
+    donateAccOwnerLabel: 'Account Holder',
+    donateSyntaxLabel: 'Transfer Message',
+    donateClose: 'Close',
+    donateCopied: 'Copied to clipboard',
   },
   ko: {
     pinTitle: '부스 CRM',
@@ -606,6 +652,21 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     xlCompany: '회사',
     xlInterest: '관심사항',
     xlLang: '언어',
+    donateBannerTitle: '1Booking Expo가 마음에 드시나요? 커피 한 잔 후원하기',
+    donateBannerSubtitle: '독립 부스 디지털 플랫폼 • 기술팀 개발 후원',
+    donateBtn: '☕ 커피 후원 / 도네이션',
+    donateModalTitle: '팀 커피 후원 / 기부',
+    donateModalSubtitle: '모든 은행 앱에서 3초 만에 VietQR 스캔 송금',
+    donateCoffee: '커피 한 잔 (30,000동)',
+    donateEventPlan: '30일 행사 패스 (300,000동)',
+    donateYearlyPlan: '1년 연간 패스 (600,000동)',
+    donateCustom: '자율 금액 (은행 앱에서 직접 입력)',
+    donateBankLabel: '은행',
+    donateAccNumLabel: '계좌번호',
+    donateAccOwnerLabel: '예금주',
+    donateSyntaxLabel: '송금 메모',
+    donateClose: '닫기',
+    donateCopied: '클립보드에 복사되었습니다',
   },
   zh: {
     pinTitle: '展位 CRM',
@@ -685,6 +746,21 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     xlCompany: '公司',
     xlInterest: '需求',
     xlLang: '语言',
+    donateBannerTitle: '喜欢 1Booking Expo 吗？请团队喝杯咖啡 / 随心赞助',
+    donateBannerSubtitle: '独立展位数字化工具 • 支持技术团队持续优化',
+    donateBtn: '☕ 请喝咖啡 / 赞助',
+    donateModalTitle: '请团队喝杯咖啡 / 随心赞助',
+    donateModalSubtitle: '使用任何手机银行 App 扫描 VietQR 3秒完成转账',
+    donateCoffee: '一杯咖啡 (30,000đ)',
+    donateEventPlan: '30天展会套餐 (300,000đ)',
+    donateYearlyPlan: '365天全年套餐 (600,000đ)',
+    donateCustom: '随心金额 (在银行App中自行填写)',
+    donateBankLabel: '开户银行',
+    donateAccNumLabel: '银行账号',
+    donateAccOwnerLabel: '账户姓名',
+    donateSyntaxLabel: '转账附言',
+    donateClose: '关闭',
+    donateCopied: '已复制到剪贴板',
   },
 };
 

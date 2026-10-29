@@ -229,9 +229,8 @@ export function ExpoStandeeClient({ business, profile }: Props) {
         </div>
 
         {/* Standee Footer */}
-        <div className="mt-auto pt-3 border-t border-slate-200 w-full flex items-center justify-between text-[10px] text-slate-500 font-medium">
-          <span>1Booking Expo Pass</span>
-          <span>1booking.asia/expo</span>
+        <div className="mt-auto pt-3 border-t border-slate-200 w-full flex items-center justify-center text-[10px] text-slate-500 font-medium tracking-tight">
+          <span>1Booking - Tiện ích số hóa gian hàng độc lập • Hỗ trợ: 0918 731 411</span>
         </div>
       </div>
     </div>
