@@ -18,6 +18,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SiteHeader, SiteFooter, useSiteConfig } from "@/components/site/Layout";
 import { PARTY_SPACES, PARTY_PERKS, type BusinessPartyProfile, isFnBCategory } from "@/types/party";
+import { getExpoEventName } from "@/types/expo";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -67,7 +68,7 @@ export default function PromoClient({
   bannerImg: string | null;
   avatar: string;
   partyProfile?: BusinessPartyProfile | null;
-  expoProfile?: { booth_number: string; event_name: string } | null;
+  expoProfile?: { booth_number: string; event_name?: string | null; event_name_en?: string | null } | null;
 }) {
   const siteConfig = useSiteConfig();
   const b = business;
@@ -445,7 +446,7 @@ export default function PromoClient({
                 className="inline-flex items-center gap-1.5 bg-amber-500/25 border border-amber-400 text-amber-200 hover:text-white text-xs font-bold px-3.5 py-1.5 rounded-full hover:bg-amber-500/40 transition-all backdrop-blur-md shadow-lg"
               >
                 <Sparkles className="size-3.5 text-amber-400" />
-                <span>Booth {expoProfile.booth_number} • {expoProfile.event_name || 'Triển Lãm Quốc Tế'}</span>
+                <span>Booth {expoProfile.booth_number} • {getExpoEventName(expoProfile, 'vi')}</span>
               </Link>
               <Link
                 href="/expo"
