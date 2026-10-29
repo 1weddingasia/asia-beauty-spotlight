@@ -121,6 +121,20 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
     partyProfile = null;
   }
 
+  // Lấy thêm hồ sơ gian hàng triển lãm expo (nếu doanh nghiệp tham gia expo)
+  let expoProfile: { booth_number: string; event_name: string } | null = null;
+  try {
+    const { data: eData } = await supabase
+      .from('business_expo_profiles')
+      .select('booth_number, event_name')
+      .eq('business_id', business.id)
+      .eq('is_active', true)
+      .maybeSingle();
+    expoProfile = (eData as any) ?? null;
+  } catch (err) {
+    expoProfile = null;
+  }
+
   // Lấy ảnh bìa hoặc avatar làm background an toàn
   const firstGalleryItem = business.page_content?.gallery?.[0];
   const galleryUrl = typeof firstGalleryItem === 'string' ? firstGalleryItem : firstGalleryItem?.url;
@@ -129,7 +143,13 @@ export default async function PromoPage({ params }: { params: Promise<{ slug: st
   const avatar = business.page_content?.logo_url || `https://placehold.co/100x100/gold/white?text=${encodeURIComponent(fallbackLetter)}`;
 
   return (
-    <PromoClient business={business} bannerImg={bannerImg} avatar={avatar} partyProfile={partyProfile} />
+    <PromoClient
+      business={business}
+      bannerImg={bannerImg}
+      avatar={avatar}
+      partyProfile={partyProfile}
+      expoProfile={expoProfile}
+    />
   );
 }
 

@@ -214,6 +214,13 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               <Sparkles className="size-3.5" />
               <span>Phố Tiệc</span>
             </Link>
+            <Link
+              href="/expo"
+              className="text-xs tracking-[0.18em] uppercase font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1 transition-colors"
+            >
+              <Sparkles className="size-3.5" />
+              <span>Expo 2026</span>
+            </Link>
             {/* Danh Mục dropdown */}
             <NavDropdown
               label="Danh Mục"
@@ -266,6 +273,10 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               <Link href="/pho-tiec" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
                 <Sparkles className="size-4 text-amber-500" />
                 <span>Phố Tiệc 🎉</span>
+              </Link>
+              <Link href="/expo" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
+                <Sparkles className="size-4 text-amber-500" />
+                <span>Expo 2026 🏢</span>
               </Link>
               <button
                 onClick={() => setMobileMenuSection("categories")}

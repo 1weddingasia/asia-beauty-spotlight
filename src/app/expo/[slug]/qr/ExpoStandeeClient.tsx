@@ -39,13 +39,22 @@ export function ExpoStandeeClient({ business, profile }: Props) {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start py-8 px-4 font-sans print:p-0 print:bg-white print:text-black">
       {/* ACTION BAR (Hidden when printing) */}
       <div className="max-w-xl w-full flex items-center justify-between mb-8 print:hidden">
-        <Link
-          href={`/expo/${business.slug}/crm`}
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Vào CRM Gian Hàng</span>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/expo"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Về Expo</span>
+          </Link>
+          <Link
+            href={`/expo/${business.slug}/crm`}
+            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 transition-colors"
+          >
+            <BarChart3 className="w-3.5 h-3.5 text-amber-400" />
+            <span>CRM Gian Hàng</span>
+          </Link>
+        </div>
 
         <div className="flex items-center gap-2">
           <Link

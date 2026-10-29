@@ -130,6 +130,8 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
   successTitle: string;
   successMsg: string;
   websiteBtn: string;
+  backToExpo: string;
+  expoDirectory: string;
 }> = {
   vi: {
     welcome: "Chào mừng quý khách đến gian hàng",
@@ -152,6 +154,8 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     successTitle: "ĐÃ TIẾP NHẬN THÔNG TIN!",
     successMsg: "Cảm ơn quý khách! Đại diện gian hàng đã ghi nhận thông tin và sẽ liên hệ kết nối trao đổi với quý khách.",
     websiteBtn: "Website Doanh Nghiệp",
+    backToExpo: "← Về Danh Bạ Expo",
+    expoDirectory: "Khám phá 85 gian hàng Triển Lãm VietFranchise SECC",
   },
   en: {
     welcome: "Welcome to our booth",
@@ -174,6 +178,8 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     successTitle: "CONTACT INFO RECEIVED!",
     successMsg: "Thank you! Our booth representatives have received your contact details and will connect with you shortly.",
     websiteBtn: "Official Website",
+    backToExpo: "← Back to Expo Hub",
+    expoDirectory: "Explore all 85 exhibitors at VietFranchise Expo SECC",
   },
   ko: {
     welcome: "부스 방문을 환영합니다",
@@ -196,6 +202,8 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     successTitle: "등록이 완료되었습니다!",
     successMsg: "감사합니다! 부스 담당자가 연락처를 확인하였으며 빠른 시일 내에 연락드리겠습니다.",
     websiteBtn: "공식 홈페이지",
+    backToExpo: "← 엑스포 명록으로",
+    expoDirectory: "VietFranchise SECC 85개 공식 부스 전체 둘러보기",
   },
   zh: {
     welcome: "欢迎光临展位",
@@ -218,5 +226,7 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     successTitle: "信息已成功提交！",
     successMsg: "非常感谢！展位代表已收到您的联系信息，将尽快与您取得联系并展开交流。",
     websiteBtn: "官方网站",
-  }
+    backToExpo: "← 返回展会名录",
+    expoDirectory: "浏览 VietFranchise SECC 展会 85 家参展商名录",
+  },
 };

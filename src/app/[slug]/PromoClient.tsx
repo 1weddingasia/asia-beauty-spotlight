@@ -61,11 +61,13 @@ export default function PromoClient({
   bannerImg,
   avatar,
   partyProfile,
+  expoProfile,
 }: {
   business: any;
   bannerImg: string | null;
   avatar: string;
   partyProfile?: BusinessPartyProfile | null;
+  expoProfile?: { booth_number: string; event_name: string } | null;
 }) {
   const siteConfig = useSiteConfig();
   const b = business;
@@ -432,6 +434,26 @@ export default function PromoClient({
                   {loc.name}
                 </Link>
               ))}
+            </div>
+          )}
+
+          {/* Expo Exhibitor Badge & Back to Expo Hub */}
+          {expoProfile && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
+              <Link
+                href={`/expo/${business.slug}`}
+                className="inline-flex items-center gap-1.5 bg-amber-500/25 border border-amber-400 text-amber-200 hover:text-white text-xs font-bold px-3.5 py-1.5 rounded-full hover:bg-amber-500/40 transition-all backdrop-blur-md shadow-lg"
+              >
+                <Sparkles className="size-3.5 text-amber-400" />
+                <span>Booth {expoProfile.booth_number} • VietFranchise Expo</span>
+              </Link>
+              <Link
+                href="/expo"
+                className="inline-flex items-center gap-1.5 bg-black/40 border border-white/20 text-white/90 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full hover:bg-black/60 transition-all backdrop-blur-md"
+              >
+                <ChevronLeft className="size-3.5" />
+                <span>Về Danh Bạ Expo</span>
+              </Link>
             </div>
           )}
           <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-8">
