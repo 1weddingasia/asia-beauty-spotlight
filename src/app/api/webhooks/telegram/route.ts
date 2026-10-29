@@ -374,7 +374,7 @@ ${qrUrl}
             const replyKeyboard = {
               inline_keyboard: [
                 [
-                  { text: '👁️ Trang Quét Thử', url: boothUrl },
+                  { text: '🤝 Trang Liên Hệ', url: boothUrl },
                   { text: '📊 Vào CRM Live', url: crmUrl },
                 ],
                 [

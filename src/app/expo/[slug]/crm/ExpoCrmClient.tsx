@@ -810,7 +810,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
               className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-950 bg-amber-500 px-4 py-2 rounded-xl shadow-md"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              <span>Quét thử từ trang này</span>
+              <span>Mở trang liên hệ</span>
             </Link>
           </div>
         ) : (
