@@ -50,10 +50,10 @@ export function ExpoStandeeClient({ business, profile }: Props) {
   const handleDownloadImage = async () => {
     if (!standeeRef.current) return;
     setIsDownloading(true);
-    const toastId = toast.loading('Đang xử lý xuất ảnh Standee độ nét cao (A4/A5)...');
+    const toastId = toast.loading('Đang tạo ảnh Standee...');
 
     try {
-      // 1. Thử dùng html-to-image (pixelRatio 4 cho độ phân giải siêu nét chuẩn in ấn 300 DPI)
+      // 1. Thử dùng html-to-image
       const { toPng } = await import('html-to-image');
       const dataUrl = await toPng(standeeRef.current, {
         quality: 1,
@@ -63,7 +63,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
       });
 
       triggerDownload(dataUrl);
-      toast.success('Đã tải ảnh Standee thành công! Bạn có thể mang file này đi in.', {
+      toast.success('Đã tải ảnh Standee!', {
         id: toastId,
       });
     } catch {
@@ -77,11 +77,11 @@ export function ExpoStandeeClient({ business, profile }: Props) {
         });
 
         triggerDownload(canvas.toDataURL('image/png'));
-        toast.success('Đã tải ảnh Standee thành công! Bạn có thể mang file này đi in.', {
+        toast.success('Đã tải ảnh Standee!', {
           id: toastId,
         });
       } catch {
-        toast.error('Không thể xuất ảnh tự động. Vui lòng thử lại hoặc chụp màn hình.', {
+        toast.error('Không thể tải ảnh. Vui lòng thử lại.', {
           id: toastId,
         });
       }
@@ -127,12 +127,12 @@ export function ExpoStandeeClient({ business, profile }: Props) {
             onClick={handleDownloadImage}
             disabled={isDownloading}
             className="inline-flex items-center gap-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all cursor-pointer disabled:opacity-60"
-            title="Tải ảnh Standee chất lượng cao"
+            title="Tải ảnh Standee"
           >
             {isDownloading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Đang xử lý ảnh...</span>
+                <span>Đang tải ảnh...</span>
               </>
             ) : (
               <>
@@ -227,16 +227,6 @@ export function ExpoStandeeClient({ business, profile }: Props) {
           <span>1Booking Expo Pass</span>
           <span>Số Hóa Gian Hàng Triển Lãm</span>
         </div>
-      </div>
-
-      {/* Helpful Hint */}
-      <div className="max-w-md text-center mt-6 text-xs text-slate-400 space-y-1 print:hidden">
-        <p>
-          💡 <b>Lưu Standee:</b> Bấm nút <b>Tải Ảnh Standee</b> để lưu file ảnh chất lượng cao (300 DPI).
-        </p>
-        <p className="text-slate-500 text-[11px]">
-          Bạn có thể dùng file ảnh này để làm biển bảng hoặc lồng vào khung mica đặt tại quầy lễ tân gian hàng.
-        </p>
       </div>
     </div>
   );
