@@ -609,7 +609,7 @@ export async function handleTelegramCallback(callbackData: string, fromChatId: s
     // 1. Kiểm tra loại hình từ onboarding_submissions hoặc category_slug
     const { data: submission } = await supabase
       .from('onboarding_submissions')
-      .select('type')
+      .select('id, type')
       .eq('business_id', business.id)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -623,14 +623,14 @@ export async function handleTelegramCallback(callbackData: string, fromChatId: s
     const planCode = isParty ? 'tiec_standard' : 'udai_standard';
     const planType = isParty ? 'party' : 'deal';
 
-    // 2. Tìm gói tương ứng trong bảng plans
+    // 2. Tìm gói tương ứng trong bảng plans (ưu tiên code, fallback đúng tier standard)
     const { data: plans } = await supabase
       .from('plans')
       .select('id, code, name, plan_type, tier, price_yearly')
       .eq('is_active', true);
 
     const targetPlan = plans?.find(p => p.code === planCode)
-      || plans?.find(p => p.plan_type === planType);
+      || plans?.find(p => p.plan_type === planType && p.tier === 'standard');
 
     if (!targetPlan) {
       return { text: `❌ Không tìm thấy gói phù hợp (${planCode}) trong hệ thống để kích hoạt.` };
@@ -642,7 +642,7 @@ export async function handleTelegramCallback(callbackData: string, fromChatId: s
       planId: targetPlan.id,
       durationYears: 1,
       provider: 'Telegram-Admin-Approve',
-      transactionRef: `TG-PUB-${Date.now()}`,
+      transactionRef: `TG-PUB-${business.id}`,
     });
 
     if (!activationRes.success) {
@@ -650,10 +650,10 @@ export async function handleTelegramCallback(callbackData: string, fromChatId: s
     }
 
     // 4. Cập nhật onboarding_submissions sang approved
-    const { error: subErr } = await supabase
-      .from('onboarding_submissions')
-      .update({ status: 'approved', updated_at: new Date().toISOString() })
-      .eq('business_id', business.id);
+    const subQuery = supabase.from('onboarding_submissions').update({ status: 'approved', updated_at: new Date().toISOString() });
+    const { error: subErr } = submission?.id 
+      ? await subQuery.eq('id', submission.id) 
+      : await subQuery.eq('business_id', business.id);
 
     if (subErr) {
       console.warn('[handleTelegramCallback] Cảnh báo cập nhật onboarding_submissions:', subErr.message);

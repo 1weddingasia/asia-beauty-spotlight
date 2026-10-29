@@ -137,7 +137,7 @@ export async function activateMembershipAction(payload: {
           console.warn("Lỗi đọc hồ sơ tiệc:", partyErr.message);
         }
 
-        await supabaseAdmin.from("business_party_profiles").upsert({
+        const { error: upsertPartyErr } = await supabaseAdmin.from("business_party_profiles").upsert({
           business_id: business.id,
           min_guests: existingParty?.min_guests ?? DEFAULT_PARTY_PROFILE_VALUES.min_guests,
           max_guests: existingParty?.max_guests ?? DEFAULT_PARTY_PROFILE_VALUES.max_guests,
@@ -149,13 +149,17 @@ export async function activateMembershipAction(payload: {
           party_deal_highlight: existingParty?.party_deal_highlight || (isVipParty ? DEFAULT_PARTY_PROFILE_VALUES.party_deal_vip_highlight : DEFAULT_PARTY_PROFILE_VALUES.party_deal_highlight),
           updated_at: new Date().toISOString(),
         }, { onConflict: "business_id" });
+
+        if (upsertPartyErr) {
+          console.warn("Lỗi lưu hồ sơ tiệc:", upsertPartyErr.message);
+        }
       } catch (partyErr) {
         console.warn("Lỗi cấu hình party profile:", partyErr);
       }
     }
 
     // 6. Cập nhật Business sang trạng thái hoạt động chính thức
-    await supabaseAdmin
+    const { error: bizErr } = await supabaseAdmin
       .from("businesses")
       .update({
         status: "published",
@@ -165,6 +169,10 @@ export async function activateMembershipAction(payload: {
         updated_at: new Date().toISOString(),
       })
       .eq("id", business.id);
+
+    if (bizErr) {
+      throw new Error("Lỗi cập nhật trạng thái doanh nghiệp: " + bizErr.message);
+    }
 
     // 7. Ghi nhận lịch sử thanh toán vào bảng payments
     try {
