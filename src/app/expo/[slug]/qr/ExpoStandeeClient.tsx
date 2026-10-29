@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
-import { Download, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2, Printer, Share2, X, Check } from 'lucide-react';
+import { Download, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2, Printer, Share2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getExpoBrandName, getStoredExpoLanguage, type ExpoLanguage } from '@/types/expo';
 
@@ -30,7 +30,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
+  const [logoFailed, setLogoFailed] = useState(false);
   const standeeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -73,7 +73,8 @@ export function ExpoStandeeClient({ business, profile }: Props) {
 
   // Tạo ảnh Standee chất lượng cao
   const generateImage = async (): Promise<{ dataUrl: string; blob: Blob; file: File } | null> => {
-    if (!standeeRef.current) return null;
+    const node = standeeRef.current;
+    if (!node) return null;
     const fileName = `Standee-${business.slug || 'expo'}-1booking.png`;
 
     const pixelRatio = typeof window !== 'undefined' && window.devicePixelRatio && window.devicePixelRatio > 2 
@@ -83,7 +84,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
     try {
       // 1. Thử dùng html-to-image
       const { toPng } = await import('html-to-image');
-      const dataUrl = await toPng(standeeRef.current, {
+      const dataUrl = await toPng(node, {
         quality: 1,
         pixelRatio,
         cacheBust: true,
@@ -96,10 +97,9 @@ export function ExpoStandeeClient({ business, profile }: Props) {
       console.warn('[html-to-image failed, trying html2canvas fallback]:', err);
       try {
         const html2canvas = (await import('html2canvas')).default;
-        const canvas = await html2canvas(standeeRef.current, {
+        const canvas = await html2canvas(node, {
           scale: pixelRatio,
           useCORS: true,
-          allowTaint: true,
           backgroundColor: '#ffffff',
           logging: false,
         });
@@ -185,19 +185,6 @@ export function ExpoStandeeClient({ business, profile }: Props) {
     // Fallback: Tải file
     triggerBlobDownload(previewBlob);
     toast.success('Đã lưu file Standee vào thiết bị!');
-  };
-
-  const handleCopyLink = async () => {
-    try {
-      if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText(boothUrl);
-        setCopiedLink(true);
-        toast.success('Đã sao chép đường link gian hàng!');
-        setTimeout(() => setCopiedLink(false), 2500);
-      }
-    } catch {
-      toast.info(`Link: ${boothUrl}`);
-    }
   };
 
   return (
@@ -300,13 +287,14 @@ export function ExpoStandeeClient({ business, profile }: Props) {
 
         {/* Brand Logo & Name */}
         <div className="flex flex-col items-center mb-6">
-          {business.logo_url ? (
+          {business.logo_url && !logoFailed ? (
             <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white p-1 mb-2 border border-slate-200 shadow-sm flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={business.logo_url}
                 alt={nameVi}
                 crossOrigin="anonymous"
+                onError={() => setLogoFailed(true)}
                 className="w-full h-full object-contain"
               />
             </div>
@@ -330,8 +318,6 @@ export function ExpoStandeeClient({ business, profile }: Props) {
           <QRCodeSVG
             value={boothUrl}
             size={240}
-            width={240}
-            height={240}
             level="H"
             includeMargin={true}
           />
@@ -376,7 +362,11 @@ export function ExpoStandeeClient({ business, profile }: Props) {
               </div>
               <button
                 type="button"
-                onClick={() => setIsPreviewOpen(false)}
+                onClick={() => {
+                  setIsPreviewOpen(false);
+                  setPreviewUrl(null);
+                  setPreviewBlob(null);
+                }}
                 className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
