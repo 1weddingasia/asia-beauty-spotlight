@@ -662,13 +662,14 @@ export function ExpoCrmClient({ business, profile }: Props) {
               <span>Đổi PIN</span>
             </button>
 
-            {/* Standee QR print link */}
+            {/* Standee QR download link */}
             <Link
               href={`/expo/${business.slug}/qr`}
-              className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-amber-400/40 transition-colors"
+              title="Tải ảnh Standee để bàn mang đi in"
             >
-              <Printer className="w-3.5 h-3.5 text-amber-400" />
-              <span>In Standee</span>
+              <Download className="w-3.5 h-3.5 text-amber-400" />
+              <span>Tải Standee</span>
             </Link>
 
             {/* Back to Expo Hub */}

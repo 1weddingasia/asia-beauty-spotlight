@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
-import { Printer, ArrowLeft, BarChart3, ExternalLink, Sparkles } from 'lucide-react';
+import { Download, Printer, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { getExpoBrandName } from '@/types/expo';
 
 interface Props {
@@ -24,6 +26,9 @@ interface Props {
 }
 
 export function ExpoStandeeClient({ business, profile }: Props) {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const standeeRef = useRef<HTMLDivElement>(null);
+
   const nameVi = getExpoBrandName(business, profile, 'vi');
   const nameEn = getExpoBrandName(business, profile, 'en');
 
@@ -31,28 +36,83 @@ export function ExpoStandeeClient({ business, profile }: Props) {
     ? `${window.location.origin}/expo/${business.slug}`
     : `https://1booking.asia/expo/${business.slug}`;
 
-  const handlePrint = () => {
-    window.print();
+  // Tải ảnh Standee độ phân giải cao để mang đi in ấn
+  const handleDownloadImage = async () => {
+    if (!standeeRef.current) return;
+    setIsDownloading(true);
+    const toastId = toast.loading('Đang xử lý xuất ảnh Standee độ nét cao (A4/A5)...');
+
+    try {
+      // 1. Thử dùng html-to-image (giữ nét vector SVG QR & phông chữ)
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(standeeRef.current, {
+        quality: 1,
+        pixelRatio: 3, // Xuất ảnh 300 DPI siêu sắc nét cho in ấn
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+      });
+
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `Standee-${business.slug || 'expo'}-1booking-pass.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      toast.success('Đã tải ảnh Standee thành công! Bạn có thể mang file này đi in.', {
+        id: toastId,
+      });
+    } catch (err) {
+      console.warn('html-to-image gặp sự cố, chuyển sang html2canvas fallback:', err);
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(standeeRef.current, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+        });
+
+        const dataUrl = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `Standee-${business.slug || 'expo'}-1booking-pass.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        toast.success('Đã tải ảnh Standee thành công! Bạn có thể mang file này đi in.', {
+          id: toastId,
+        });
+      } catch (fallbackErr) {
+        console.error('Lỗi khi xuất ảnh Standee:', fallbackErr);
+        toast.error('Không thể xuất ảnh tự động. Vui lòng thử lại hoặc chụp màn hình.', {
+          id: toastId,
+        });
+      }
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-start py-8 px-4 font-sans print:p-0 print:bg-white print:text-black">
-      {/* ACTION BAR (Hidden when printing) */}
-      <div className="max-w-xl w-full flex items-center justify-between mb-8 print:hidden">
+      {/* ACTION BAR (Ẩn khi in ấn) */}
+      <div className="max-w-xl w-full flex items-center justify-between mb-8 print:hidden gap-2">
         <div className="flex items-center gap-2">
           <Link
             href="/expo"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Về Expo</span>
           </Link>
           <Link
             href={`/expo/${business.slug}/crm`}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors"
           >
             <BarChart3 className="w-3.5 h-3.5 text-amber-400" />
-            <span>CRM Gian Hàng</span>
+            <span className="hidden sm:inline">CRM Gian Hàng</span>
           </Link>
         </div>
 
@@ -60,25 +120,51 @@ export function ExpoStandeeClient({ business, profile }: Props) {
           <Link
             href={`/expo/${business.slug}`}
             target="_blank"
-            className="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            <span>Xem Trang Khách Quét</span>
+            <span className="hidden md:inline">Trang Khách Quét</span>
           </Link>
 
+          {/* Nút chính: TẢI ẢNH STANDEE ĐỂ MANG ĐI IN */}
           <button
             type="button"
-            onClick={handlePrint}
-            className="inline-flex items-center gap-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-1.5 rounded-lg shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+            onClick={handleDownloadImage}
+            disabled={isDownloading}
+            className="inline-flex items-center gap-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all cursor-pointer disabled:opacity-60"
+            title="Tải ảnh Standee chất lượng cao để mang đi in ấn"
           >
-            <Printer className="w-4 h-4" />
-            <span>IN STANDEE (A4 / A5)</span>
+            {isDownloading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Đang xử lý ảnh...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                <span>TẢI ẢNH STANDEE (ĐỂ IN)</span>
+              </>
+            )}
+          </button>
+
+          {/* Nút phụ: In trực tiếp nếu có máy in kết nối sẵn */}
+          <button
+            type="button"
+            onClick={() => window.print()}
+            title="In trực tiếp ra máy in"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors cursor-pointer"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline">In ngay</span>
           </button>
         </div>
       </div>
 
-      {/* STANDEE BOARD CANVAS (Optimized for table acrylic standee & paper print) */}
-      <div className="w-full max-w-[420px] bg-white text-slate-900 rounded-3xl p-8 shadow-2xl border-4 border-amber-500 flex flex-col items-center text-center relative overflow-hidden print:border-none print:shadow-none print:max-w-full print:w-[148mm] print:h-[210mm] print:p-6 print:m-0 print:rounded-none">
+      {/* STANDEE BOARD CANVAS (Khung bảng Standee để bàn hoặc in decal/mica) */}
+      <div 
+        ref={standeeRef}
+        className="w-full max-w-[420px] bg-white text-slate-900 rounded-3xl p-8 shadow-2xl border-4 border-amber-500 flex flex-col items-center text-center relative overflow-hidden print:border-none print:shadow-none print:max-w-full print:w-[148mm] print:h-[210mm] print:p-6 print:m-0 print:rounded-none"
+      >
         
         {/* Decorative Top Accent */}
         <div className="w-20 h-1.5 bg-amber-500 rounded-full mb-4 print:mb-3" />
@@ -160,9 +246,14 @@ export function ExpoStandeeClient({ business, profile }: Props) {
       </div>
 
       {/* Helpful Hint */}
-      <p className="text-xs text-slate-500 mt-6 print:hidden">
-        💡 Mẹo: Bấm <b>In Standee</b> và chọn khổ <b>A5 hoặc A4</b> rồi lồng vào mica để bàn tại quầy lễ tân.
-      </p>
+      <div className="max-w-md text-center mt-6 text-xs text-slate-400 space-y-1 print:hidden">
+        <p>
+          💡 <b>Mẹo in ấn:</b> Bấm nút <b>Tải Ảnh Standee (Để In)</b> để lưu file ảnh chất lượng cao (300 DPI).
+        </p>
+        <p className="text-slate-500 text-[11px]">
+          Bạn có thể gửi file ảnh qua Zalo/Email cho xưởng in chọn in màu khổ <b>A5 (chuẩn để bàn)</b> hoặc <b>A4</b>, sau đó lồng vào khung mica đặt tại quầy lễ tân gian hàng.
+        </p>
+      </div>
     </div>
   );
 }

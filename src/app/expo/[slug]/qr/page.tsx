@@ -10,8 +10,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   return {
-    title: `In Standee QR | ${slug} - 1Booking Expo Pass`,
-    description: 'Bản in Standee mã QR để bàn cho gian hàng triển lãm.',
+    title: `Tải Standee QR | ${slug} - 1Booking Expo Pass`,
+    description: 'Tải ảnh Standee mã QR để bàn chất lượng cao cho gian hàng triển lãm mang đi in ấn.',
   };
 }
 
