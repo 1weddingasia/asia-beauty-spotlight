@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/pho-tiec',
+        destination: '/tat-nien',
+      },
+      {
+        source: '/pho-tiec/dang-ky',
+        destination: '/tat-nien/dang-ky',
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       // Supabase storage

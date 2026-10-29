@@ -198,15 +198,9 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
           </button>
         </div>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — Chỉ giữ: Ưu đãi, Phố tiệc, Danh mục, Địa điểm */}
         <div className="hidden items-center gap-6 md:flex">
           <nav className="flex items-center gap-6">
-            <Link
-              href="/"
-              className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${solid ? "text-foreground" : "text-background/85"}`}
-            >
-              Trang chủ
-            </Link>
             <Link
               href="/uu-dai"
               className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${solid ? "text-foreground" : "text-background/85"}`}
@@ -214,17 +208,11 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               Ưu đãi
             </Link>
             <Link
-              href="/tat-nien"
+              href="/pho-tiec"
               className="text-xs tracking-[0.18em] uppercase font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1 transition-colors"
             >
               <Sparkles className="size-3.5" />
               <span>Phố Tiệc</span>
-            </Link>
-            <Link
-              href="/bang-gia"
-              className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${solid ? "text-foreground" : "text-background/85"}`}
-            >
-              Bảng giá
             </Link>
             {/* Danh Mục dropdown */}
             <NavDropdown
@@ -242,25 +230,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               icon={MapPin}
               solid={solid}
             />
-            <Link
-              href="/lien-he"
-              className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${solid ? "text-foreground" : "text-background/85"}`}
-            >
-              Liên hệ
-            </Link>
           </nav>
-          {/* Dành cho Doanh nghiệp button — desktop */}
-          <Link
-            href="/danh-cho-doanh-nghiep"
-            className={`flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 mr-2 ${
-              solid
-                ? "border-gold/50 text-gold hover:bg-gold/10"
-                : "border-white/40 text-white hover:bg-white/10"
-            }`}
-          >
-            <Building2 className="size-3.5" />
-            Doanh nghiệp
-          </Link>
 
           {authLoading ? (
             <div className="w-32 h-8 rounded-full bg-muted/20 animate-pulse" />
@@ -289,35 +259,27 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
         <div className="border-t border-border bg-background px-4 py-3 md:hidden">
           {mobileMenuSection === "main" && (
             <nav className="space-y-1">
-              <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
-                <Home className="size-4 text-muted-foreground" />
-                <span>Trang chủ</span>
-              </Link>
-              <Link href="/uu-dai" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
+              <Link href="/uu-dai" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted font-medium">
                 <Gift className="size-4 text-amber-500" />
-                <span>Khám phá Ưu đãi</span>
+                <span>Ưu đãi</span>
               </Link>
-              <Link href="/tat-nien" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
+              <Link href="/pho-tiec" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
                 <Sparkles className="size-4 text-amber-500" />
-                <span>Phố Tiệc Tất Niên 🎉</span>
-              </Link>
-              <Link href="/bang-gia" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted font-medium text-foreground">
-                <CreditCard className="size-4 text-amber-500" />
-                <span>Bảng Giá Gói Dịch Vụ</span>
+                <span>Phố Tiệc 🎉</span>
               </Link>
               <button
                 onClick={() => setMobileMenuSection("categories")}
-                className="w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-lg hover:bg-muted"
+                className="w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-lg hover:bg-muted font-medium"
               >
                 <span className="flex items-center gap-2.5">
                   <LayoutGrid className="size-4 text-muted-foreground" />
-                  <span>Danh Mục Ngành</span>
+                  <span>Danh Mục</span>
                 </span>
                 <ChevronDown className="size-4" />
               </button>
               <button
                 onClick={() => setMobileMenuSection("locations")}
-                className="w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-lg hover:bg-muted"
+                className="w-full flex items-center justify-between py-2.5 px-3 text-sm rounded-lg hover:bg-muted font-medium"
               >
                 <span className="flex items-center gap-2.5">
                   <MapPin className="size-4 text-muted-foreground" />
@@ -325,14 +287,21 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
                 </span>
                 <ChevronDown className="size-4" />
               </button>
-              <Link href="/lien-he" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted">
-                <Phone className="size-4 text-muted-foreground" />
-                <span>Liên hệ</span>
-              </Link>
-              <Link href="/danh-cho-doanh-nghiep" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg border border-gold/40 text-gold hover:bg-gold/5 mt-2">
-                <Building2 className="size-4" />
-                <span>Dành cho Doanh nghiệp</span>
-              </Link>
+
+              <div className="pt-2 mt-2 border-t border-border/60 space-y-1">
+                <Link href="/bang-gia" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2 px-3 text-xs text-muted-foreground hover:text-foreground">
+                  <CreditCard className="size-3.5" />
+                  <span>Bảng Giá</span>
+                </Link>
+                <Link href="/lien-he" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2 px-3 text-xs text-muted-foreground hover:text-foreground">
+                  <Phone className="size-3.5" />
+                  <span>Liên hệ hỗ trợ</span>
+                </Link>
+                <Link href="/danh-cho-doanh-nghiep" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2 px-3 text-xs text-gold hover:underline font-semibold">
+                  <Building2 className="size-3.5" />
+                  <span>Dành cho Doanh nghiệp</span>
+                </Link>
+              </div>
             </nav>
           )}
 
@@ -468,13 +437,32 @@ export function SiteFooter() {
         </div>
 
         {/* Liên hệ */}
+        {/* Thông tin & Dịch vụ */}
         <div>
-          <p className="text-xs tracking-[0.25em] text-gold uppercase">Liên hệ</p>
+          <p className="text-xs tracking-[0.25em] text-gold uppercase">Dịch vụ & Đối tác</p>
           <ul className="mt-4 space-y-2 text-sm">
-            <li>{settings?.contact_phone || "0918 731 411"}</li>
             <li>
-              <Link href="/lien-he" className="transition-colors hover:text-gold">
-                Gửi tin nhắn
+              <Link href="/bang-gia" className="transition-colors hover:text-gold flex items-center gap-1.5">
+                <CreditCard className="size-3.5 text-gold/60" />
+                <span>Bảng giá dịch vụ</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/danh-cho-doanh-nghiep" className="transition-colors hover:text-gold flex items-center gap-1.5">
+                <Building2 className="size-3.5 text-gold/60" />
+                <span>Dành cho Doanh nghiệp</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/pho-tiec" className="transition-colors hover:text-gold flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-amber-500" />
+                <span>Phố Tiệc Tất Niên</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/uu-dai" className="transition-colors hover:text-gold flex items-center gap-1.5">
+                <Gift className="size-3.5 text-gold/60" />
+                <span>Khám phá Ưu đãi</span>
               </Link>
             </li>
             <li>
@@ -483,14 +471,8 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link href="/uu-dai" className="transition-colors hover:text-gold">
-                Khám phá Ưu đãi
-              </Link>
-            </li>
-            <li className="pt-2 border-t border-background/10 mt-2">
-              <Link href="/danh-cho-doanh-nghiep" className="flex items-center gap-2 text-gold font-semibold hover:underline">
-                <Building2 className="size-4 shrink-0" />
-                <span>Dành cho Doanh nghiệp</span>
+              <Link href="/lien-he" className="transition-colors hover:text-gold">
+                Liên hệ hỗ trợ: {settings?.contact_phone || "0918 731 411"}
               </Link>
             </li>
           </ul>

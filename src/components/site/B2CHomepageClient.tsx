@@ -20,6 +20,8 @@ import {
   Compass,
   CheckCircle2,
   Zap,
+  UtensilsCrossed,
+  Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CategoryIcon, LocationIcon } from "@/components/ui/category-icon";
@@ -503,6 +505,137 @@ function B2BBanner() {
   );
 }
 
+// --- Phố Tiệc Banner Section ------------------------------------------------
+function PhoTiecBannerSection() {
+  return (
+    <section className="py-12 md:py-16 relative overflow-hidden bg-slate-950 text-white border-y border-amber-500/20">
+      {/* Ambient decorative glowing light */}
+      <div className="absolute -top-20 -left-20 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-rose-500/15 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="mx-auto max-w-6xl px-4 relative z-10">
+        <div className="relative rounded-3xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-zinc-900/90 via-slate-900/90 to-amber-950/40 p-6 sm:p-8 md:p-10 shadow-2xl backdrop-blur-sm">
+          {/* Subtle background image overlay */}
+          <div className="absolute inset-0 opacity-15 mix-blend-luminosity pointer-events-none">
+            <Image
+              src="/images/tat-nien-og.jpg"
+              alt="Phố Tiệc Background"
+              fill
+              className="object-cover"
+              sizes="100vw"
+            />
+          </div>
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 space-y-4 text-left">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/10 border border-amber-500/40 rounded-full px-3.5 py-1 text-xs font-bold text-amber-400 uppercase tracking-wider shadow-sm">
+                <Sparkles className="size-3.5 fill-amber-400" />
+                <span>Tâm Điểm Sự Kiện & Tiệc Tất Niên 2026</span>
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
+                </span>
+              </div>
+
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-white font-black leading-tight tracking-tight">
+                Khám Phá <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">Phố Tiệc</span> — Bản Đồ Sảnh Tiệc & Year-End Party
+              </h2>
+
+              <p className="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-xl">
+                Bản đồ trực quan giúp bạn dễ dàng tìm quán tiệc tất niên, sảnh tiệc liên hoan công ty và phòng VIP gia đình tại TP.HCM. Lọc sảnh tiệc sức chứa 15 - 500 khách, xem menu và nhận ưu đãi tặng bia, karaoke độc quyền!
+              </p>
+
+              {/* 3 Key Highlights */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                  <div className="size-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                    <MapPin className="size-4" />
+                  </div>
+                  <div className="text-xs">
+                    <div className="font-bold text-white">Định vị gần bạn</div>
+                    <div className="text-zinc-400 text-[11px]">Bản đồ trực quan 1-chạm</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                  <div className="size-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                    <Users className="size-4" />
+                  </div>
+                  <div className="text-xs">
+                    <div className="font-bold text-white">Phòng VIP & Đoàn đông</div>
+                    <div className="text-zinc-400 text-[11px]">Sức chứa 15 - 500 khách</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                  <div className="size-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                    <Gift className="size-4" />
+                  </div>
+                  <div className="text-xs">
+                    <div className="font-bold text-white">Ưu đãi độc quyền</div>
+                    <div className="text-zinc-400 text-[11px]">Tặng bia & gói âm thanh</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA Action Buttons */}
+              <div className="pt-2 flex flex-wrap gap-3.5 items-center">
+                <Link
+                  href="/pho-tiec"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black font-extrabold px-6 sm:px-8 py-3 rounded-2xl text-sm sm:text-base shadow-xl shadow-amber-500/20 hover:shadow-amber-500/35 hover:scale-105 active:scale-95 transition-all"
+                >
+                  <Sparkles className="size-4 fill-black" />
+                  <span>Vào Phố Tiệc Ngay</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+
+                <Link
+                  href="/tat-nien/dang-ky"
+                  className="inline-flex items-center gap-2 border border-amber-500/40 text-amber-300 hover:text-white hover:border-amber-400 hover:bg-amber-500/10 px-5 py-3 rounded-2xl text-xs sm:text-sm font-semibold transition-all"
+                >
+                  <UtensilsCrossed className="size-4" />
+                  <span>Dành cho Nhà hàng: Đăng Điểm Tiệc</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Visual Card */}
+            <div className="lg:col-span-5 relative">
+              <Link href="/pho-tiec" className="group block relative rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-2xl hover:border-amber-400 transition-all">
+                <div className="relative h-60 sm:h-72 w-full overflow-hidden">
+                  <Image
+                    src="/images/tat-nien-og.jpg"
+                    alt="Bản Đồ Phố Tiệc Tất Niên"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+
+                  {/* Floating Badges */}
+                  <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md border border-amber-500/40 text-amber-300 text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg">
+                    <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Bản Đồ Phố Tiệc 2026</span>
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 right-4 text-left">
+                    <div className="text-xs uppercase font-extrabold text-amber-400 tracking-wider">Trải nghiệm tương tác</div>
+                    <div className="text-base sm:text-lg font-bold text-white group-hover:text-amber-200 transition-colors flex items-center justify-between">
+                      <span>Khám phá các điểm tiệc nổi bật</span>
+                      <ArrowRight className="size-5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // --- Main Client Component --------------------------------------------------
 export function B2CHomepageClient({
   categories,
@@ -534,6 +667,7 @@ export function B2CHomepageClient({
       </div>
 
       <CategoryGrid categories={categories} />
+      <PhoTiecBannerSection />
       <DealsSection businesses={businesses} locations={locations} categories={categories} />
       <LocationSection locations={locations} />
       <B2BBanner />

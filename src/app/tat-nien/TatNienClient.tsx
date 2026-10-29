@@ -280,12 +280,12 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
           <Link
             href="/tat-nien/dang-ky"
             className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black shadow-md shadow-amber-950/40 transition-all active:scale-95 shrink-0"
-            title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc 500k để sáng đèn trên bản đồ"
+            title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc để sáng đèn trên bản đồ"
           >
             <Sparkles className="w-3.5 h-3.5 fill-black shrink-0" />
-            <span className="hidden md:inline">Đăng Điểm Tiệc 500k</span>
-            <span className="hidden sm:inline md:hidden text-[11px] whitespace-nowrap">Đăng Tiệc 500k</span>
-            <span className="sm:hidden text-[10.5px] whitespace-nowrap">+ Tiệc 500k</span>
+            <span className="hidden md:inline">Đăng Ký Điểm Tiệc</span>
+            <span className="hidden sm:inline md:hidden text-[11px] whitespace-nowrap">Đăng Điểm Tiệc</span>
+            <span className="sm:hidden text-[10.5px] whitespace-nowrap">+ Đăng Tiệc</span>
           </Link>
         </div>
       </header>
