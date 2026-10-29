@@ -17,6 +17,7 @@ interface BoothItem {
   event_name: string;
   event_name_en?: string | null;
   booth_number: string;
+  btc_url?: string | null;
   is_demo?: boolean;
 }
 
@@ -51,14 +52,17 @@ export function ExpoHubClient({ initialBooths }: Props) {
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            1BOOKING EXPO PASS ECOSYSTEM
+            VIETFRANCHISE 2026 • SECC TP.HCM (29 - 31/10/2026)
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-2">
-            Danh Bạ Gian Hàng Triển Lãm
+            VIETFRANCHISE 2026
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto mb-6 leading-relaxed">
-            Nền tảng số hóa gian hàng hội chợ, hỗ trợ 4 ngôn ngữ, thu thập Lead real-time và xuất file Excel tức thì.
+          <p className="text-sm font-bold text-amber-400 mb-1">
+            Triển Lãm Quốc Tế Nhượng Quyền Việt Nam • Vietnam International Franchise Exhibition
+          </p>
+          <p className="text-xs text-slate-400 max-w-lg mx-auto mb-6 leading-relaxed">
+            Danh bạ 85 gian hàng thực tế từ ban tổ chức <span className="text-slate-300 font-semibold">vietfranchise.vn</span> tại SECC. Số hóa QR kết nối đối tác, Standee để bàn và CRM Live theo thời gian thực.
           </p>
 
           {/* SEARCH BAR CHÍNH */}
@@ -68,7 +72,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Tìm nhanh theo tên gian hàng, số booth (ví dụ: A-01), sự kiện..."
+              placeholder="Tìm theo tên doanh nghiệp, số booth (C07, G26, A10...), ngành hàng..."
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl pl-12 pr-4 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 shadow-xl"
             />
             {search && (
@@ -89,13 +93,13 @@ export function ExpoHubClient({ initialBooths }: Props) {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-white">Danh sách gian hàng</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-mono font-bold">
-              {filteredBooths.length} gian hàng
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-mono font-bold">
+              {filteredBooths.length} gian hàng thực tế
             </span>
           </div>
 
           <p className="text-xs text-slate-500 hidden sm:block">
-            Bấm chọn để mở trang khách quét hoặc quản trị CRM
+            Dữ liệu đồng bộ trực tiếp từ ban tổ chức VietFranchise SECC
           </p>
         </div>
 
@@ -127,9 +131,22 @@ export function ExpoHubClient({ initialBooths }: Props) {
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] text-slate-400 truncate max-w-[130px]">
-                      {booth.event_name}
-                    </span>
+                    {booth.btc_url ? (
+                      <a
+                        href={booth.btc_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[10px] text-amber-400/80 hover:text-amber-300 hover:underline"
+                        title="Xem trang chi tiết từ Ban Tổ Chức vietfranchise.vn"
+                      >
+                        <span>Ban Tổ Chức</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    ) : (
+                      <span className="text-[10px] text-slate-400 truncate max-w-[130px]">
+                        SECC 2026
+                      </span>
+                    )}
                   </div>
 
                   {/* Logo + Name */}
@@ -161,7 +178,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                         </p>
                       )}
                       <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                        {booth.address || 'Hội chợ triển lãm'}
+                        {booth.address || 'SECC - TP. Hồ Chí Minh'}
                       </p>
                     </div>
                   </div>

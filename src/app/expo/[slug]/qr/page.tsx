@@ -43,7 +43,8 @@ export default async function ExpoQrPrintPage({ params }: Props) {
     .maybeSingle();
 
   const profile = expoProfile || {
-    event_name: 'Hội Chợ Triển Lãm Quốc Tế',
+    event_name: 'VIETFRANCHISE 2026 - Triển Lãm Quốc Tế Nhượng Quyền Việt Nam',
+    event_name_en: 'VIETFRANCHISE 2026 - Vietnam International Franchise Exhibition',
     booth_number: 'Gian Hàng Tiêu Chuẩn',
     access_pin: '123456',
   };

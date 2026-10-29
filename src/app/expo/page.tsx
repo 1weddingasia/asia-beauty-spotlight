@@ -3,8 +3,8 @@ import { ExpoHubClient } from './ExpoHubClient';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Danh Bạ Gian Hàng Triển Lãm | 1Booking Expo Pass',
-  description: 'Khám phá và kết nối trực tiếp với các thương hiệu, gian hàng tại các kỳ triển lãm quốc tế hàng đầu.',
+  title: 'VIETFRANCHISE 2026 | Danh Bạ 85 Gian Hàng Triển Lãm Quốc Tế Nhượng Quyền Việt Nam - SECC',
+  description: 'Khám phá danh bạ 85 gian hàng triển lãm thực tế tại VIETFRANCHISE 2026 (SECC). Quét mã kết nối thông tin, tra cứu booth, số hóa hội chợ B2B.',
 };
 
 export default async function ExpoHubPage() {
@@ -48,6 +48,7 @@ export default async function ExpoHubPage() {
     event_name: string;
     event_name_en?: string | null;
     booth_number: string;
+    btc_url?: string | null;
     is_demo?: boolean;
   }> = [];
 
@@ -70,6 +71,7 @@ export default async function ExpoHubPage() {
           event_name: p.event_name,
           event_name_en: p.event_name_en || null,
           booth_number: p.booth_number,
+          btc_url: b.page_content?.btc_url || null,
           is_demo: Boolean(b.is_demo || b.slug === 'deoproce-korea'),
         });
       }
