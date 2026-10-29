@@ -8,9 +8,18 @@ export function playChimeSound() {
     if (!AudioContextClass) return;
 
     const ctx = new AudioContextClass();
+    let isClosed = false;
+    const safeClose = () => {
+      if (!isClosed && ctx.state !== 'closed') {
+        isClosed = true;
+        ctx.close().catch(() => {});
+      }
+    };
+
     if (ctx.state === 'suspended') {
-      ctx.resume().catch(() => {
-        void ctx.close();
+      ctx.resume().catch((err) => {
+        console.warn('[Audio Chime] resume failed:', err);
+        safeClose();
       });
     }
     const now = ctx.currentTime;
@@ -51,7 +60,7 @@ export function playChimeSound() {
     osc2.onended = () => {
       osc2.disconnect();
       gain2.disconnect();
-      void ctx.close();
+      safeClose();
     };
   } catch (err) {
     console.warn('[Audio Chime Exception]:', err);
