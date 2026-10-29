@@ -9,7 +9,9 @@ export function playChimeSound() {
 
     const ctx = new AudioContextClass();
     if (ctx.state === 'suspended') {
-      ctx.resume().catch(() => {});
+      ctx.resume().catch(() => {
+        void ctx.close();
+      });
     }
     const now = ctx.currentTime;
 
@@ -49,6 +51,7 @@ export function playChimeSound() {
     osc2.onended = () => {
       osc2.disconnect();
       gain2.disconnect();
+      void ctx.close();
     };
   } catch (err) {
     console.warn('[Audio Chime Exception]:', err);
