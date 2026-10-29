@@ -11,7 +11,7 @@ export const revalidate = 3600;
 
 const PAGE_TITLE = "1Beauty.Asia — Cổng Nhận Khách 1-Chạm Cho Tiệm Làm Đẹp";
 const PAGE_DESC =
-  "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông Telegram tức thì, sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.";
+  "Giải pháp số hóa hoàn chỉnh cho Spa & Salon: Landing page ưu đãi riêng, chuông báo thông minh tức thì (<1s), sổ quản lý khách hàng Mini-CRM. Chỉ 500.000đ/năm.";
 const OG_IMAGE = "https://1beauty.asia/images/og-1beauty.png";
 
 export const metadata = {
@@ -85,7 +85,7 @@ export default async function HomePage() {
 
           <p className="mt-6 text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             Khách quét QR → Chọn deal → Để số điện thoại →{" "}
-            <span className="text-gold font-semibold">Tiệm nghe chuông Telegram ngay lập tức.</span>{" "}
+            <span className="text-gold font-semibold">Tiệm nghe chuông báo nổ đơn ngay lập tức (&lt;1s).</span>{" "}
             Không cần app. Không cần kỹ thuật.
           </p>
 
@@ -157,9 +157,9 @@ export default async function HomePage() {
               },
               {
                 icon: <Bell className="size-8 text-gold" />,
-                title: "Chuông Telegram < 1s",
+                title: "Chuông Báo Tức Thì < 1s",
                 badge: "Không sót đơn",
-                desc: "Mỗi khi có khách để lại số điện thoại, điện thoại của bạn/quản lý nổ chuông Telegram ngay lập tức. Tin nhắn ghi rõ: Tên, SĐT, Gói chọn và Khách mới/VIP.",
+                desc: "Mỗi khi có khách để lại số điện thoại, hệ thống đổ chuông báo tức thì ngay lập tức. Tin nhắn thông báo ghi rõ: Tên, SĐT, Gói chọn và Khách mới/VIP.",
                 highlight: "Gọi ngay khi khách đang nóng"
               },
               {
@@ -237,7 +237,7 @@ export default async function HomePage() {
             <ul className="mt-8 space-y-3 text-left max-w-xs mx-auto">
               {[
                 "Landing Page ưu đãi riêng của tiệm",
-                "Chuông Telegram bắn tức thì < 1 giây",
+                "Chuông báo nổ đơn tức thì < 1 giây",
                 "Sổ quản lý khách Mini-CRM",
                 "Bảng QR Standee A5 (in ngay trên web)",
                 "Xuất danh sách khách ra Excel",

@@ -320,7 +320,7 @@ export default function UpgradePage() {
                     )}
                   </div>
                   <p className="text-xs text-slate-600 mb-3 leading-relaxed">
-                    {p.description || (isVip ? 'Setup toàn bộ trang vận hành & chuông Telegram' : 'Kích hoạt trang ưu đãi chính 1 năm')}
+                    {p.description || (isVip ? 'Setup toàn bộ trang vận hành & hệ thống chuông báo tức thì' : 'Kích hoạt trang ưu đãi chính 1 năm')}
                   </p>
                 </div>
                 <div className="pt-3 border-t border-slate-100 flex items-baseline justify-between">

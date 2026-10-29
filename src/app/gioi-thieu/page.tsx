@@ -255,10 +255,10 @@ export default function GioiThieuPage() {
                 className="w-full md:w-1/2"
               >
                 <div className="text-gold font-display text-7xl font-bold opacity-30 mb-2">02</div>
-                <h3 className="font-display text-3xl md:text-4xl font-bold text-ink mb-6">Chuông Báo Telegram Tức Thì</h3>
+                <h3 className="font-display text-3xl md:text-4xl font-bold text-ink mb-6">Chuông Báo Thông Minh Tức Thì</h3>
                 <ul className="space-y-6">
                   {[
-                    { title: "Bắn thông báo trong 3 giây", desc: "Khách vừa bấm giữ chỗ, Telegram nổ chuông ngay lập tức." },
+                    { title: "Bắn thông báo trong 1 giây", desc: "Khách vừa bấm giữ chỗ, chuông báo nổ đơn ngay lập tức (<1s)." },
                     { title: "Chống trôi tuyệt đối", desc: "Âm thanh đặc trưng, tách biệt với tin nhắn rác. Đầy đủ: Tên - SĐT - Gói Deal - Giờ đặt." },
                     { title: "Cơ chế kiểm soát kép", desc: "Đảm bảo 100% không sót đơn kể cả khi mạng tại tiệm chập chờn." }
                   ].map((f, i) => (
@@ -416,7 +416,7 @@ export default function GioiThieuPage() {
                 {[
                   { crit: "Chi phí đầu tư", fz: "Miễn phí (nhưng tốn tiền nhân viên trực)", web: "5M – 10M VNĐ", beauty: `${PRICING_AMOUNT}/năm (Trọn gói)` },
                   { crit: "Tốc độ đón khách", fz: "Chậm (phụ thuộc người cầm máy)", web: "Rườm rà (nhiều bước đăng ký)", beauty: "3 giây (Chỉ cần 1 chạm điền SĐT)" },
-                  { crit: "Nguy cơ sót đơn", fz: "Rất cao (trôi tin, khách thoát)", web: "Trung bình (khách lười điền form)", beauty: "0% (Thông báo Telegram tức thì)" },
+                  { crit: "Nguy cơ sót đơn", fz: "Rất cao (trôi tin, khách thoát)", web: "Trung bình (khách lười điền form)", beauty: "0% (Chuông báo tự động tức thì)" },
                   { crit: "Thời gian triển khai", fz: "Tự quản lý thủ công", web: "Mất 2 – 4 tuần lập trình", beauty: `Bàn giao dùng ngay trong ${SETUP_TIME}` },
                   { crit: "Quảng bá cộng đồng", fz: "Tự chạy quảng cáo", web: "Tự làm SEO", beauty: "Xuất hiện miễn phí trên Khám Phá" },
                 ].map((row, idx) => (
@@ -456,7 +456,7 @@ export default function GioiThieuPage() {
               {
                 time: "Giờ cao điểm",
                 title: "Thợ đang bận tay",
-                desc: "Không cần mở máy rep tin nhắn. Telegram 'ting ting', chủ tiệm liếc mắt là biết ngay có khách vừa đặt gói nào để chủ động sắp xếp bàn."
+                desc: "Không cần mở máy rep tin nhắn. Chuông báo 'ting ting' tức thì, chủ tiệm liếc mắt là biết ngay có khách vừa đặt gói nào để chủ động sắp xếp bàn."
               },
               {
                 time: "Tại quầy",
@@ -506,7 +506,7 @@ export default function GioiThieuPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   "01 Trang Cổng Ưu Đãi riêng biệt",
-                  "Tích hợp chuông báo Telegram không giới hạn",
+                  "Tích hợp chuông báo thông minh tức thì không giới hạn",
                   "Tặng thiết kế Standee mã QR để bàn",
                   "Tài khoản CRM & xuất Excel",
                   "Đăng deal trên Khám Phá Ưu Đãi 1Beauty",

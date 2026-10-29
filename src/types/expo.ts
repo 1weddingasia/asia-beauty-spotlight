@@ -156,7 +156,7 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     successMsg: "Cảm ơn quý khách! Đại diện gian hàng đã ghi nhận thông tin và sẽ liên hệ kết nối trao đổi với quý khách.",
     websiteBtn: "Website Doanh Nghiệp",
     backToExpo: "Về Danh Bạ Expo",
-    expoDirectory: "Khám phá danh bạ doanh nghiệp triển lãm SECC",
+    expoDirectory: "Khám phá danh bạ doanh nghiệp triển lãm quốc tế",
     viewDirectoryBtn: "Xem Tất Cả Gian Hàng Triển Lãm",
   },
   en: {
@@ -181,7 +181,7 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     successMsg: "Thank you! Our booth representatives have received your contact details and will connect with you shortly.",
     websiteBtn: "Official Website",
     backToExpo: "Back to Expo Hub",
-    expoDirectory: "Explore all exhibitors at SECC Expo",
+    expoDirectory: "Explore all exhibitors in the digital directory",
     viewDirectoryBtn: "Explore All Expo Booths",
   },
   ko: {
@@ -206,7 +206,7 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     successMsg: "감사합니다! 부스 담당자가 연락처를 확인하였으며 빠른 시일 내에 연락드리겠습니다.",
     websiteBtn: "공식 홈페이지",
     backToExpo: "엑스포 명록으로",
-    expoDirectory: "호치민 SECC 참가기업 디렉토리 전체 둘러보기",
+    expoDirectory: "국제 박람회 참가기업 디렉토리 전체 둘러보기",
     viewDirectoryBtn: "전체 부스 둘러보기",
   },
   zh: {
@@ -231,7 +231,7 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     successMsg: "非常感谢！展位代表已收到您的联系信息，将尽快与您取得联系并展开交流。",
     websiteBtn: "官方网站",
     backToExpo: "返回展会名录",
-    expoDirectory: "浏览 SECC 展会参展商名录",
+    expoDirectory: "浏览国际博览会参展企业名录",
     viewDirectoryBtn: "浏览全部参展展位",
   },
 };

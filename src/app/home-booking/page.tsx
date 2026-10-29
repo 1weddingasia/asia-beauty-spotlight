@@ -16,7 +16,7 @@ export const revalidate = 3600;
 
 const PAGE_TITLE = "1Booking.Asia — Nền Tảng Đặt Lịch 1-Chạm & Trợ Lý Lễ Tân AI Thế Hệ Mới";
 const PAGE_DESC =
-  "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông Telegram tức thì, Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.";
+  "Biến người lướt mạng thành khách quen ghé tiệm. Hệ thống đặt lịch tự động 24/7, chuông báo thông minh tức thì (<1s), Mini-CRM quản lý khách. Áp dụng cho 11 nhóm ngành dịch vụ. Chỉ 500.000đ/năm.";
 const OG_IMAGE = "https://1booking.asia/images/og-1booking.png";
 
 export const metadata = {
@@ -109,7 +109,7 @@ export default async function HomeBookingPage() {
 
           <p className="mt-6 text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
             Hệ thống trang đặt lịch tự động chốt khách 24/7,{" "}
-            <span className="text-gold font-semibold">nổ chuông báo Telegram tức thì trong 1 giây</span>,
+            <span className="text-gold font-semibold">nổ chuông báo tự động tức thì trong 1 giây (Realtime Alert)</span>,
             quản trị giá và menu siêu tốc qua chat. Chi phí cố định với 0% hoa hồng, giữ trọn 100% lợi nhuận và tệp data khách hàng.
           </p>
 
@@ -188,8 +188,8 @@ export default async function HomeBookingPage() {
               {
                 icon: <Bell className="size-10 text-gold" />,
                 badge: "Chuông < 1 giây",
-                title: "Chuông Báo Telegram Tức Thì",
-                desc: "Khách vừa bấm đặt lịch là điện thoại chủ tiệm đổ chuông kèm tên, số điện thoại, giờ hẹn và dịch vụ đã chọn. Không bao giờ lo trôi tin nhắn hay sót đơn.",
+                title: "Chuông Báo Thông Minh Tức Thì (Realtime Alert)",
+                desc: "Khách vừa bấm đặt lịch là hệ thống đổ chuông báo tức thì kèm tên, số điện thoại, giờ hẹn và dịch vụ đã chọn. Không bao giờ lo trôi tin nhắn hay sót đơn.",
                 highlight: "Gọi lại ngay khi khách đang nóng",
               },
               {
@@ -336,7 +336,7 @@ export default async function HomeBookingPage() {
               <ul className="space-y-3 mb-8">
                 {[
                   "Trang đặt lịch riêng tại 1booking.asia/ten-co-so",
-                  "Tích hợp chuông báo Telegram tức thì",
+                  "Tích hợp hệ thống chuông báo tức thì Realtime (<1s)",
                   "Mini-CRM quản lý danh sách khách",
                   "Chatbot AI tiếp đón và giải đáp cơ bản",
                   "Xuất danh sách khách ra Excel",

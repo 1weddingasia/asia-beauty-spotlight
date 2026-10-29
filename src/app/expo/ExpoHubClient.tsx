@@ -91,13 +91,13 @@ const HUB_I18N: Record<HubLang, {
   disclaimer: string;
 }> = {
   vi: {
-    eventTag: '1BOOKING EXPO PASS • SECC TP.HCM',
+    eventTag: '1BOOKING EXPO PASS • TP. HỒ CHÍ MINH',
     title: '1BOOKING EXPO PASS',
-    subtitle: 'Danh Bạ Số Hóa Doanh Nghiệp & Kết Nối B2B - SECC',
-    desc: 'Nền tảng số hóa kết nối đối tác B2B, tra cứu vị trí gian hàng, Standee để bàn thông minh và hệ thống Mini-CRM Live theo thời gian thực tại SECC.',
+    subtitle: 'Danh Bạ Số Hóa Doanh Nghiệp & Kết Nối B2B Toàn Diện',
+    desc: 'Nền tảng số hóa kết nối đối tác B2B, tra cứu vị trí gian hàng, Standee để bàn thông minh và hệ thống Mini-CRM Live thời gian thực tại các kỳ triển lãm quốc tế.',
     searchPlaceholder: 'Tìm theo tên doanh nghiệp, số vị trí (C07, G26, A10...), ngành hàng...',
     boothsHeading: 'Danh sách doanh nghiệp',
-    boothsSub: 'Danh bạ số hóa kết nối doanh nghiệp B2B tại SECC',
+    boothsSub: 'Danh bạ số hóa kết nối doanh nghiệp B2B triển lãm thương mại',
     realBoothsSuffix: 'doanh nghiệp',
     btnScan: 'Liên hệ',
     btnCrm: 'CRM Live',
@@ -123,16 +123,16 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: 'Đặt lại',
     pageWord: 'Trang',
     totalWord: 'Tổng cộng',
-    disclaimer: '1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập phục vụ các doanh nghiệp & khách tham quan tại SECC TP.HCM. Nền tảng hoạt động độc lập, không phải và không đại diện cho Ban Tổ Chức sự kiện. Mọi tên thương hiệu thuộc về chủ sở hữu hợp pháp.',
+    disclaimer: '1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập phục vụ các doanh nghiệp & khách tham quan tại các trung tâm triển lãm quốc tế TP.HCM. Nền tảng hoạt động hoàn toàn độc lập, không trực thuộc và không đại diện cho Ban Tổ Chức bất kỳ triển lãm nào. Mọi tên thương hiệu và nhãn hiệu thuộc về chủ sở hữu hợp pháp.',
   },
   en: {
-    eventTag: '1BOOKING EXPO PASS • SECC HCMC',
+    eventTag: '1BOOKING EXPO PASS • HO CHI MINH CITY',
     title: '1BOOKING EXPO PASS',
     subtitle: 'Digitized B2B Business Directory & Smart Networking',
-    desc: 'Digital B2B networking platform, booth location lookup, smart table standees, and live real-time CRM solutions at SECC.',
+    desc: 'Digital B2B networking platform, booth location lookup, smart table standees, and live real-time CRM solutions for international trade exhibitions.',
     searchPlaceholder: 'Search by exhibitor, booth location (C07, G26, A10...), industry...',
     boothsHeading: 'Exhibitor Directory',
-    boothsSub: 'Digitized B2B business networking directory at SECC',
+    boothsSub: 'Digitized B2B business networking directory for trade exhibitions',
     realBoothsSuffix: 'exhibitors',
     btnScan: 'Contact',
     btnCrm: 'Live CRM',
@@ -158,16 +158,16 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: 'Reset',
     pageWord: 'Page',
     totalWord: 'Total',
-    disclaimer: '1Booking Expo Pass is an independent digital directory and B2B networking solution for exhibitors and attendees at SECC HCMC. We operate independently and do not represent the event organizing committee. All brand names belong to their respective owners.',
+    disclaimer: '1Booking Expo Pass is an independent digital directory and B2B networking platform serving exhibitors and attendees at international trade exhibitions in Ho Chi Minh City. We operate completely independently and do not represent any exhibition organizer. All brand names and trademarks belong to their respective owners.',
   },
   ko: {
-    eventTag: '1BOOKING EXPO PASS • 호치민 SECC',
+    eventTag: '1BOOKING EXPO PASS • 호치민',
     title: '1BOOKING EXPO PASS',
     subtitle: '참가기업 디지털 디렉토리 및 스마트 B2B 매칭',
-    desc: '호치민 SECC 참가기업 디지털 B2B 네트워킹, 부스 위치 검색, 스마트 탁상용 스탠디 및 실시간 CRM 솔루션.',
+    desc: '국제 박람회 참가기업 디지털 B2B 네트워킹, 부스 위치 검색, 스마트 탁상용 스탠디 및 실시간 CRM 솔루션.',
     searchPlaceholder: '기업명, 부스 위치(C07, G26, A10...), 업종 검색...',
     boothsHeading: '참가기업 명록',
-    boothsSub: '호치민 SECC B2B 기업 디지털 비즈니스 디렉토리',
+    boothsSub: '국제 박람회 B2B 기업 디지털 비즈니스 디렉토리',
     realBoothsSuffix: '개 기업',
     btnScan: '문의하기',
     btnCrm: '실시간 CRM',
@@ -193,16 +193,16 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: '초기화',
     pageWord: '페이지',
     totalWord: '총',
-    disclaimer: '1Booking Expo Pass는 호치민 SECC 참가기업 및 참관객을 위한 독립적인 디지털 디렉토리 및 B2B 네트워킹 솔루션입니다. 당사는 주최측과 무관하게 독립적으로 운영되며, 모든 브랜드와 상표권은 해당 권리자에게 있습니다.',
+    disclaimer: '1Booking Expo Pass는 호치민 국제 무역 박람회 참가기업 및 참관객을 위한 독립적인 디지털 디렉토리 및 B2B 네트워킹 플랫폼입니다. 당사는 특정 행사 주최측과 무관하게 독립적으로 운영되며, 모든 브랜드와 상표권은 해당 권리자에게 귀속됩니다.',
   },
   zh: {
-    eventTag: '1BOOKING EXPO PASS • 胡志明市 SECC',
+    eventTag: '1BOOKING EXPO PASS • 胡志明市',
     title: '1BOOKING EXPO PASS',
     subtitle: '数字化企业商务名录与智能B2B对接',
-    desc: '胡志明市 SECC 展会数字化商务对接平台、展位查询、智能桌面展架与实时CRM客户管理。',
+    desc: '胡志明市国际博览会参展企业数字化商务对接平台、展位查询、智能桌面展架与实时CRM客户管理。',
     searchPlaceholder: '搜索参展企业、展位编号 (C07, G26, A10...)、所属行业...',
     boothsHeading: '参展商名录',
-    boothsSub: 'SECC 数字化 B2B 商务对接名录',
+    boothsSub: '国际博览会数字化 B2B 商务对接名录',
     realBoothsSuffix: '家参展商',
     btnScan: '商务联系',
     btnCrm: '实时CRM',
@@ -228,7 +228,7 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: '重置',
     pageWord: '第',
     totalWord: '共',
-    disclaimer: '1Booking Expo Pass 是服务于胡志明市 SECC 展会参展企业与观众的独立数字化名录与 B2B 商务对接平台。本平台独立运营，不代表展会主办方。所有品牌名称归其合法持有者所有。',
+    disclaimer: '1Booking Expo Pass 是服务于胡志明市国际贸易博览会参展企业与观众的独立数字化名录与 B2B 商务对接平台。本平台完全独立运营，不代表任何展会主办方。所有品牌名称与商标均归其合法所有者所有。',
   },
 };
 
@@ -599,7 +599,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                         </span>
                       </div>
                       <span className="text-[10px] text-slate-400 font-medium truncate">
-                        SECC TP.HCM
+                        TP. Hồ Chí Minh
                       </span>
                     </div>
 
@@ -632,7 +632,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                           </p>
                         )}
                         <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                          {booth.address || 'SECC - TP. Hồ Chí Minh'}
+                          {booth.address || 'TP. Hồ Chí Minh'}
                         </p>
                       </div>
                     </div>

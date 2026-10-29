@@ -306,7 +306,7 @@ export function OnboardingDealClient() {
             Hồ Sơ & Tài Khoản Đã Khởi Tạo Thành Công!
           </h1>
           <p className="text-muted-foreground text-base max-w-xl mx-auto mb-8">
-            Hệ thống đã tự động tạo tài khoản chính thức cho cơ sở <b className="text-foreground">{successData.name}</b>. AI đang trau chuốt nội dung và Ban Quản Trị đã nhận được thông báo qua Telegram để phê duyệt công khai.
+            Hệ thống đã tự động tạo tài khoản chính thức cho cơ sở <b className="text-foreground">{successData.name}</b>. AI đang trau chuốt nội dung và Ban Quản Trị đã nhận được thông báo tức thì để phê duyệt kích hoạt.
           </p>
 
           {/* Hộp thông tin tài khoản */}

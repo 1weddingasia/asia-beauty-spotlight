@@ -131,8 +131,8 @@ export default function GioiThieuBookingPage() {
                   <BellRing className="size-8" />
                 </div>
                 <div>
-                  <h3 className="font-display text-2xl font-bold text-ink mb-2">Chuông Báo Telegram (1 Giây)</h3>
-                  <p className="text-muted-foreground leading-relaxed">Khách vừa bấm đặt lịch là điện thoại chủ tiệm đổ chuông kèm tên, số điện thoại, giờ hẹn và dịch vụ đã chọn. Tuyệt đối không sót đơn.</p>
+                  <h3 className="font-display text-2xl font-bold text-ink mb-2">Chuông Báo Tức Thì (&lt;1 Giây)</h3>
+                  <p className="text-muted-foreground leading-relaxed">Khách vừa bấm đặt lịch là hệ thống đổ chuông báo tức thì kèm tên, số điện thoại, giờ hẹn và dịch vụ đã chọn. Tuyệt đối không sót đơn.</p>
                 </div>
               </div>
             </div>

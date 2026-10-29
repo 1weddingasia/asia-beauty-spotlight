@@ -364,7 +364,7 @@ export function OnboardingPartyClient() {
             Hồ Sơ Đặt Tiệc & Tài Khoản Đã Khởi Tạo!
           </h1>
           <p className="text-muted-foreground text-base max-w-xl mx-auto mb-8">
-            Hệ thống đã tự động tạo tài khoản chính thức cho nhà hàng <b className="text-foreground">{successData.name}</b>. AI đang biên soạn giao diện sảnh tiệc và thông báo đã được gửi tới Ban Quản Trị qua Telegram để kích hoạt.
+            Hệ thống đã tự động tạo tài khoản chính thức cho nhà hàng <b className="text-foreground">{successData.name}</b>. AI đang biên soạn giao diện sảnh tiệc và thông báo tức thì đã được gửi tới Ban Quản Trị để kích hoạt nhanh.
           </p>
 
           {/* Hộp thông tin tài khoản */}

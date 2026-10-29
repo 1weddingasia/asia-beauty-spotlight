@@ -690,7 +690,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
             <Link
               href="/expo"
               className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-colors"
-              title="Về danh bạ triển lãm SECC"
+              title="Về danh bạ 1Booking Expo Pass"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Về Expo</span>

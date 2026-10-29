@@ -299,7 +299,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                       Đã Gửi Yêu Cầu Đặt Tiệc Thành Công! 🎉
                     </h3>
                     <p className="text-xs text-zinc-300 max-w-md mx-auto leading-relaxed">
-                      Thông tin liên hệ của bạn đã được chuyển thẳng tới Telegram của{' '}
+                      Thông tin liên hệ của bạn đã được chuyển thẳng tới hệ thống chuông báo tức thì của{' '}
                       <span className="text-amber-300 font-bold">{venue.name}</span> và bộ phận hỗ trợ tiệc của 1Booking.Asia.
                     </p>
                     <div className="mt-3 p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 text-xs text-zinc-300 text-left space-y-1.5">
@@ -347,7 +347,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                           Liên Hệ Đặt Tiệc — {venue.name}
                         </h3>
                         <p className="text-[11px] text-zinc-400">
-                          Nhà hàng nhận thông báo Telegram tức thì và gọi lại tư vấn menu cho bạn
+                          Nhà hàng nhận thông báo chuông báo tức thì (&lt;1s) và gọi lại tư vấn menu cho bạn
                         </p>
                       </div>
                     </div>

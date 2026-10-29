@@ -143,12 +143,12 @@ async function main() {
         const details = await scrapeExhibitor(btcUrl);
 
         const companyDesc = details.description || 
-          `Gian hàng chính thức của ${rawName} (Booth ${boothNumber}) tại Triển lãm Quốc tế Nhượng Quyền Việt Nam (VIETFRANCHISE 2026) - Trung tâm Hội chợ và Triển lãm Sài Gòn (SECC).`;
+          `Hồ sơ số hóa kết nối doanh nghiệp của ${rawName} trên hệ thống 1Booking Expo Pass.`;
         
         const companyDescEn = details.description ||
-          `Official exhibition booth of ${nameEn || rawName} (Booth ${boothNumber}) at Vietnam International Franchise Exhibition (VIETFRANCHISE 2026) - Saigon Exhibition and Convention Center (SECC).`;
+          `Official digitized business profile of ${nameEn || rawName} on 1Booking Expo Pass.`;
 
-        const companyAddress = details.address || 'SECC - 799 Nguyễn Văn Linh, P. Tân Mỹ, Q.7, TP.HCM';
+        const companyAddress = details.address || 'TP. Hồ Chí Minh';
         const companyWebsite = details.website || (btcUrl && !btcUrl.includes('vietfranchise.vn') ? btcUrl : '');
 
         const pageContent = {
@@ -156,10 +156,9 @@ async function main() {
           name_en: nameEn,
           logo_url: logoUrl,
           booth_number: boothNumber,
-          event_name: EVENT_NAME_VI,
-          event_name_en: EVENT_NAME_EN,
-          organizer: 'COEX VINA & VFLN',
-          venue: 'SECC (Saigon Exhibition & Convention Center) - 799 Nguyễn Văn Linh, Q.7, TP.HCM',
+          event_name: '1Booking Expo Pass • Triển Lãm Quốc Tế',
+          event_name_en: '1Booking Expo Pass • International Expo',
+          venue: 'TP. Hồ Chí Minh',
           event_date: '29 – 31 Tháng 10, 2026',
           btc_url: btcUrl,
           description: companyDesc,

@@ -1004,7 +1004,7 @@ export default function PromoClient({
                   )}
                   {isPartyBooking && !voucher && (
                     <span className="text-xs text-zinc-400 mt-1 block">
-                      Đại diện nhà hàng sẽ nhận thông báo qua Telegram và liên hệ lại ngay
+                      Đại diện nhà hàng sẽ nhận chuông báo tức thì (&lt;1s) và liên hệ lại ngay
                     </span>
                   )}
                 </DialogDescription>
@@ -1164,7 +1164,7 @@ export default function PromoClient({
                   {isPartyBooking ? (
                     <div className="space-y-3 mt-3 text-left">
                       <p className="text-xs text-zinc-300 leading-relaxed text-center">
-                        Thông tin của bạn đã được chuyển thẳng tới Telegram của <span className="text-amber-300 font-bold">{business.name}</span> và ban quản trị 1Booking.Asia.
+                        Thông tin của bạn đã được chuyển thẳng tới hệ thống chuông báo tức thì của <span className="text-amber-300 font-bold">{business.name}</span> và ban quản trị 1Booking.Asia.
                       </p>
 
                       <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 space-y-1.5">

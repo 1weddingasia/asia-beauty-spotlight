@@ -195,8 +195,8 @@ export default function AccountSettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Cảnh báo Đơn hàng qua Telegram</CardTitle>
-          <CardDescription>Nhận thông báo ngay lập tức về điện thoại khi có khách chốt đơn hoặc đặt lịch.</CardDescription>
+          <CardTitle>Kênh Nhận Chuông Báo Đơn Hàng Tức Thì (Realtime Alert)</CardTitle>
+          <CardDescription>Nhận chuông báo nổ đơn ngay lập tức (&lt;1s) về thiết bị khi có khách chốt đơn hoặc đặt lịch hẹn.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-4">
@@ -204,12 +204,12 @@ export default function AccountSettingsPage() {
               <Send className="size-4" /> Kích hoạt tự động (Rất dễ)
             </h4>
             <p className="text-sm text-blue-700 mb-4">
-              Chỉ cần nhấn vào nút bên dưới, ứng dụng Telegram của bạn sẽ mở ra. Nhấn nút <strong>START</strong> (Bắt đầu) trong Telegram là xong!
+              Nhấn vào nút bên dưới để mở liên kết đồng bộ thông báo tức thì, sau đó nhấn nút <strong>START</strong> (Bắt đầu) là hoàn tất kích hoạt chuông báo.
             </p>
             {telegramLinked ? (
               <div className="flex items-center gap-2 text-green-600 font-bold bg-green-50 px-4 py-3 rounded-lg border border-green-200 w-fit">
                 <CheckCircle2 className="size-5" />
-                Đã kết nối Telegram thành công!
+                Đã kết nối kênh chuông báo thành công!
               </div>
             ) : (
               <Button asChild className="bg-[#0088cc] hover:bg-[#0088cc]/90 text-white font-bold h-12 px-6">
@@ -219,7 +219,7 @@ export default function AccountSettingsPage() {
                   rel="noopener noreferrer"
                 >
                   <Send className="mr-2 size-5" />
-                  Bấm để Kết Nối Telegram
+                  Bấm để Kích Hoạt Chuông Báo Tức Thì
                 </a>
               </Button>
             )}
