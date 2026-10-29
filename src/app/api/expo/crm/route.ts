@@ -150,8 +150,8 @@ function cleanupPinRateLimits(now: number): void {
   for (const [k, v] of pinAttemptCounts.entries()) {
     if (v.resetAt < now) pinAttemptCounts.delete(k);
   }
-  // 2. Nếu vẫn vượt quá dung lượng tối đa, loại bỏ key cũ nhất theo FIFO
-  while (pinAttemptCounts.size > PIN_RATE_LIMIT_MAX_ENTRIES) {
+  // 2. Nếu vẫn chạm hoặc vượt quá dung lượng tối đa, loại bỏ key cũ nhất theo FIFO
+  while (pinAttemptCounts.size >= PIN_RATE_LIMIT_MAX_ENTRIES) {
     const oldestKey = pinAttemptCounts.keys().next().value;
     if (!oldestKey) break;
     pinAttemptCounts.delete(oldestKey);
@@ -162,10 +162,6 @@ function checkPinRateLimit(key: string): boolean {
   const now = Date.now();
   if (pinAttemptCounts.size >= PIN_RATE_LIMIT_MAX_ENTRIES) {
     cleanupPinRateLimits(now);
-    if (pinAttemptCounts.size >= PIN_RATE_LIMIT_MAX_ENTRIES) {
-      const oldestKey = pinAttemptCounts.keys().next().value;
-      if (oldestKey) pinAttemptCounts.delete(oldestKey);
-    }
   }
 
   const record = pinAttemptCounts.get(key);
