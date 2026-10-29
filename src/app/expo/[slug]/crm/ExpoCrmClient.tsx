@@ -10,8 +10,6 @@ import {
   Unlock,
   KeyRound,
   Download,
-  Phone,
-  MessageCircle,
   Mail,
   Search,
   Printer,
@@ -23,9 +21,14 @@ import {
   UserCheck,
   Sparkles,
   Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getExpoBrandName } from '@/types/expo';
+import { CountryFlag } from '../../CountryFlag';
 
 interface Lead {
   id: string;
@@ -68,6 +71,9 @@ export function ExpoCrmClient({ business, profile }: Props) {
   const [search, setSearch] = useState('');
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState<number>(20);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const nameVi = getExpoBrandName(business, profile, 'vi');
   const nameEn = getExpoBrandName(business, profile, 'en');
@@ -161,6 +167,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
           const newLead = payload.new as Lead;
           setLeads((prev) => [newLead, ...prev]);
           setHighlightedId(newLead.id);
+          setCurrentPage(1);
           if (audioEnabled) {
             playChimeSound();
           }
@@ -233,6 +240,46 @@ export function ExpoCrmClient({ business, profile }: Props) {
       (lead.company_name && lead.company_name.toLowerCase().includes(q))
     );
   });
+
+  // Reset trang về 1 khi thay đổi từ khóa tìm kiếm hoặc đổi số dòng/trang
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, pageSize]);
+
+  // Phân trang danh sách Lead
+  const totalLeads = filteredLeads.length;
+  const totalPages = Math.max(1, Math.ceil(totalLeads / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalLeads);
+  const paginatedLeads = filteredLeads.slice(startIndex, endIndex);
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      if (safeCurrentPage <= 4) {
+        pages.push(1, 2, 3, 4, 5, '...', totalPages);
+      } else if (safeCurrentPage >= totalPages - 3) {
+        pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, '...', safeCurrentPage - 1, safeCurrentPage, safeCurrentPage + 1, '...', totalPages);
+      }
+    }
+    return pages;
+  };
+
+  const handleCopy = (text: string, id: string, label: string) => {
+    try {
+      navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      toast.success(`Đã sao chép ${label}: ${text}`);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      toast.info(`${label}: ${text}`);
+    }
+  };
 
   const handleDeleteDemo = async () => {
     if (!confirm('Anh có chắc muốn XÓA gian hàng mẫu này? Sau khi xóa, trang demo và toàn bộ dữ liệu mẫu sẽ bị xóa vĩnh viễn.')) {
@@ -466,7 +513,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
           </div>
         )}
 
-        {/* SEARCH & REFRESH BAR */}
+        {/* SEARCH & PAGE SIZE BAR */}
         <div className="flex items-center gap-2 mb-4">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
@@ -479,11 +526,26 @@ export function ExpoCrmClient({ business, profile }: Props) {
             />
           </div>
 
+          {/* Page Size Selector */}
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300">
+            <span className="text-[11px] text-slate-500 hidden sm:inline">Hiển thị:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="bg-transparent text-amber-400 font-bold focus:outline-none cursor-pointer text-xs"
+            >
+              <option value={10} className="bg-slate-900 text-slate-200">10 / trang</option>
+              <option value={20} className="bg-slate-900 text-slate-200">20 / trang</option>
+              <option value={50} className="bg-slate-900 text-slate-200">50 / trang</option>
+              <option value={100} className="bg-slate-900 text-slate-200">100 / trang</option>
+            </select>
+          </div>
+
           <button
             type="button"
             onClick={() => fetchFreshLeads(false)}
             disabled={loadingLeads}
-            className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition-colors"
+            className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition-colors cursor-pointer"
             title="Làm mới danh sách"
           >
             <RefreshCw className={`w-4 h-4 ${loadingLeads ? 'animate-spin text-amber-400' : ''}`} />
@@ -510,101 +572,246 @@ export function ExpoCrmClient({ business, profile }: Props) {
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
-            {filteredLeads.map((item, idx) => {
-              const isHighlight = highlightedId === item.id;
-              const cleanPhone = item.customer_phone.replace(/\D/g, '');
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+            {/* Desktop Table View (Compact & Data-Dense) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold text-[11px]">
+                    <th className="py-2.5 px-3 w-12 text-center">STT</th>
+                    <th className="py-2.5 px-3">Khách Hàng</th>
+                    <th className="py-2.5 px-3">Công Ty</th>
+                    <th className="py-2.5 px-3">Số Điện Thoại</th>
+                    <th className="py-2.5 px-3">Email</th>
+                    <th className="py-2.5 px-3">Nhu Cầu Kết Nối</th>
+                    <th className="py-2.5 px-3 w-28 text-right">Thời Gian</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {paginatedLeads.map((item, idx) => {
+                    const isHighlight = highlightedId === item.id;
+                    const stt = filteredLeads.length - (startIndex + idx);
 
-              return (
-                <div
-                  key={item.id}
-                  className={`bg-slate-900 border rounded-2xl p-4 transition-all duration-300 ${
-                    isHighlight
-                      ? 'border-amber-400 ring-2 ring-amber-400/20 shadow-lg shadow-amber-500/10'
-                      : 'border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    {/* Left: Contact Info */}
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-bold text-amber-400">
-                          #{filteredLeads.length - idx}
-                        </span>
-                        <h4 className="text-sm font-bold text-white">
+                    return (
+                      <tr
+                        key={item.id}
+                        className={`transition-colors ${
+                          isHighlight
+                            ? 'bg-amber-500/15 border-l-4 border-l-amber-400'
+                            : 'hover:bg-slate-800/50'
+                        }`}
+                      >
+                        {/* STT */}
+                        <td className="py-2.5 px-3 text-center font-mono font-bold text-amber-400/90 text-xs">
+                          #{stt}
+                        </td>
+
+                        {/* Tên + Cờ Quốc Gia */}
+                        <td className="py-2.5 px-3">
+                          <div className="flex items-center gap-2">
+                            <CountryFlag country={item.preferred_lang || 'vi'} size="sm" />
+                            <span className="font-bold text-white text-xs truncate max-w-[160px]">
+                              {item.customer_name}
+                            </span>
+                            {isHighlight && (
+                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 animate-pulse">
+                                MỚI
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Công ty */}
+                        <td className="py-2.5 px-3 text-slate-300">
+                          {item.company_name ? (
+                            <span className="truncate max-w-[150px] inline-block font-medium" title={item.company_name}>
+                              {item.company_name}
+                            </span>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
+
+                        {/* Số điện thoại (Nhấp để chép) */}
+                        <td className="py-2.5 px-3">
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(item.customer_phone, item.id, 'SĐT')}
+                            className="inline-flex items-center gap-1.5 font-mono font-bold text-amber-300 hover:text-amber-200 transition-colors group cursor-pointer"
+                            title="Bấm để sao chép số điện thoại"
+                          >
+                            <span>{item.customer_phone}</span>
+                            {copiedId === item.id ? (
+                              <Check className="w-3 h-3 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            )}
+                          </button>
+                        </td>
+
+                        {/* Email */}
+                        <td className="py-2.5 px-3 text-slate-400">
+                          {item.customer_email ? (
+                            <a
+                              href={`mailto:${item.customer_email}`}
+                              className="truncate max-w-[160px] inline-block hover:text-amber-300 hover:underline transition-colors"
+                              title={item.customer_email}
+                            >
+                              {item.customer_email}
+                            </a>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
+
+                        {/* Nhu cầu */}
+                        <td className="py-2.5 px-3 text-slate-300">
+                          {item.interests ? (
+                            <span className="truncate max-w-[200px] inline-block text-slate-300" title={item.interests}>
+                              {item.interests}
+                            </span>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
+
+                        {/* Thời gian */}
+                        <td className="py-2.5 px-3 text-right font-mono text-[11px] text-slate-400 whitespace-nowrap">
+                          {new Date(item.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}{' '}
+                          <span className="text-slate-500">{new Date(item.created_at).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile View: High-density compact card list */}
+            <div className="block sm:hidden divide-y divide-slate-800/80">
+              {paginatedLeads.map((item, idx) => {
+                const isHighlight = highlightedId === item.id;
+                const stt = filteredLeads.length - (startIndex + idx);
+
+                return (
+                  <div
+                    key={item.id}
+                    className={`p-3 transition-colors ${
+                      isHighlight
+                        ? 'bg-amber-500/15 border-l-4 border-l-amber-400'
+                        : 'hover:bg-slate-800/30'
+                    }`}
+                  >
+                    {/* Line 1: Header */}
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <div className="flex items-center gap-1.5 truncate">
+                        <span className="text-xs font-mono font-bold text-amber-400">#{stt}</span>
+                        <CountryFlag country={item.preferred_lang || 'vi'} size="sm" />
+                        <span className="text-xs font-bold text-white truncate max-w-[140px]">
                           {item.customer_name}
-                        </h4>
-                        <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
-                          {item.preferred_lang || 'VI'}
                         </span>
                         {isHighlight && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 animate-pulse">
+                          <span className="text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 animate-pulse">
                             MỚI
                           </span>
                         )}
                       </div>
 
-                      <div className="text-xs text-slate-300 flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span className="font-mono font-bold text-amber-300">
-                          {item.customer_phone}
-                        </span>
-                        {item.customer_email && (
-                          <span className="text-slate-400">{item.customer_email}</span>
-                        )}
-                        {item.company_name && (
-                          <span className="text-slate-300 font-medium">
-                            🏢 {item.company_name}
-                          </span>
-                        )}
-                      </div>
-
-                      {item.interests && (
-                        <p className="text-xs text-slate-400 bg-slate-950/60 p-2 rounded-lg border border-slate-800/80 mt-1">
-                          📝 {item.interests}
-                        </p>
-                      )}
-
-                      <div className="text-[10px] text-slate-500 flex items-center gap-1 pt-1">
-                        <Clock className="w-3 h-3" />
-                        <span>{new Date(item.created_at).toLocaleString('vi-VN')}</span>
-                      </div>
+                      <span className="text-[10px] font-mono text-slate-500 shrink-0">
+                        {new Date(item.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                     </div>
 
-                    {/* Right: Quick Action Buttons */}
-                    <div className="flex items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
-                      <a
-                        href={`tel:${item.customer_phone}`}
-                        className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-colors"
+                    {/* Line 2: Phone & Details */}
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(item.customer_phone, item.id, 'SĐT')}
+                        className="font-mono font-bold text-amber-300 hover:text-amber-200 inline-flex items-center gap-1 cursor-pointer"
+                        title="Bấm để sao chép"
                       >
-                        <Phone className="w-3.5 h-3.5" />
-                        <span>Gọi</span>
-                      </a>
+                        <span>{item.customer_phone}</span>
+                        {copiedId === item.id ? (
+                          <Check className="w-3 h-3 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-2.5 h-2.5 text-slate-500" />
+                        )}
+                      </button>
 
-                      {cleanPhone && (
-                        <a
-                          href={`https://zalo.me/${cleanPhone}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 transition-colors"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          <span>Zalo</span>
-                        </a>
+                      {item.company_name && (
+                        <span className="text-slate-400 truncate max-w-[160px]">
+                          • 🏢 {item.company_name}
+                        </span>
                       )}
 
                       {item.customer_email && (
-                        <a
-                          href={`mailto:${item.customer_email}`}
-                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
-                        >
-                          <Mail className="w-3.5 h-3.5" />
-                        </a>
+                        <span className="text-slate-500 truncate max-w-[140px]">
+                          • {item.customer_email}
+                        </span>
                       )}
                     </div>
+
+                    {item.interests && (
+                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-1 bg-slate-950/40 px-2 py-0.5 rounded border border-slate-800/50">
+                        📝 {item.interests}
+                      </p>
+                    )}
                   </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination Controls Footer */}
+            {totalPages > 1 && (
+              <div className="px-4 py-3 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div className="text-slate-400 text-center sm:text-left">
+                  Hiển thị <span className="font-bold text-amber-400">{startIndex + 1} - {endIndex}</span> trong tổng số <span className="font-bold text-white">{totalLeads}</span> khách quét
                 </div>
-              );
-            })}
+
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={safeCurrentPage <= 1}
+                    className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    title="Trang trước"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  {getPageNumbers().map((p, pIdx) => {
+                    if (p === '...') {
+                      return <span key={`ellipsis-${pIdx}`} className="px-2 text-slate-600 font-mono">...</span>;
+                    }
+                    const isCurrent = p === safeCurrentPage;
+                    return (
+                      <button
+                        key={`page-${p}`}
+                        type="button"
+                        onClick={() => setCurrentPage(p as number)}
+                        className={`w-7 h-7 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                          isCurrent
+                            ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                            : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={safeCurrentPage >= totalPages}
+                    className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    title="Trang sau"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>

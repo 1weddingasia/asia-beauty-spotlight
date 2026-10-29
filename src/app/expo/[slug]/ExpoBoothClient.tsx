@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { EXPO_TRANSLATIONS, ExpoLanguage, getExpoBrandName, getExpoEventName } from '@/types/expo';
 import { Globe, CheckCircle2, Building2, Handshake, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { CountryFlag } from '../CountryFlag';
 
 interface Props {
   business: {
@@ -34,11 +35,11 @@ interface Props {
   };
 }
 
-const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; flag: string }> = [
-  { code: 'vi', label: 'Tiếng Việt', flag: '🇻🇳' },
-  { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'ko', label: '한국어', flag: '🇰🇷' },
-  { code: 'zh', label: '中文', flag: '🇨🇳' },
+const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; countryName: string }> = [
+  { code: 'vi', label: 'Tiếng Việt', countryName: 'Việt Nam' },
+  { code: 'en', label: 'English', countryName: 'International / English' },
+  { code: 'ko', label: '한국어', countryName: '대한민국 (Korea)' },
+  { code: 'zh', label: '中文', countryName: '中国 (China)' },
 ];
 
 export function ExpoBoothClient({ business, profile }: Props) {
@@ -114,24 +115,27 @@ export function ExpoBoothClient({ business, profile }: Props) {
             </span>
           </div>
 
-          {/* 4-Language Switcher */}
-          <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-full border border-slate-700">
-            {LANGUAGE_CONFIG.map((item) => (
-              <button
-                key={item.code}
-                type="button"
-                onClick={() => setLang(item.code)}
-                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                  lang === item.code
-                    ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title={item.label}
-              >
-                <span>{item.flag}</span>
-                <span className="ml-1 hidden sm:inline">{item.code.toUpperCase()}</span>
-              </button>
-            ))}
+          {/* National Flags Language Switcher */}
+          <div className="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-full border border-slate-700/80 shadow-inner">
+            {LANGUAGE_CONFIG.map((item) => {
+              const isActive = lang === item.code;
+              return (
+                <button
+                  key={item.code}
+                  type="button"
+                  onClick={() => setLang(item.code)}
+                  className={`relative p-1 rounded-full transition-all flex items-center justify-center cursor-pointer ${
+                    isActive
+                      ? 'bg-amber-400/20 ring-2 ring-amber-400 scale-105 shadow-md shadow-amber-400/20'
+                      : 'hover:bg-slate-800 opacity-60 hover:opacity-100'
+                  }`}
+                  title={`${item.label} (${item.countryName})`}
+                  aria-label={item.label}
+                >
+                  <CountryFlag country={item.code} size="md" className="rounded-full overflow-hidden object-cover" />
+                </button>
+              );
+            })}
           </div>
         </div>
       </header>
