@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   X,
   Sparkles,
@@ -8,7 +8,6 @@ import {
   User,
   Building2,
   MessageSquare,
-  Mail,
   Send,
   Loader2,
   CheckCircle2,
@@ -22,6 +21,8 @@ interface Props {
   defaultBusinessName?: string;
   source?: string;
 }
+
+const TELEGRAM_BOT_URL = 'https://t.me/bookingasia_bot';
 
 const SERVICE_OPTIONS = [
   'Số hóa gian hàng mới',
@@ -45,6 +46,34 @@ export function ExpoContactModal({
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setBusinessName(defaultBusinessName);
+    }
+  }, [isOpen, defaultBusinessName]);
+
+  const handleResetAndClose = () => {
+    if (isSubmitting) return;
+    setIsSuccess(false);
+    setContactName('');
+    setPhone('');
+    setEmail('');
+    setMessage('');
+    setSelectedService(SERVICE_OPTIONS[0]);
+    onClose();
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isSubmitting) {
+        handleResetAndClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isSubmitting]);
 
   if (!isOpen) return null;
 
@@ -71,33 +100,27 @@ export function ExpoContactModal({
         }),
       });
 
-      const data = await res.json();
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         throw new Error(data.error || 'Có lỗi xảy ra, vui lòng thử lại');
       }
 
       setIsSuccess(true);
       toast.success('Đã gửi yêu cầu liên hệ thành công!');
-    } catch (err: any) {
-      toast.error(err.message || 'Không thể gửi yêu cầu lúc này. Vui lòng thử lại.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      toast.error(msg || 'Không thể gửi yêu cầu lúc này. Vui lòng thử lại.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleResetAndClose = () => {
-    setIsSuccess(false);
-    setContactName('');
-    setPhone('');
-    setEmail('');
-    setMessage('');
-    onClose();
-  };
-
   return (
     <div
+      role="dialog"
+      aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
-      onClick={handleResetAndClose}
+      onClick={() => { if (!isSubmitting) handleResetAndClose(); }}
     >
       <div
         className="relative w-full max-w-lg bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-100 overflow-hidden max-h-[92vh] overflow-y-auto"
@@ -134,7 +157,7 @@ export function ExpoContactModal({
 
             <div className="w-full space-y-2.5">
               <a
-                href="https://t.me/bookingasia_bot"
+                href={TELEGRAM_BOT_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs sm:text-sm shadow-lg shadow-sky-500/20 transition-all cursor-pointer"
@@ -287,7 +310,7 @@ export function ExpoContactModal({
                 <span>⚡ Phản hồi trực tiếp qua Telegram &amp; Zalo</span>
                 <span>•</span>
                 <a
-                  href="https://t.me/bookingasia_bot"
+                  href={TELEGRAM_BOT_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-amber-400 hover:underline inline-flex items-center gap-1"

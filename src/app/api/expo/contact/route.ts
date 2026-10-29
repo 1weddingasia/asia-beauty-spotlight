@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     // 1. Lưu vào Database (contact_requests)
     try {
       const supabase = await createAdminClient();
-      await supabase.from('contact_requests').insert({
+      const { error: insertErr } = await supabase.from('contact_requests').insert({
         contact_name,
         phone,
         business_name: business_name || 'Khách vãng lai / Gian hàng mới',
@@ -68,13 +68,16 @@ export async function POST(req: Request) {
         status: 'new',
         created_at: new Date().toISOString(),
       });
+      if (insertErr) {
+        console.warn('[Expo Contact] DB insert warning:', insertErr.message);
+      }
     } catch (dbErr) {
-      console.warn('[Expo Contact] DB save note:', dbErr);
+      console.warn('[Expo Contact] DB save error:', dbErr);
     }
 
-    // 2. Gửi thông báo trực tiếp đến Telegram Admin (584207194)
+    // 2. Gửi thông báo trực tiếp đến Telegram Admin
     const botToken = process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID || '584207194';
+    const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 
     if (botToken && chatId) {
       const escapeHtml = (text: string) =>
