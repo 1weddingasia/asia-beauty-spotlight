@@ -68,8 +68,8 @@ export default async function ExpoBoothPage({ params }: Props) {
   const profile = expoProfile || {
     id: 'default',
     business_id: business.id,
-    event_name: 'VIETFRANCHISE 2026 - Triển Lãm Quốc Tế Nhượng Quyền Việt Nam',
-    event_name_en: 'VIETFRANCHISE 2026 - Vietnam International Franchise Exhibition',
+    event_name: '1Booking Expo Pass • SECC TP.HCM',
+    event_name_en: '1Booking Expo Pass • SECC HCMC',
     booth_number: 'Gian Hàng Tiêu Chuẩn',
     access_pin: '123456',
     languages_enabled: ['vi', 'en', 'ko', 'zh'],
