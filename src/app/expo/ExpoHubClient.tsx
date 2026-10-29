@@ -88,6 +88,7 @@ const HUB_I18N: Record<HubLang, {
   resetFilter: string;
   pageWord: string;
   totalWord: string;
+  disclaimer: string;
 }> = {
   vi: {
     eventTag: 'TRIỂN LÃM QUỐC TẾ NHƯỢNG QUYỀN • SECC TP.HCM',
@@ -122,6 +123,7 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: 'Đặt lại',
     pageWord: 'Trang',
     totalWord: 'Tổng cộng',
+    disclaimer: '1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập phục vụ các doanh nghiệp & khách tham quan tại SECC TP.HCM. Nền tảng hoạt động độc lập, không phải và không đại diện cho Ban Tổ Chức sự kiện. Mọi tên thương hiệu thuộc về chủ sở hữu hợp pháp.',
   },
   en: {
     eventTag: 'INTERNATIONAL FRANCHISE EXHIBITION • SECC HCMC',
@@ -156,6 +158,7 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: 'Reset',
     pageWord: 'Page',
     totalWord: 'Total',
+    disclaimer: '1Booking Expo Pass is an independent digital directory and B2B networking solution for exhibitors and attendees at SECC HCMC. We operate independently and do not represent the event organizing committee. All brand names belong to their respective owners.',
   },
   ko: {
     eventTag: '국제 프랜차이즈 박람회 • 호치민 SECC',
@@ -190,6 +193,7 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: '초기화',
     pageWord: '페이지',
     totalWord: '총',
+    disclaimer: '1Booking Expo Pass는 호치민 SECC 참가기업 및 참관객을 위한 독립적인 디지털 디렉토리 및 B2B 네트워킹 솔루션입니다. 당사는 주최측과 무관하게 독립적으로 운영되며, 모든 브랜드와 상표권은 해당 권리자에게 있습니다.',
   },
   zh: {
     eventTag: '国际特许加盟展览会 • 胡志明市 SECC',
@@ -224,6 +228,7 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: '重置',
     pageWord: '第',
     totalWord: '共',
+    disclaimer: '1Booking Expo Pass 是服务于胡志明市 SECC 展会参展企业与观众的独立数字化名录与 B2B 商务对接平台。本平台独立运营，不代表展会主办方。所有品牌名称归其合法持有者所有。',
   },
 };
 
@@ -752,9 +757,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
 
         {/* ĐỊNH VỊ ĐỘC LẬP / INDEPENDENT DIRECTORY DISCLAIMER */}
         <div className="mt-16 pt-6 border-t border-slate-900 text-center text-[11px] text-slate-500 max-w-2xl mx-auto leading-relaxed">
-          <p>
-            1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập phục vụ các doanh nghiệp & khách tham quan tại SECC TP.HCM. Nền tảng hoạt động độc lập, không phải và không đại diện cho Ban Tổ Chức sự kiện. Mọi tên thương hiệu thuộc về chủ sở hữu hợp pháp.
-          </p>
+          <p>{t.disclaimer}</p>
         </div>
       </main>
     </div>

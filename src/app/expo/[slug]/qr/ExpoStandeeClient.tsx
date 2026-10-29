@@ -90,9 +90,11 @@ export function ExpoStandeeClient({ business, profile }: Props) {
         </div>
 
         {/* Booth Location Number */}
-        <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-lg text-sm font-mono font-black bg-amber-500/10 text-amber-700 border border-amber-500/30 uppercase tracking-widest mb-4">
-          <span>{profile.booth_number}</span>
-        </div>
+        {profile.booth_number && (
+          <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-lg text-sm font-mono font-black bg-amber-500/10 text-amber-700 border border-amber-500/30 uppercase tracking-widest mb-4">
+            <span>{profile.booth_number}</span>
+          </div>
+        )}
 
         {/* Brand Logo & Name */}
         <div className="flex flex-col items-center mb-6">

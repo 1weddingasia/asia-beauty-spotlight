@@ -145,10 +145,13 @@ const ChangePinSchema = z.object({
 const pinAttemptCounts = new Map<string, { count: number; resetAt: number }>();
 function checkPinRateLimit(key: string): boolean {
   const now = Date.now();
-  // Dọn dẹp bộ nhớ nếu map vượt 300 entries
-  if (pinAttemptCounts.size > 300) {
+  // Dọn dẹp bộ nhớ nếu map vượt 200 entries và hard-cap chống rò rỉ RAM
+  if (pinAttemptCounts.size > 200) {
     for (const [k, v] of pinAttemptCounts.entries()) {
       if (v.resetAt < now) pinAttemptCounts.delete(k);
+    }
+    if (pinAttemptCounts.size > 300) {
+      pinAttemptCounts.clear();
     }
   }
 

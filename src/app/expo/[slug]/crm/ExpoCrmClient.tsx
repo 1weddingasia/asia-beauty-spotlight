@@ -640,7 +640,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Booth: <span className="text-amber-300 font-mono font-bold">{profile.booth_number}</span> • {profile.event_name}
+                Vị trí: <span className="text-amber-300 font-mono font-bold">{profile.booth_number}</span> • {profile.event_name}
               </p>
             </div>
           </div>
