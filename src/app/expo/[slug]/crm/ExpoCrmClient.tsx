@@ -10,7 +10,6 @@ import {
   Unlock,
   KeyRound,
   Download,
-  Mail,
   Search,
   Printer,
   ExternalLink,
@@ -134,6 +133,7 @@ export function ExpoCrmClient({ business, profile }: Props) {
         if (leadsRef.current.length > 0 && data.length > leadsRef.current.length) {
           const newest = data[0];
           setHighlightedId(newest.id);
+          setCurrentPage(1);
           if (audioEnabled) {
             playChimeSound();
           }
@@ -270,12 +270,26 @@ export function ExpoCrmClient({ business, profile }: Props) {
     return pages;
   };
 
-  const handleCopy = (text: string, id: string, label: string) => {
+  // Tự động tắt nhấp nháy highlight sau 8 giây
+  useEffect(() => {
+    if (!highlightedId) return;
+    const t = setTimeout(() => {
+      setHighlightedId(null);
+    }, 8000);
+    return () => clearTimeout(t);
+  }, [highlightedId]);
+
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCopy = async (text: string, id: string, label: string) => {
     try {
-      navigator.clipboard.writeText(text);
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+      }
       setCopiedId(id);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
       toast.success(`Đã sao chép ${label}: ${text}`);
-      setTimeout(() => setCopiedId(null), 2000);
     } catch {
       toast.info(`${label}: ${text}`);
     }

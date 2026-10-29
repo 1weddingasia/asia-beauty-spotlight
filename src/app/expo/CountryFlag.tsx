@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 export type SupportedLanguage = 'vi' | 'en' | 'ko' | 'zh';
 
@@ -9,7 +9,9 @@ interface FlagProps {
 }
 
 export function CountryFlag({ country, className = '', size = 'md' }: FlagProps) {
-  const code = (country || 'vi').toLowerCase();
+  const uniqueId = useId().replace(/:/g, '-');
+  const clipId = `uk-clip-${uniqueId}`;
+  const code = (country || 'vi').toLowerCase().split(/[-_]/)[0];
 
   const sizeClasses = {
     sm: 'w-5 h-3.5 rounded-sm',
@@ -42,10 +44,10 @@ export function CountryFlag({ country, className = '', size = 'md' }: FlagProps)
         className={`inline-block shrink-0 shadow-xs border border-white/10 overflow-hidden ${sizeClasses} ${className}`}
         aria-label="English / UK Flag"
       >
-        <clipPath id="uk-clip">
+        <clipPath id={clipId}>
           <rect width="60" height="40" />
         </clipPath>
-        <g clipPath="url(#uk-clip)">
+        <g clipPath={`url(#${clipId})`}>
           <rect width="60" height="40" fill="#012169" />
           {/* Diagonal White */}
           <path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" strokeWidth="8" />
