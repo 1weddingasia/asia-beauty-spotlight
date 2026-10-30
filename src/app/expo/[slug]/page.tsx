@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!business) {
     return {
-      title: '1Booking Expo Pass | Gian hàng số',
-      description: 'Số hóa gian hàng triển lãm & Thu thập thông tin khách hàng thông minh.',
+      title: '1Booking Digital Pass | Hồ sơ doanh nghiệp',
+      description: 'Hồ sơ số hóa doanh nghiệp & Thu thập thông tin đối tác thông minh.',
     };
   }
 

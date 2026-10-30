@@ -185,7 +185,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
           <div className="flex flex-col items-center text-center mb-6">
             <div className="mb-3 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-amber-400/15 text-amber-300 border border-amber-400/30 tracking-wider uppercase shadow-xs">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>{lang === 'vi' ? 'Hồ Sơ Doanh Nghiệp Số' : 'Digital Business Pass'}</span>
+              <span>{t.digitalPassBadge}</span>
             </div>
 
             {business.logo_url ? (
@@ -387,7 +387,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
         defaultBusinessName={brandName}
-        source={`1Booking Expo Pass - Gian Hàng ${brandName}`}
+        source={`1Booking Digital Pass - ${brand.primary}`}
         lang={lang}
       />
     </div>

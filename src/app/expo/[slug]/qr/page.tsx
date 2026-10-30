@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   return {
     title: `Tải Standee QR | ${slug} - 1Booking Expo Pass`,
-    description: 'Tải ảnh Standee mã QR để bàn dạng file PNG độ nét cao cho gian hàng doanh nghiệp.',
+    description: 'Tải ảnh Standee mã QR để bàn dạng file PNG độ nét cao cho doanh nghiệp.',
   };
 }
 

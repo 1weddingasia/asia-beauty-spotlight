@@ -24,6 +24,12 @@ interface Props {
   };
 }
 
+function getTitleSizeClass(text: string): string {
+  if (text.length > 30) return 'text-lg sm:text-xl';
+  if (text.length > 18) return 'text-xl sm:text-2xl';
+  return 'text-2xl sm:text-3xl';
+}
+
 export function ExpoStandeeClient({ business, profile }: Props) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [lang, setLang] = useState<ExpoLanguage>('vi');
@@ -41,12 +47,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
   const nameVi = getExpoBrandName(business, profile, 'vi');
   const nameEn = getExpoBrandName(business, profile, 'en');
   const brand = formatStandeeBrandName(nameVi, nameEn);
-
-  const titleSizeClass = brand.primary.length > 30 
-    ? 'text-lg sm:text-xl' 
-    : brand.primary.length > 18 
-      ? 'text-xl sm:text-2xl' 
-      : 'text-2xl sm:text-3xl';
+  const titleSizeClass = getTitleSizeClass(brand.primary);
 
   const boothUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/expo/${business.slug}`
@@ -141,8 +142,8 @@ export function ExpoStandeeClient({ business, profile }: Props) {
       if (action === 'share' && typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [result.file] })) {
         try {
           await navigator.share({
-            title: `Standee Gian Hàng ${nameVi}`,
-            text: `Mã QR Standee gian hàng ${nameVi} (${profile.booth_number}) - 1Booking Expo Pass`,
+            title: `Standee Doanh Nghiệp ${brand.primary}`,
+            text: `Mã QR Standee ${brand.primary} - 1Booking Digital Pass`,
             files: [result.file],
           });
           toast.success('Đã mở menu chia sẻ!', { id: toastId });
@@ -179,8 +180,8 @@ export function ExpoStandeeClient({ business, profile }: Props) {
     if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
         await navigator.share({
-          title: `Standee Gian Hàng ${nameVi}`,
-          text: `Mã QR Standee gian hàng ${nameVi} (${profile.booth_number}) - 1Booking Expo Pass`,
+          title: `Standee Doanh Nghiệp ${brand.primary}`,
+          text: `Mã QR Standee ${brand.primary} - 1Booking Digital Pass`,
           files: [file],
         });
         return;
@@ -298,7 +299,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
               />
             </div>
           ) : (
-            <div className="w-18 h-18 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-300 text-slate-950 font-black text-2xl flex items-center justify-center mb-3 shadow-md border-2 border-white ring-2 ring-amber-500/20">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-300 text-slate-950 font-black text-2xl flex items-center justify-center mb-3 shadow-md border-2 border-white ring-2 ring-amber-500/20">
               {brand.primary.replace(/[^a-zA-Z0-9]/g, '').slice(0, 2).toUpperCase() || '1B'}
             </div>
           )}
@@ -362,7 +363,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
               <div className="flex items-center gap-2">
                 <span className="text-xl">🖼️</span>
                 <div>
-                  <h3 className="text-sm sm:text-base font-bold text-white">Ảnh Standee Gian Hàng</h3>
+                  <h3 className="text-sm sm:text-base font-bold text-white">Ảnh Standee Doanh Nghiệp</h3>
                   <p className="text-[11px] text-slate-400">Đã tạo xong file ảnh PNG độ nét cao</p>
                 </div>
               </div>

@@ -99,18 +99,18 @@ const HUB_I18N: Record<HubLang, {
     eventTag: '1BOOKING EXPO PASS',
     title: '1BOOKING EXPO PASS',
     subtitle: 'Danh Bạ Số Hóa Doanh Nghiệp & Kết Nối B2B Toàn Diện',
-    desc: 'Nền tảng số hóa kết nối đối tác B2B, tra cứu vị trí gian hàng, Standee để bàn thông minh và hệ thống Mini-CRM Live thời gian thực tại các kỳ triển lãm quốc tế.',
-    searchPlaceholder: 'Tìm theo tên doanh nghiệp, số vị trí (C07, G26, A10...), ngành hàng...',
+    desc: 'Nền tảng số hóa kết nối đối tác B2B, Standee để bàn thông minh và hệ thống Mini-CRM Live thời gian thực cho doanh nghiệp.',
+    searchPlaceholder: 'Tìm theo tên doanh nghiệp, ngành hàng, sản phẩm...',
     boothsHeading: 'Danh sách doanh nghiệp',
-    boothsSub: 'Danh bạ số hóa kết nối doanh nghiệp B2B triển lãm thương mại',
+    boothsSub: 'Danh bạ số hóa kết nối doanh nghiệp B2B thương mại',
     realBoothsSuffix: 'doanh nghiệp',
     btnScan: 'Liên hệ',
     btnCrm: 'CRM Live',
     btnStandee: 'Tải Standee',
     btnContactExpo: 'Liên Hệ 1Booking Expo Pass',
     langSupport: 'Hỗ trợ 4 ngôn ngữ',
-    emptyTitle: 'Không tìm thấy gian hàng nào',
-    emptyDesc: 'Thử tìm kiếm với từ khóa khác hoặc số vị trí.',
+    emptyTitle: 'Không tìm thấy doanh nghiệp nào',
+    emptyDesc: 'Thử tìm kiếm với từ khóa khác hoặc danh mục ngành hàng.',
     clearSearch: 'Xóa',
     allZones: 'Tất cả khu',
     zonePrefix: 'Khu',
@@ -129,30 +129,30 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: 'Đặt lại',
     pageWord: 'Trang',
     totalWord: 'Tổng cộng',
-    disclaimer: '1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập phục vụ các doanh nghiệp & khách tham quan tại các trung tâm triển lãm quốc tế.',
+    disclaimer: '1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập, phục vụ kết nối thương mại mọi sự kiện, showroom & văn phòng doanh nghiệp.',
   },
   en: {
     eventTag: '1BOOKING EXPO PASS',
     title: '1BOOKING EXPO PASS',
     subtitle: 'Digitized B2B Business Directory & Smart Networking',
-    desc: 'Digital B2B networking platform, booth location lookup, smart table standees, and live real-time CRM solutions for international trade exhibitions.',
-    searchPlaceholder: 'Search by exhibitor, booth location (C07, G26, A10...), industry...',
+    desc: 'Digital B2B networking platform, smart tabletop standees, and live real-time CRM solutions for enterprise networking.',
+    searchPlaceholder: 'Search by company, product, industry...',
     boothsHeading: 'Exhibitor Directory',
-    boothsSub: 'Digitized B2B business networking directory for trade exhibitions',
-    realBoothsSuffix: 'exhibitors',
+    boothsSub: 'Digitized B2B business networking directory',
+    realBoothsSuffix: 'businesses',
     btnScan: 'Contact',
     btnCrm: 'Live CRM',
     btnStandee: 'Standee',
     btnContactExpo: 'Contact 1Booking Expo Pass',
     langSupport: '4 Languages Ready',
-    emptyTitle: 'No exhibitors found',
-    emptyDesc: 'Try searching with different keywords or booth number.',
+    emptyTitle: 'No businesses found',
+    emptyDesc: 'Try searching with different keywords or product categories.',
     clearSearch: 'Clear',
     allZones: 'All Zones',
     zonePrefix: 'Zone',
     showing: 'Showing',
     of: 'of',
-    boothUnit: 'exhibitors',
+    boothUnit: 'businesses',
     sortByLabel: 'Sort:',
     sortBoothAsc: 'Location (A → Z)',
     sortBoothDesc: 'Location (Z → A)',
@@ -165,7 +165,7 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: 'Reset',
     pageWord: 'Page',
     totalWord: 'Total',
-    disclaimer: '1Booking Expo Pass is an independent digitized directory and B2B networking platform serving businesses and visitors at international exhibition centers.',
+    disclaimer: '1Booking Expo Pass is an independent digitized directory and B2B networking platform serving businesses and partners across events, showrooms and offices.',
   },
   ko: {
     eventTag: '1BOOKING EXPO PASS',
@@ -629,8 +629,9 @@ export function ExpoHubClient({ initialBooths }: Props) {
                     {/* Top Bar of Card */}
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-1.5">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                          {booth.booth_number}
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-400/15 text-amber-300 border border-amber-400/30">
+                          <Sparkles className="w-3 h-3 text-amber-400" />
+                          Digital Pass
                         </span>
                       </div>
                     </div>
@@ -792,13 +793,13 @@ export function ExpoHubClient({ initialBooths }: Props) {
         {/* BANNER KÊU GỌI LIÊN HỆ 1BOOKING EXPO PASS */}
         <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-500/10 via-slate-900 to-amber-500/10 border border-amber-500/30 text-center relative overflow-hidden">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 mb-3">
-            <Sparkles className="w-3.5 h-3.5" /> Giải Pháp Số Hóa Gian Hàng Triển Lãm
+            <Sparkles className="w-3.5 h-3.5" /> Giải Pháp Số Hóa Kết Nối Doanh Nghiệp
           </span>
           <h3 className="text-xl sm:text-2xl font-black text-white mb-2">
-            Bạn Muốn Số Hóa Gian Hàng Của Mình Tại Triển Lãm?
+            Bạn Muốn Số Hóa Doanh Nghiệp &amp; Sở Hữu Standee Thông Minh?
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mb-6">
-            Trang bị ngay Standee để bàn thông minh, mã QR nhận diện đa ngôn ngữ và hệ thống Mini-CRM lưu khách hàng tức thời từ 1Booking Expo Pass.
+            Trang bị ngay Standee để bàn thông minh, mã QR nhận diện đa ngôn ngữ và hệ thống Mini-CRM lưu khách hàng tức thời từ 1Booking Pass.
           </p>
           <button
             type="button"
