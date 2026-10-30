@@ -58,7 +58,8 @@ export function ExpoBoothClient({ business, profile }: Props) {
   useEffect(() => {
     const urlLang = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('lang') : null;
     const validUrlLang = urlLang && ['vi', 'en', 'ko', 'zh'].includes(urlLang) ? (urlLang as ExpoLanguage) : null;
-    const detected = validUrlLang || (getAppLanguage() || getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi')) as ExpoLanguage;
+    const fallback = (getAppLanguage() || getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi')) as ExpoLanguage;
+    const detected: ExpoLanguage = validUrlLang ?? fallback;
     if (detected && ['vi', 'en', 'ko', 'zh'].includes(detected)) {
       setLang(detected);
     }
@@ -180,8 +181,8 @@ export function ExpoBoothClient({ business, profile }: Props) {
         localStorage.setItem('expo_visitor_phone', phone.trim());
         if (email.trim()) localStorage.setItem('expo_visitor_email', email.trim());
         if (company.trim()) localStorage.setItem('expo_visitor_company', company.trim());
-        setHasPrefilled(true);
       } catch (_) {}
+      setHasPrefilled(true);
 
       setSubmitted(true);
       toast.success(t.successTitle);
@@ -336,7 +337,9 @@ export function ExpoBoothClient({ business, profile }: Props) {
                 <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] text-amber-300">
                   <span className="flex items-center gap-1.5 min-w-0">
                     <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
-                    <span className="truncate">{lang === 'vi' ? 'Tự động điền từ lần quét trước' : 'Auto-filled from previous scan'}</span>
+                    <span className="truncate">
+                      {lang === 'ko' ? '이전 스캔 정보 자동 입력됨' : lang === 'zh' ? '已从上次扫码自动填充' : lang === 'en' ? 'Auto-filled from previous scan' : 'Tự động điền từ lần quét trước'}
+                    </span>
                   </span>
                   <button
                     type="button"
@@ -344,7 +347,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
                     className="inline-flex items-center gap-1 text-slate-400 hover:text-amber-200 underline cursor-pointer ml-2 shrink-0 text-[10px]"
                   >
                     <RotateCcw className="w-3 h-3" />
-                    <span>{lang === 'vi' ? 'Nhập mới' : 'Clear'}</span>
+                    <span>{lang === 'ko' ? '새로 입력' : lang === 'zh' ? '清除' : lang === 'en' ? 'Clear' : 'Nhập mới'}</span>
                   </button>
                 </div>
               )}
@@ -358,7 +361,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
                   type="text"
                   required
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (hasPrefilled) setHasPrefilled(false);
+                  }}
                   placeholder={t.namePlaceholder}
                   className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                 />
@@ -373,7 +379,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
                   type="tel"
                   required
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    if (hasPrefilled) setHasPrefilled(false);
+                  }}
                   placeholder={t.phonePlaceholder}
                   className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                 />
@@ -387,7 +396,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (hasPrefilled) setHasPrefilled(false);
+                  }}
                   placeholder={t.emailPlaceholder}
                   className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                 />
@@ -401,7 +413,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
                 <input
                   type="text"
                   value={company}
-                  onChange={(e) => setCompany(e.target.value)}
+                  onChange={(e) => {
+                    setCompany(e.target.value);
+                    if (hasPrefilled) setHasPrefilled(false);
+                  }}
                   placeholder={t.companyPlaceholder}
                   className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                 />

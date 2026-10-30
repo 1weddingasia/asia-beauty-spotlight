@@ -15,13 +15,18 @@ const ExpoLeadSchema = z.object({
 // Bộ nhớ tạm giới hạn request & chống gửi trùng lặp (Tối ưu cho Wifi đông người tại Triển lãm)
 const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
 const recentSubmissions = new Map<string, number>();
+let lastCleanup = 0;
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
-  // Dọn dẹp lười (lazy cleanup) nếu map quá lớn
-  if (ipRequestCounts.size > 2000) {
+  // Dọn dẹp định kỳ mỗi 60 giây hoặc khi map vượt ngưỡng
+  if (now - lastCleanup > 60000 || ipRequestCounts.size > 2000) {
+    lastCleanup = now;
     for (const [k, v] of ipRequestCounts.entries()) {
       if (v.resetAt < now) ipRequestCounts.delete(k);
+    }
+    for (const [k, ts] of recentSubmissions.entries()) {
+      if (now - ts > 30000) recentSubmissions.delete(k);
     }
   }
 
@@ -68,13 +73,6 @@ export async function POST(req: Request) {
     const dedupKey = `${business_id}:${cleanPhone}`;
     const now = Date.now();
 
-    // Dọn dẹp lười cho recentSubmissions
-    if (recentSubmissions.size > 2000) {
-      for (const [k, ts] of recentSubmissions.entries()) {
-        if (now - ts > 30000) recentSubmissions.delete(k);
-      }
-    }
-
     const lastSubmitTime = recentSubmissions.get(dedupKey);
     if (lastSubmitTime && now - lastSubmitTime < 15000) {
       // Đã gửi trong vòng 15 giây -> Trả về thành công ngay lập tức mà không ghi đè DB
@@ -86,6 +84,9 @@ export async function POST(req: Request) {
       });
     }
 
+    // Đặt chỗ dedup ngay từ đầu để chặn race-condition khi 2 request song song
+    recentSubmissions.set(dedupKey, now);
+
     const supabase = await createAdminClient();
 
     // 1. Kiểm tra gian hàng tồn tại và lấy tên gian hàng
@@ -96,6 +97,7 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     if (bizErr || !business) {
+      recentSubmissions.delete(dedupKey); // Hoàn tác slot để khách có thể thử lại
       return NextResponse.json({ error: 'Gian hàng không tồn tại trong hệ thống' }, { status: 404 });
     }
 
@@ -116,12 +118,10 @@ export async function POST(req: Request) {
       .single();
 
     if (insertErr || !newLead) {
+      recentSubmissions.delete(dedupKey); // Hoàn tác slot để khách có thể thử lại
       console.error('[Expo Lead Insert Error]:', insertErr);
       return NextResponse.json({ error: 'Lỗi lưu thông tin khách hàng' }, { status: 500 });
     }
-
-    // Chỉ ghi nhận dedup sau khi insert DB thành công (đảm bảo không mất lead nếu insert lỗi)
-    recentSubmissions.set(dedupKey, Date.now());
 
     // 3. Bắn Telegram thông báo tức thời (Fire and Forget với timeout 2.5s không làm nghẽn máy chủ)
     const adminBotToken = process.env.TELEGRAM_BOT_TOKEN_1BOOKING;
