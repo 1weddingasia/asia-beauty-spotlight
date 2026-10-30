@@ -30,10 +30,10 @@ import {
   ArrowLeft,
   Loader2,
   CheckCircle2,
-  Send,
   Building2,
   X,
 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface VenueBottomSheetProps {
   venue: PartyVenue | null;
@@ -41,6 +41,7 @@ interface VenueBottomSheetProps {
 }
 
 export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetProps) {
+  const isMobile = useIsMobile();
   const [copiedShare, setCopiedShare] = React.useState(false);
   const [showBookingForm, setShowBookingForm] = React.useState(false);
   const [bookingName, setBookingName] = React.useState('');
@@ -639,30 +640,26 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     </div>
   );
 
-  return (
-    <>
-      {/* 1. DESKTOP VIEW: Sleek Left Slide-over Side Panel (Google Maps Luxury Style) */}
-      <div className="hidden md:block">
-        <aside
-          className="fixed top-[52px] bottom-0 left-0 z-40 w-[420px] lg:w-[460px] bg-white shadow-2xl border-r border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-left duration-300"
-          aria-label={`Chi tiết sảnh tiệc ${venue.name}`}
-        >
+  if (isMobile) {
+    return (
+      <Drawer open={!!venue} onOpenChange={(open) => !open && onClose()}>
+        <DrawerContent className="bg-white border-t border-slate-200 text-slate-900 max-h-[88dvh] rounded-t-3xl overflow-hidden shadow-2xl flex flex-col md:hidden">
+          <DrawerHeader className="sr-only">
+            <DrawerTitle>{venue.name}</DrawerTitle>
+            <DrawerDescription>Hồ sơ đặt tiệc tất niên của {venue.name}</DrawerDescription>
+          </DrawerHeader>
           {renderDetailBody()}
-        </aside>
-      </div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
 
-      {/* 2. MOBILE VIEW: Native Bottom Sheet (Vaul Drawer) */}
-      <div className="md:hidden">
-        <Drawer open={!!venue} onOpenChange={(open) => !open && onClose()}>
-          <DrawerContent className="bg-white border-t border-slate-200 text-slate-900 max-h-[88dvh] rounded-t-3xl overflow-hidden shadow-2xl flex flex-col">
-            <DrawerHeader className="sr-only">
-              <DrawerTitle>{venue.name}</DrawerTitle>
-              <DrawerDescription>Hồ sơ đặt tiệc tất niên của {venue.name}</DrawerDescription>
-            </DrawerHeader>
-            {renderDetailBody()}
-          </DrawerContent>
-        </Drawer>
-      </div>
-    </>
+  return (
+    <aside
+      className="fixed top-0 md:top-[96px] bottom-0 left-0 z-40 w-full sm:w-[420px] lg:w-[460px] bg-white shadow-2xl border-r border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-left duration-300"
+      aria-label={`Chi tiết sảnh tiệc ${venue.name}`}
+    >
+      {renderDetailBody()}
+    </aside>
   );
 }
