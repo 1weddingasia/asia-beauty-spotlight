@@ -12,6 +12,7 @@ import {
   getStoredExpoLanguage,
   setStoredExpoLanguage,
 } from '@/types/expo';
+import { setAppLanguage, getAppLanguage } from '@/lib/i18n';
 import { Globe, CheckCircle2, Building2, Handshake, Lock, ArrowLeft, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { CountryFlag } from '../CountryFlag';
@@ -53,17 +54,27 @@ const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; countryName: s
 export function ExpoBoothClient({ business, profile }: Props) {
   const [lang, setLang] = useState<ExpoLanguage>((profile.default_language as ExpoLanguage) || 'vi');
 
-  // Đồng bộ ngôn ngữ từ URL query hoặc localStorage
+  // Đồng bộ ngôn ngữ từ URL query hoặc localStorage & event toàn cục
   useEffect(() => {
-    const detected = getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi');
+    const detected = (getAppLanguage() || getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi')) as ExpoLanguage;
     if (detected && ['vi', 'en', 'ko', 'zh'].includes(detected)) {
       setLang(detected);
     }
+
+    const onLangChange = (e: Event) => {
+      const customEvt = e as CustomEvent<ExpoLanguage>;
+      if (customEvt.detail && ['vi', 'en', 'ko', 'zh'].includes(customEvt.detail)) {
+        setLang(customEvt.detail);
+      }
+    };
+    window.addEventListener('app_lang_change', onLangChange);
+    return () => window.removeEventListener('app_lang_change', onLangChange);
   }, [profile.default_language]);
 
   const handleSwitchLang = (newLang: ExpoLanguage) => {
     setLang(newLang);
     setStoredExpoLanguage(newLang);
+    setAppLanguage(newLang);
   };
 
   const t = EXPO_TRANSLATIONS[lang] || EXPO_TRANSLATIONS.vi;

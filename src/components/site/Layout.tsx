@@ -4,6 +4,8 @@ import { Menu, X, LogIn, LayoutDashboard, ChevronDown, Tag, MapPin, Building2, H
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { getSiteConfig, type SiteConfig } from "@/config/site-config";
+import { useAppLanguage } from "@/lib/use-app-language";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 
 // ── Module-level cache (5 phút) ──────────────────────────────────────────────
 let _settingsCache: any = null;
@@ -59,6 +61,7 @@ function NavDropdown({
   icon: React.ElementType;
   solid: boolean;
 }) {
+  const { t } = useAppLanguage();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -94,10 +97,10 @@ function NavDropdown({
             className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gold hover:bg-gold/5 border-b border-border mb-1"
           >
             <Icon className="size-4" />
-            Xem tất cả
+            {t.nav.viewAll}
           </Link>
           {items.length === 0 ? (
-            <p className="px-4 py-2 text-xs text-muted-foreground">Chưa có dữ liệu</p>
+            <p className="px-4 py-2 text-xs text-muted-foreground">{t.nav.noData}</p>
           ) : (
             <div className="max-h-64 overflow-y-auto">
               {items.map((item) => (
@@ -121,6 +124,7 @@ function NavDropdown({
 
 // ── SiteHeader ────────────────────────────────────────────────────────────────
 export function SiteHeader({ solid = false }: { solid?: boolean }) {
+  const { t } = useAppLanguage();
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
@@ -167,63 +171,63 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
         </Link>
 
         {/* Mobile nav trigger */}
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-3 md:hidden">
           {authLoading ? (
             <div className="size-8 rounded-full border border-gold/30 border-t-gold animate-spin" />
           ) : user ? (
             <Link
               href="/dashboard"
-              aria-label="Bảng điều khiển"
+              aria-label={t.nav.dashboard}
               className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
             >
               <LayoutDashboard className="size-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Quản lý</span>
+              <span className="hidden sm:inline">{t.nav.dashboard}</span>
             </Link>
           ) : (
             <Link
               href="/login"
-              aria-label="Đăng nhập"
+              aria-label={t.nav.login}
               className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
             >
               <LogIn className="size-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Đăng nhập</span>
+              <span className="hidden sm:inline">{t.nav.login}</span>
             </Link>
           )}
           <button
             onClick={() => { setOpen(!open); setMobileMenuSection("main"); }}
-            aria-label="Menu"
+            aria-label={t.nav.menu}
             className={solid ? "text-foreground" : "text-background"}
           >
             {open ? <X className="size-6" /> : <Menu className="size-6" />}
           </button>
         </div>
 
-        {/* Desktop nav — Chỉ giữ: Ưu đãi, Phố tiệc, Danh mục, Địa điểm */}
-        <div className="hidden items-center gap-6 md:flex">
-          <nav className="flex items-center gap-6">
+        {/* Desktop nav — Ưu đãi, Phố tiệc, Expo, Danh mục, Địa điểm, Ngôn ngữ, Đăng nhập */}
+        <div className="hidden items-center gap-5 md:flex">
+          <nav className="flex items-center gap-5">
             <Link
               href="/uu-dai"
               className={`text-xs tracking-[0.18em] uppercase transition-colors hover:text-gold ${solid ? "text-foreground" : "text-background/85"}`}
             >
-              Ưu đãi
+              {t.nav.deals}
             </Link>
             <Link
               href="/pho-tiec"
               className="text-xs tracking-[0.18em] uppercase font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1 transition-colors"
             >
               <Sparkles className="size-3.5" />
-              <span>Phố Tiệc</span>
+              <span>{t.nav.party}</span>
             </Link>
             <Link
               href="/expo"
               className="text-xs tracking-[0.18em] uppercase font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1 transition-colors"
             >
               <Sparkles className="size-3.5" />
-              <span>Hội Chợ Expo</span>
+              <span>{t.nav.expo}</span>
             </Link>
             {/* Danh Mục dropdown */}
             <NavDropdown
-              label="Danh Mục"
+              label={t.nav.categories}
               href="/danh-muc"
               items={navData.categories}
               icon={Tag}
@@ -231,13 +235,16 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
             />
             {/* Địa Điểm dropdown */}
             <NavDropdown
-              label="Địa Điểm"
+              label={t.nav.locations}
               href="/dia-diem"
               items={navData.locations}
               icon={MapPin}
               solid={solid}
             />
           </nav>
+
+          {/* Language Switcher 4 flags */}
+          <LanguageSwitcher solid={solid} />
 
           {authLoading ? (
             <div className="w-32 h-8 rounded-full bg-muted/20 animate-pulse" />
@@ -247,7 +254,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
             >
               <LayoutDashboard className="size-4" />
-              Quản lý Gian hàng
+              {t.nav.manageBooth}
             </Link>
           ) : (
             <Link
@@ -255,7 +262,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               className={`flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${solid ? "border-gold/30 text-gold bg-gold/5 hover:bg-gold/10 hover:border-gold" : "border-white/30 text-white bg-white/5 hover:bg-white/20 hover:border-white"}`}
             >
               <LogIn className="size-4" />
-              Đăng nhập / Đăng ký
+              {t.nav.login}
             </Link>
           )}
         </div>
@@ -264,19 +271,22 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
       {/* Mobile Menu */}
       {open && (
         <div className="border-t border-border bg-background px-4 py-3 md:hidden">
+          {/* Mobile Language Switcher Selector */}
+          <LanguageSwitcher variant="mobile" className="mb-3" />
+
           {mobileMenuSection === "main" && (
             <nav className="space-y-1">
               <Link href="/uu-dai" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-muted font-medium">
                 <Gift className="size-4 text-amber-500" />
-                <span>Ưu đãi</span>
+                <span>{t.nav.deals}</span>
               </Link>
               <Link href="/pho-tiec" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
                 <Sparkles className="size-4 text-amber-500" />
-                <span>Phố Tiệc 🎉</span>
+                <span>{t.nav.party}</span>
               </Link>
               <Link href="/expo" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
                 <Sparkles className="size-4 text-amber-500" />
-                <span>Hội Chợ Expo 🏢</span>
+                <span>{t.nav.expo}</span>
               </Link>
               <button
                 onClick={() => setMobileMenuSection("categories")}
@@ -284,7 +294,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               >
                 <span className="flex items-center gap-2.5">
                   <LayoutGrid className="size-4 text-muted-foreground" />
-                  <span>Danh Mục</span>
+                  <span>{t.nav.categories}</span>
                 </span>
                 <ChevronDown className="size-4" />
               </button>
@@ -294,7 +304,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               >
                 <span className="flex items-center gap-2.5">
                   <MapPin className="size-4 text-muted-foreground" />
-                  <span>Địa Điểm</span>
+                  <span>{t.nav.locations}</span>
                 </span>
                 <ChevronDown className="size-4" />
               </button>
@@ -302,15 +312,15 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               <div className="pt-2 mt-2 border-t border-border/60 space-y-1">
                 <Link href="/bang-gia" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2 px-3 text-xs text-muted-foreground hover:text-foreground">
                   <CreditCard className="size-3.5" />
-                  <span>Bảng Giá</span>
+                  <span>{t.nav.pricing}</span>
                 </Link>
                 <Link href="/lien-he" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2 px-3 text-xs text-muted-foreground hover:text-foreground">
                   <Phone className="size-3.5" />
-                  <span>Liên hệ hỗ trợ</span>
+                  <span>{t.nav.contactSupport}</span>
                 </Link>
                 <Link href="/danh-cho-doanh-nghiep" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2 px-3 text-xs text-gold hover:underline font-semibold">
                   <Building2 className="size-3.5" />
-                  <span>Dành cho Doanh nghiệp</span>
+                  <span>{t.nav.forBusiness}</span>
                 </Link>
               </div>
             </nav>
@@ -322,10 +332,10 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
                 onClick={() => setMobileMenuSection("main")}
                 className="flex items-center gap-2 py-2 text-sm text-muted-foreground mb-2"
               >
-                ← Quay lại
+                ← {t.nav.back}
               </button>
               <Link href="/danh-muc" onClick={() => setOpen(false)} className="block py-2.5 px-3 text-sm font-semibold text-gold rounded-lg hover:bg-gold/5 mb-1">
-                Xem tất cả danh mục →
+                {t.nav.viewAll} →
               </Link>
               {navData.categories.map((cat) => (
                 <Link
@@ -347,10 +357,10 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
                 onClick={() => setMobileMenuSection("main")}
                 className="flex items-center gap-2 py-2 text-sm text-muted-foreground mb-2"
               >
-                ← Quay lại
+                ← {t.nav.back}
               </button>
               <Link href="/dia-diem" onClick={() => setOpen(false)} className="block py-2.5 px-3 text-sm font-semibold text-gold rounded-lg hover:bg-gold/5 mb-1">
-                Xem tất cả địa điểm →
+                {t.nav.viewAll} →
               </Link>
               {navData.locations.map((loc) => (
                 <Link
@@ -373,6 +383,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
 
 // ── SiteFooter ────────────────────────────────────────────────────────────────
 export function SiteFooter() {
+  const { t } = useAppLanguage();
   const [settings, setSettings] = useState<any>(null);
   const [navData, setNavData] = useState<{ categories: any[]; locations: any[] }>({ categories: [], locations: [] });
   const siteConfig = useSiteConfig();
@@ -397,16 +408,20 @@ export function SiteFooter() {
               <span className="text-gradient-gold">{siteConfig.logoDomain}</span>
             </p>
           )}
-          <p className="mt-4 max-w-sm text-sm">{siteConfig.description}</p>
-          <p className="mt-4 text-xs text-background/40">
-            {settings?.contact_phone || "0918 731 411"}
+          <p className="mt-4 max-w-sm text-sm">{siteConfig.description || t.footer.brandDesc}</p>
+          <p className="mt-2 text-xs text-background/40">
+            {t.footer.hotline}: {settings?.contact_phone || "0918 731 411"}
           </p>
+          <div className="mt-4 pt-3 border-t border-background/10">
+            <p className="text-[10px] uppercase tracking-wider text-background/50 mb-2 font-semibold">Language / Ngôn ngữ</p>
+            <LanguageSwitcher solid={false} />
+          </div>
         </div>
 
         {/* Danh Mục */}
         <div>
-          <p className="text-xs tracking-[0.25em] text-gold uppercase flex items-center gap-2">
-            <Tag className="size-3.5" /> Danh Mục
+          <p className="text-xs tracking-[0.25em] text-gold uppercase flex items-center gap-2 font-semibold">
+            <Tag className="size-3.5" /> {t.footer.categories}
           </p>
           <ul className="mt-4 space-y-2 text-sm">
             {navData.categories.slice(0, 6).map((cat) => (
@@ -419,7 +434,7 @@ export function SiteFooter() {
             ))}
             <li>
               <Link href="/danh-muc" className="transition-colors hover:text-gold italic text-background/50">
-                Xem tất cả →
+                {t.footer.viewAll}
               </Link>
             </li>
           </ul>
@@ -427,8 +442,8 @@ export function SiteFooter() {
 
         {/* Địa Điểm */}
         <div>
-          <p className="text-xs tracking-[0.25em] text-gold uppercase flex items-center gap-2">
-            <MapPin className="size-3.5" /> Địa Điểm
+          <p className="text-xs tracking-[0.25em] text-gold uppercase flex items-center gap-2 font-semibold">
+            <MapPin className="size-3.5" /> {t.footer.locations}
           </p>
           <ul className="mt-4 space-y-2 text-sm">
             {navData.locations.slice(0, 6).map((loc) => (
@@ -441,56 +456,56 @@ export function SiteFooter() {
             ))}
             <li>
               <Link href="/dia-diem" className="transition-colors hover:text-gold italic text-background/50">
-                Xem tất cả →
+                {t.footer.viewAll}
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Liên hệ */}
-        {/* Thông tin & Dịch vụ */}
+        {/* Dịch vụ & Đối tác */}
         <div>
-          <p className="text-xs tracking-[0.25em] text-gold uppercase">Dịch vụ & Đối tác</p>
+          <p className="text-xs tracking-[0.25em] text-gold uppercase font-semibold">{t.footer.support}</p>
           <ul className="mt-4 space-y-2 text-sm">
             <li>
               <Link href="/bang-gia" className="transition-colors hover:text-gold flex items-center gap-1.5">
                 <CreditCard className="size-3.5 text-gold/60" />
-                <span>Bảng giá dịch vụ</span>
+                <span>{t.nav.pricing}</span>
               </Link>
             </li>
             <li>
               <Link href="/danh-cho-doanh-nghiep" className="transition-colors hover:text-gold flex items-center gap-1.5">
                 <Building2 className="size-3.5 text-gold/60" />
-                <span>Dành cho Doanh nghiệp</span>
+                <span>{t.nav.forBusiness}</span>
               </Link>
             </li>
             <li>
               <Link href="/pho-tiec" className="transition-colors hover:text-gold flex items-center gap-1.5">
                 <Sparkles className="size-3.5 text-amber-500" />
-                <span>Phố Tiệc Tất Niên</span>
+                <span>{t.nav.party}</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/expo" className="transition-colors hover:text-gold flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-amber-500" />
+                <span>{t.nav.expo}</span>
               </Link>
             </li>
             <li>
               <Link href="/uu-dai" className="transition-colors hover:text-gold flex items-center gap-1.5">
                 <Gift className="size-3.5 text-gold/60" />
-                <span>Khám phá Ưu đãi</span>
-              </Link>
-            </li>
-            <li>
-              <Link href="/gioi-thieu" className="transition-colors hover:text-gold">
-                Giới thiệu
+                <span>{t.nav.deals}</span>
               </Link>
             </li>
             <li>
               <Link href="/lien-he" className="transition-colors hover:text-gold">
-                Liên hệ hỗ trợ: {settings?.contact_phone || "0918 731 411"}
+                {t.nav.contactSupport}
               </Link>
             </li>
           </ul>
         </div>
       </div>
       <div className="border-t border-background/10 py-6 text-center text-xs">
-        © {new Date().getFullYear()} {siteConfig.brand}. Mọi quyền được bảo lưu.
+        © {new Date().getFullYear()} {siteConfig.brand}. {t.footer.rightsReserved}
       </div>
     </footer>
   );

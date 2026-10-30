@@ -29,6 +29,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { useAppLanguage } from '@/lib/use-app-language';
+import { LanguageSwitcher } from '@/components/site/LanguageSwitcher';
 
 export interface PricingPlanItem {
   id: string;
@@ -129,6 +131,7 @@ interface BangGiaClientProps {
 }
 
 export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps) {
+  const { t, lang } = useAppLanguage();
   const [selectedPlan, setSelectedPlan] = useState<PricingPlanItem | null>(null);
 
   const [userBusiness, setUserBusiness] = useState<{ id: string; name: string; slug: string } | null>(null);
@@ -313,17 +316,22 @@ export default function BangGiaClient({ initialPlans = [] }: BangGiaClientProps)
     <div className="py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto select-none">
       {/* 1. Header */}
       <div className="text-center max-w-3xl mx-auto mb-14">
+        {/* Bộ chuyển đổi ngôn ngữ 4 cờ */}
+        <div className="flex items-center justify-center mb-5">
+          <LanguageSwitcher solid={false} />
+        </div>
+
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold mb-4">
-          <Sparkles className="w-3.5 h-3.5" /> BẢNG GIÁ KÍCH HOẠT THEO TỪNG LOẠI TRANG
+          <Sparkles className="w-3.5 h-3.5" /> {t.pricing.pageTitle.toUpperCase()}
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-          Bảng Giá Gói Thành Viên{' '}
+          {lang === 'vi' ? 'Bảng Giá Kích Hoạt Dịch Vụ ' : `${t.pricing.pageTitle} `}
           <span className="bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500 bg-clip-text text-transparent">
-            Chính Thức
+            {lang === 'vi' ? 'Chính Thức' : ''}
           </span>
         </h1>
         <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
-          Hệ thống gồm <strong>2 loại trang độc lập</strong>: <strong>Trang Ưu Đãi</strong> (hiển thị gian hàng quanh năm) và <strong>Trang Đặt Tiệc</strong> (hiển thị trên Bản Đồ Tiệc Tất Niên). Quý đối tác có thể kích hoạt từng trang hoặc cả 2 trang tùy theo nhu cầu vận hành.
+          {t.pricing.pageSubtitle}
         </p>
       </div>
 

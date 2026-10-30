@@ -18,7 +18,9 @@ import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SiteHeader, SiteFooter, useSiteConfig } from "@/components/site/Layout";
 import { PARTY_SPACES, PARTY_PERKS, type BusinessPartyProfile, isFnBCategory } from "@/types/party";
-import { getExpoEventName, getStoredExpoLanguage, type ExpoLanguage } from "@/types/expo";
+import { getExpoEventName, type ExpoLanguage } from "@/types/expo";
+import { useAppLanguage } from "@/lib/use-app-language";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -71,11 +73,13 @@ export default function PromoClient({
   expoProfile?: { booth_number: string; event_name?: string | null; event_name_en?: string | null } | null;
 }) {
   const siteConfig = useSiteConfig();
+  const { t, lang } = useAppLanguage();
   const b = business;
   const industryKey = b.page_content?.industry || b.category_slug || 'other';
   const ctaConfig = INDUSTRY_CTAS[industryKey] || INDUSTRY_CTAS['other'];
-  const actionName = b.page_content?.action_name || ctaConfig.btnText;
-  const modalTitle = ctaConfig.modalTitle;
+  const rawActionName = b.page_content?.action_name || ctaConfig.btnText;
+  const actionName = lang === 'vi' ? rawActionName : (industryKey === 'dining' || industryKey === 'fnb' ? t.biz.bookTable : (industryKey === 'beauty' || industryKey === 'health' || industryKey === 'clinic' ? t.biz.bookService : t.biz.bookService));
+  const modalTitle = lang === 'vi' ? ctaConfig.modalTitle : actionName;
   const actionNameUpper = actionName.toUpperCase();
   const ActionIcon = ctaConfig.icon;
   const [name, setName] = useState("");
@@ -97,11 +101,6 @@ export default function PromoClient({
   const [partyNotes, setPartyNotes] = useState("");
   const [copiedShare, setCopiedShare] = useState(false);
   const shareTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [expoLang, setExpoLang] = useState<ExpoLanguage>('vi');
-  useEffect(() => {
-    setExpoLang(getStoredExpoLanguage('vi'));
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -447,29 +446,35 @@ export default function PromoClient({
           {expoProfile && (
             <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
               <Link
-                href={`/expo/${business.slug}?lang=${expoLang}`}
+                href={`/expo/${business.slug}?lang=${lang}`}
                 className="inline-flex items-center gap-1.5 bg-amber-500/25 border border-amber-400 text-amber-200 hover:text-white text-xs font-bold px-3.5 py-1.5 rounded-full hover:bg-amber-500/40 transition-all backdrop-blur-md shadow-lg"
               >
                 <Sparkles className="size-3.5 text-amber-400" />
-                <span>{expoProfile.booth_number ? `${expoProfile.booth_number} • ` : ''}{getExpoEventName(expoProfile, expoLang)}</span>
+                <span>{expoProfile.booth_number ? `${expoProfile.booth_number} • ` : ''}{getExpoEventName(expoProfile, lang)}</span>
               </Link>
               <Link
-                href={`/expo?lang=${expoLang}`}
+                href={`/expo?lang=${lang}`}
                 className="inline-flex items-center gap-1.5 bg-black/40 border border-white/20 text-white/90 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full hover:bg-black/60 transition-all backdrop-blur-md"
               >
                 <ChevronLeft className="size-3.5" />
-                <span>{expoLang === 'vi' ? 'Về Danh Bạ Expo' : 'Back to Expo Hub'}</span>
+                <span>{lang === 'vi' ? 'Về Danh Bạ Expo' : (lang === 'en' ? 'Back to Expo Hub' : (lang === 'ko' ? '엑스포 허브' : '返回展会通'))}</span>
               </Link>
             </div>
           )}
-          <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-8">
+
+          {/* 🌐 Bộ chuyển đổi 4 ngôn ngữ nhanh trên Hero */}
+          <div className="my-2 flex items-center justify-center">
+            <LanguageSwitcher solid={false} />
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-4 md:mt-6">
             <button
               onClick={() => {
                 document.getElementById('deals-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
               className="flex items-center justify-center gap-2 bg-champagne text-gold font-bold px-8 py-3.5 md:py-3 rounded-full shadow-lg border border-gold/30 hover:bg-gold hover:text-white transition-all hover:scale-105 w-64 sm:w-auto"
             >
-              <Gift className="size-5" /> NHẬN ƯU ĐÃI
+              <Gift className="size-5" /> {t.biz.getDealNow.toUpperCase()}
             </button>
             <button
               onClick={() => {
@@ -489,7 +494,7 @@ export default function PromoClient({
                 className="flex items-center justify-center gap-2 bg-white/95 hover:bg-white text-ink font-bold px-7 py-3.5 md:py-3 rounded-full shadow-lg border border-gold/40 hover:scale-105 transition-all w-64 sm:w-auto"
               >
                 <Utensils className="size-5 text-amber-600" />
-                <span>Xem Menu Món Ăn</span>
+                <span>{t.biz.viewMenu}</span>
               </a>
             )}
           </div>
@@ -498,7 +503,7 @@ export default function PromoClient({
             <div className="mt-8 flex items-center justify-center gap-2 text-white/90 bg-black/40 backdrop-blur-md px-5 py-2 rounded-full text-sm border border-gold/20 shadow-lg">
               <Eye className="w-4 h-4 text-gold" />
               <span className="font-medium tracking-wide">
-                <span className="text-gold font-bold">{views.total}</span> lượt xem trang
+                <span className="text-gold font-bold">{views.total}</span> {lang === 'vi' ? 'lượt xem trang' : (lang === 'en' ? 'page views' : (lang === 'ko' ? '조회수' : '次浏览'))}
               </span>
             </div>
           )}
@@ -579,10 +584,10 @@ export default function PromoClient({
           </div>
           <h2 className="text-3xl md:text-4xl font-black font-display flex flex-col md:flex-row items-center justify-center gap-3 text-ink">
             <Tag className="size-8 md:size-10 text-gold" />
-            ƯU ĐÃI ĐẶC BIỆT
+            {t.biz.specialOffer}
           </h2>
           <p className="mt-4 text-base md:text-lg text-muted-foreground">
-            Chọn một ưu đãi bên dưới và lưu lại để sử dụng khi đến tiệm.
+            {lang === 'vi' ? 'Chọn một ưu đãi bên dưới và lưu lại để sử dụng khi đến tiệm.' : (lang === 'en' ? 'Select an exclusive offer below to redeem upon arrival.' : (lang === 'ko' ? '방문 시 사용할 수 있는 특별 혜택을 아래에서 선택하세요.' : '请选择下方专享优惠并在到店时出示使用。'))}
           </p>
         </div>
 
@@ -710,7 +715,7 @@ export default function PromoClient({
                         }}
                         className="w-full xl:w-auto font-bold shadow-lg h-12 md:h-14 px-8 rounded-2xl text-base transition-all active:scale-95 group-hover:scale-105 border bg-gradient-to-r from-gold to-gold-soft text-ink border-gold/50 hover:brightness-110"
                       >
-                        Nhận và Lưu Ưu Đãi
+                        {t.biz.getDealNow}
                       </Button>
                     </div>
                   </div>
@@ -726,7 +731,7 @@ export default function PromoClient({
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase mb-2">Bảng giá</p>
-                <h2 className="font-display text-2xl md:text-4xl text-ink">Sản phẩm & Dịch vụ</h2>
+                <h2 className="font-display text-2xl md:text-4xl text-ink">{t.biz.exclusiveDeals}</h2>
               </div>
               <div className="hidden md:flex gap-2">
                 <button onClick={scrollPrevServices} className="grid size-10 place-items-center rounded-full border border-border bg-white hover:border-gold hover:text-gold transition-colors">
@@ -764,11 +769,11 @@ export default function PromoClient({
                       <div className="p-5 md:p-6 flex flex-col flex-1">
                         <h3 className="text-lg md:text-xl font-display text-ink mb-3 group-hover:text-gold transition-colors">{s.name}</h3>
                         <p className="text-xs md:text-sm text-muted-foreground flex-1 mb-5 leading-relaxed line-clamp-3">
-                          {s.description || "Liên hệ để biết thêm chi tiết."}
+                          {s.description || (lang === 'vi' ? 'Liên hệ để biết thêm chi tiết.' : 'Contact us for more details.')}
                         </p>
                         <div className="pt-4 border-t border-border/50 flex items-center justify-between mt-auto">
                           <span className="font-semibold text-gold text-base md:text-lg">
-                            {formatPrice(s.price || s.price_min) || "Liên hệ"}
+                            {formatPrice(s.price || s.price_min) || (lang === 'vi' ? 'Liên hệ' : 'Contact')}
                           </span>
                           <button
                             onClick={(e) => {
@@ -799,7 +804,7 @@ export default function PromoClient({
             <div className="lg:col-span-3 space-y-6">
               <div className="flex items-center gap-4 mb-6">
                 <div className="h-px bg-gold flex-1" />
-                <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold">Câu Chuyện Thương Hiệu</p>
+                <p className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold">{t.biz.aboutUs}</p>
                 <div className="h-px bg-gold flex-1" />
               </div>
 
@@ -811,7 +816,7 @@ export default function PromoClient({
 
               {b.page_content?.amenities && b.page_content.amenities.length > 0 && (
                 <div className="pt-6 border-t border-border mt-8">
-                  <h3 className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold mb-4">Tiện Ích Không Gian</h3>
+                  <h3 className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold mb-4">{t.biz.amenities}</h3>
                   <div className="flex flex-wrap gap-2">
                     {b.page_content.amenities.map((amenity: string, idx: number) => (
                       <span key={idx} className="bg-champagne border border-gold-soft text-ink text-xs px-3 py-1.5 rounded-full">
@@ -825,7 +830,7 @@ export default function PromoClient({
               {/* THƯ VIỆN ẢNH (GALLERY) */}
               {galleryItems.length > 0 && (
                 <div className="pt-8 mt-8 border-t border-border/50">
-                  <h3 className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold mb-6">Thư Viện Ảnh</h3>
+                  <h3 className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase font-semibold mb-6">{t.biz.gallery}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {galleryItems.slice(0, 6).map((img: string, idx: number) => (
                       <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden shadow-sm group">
@@ -840,7 +845,7 @@ export default function PromoClient({
 
             {/* Cột phải: Card liên hệ */}
             <div className="lg:col-span-2 bg-card rounded-3xl p-6 md:p-8 border border-border shadow-card h-fit space-y-6">
-              <h3 className="font-display text-lg md:text-xl border-b border-border pb-4">Thông tin liên hệ</h3>
+              <h3 className="font-display text-lg md:text-xl border-b border-border pb-4">{t.footer.support}</h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <MapPin className="size-4 md:size-5 text-gold shrink-0 mt-0.5" />
@@ -1318,7 +1323,7 @@ export default function PromoClient({
           }}
           className="flex-1 bg-champagne text-gold font-bold text-sm py-3 rounded-xl border border-gold/30 transition-all duration-200 active:scale-95 active:opacity-90 hover:bg-gold hover:text-white"
         >
-          <span className="flex items-center justify-center gap-1.5"><Gift className="size-4" /> Nhận Ưu Đãi</span>
+          <span className="flex items-center justify-center gap-1.5"><Gift className="size-4" /> {t.biz.getDealNow}</span>
         </button>
         <button
           onClick={() => {

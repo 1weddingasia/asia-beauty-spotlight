@@ -22,6 +22,7 @@ import {
 import { CountryFlag } from './CountryFlag';
 import { ExpoContactModal } from './ExpoContactModal';
 import { getStoredExpoLanguage, setStoredExpoLanguage, type ExpoLanguage } from '@/types/expo';
+import { setAppLanguage, getAppLanguage } from '@/lib/i18n';
 
 export type SortKey = 'booth_asc' | 'booth_desc' | 'name_asc' | 'name_desc';
 
@@ -256,17 +257,27 @@ export function ExpoHubClient({ initialBooths }: Props) {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
 
-  // Đồng bộ ngôn ngữ từ URL query hoặc localStorage
+  // Đồng bộ ngôn ngữ từ URL query hoặc localStorage & CustomEvent toàn cục
   useEffect(() => {
-    const detected = getStoredExpoLanguage('vi') as HubLang;
+    const detected = (getAppLanguage() || getStoredExpoLanguage('vi')) as HubLang;
     if (detected && ['vi', 'en', 'ko', 'zh'].includes(detected)) {
       setHubLang(detected);
     }
+
+    const onLangChange = (e: Event) => {
+      const customEvt = e as CustomEvent<HubLang>;
+      if (customEvt.detail && ['vi', 'en', 'ko', 'zh'].includes(customEvt.detail)) {
+        setHubLang(customEvt.detail);
+      }
+    };
+    window.addEventListener('app_lang_change', onLangChange);
+    return () => window.removeEventListener('app_lang_change', onLangChange);
   }, []);
 
   const handleSelectLang = (code: HubLang) => {
     setHubLang(code);
     setStoredExpoLanguage(code as ExpoLanguage);
+    setAppLanguage(code);
   };
 
   const t = HUB_I18N[hubLang];

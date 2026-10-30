@@ -39,6 +39,7 @@ import {
   CRM_TRANSLATIONS,
   type ExpoLanguage,
 } from '@/types/expo';
+import { setAppLanguage, getAppLanguage } from '@/lib/i18n';
 import { CountryFlag } from '../../CountryFlag';
 
 interface Lead {
@@ -85,17 +86,27 @@ const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; countryName: s
 export function ExpoCrmClient({ business, profile, initialIsActivated = false }: Props) {
   const [lang, setLang] = useState<ExpoLanguage>((profile.default_language as ExpoLanguage) || 'vi');
 
-  // 0. Khởi tạo và đồng bộ ngôn ngữ từ URL query param (?lang=) hoặc localStorage
+  // 0. Khởi tạo và đồng bộ ngôn ngữ từ URL query param (?lang=), localStorage & event toàn cục
   useEffect(() => {
-    const detected = getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi');
+    const detected = (getAppLanguage() || getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi')) as ExpoLanguage;
     if (detected && ['vi', 'en', 'ko', 'zh'].includes(detected)) {
       setLang(detected);
     }
+
+    const onLangChange = (e: Event) => {
+      const customEvt = e as CustomEvent<ExpoLanguage>;
+      if (customEvt.detail && ['vi', 'en', 'ko', 'zh'].includes(customEvt.detail)) {
+        setLang(customEvt.detail);
+      }
+    };
+    window.addEventListener('app_lang_change', onLangChange);
+    return () => window.removeEventListener('app_lang_change', onLangChange);
   }, [profile.default_language]);
 
   const handleSwitchLang = (newLang: ExpoLanguage) => {
     setLang(newLang);
     setStoredExpoLanguage(newLang);
+    setAppLanguage(newLang);
   };
 
   const t = CRM_TRANSLATIONS[lang] || CRM_TRANSLATIONS.vi;
