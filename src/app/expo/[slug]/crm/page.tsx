@@ -65,7 +65,7 @@ export default async function ExpoCrmPage({ params, searchParams }: Props) {
     .limit(1)
     .maybeSingle();
 
-  const isActivated = Boolean(expoMembership || (business as any).plan_tier === 'vip');
+  const isActivated = Boolean(expoProfile?.is_active || expoMembership || (business as any).plan_tier === 'vip');
 
   return (
     <ExpoCrmClient

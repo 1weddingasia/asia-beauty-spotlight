@@ -28,6 +28,9 @@ export async function POST(request: Request) {
       business_party_profiles (
         is_active,
         is_vip
+      ),
+      business_expo_profiles (
+        is_active
       )
     `);
 
@@ -95,6 +98,10 @@ export async function POST(request: Request) {
       ? business.business_party_profiles[0]
       : business.business_party_profiles;
 
+    const expoProfile = Array.isArray(business.business_expo_profiles)
+      ? business.business_expo_profiles[0]
+      : business.business_expo_profiles;
+
     const getPlan = (m: any) => (Array.isArray(m.plans) ? m.plans[0] : m.plans);
 
     const isPartyActive = Boolean(partyProfile?.is_active) || Boolean(activeMems?.some((m: any) => {
@@ -117,7 +124,9 @@ export async function POST(request: Request) {
       return (p?.plan_type === 'deal' || p?.name?.includes('Ưu Đãi')) && (p?.tier === 'vip' || p?.code === 'udai_vip');
     }));
 
-    const isExpoActive = Boolean(activeMems?.some((m: any) => {
+    const isExpoProfileActive = Boolean(expoProfile?.is_active);
+
+    const isExpoActive = isExpoProfileActive || Boolean(activeMems?.some((m: any) => {
       const p = getPlan(m);
       return p?.plan_type === 'expo' || p?.code?.includes('expo');
     }));

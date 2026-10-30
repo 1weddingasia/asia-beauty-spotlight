@@ -18,6 +18,38 @@ interface SepayPayload {
   referenceCode?: string;
 }
 
+async function sendTelegramAlert(text: string) {
+  try {
+    const tokens = [
+      process.env.TELEGRAM_BOT_TOKEN_1BOOKING,
+      process.env.TELEGRAM_BOT_TOKEN
+    ].filter((t, i, arr): t is string => Boolean(t) && arr.indexOf(t) === i);
+
+    const chatIds = [
+      process.env.TELEGRAM_CHAT_ID,
+      process.env.TELEGRAM_ADMIN_CHAT_ID
+    ].filter((c, i, arr): c is string => Boolean(c) && arr.indexOf(c) === i);
+
+    if (tokens.length === 0 || chatIds.length === 0) return;
+
+    for (const token of tokens) {
+      for (const chatId of chatIds) {
+        try {
+          await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
+          });
+        } catch (subErr) {
+          console.error('[SePay Webhook] Telegram send sub-error:', subErr);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[SePay Webhook] Telegram dispatch error:', err);
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const rawBody = await request.text();
@@ -104,6 +136,7 @@ export async function POST(request: Request) {
     }
 
     // Xử lý logic cấp phát membership gói VIP
+    let isAutoActivated = false;
     // Hỗ trợ 2 cú pháp: 
     // 1. "UPGRADE [SLUG]" hoặc "VIP [SLUG]"
     // 2. Hoặc chỉ cần chứa Số điện thoại (10 số, bắt đầu bằng số 0)
@@ -113,8 +146,8 @@ export async function POST(request: Request) {
     const isExpoOrder = contentUpper.includes('EXPO') || contentUpper.includes('DONATE');
 
     // Tìm Slug (hỗ trợ TIECVIP, UDAIVIP, UPGRADE, TIEC, UDAI, VIP, EXPO365, EXPO30, EXPO, DONATE theo sau bởi slug)
-    const slugMatch = contentUpper.match(/^(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP|EXPO365|EXPO30|EXPO|DONATE)[\s_]+([A-Z0-9-]+)/) 
-      || contentUpper.match(/(?<![A-Z])(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP|EXPO365|EXPO30|EXPO|DONATE)[\s_]+([A-Z0-9-]*[A-Z][A-Z0-9-]*)/);
+    const slugMatch = contentUpper.match(/^(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP|EXPO365|EXPO30|EXPO|DONATE)[\s_]*([A-Z0-9-]+)/) 
+      || contentUpper.match(/(?<![A-Z])(?:TIECVIP|UDAIVIP|UPGRADE|TIEC|UDAI|VIP|EXPO365|EXPO30|EXPO|DONATE)[\s_]*([A-Z0-9-]*[A-Z][A-Z0-9-]*)/);
     
     let targetSlug = slugMatch ? slugMatch[1].toLowerCase() : null;
     // Bỏ qua nếu token là 'biz' hoặc toàn chữ số (toàn chữ số để xử lý qua targetPhone bên dưới)
@@ -339,12 +372,31 @@ export async function POST(request: Request) {
           // 4.1. Nếu là gói Expo: Kích hoạt business_expo_profiles
           if (isExpoPayment) {
             try {
-              await supabase.from('business_expo_profiles')
-                .update({
-                  is_active: true,
-                  updated_at: new Date().toISOString()
-                })
-                .eq('business_id', business.id);
+              const { data: existingExpo } = await supabase
+                .from('business_expo_profiles')
+                .select('id, business_id')
+                .eq('business_id', business.id)
+                .maybeSingle();
+
+              if (existingExpo) {
+                await supabase.from('business_expo_profiles')
+                  .update({
+                    is_active: true,
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('business_id', business.id);
+              } else {
+                await supabase.from('business_expo_profiles')
+                  .insert({
+                    business_id: business.id,
+                    event_name: '1Booking Expo Pass',
+                    is_active: true,
+                    access_pin: '123456',
+                    languages_enabled: ['vi', 'en', 'ko', 'zh'],
+                    default_language: 'vi',
+                    updated_at: new Date().toISOString()
+                  });
+              }
               console.log(`[SePay Webhook] Activated business_expo_profiles for ${business.name}`);
             } catch (expoErr) {
               console.error('[SePay Webhook] Error activating expo profile:', expoErr);
@@ -383,29 +435,22 @@ export async function POST(request: Request) {
             .update({ processed: true, user_id: business.owner_id })
             .eq('transaction_id', payload.id.toString());
 
+          isAutoActivated = true;
           console.log(`Successfully upgraded business ${business.name} via SePay transaction ${payload.id}`);
 
           // 5.1. Bắn thông báo nổ chuông Telegram cho Admin
           try {
-            const botToken = process.env.TELEGRAM_BOT_TOKEN_1BOOKING || process.env.TELEGRAM_BOT_TOKEN;
-            const chatId = process.env.TELEGRAM_CHAT_ID;
-            if (botToken && chatId) {
-              let planTag = 'Gian hàng Doanh nghiệp';
-              if (isExpoPayment) {
-                planTag = `🎪 1Booking Expo Pass (${targetPlanCode === 'expo_pass_yearly' ? 'Gói Toàn Niên 365 Ngày' : 'Gói Sự Kiện 30 Ngày'})`;
-              } else if (isPartyPayment) {
-                planTag = isVipParty ? '🌟 Kích hoạt VIP Neon' : '✅ Kích hoạt Phố Tiệc';
-              }
-
-              const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://1booking.asia';
-              const crmLink = isExpoPayment ? `${siteUrl}/expo/${business.slug}/crm` : `${siteUrl}/${business.slug}`;
-              const msg = `🎉 <b>[1BOOKING.ASIA] NỔ ĐƠN KÍCH HOẠT TỰ ĐỘNG!</b>\n━━━━━━━━━━━━━━━━━━━━\n🏛️ <b>Quán / Gian hàng:</b> ${business.name}\n🔗 <b>Đường dẫn:</b> ${crmLink}\n📞 <b>SĐT:</b> ${business.phone || 'Không rõ'}\n💰 <b>Số tiền:</b> ${payload.transferAmount.toLocaleString('vi-VN')} đ\n📦 <b>Gói:</b> ${plan.name || targetPlanCode}\n✨ <b>Phân loại:</b> ${planTag}\n📝 <b>Nội dung CK:</b> ${payload.content}\n━━━━━━━━━━━━━━━━━━━━\n⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
-              await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'HTML' }),
-              });
+            let planTag = 'Gian hàng Doanh nghiệp';
+            if (isExpoPayment) {
+              planTag = `🎪 1Booking Expo Pass (${targetPlanCode === 'expo_pass_yearly' ? 'Gói Toàn Niên 365 Ngày' : 'Gói Sự Kiện 30 Ngày'})`;
+            } else if (isPartyPayment) {
+              planTag = isVipParty ? '🌟 Kích hoạt VIP Neon' : '✅ Kích hoạt Phố Tiệc';
             }
+
+            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://1booking.asia';
+            const crmLink = isExpoPayment ? `${siteUrl}/expo/${business.slug}/crm` : `${siteUrl}/${business.slug}`;
+            const msg = `🎉 <b>[1BOOKING.ASIA] NỔ ĐƠN KÍCH HOẠT TỰ ĐỘNG!</b>\n━━━━━━━━━━━━━━━━━━━━\n🏛️ <b>Quán / Gian hàng:</b> ${business.name}\n🔗 <b>Đường dẫn:</b> ${crmLink}\n📞 <b>SĐT:</b> ${business.phone || 'Không rõ'}\n💰 <b>Số tiền:</b> ${payload.transferAmount.toLocaleString('vi-VN')} đ\n📦 <b>Gói:</b> ${plan.name || targetPlanCode}\n✨ <b>Phân loại:</b> ${planTag}\n📝 <b>Nội dung CK:</b> ${payload.content}\n━━━━━━━━━━━━━━━━━━━━\n⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
+            await sendTelegramAlert(msg);
           } catch (teleErr) {
             console.error('[SePay Webhook] Telegram alert error:', teleErr);
           }
@@ -448,6 +493,15 @@ export async function POST(request: Request) {
             console.error('[SePay Webhook] Error sending payment confirmation email:', emailErr);
           }
         }
+      }
+    }
+
+    if (!isAutoActivated) {
+      try {
+        const unmappedAlert = `⚠️ <b>[1BOOKING.ASIA] CÓ GIAO DỊCH MỚI (CHƯA TỰ ĐỘNG MAP)</b>\n━━━━━━━━━━━━━━━━━━━━\n💰 <b>Số tiền:</b> ${payload.transferAmount.toLocaleString('vi-VN')} đ\n📝 <b>Nội dung CK:</b> ${payload.content}\n🏦 <b>Ngân hàng:</b> ${payload.gateway || 'TPBank'} (STK: ${payload.accountNumber || '00003554020'})\n🆔 <b>Mã GD:</b> ${payload.code || payload.id}\n⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}\n━━━━━━━━━━━━━━━━━━━━\n💡 <i>Giao dịch đã được lưu an toàn vào hệ thống. Vui lòng đối soát và kích hoạt thủ công nếu cần.</i>`;
+        await sendTelegramAlert(unmappedAlert);
+      } catch (alertErr) {
+        console.error('[SePay Webhook] Unmapped alert error:', alertErr);
       }
     }
 

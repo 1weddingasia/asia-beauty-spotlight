@@ -126,29 +126,86 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
   const [isActivateOpen, setIsActivateOpen] = useState(false);
   const [selectedPlanAmount, setSelectedPlanAmount] = useState<number>(300000);
   const [checkingPayment, setCheckingPayment] = useState(false);
+  const [checkProgressText, setCheckProgressText] = useState<string>('');
+  const [checkWarningMessage, setCheckWarningMessage] = useState<string | null>(null);
+  const [hasCheckedAtLeastOnce, setHasCheckedAtLeastOnce] = useState(false);
 
   const handleCheckPayment = async () => {
+    if (checkingPayment) return;
     setCheckingPayment(true);
-    try {
-      const res = await fetch('/api/payment/check-status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: business.slug }),
-      });
-      const data = await res.json();
-      if (data.success && (data.activated || data.business?.is_expo_active)) {
-        setIsActivated(true);
-        setIsActivateOpen(false);
-        toast.success(t.activateConfirmed);
-      } else {
-        toast.info(t.activateChecking);
+    setCheckWarningMessage(null);
+    setCheckProgressText('Đang kết nối cổng ngân hàng... (1/5)');
+
+    const maxAttempts = 5;
+    const intervalMs = 2800;
+    let isSuccess = false;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      if (attempt > 1) {
+        if (attempt === 2) setCheckProgressText('Đang kiểm tra biến động số dư VietQR... (2/5)');
+        else if (attempt === 3) setCheckProgressText('Đang đồng bộ giao dịch SePay... (3/5)');
+        else if (attempt === 4) setCheckProgressText('Đang xác thực thông tin gian hàng... (4/5)');
+        else setCheckProgressText('Đang hoàn tất kiểm tra... (5/5)');
       }
-    } catch {
-      toast.error('Lỗi khi kiểm tra trạng thái thanh toán.');
-    } finally {
-      setCheckingPayment(false);
+
+      try {
+        const res = await fetch('/api/payment/check-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: business.slug }),
+        });
+        const data = await res.json();
+        if (data.success && (data.activated || data.business?.is_expo_active)) {
+          isSuccess = true;
+          setIsActivated(true);
+          setIsActivateOpen(false);
+          toast.success(t.activateConfirmed || 'Kích hoạt bản quyền thành công!');
+          break;
+        }
+      } catch (err) {
+        console.warn('Check payment status attempt failed:', err);
+      }
+
+      if (attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      }
+    }
+
+    setCheckingPayment(false);
+    setCheckProgressText('');
+    setHasCheckedAtLeastOnce(true);
+
+    if (!isSuccess) {
+      setCheckWarningMessage(
+        'Hệ thống chưa ghi nhận biến động số dư từ ngân hàng. Nếu bạn vừa chuyển khoản, vui lòng đợi 1 - 2 phút để ngân hàng chuyển tiếp dữ liệu (hệ thống sẽ tự động kích hoạt ngay khi nhận được tín hiệu), hoặc bạn có thể bấm [Kiểm tra lại].'
+      );
+      toast.info('Chưa thấy giao dịch mới. Vui lòng đợi 1-2 phút hoặc thử lại.');
     }
   };
+
+  // Tự động kiểm tra ngầm mỗi 7 giây khi mở modal kích hoạt (không hiện spinner làm phiền)
+  useEffect(() => {
+    if (!isActivateOpen || isActivated) return;
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/payment/check-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: business.slug }),
+        });
+        const data = await res.json();
+        if (data.success && (data.activated || data.business?.is_expo_active)) {
+          setIsActivated(true);
+          setIsActivateOpen(false);
+          toast.success(t.activateConfirmed || 'Kích hoạt bản quyền thành công!');
+        }
+      } catch {
+        // ignore background poll error
+      }
+    }, 7000);
+
+    return () => clearInterval(pollInterval);
+  }, [isActivateOpen, isActivated, business.slug, t.activateConfirmed]);
 
   const brandName = getExpoBrandName(business, profile, lang);
   const eventName = getExpoEventName(profile, lang);
@@ -731,16 +788,20 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
               alt="VietQR Kích Hoạt"
               className="w-56 h-auto max-w-full rounded-xl object-contain shadow-sm"
             />
-            <p className="text-[11px] text-slate-600 font-medium mt-2">
-              Mở App ngân hàng quét mã VietQR thanh toán tự động 24/7
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold mt-2.5 shadow-xs">
+              <span className="text-emerald-600 font-black">✓</span>
+              <span>Quét mã tự điền 100% - Không cần nhập tay</span>
+            </div>
+            <p className="text-[11px] text-slate-600 font-medium mt-1.5">
+              Mở App ngân hàng bất kỳ quét mã VietQR để thanh toán tự động 24/7
             </p>
-            <p className="text-xs font-bold text-amber-700 mt-0.5">
+            <p className="text-xs font-black text-amber-700 mt-0.5">
               Số tiền: {selectedPlanAmount.toLocaleString('vi-VN')} VNĐ
             </p>
           </div>
 
           {/* Bank Details Table */}
-          <div className="space-y-2 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-xs mb-5">
+          <div className="space-y-2 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-xs mb-4">
             <div className="flex items-center justify-between py-1 border-b border-slate-800/80">
               <span className="text-slate-400">{t.activateBankLabel}:</span>
               <span className="font-bold text-white font-mono">{BANK_NAME} (Ngân hàng Tiên Phong)</span>
@@ -779,8 +840,27 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
             </div>
           </div>
 
+          {/* Polling Progress Feedback */}
+          {checkingPayment && (
+            <div className="w-full p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-center gap-2.5 animate-pulse mb-3">
+              <RefreshCw className="w-4 h-4 animate-spin text-amber-400 shrink-0" />
+              <span className="font-semibold">{checkProgressText || t.activateChecking}</span>
+            </div>
+          )}
+
+          {/* Timeout Guidance Message */}
+          {checkWarningMessage && !checkingPayment && (
+            <div className="w-full p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs space-y-1 mb-4 leading-relaxed text-left">
+              <div className="font-bold flex items-center gap-1.5 text-amber-300">
+                <span>⏱️</span>
+                <span>Ngân hàng đang xử lý giao dịch</span>
+              </div>
+              <p className="text-slate-300 text-[11px]">{checkWarningMessage}</p>
+            </div>
+          )}
+
           {/* Footer with Check Payment & Close */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
             <button
               type="button"
               disabled={checkingPayment}
@@ -790,12 +870,12 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
               {checkingPayment ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>{t.activateChecking}</span>
+                  <span>{checkProgressText || t.activateChecking}</span>
                 </>
               ) : (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>{t.activateCheckBtn}</span>
+                  <span>{hasCheckedAtLeastOnce ? 'Kiểm Tra Lại' : t.activateCheckBtn}</span>
                 </>
               )}
             </button>
