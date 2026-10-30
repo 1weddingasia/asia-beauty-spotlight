@@ -2,7 +2,7 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { ExpoHubClient } from './ExpoHubClient';
 import type { Metadata } from 'next';
 
-export const revalidate = 60; // Tải siêu tốc trong < 20ms từ Edge Cache, chịu tải hàng chục ngàn lượt quét đồng thời
+export const revalidate = 60; // ISR: làm mới danh sách gian hàng mỗi 60 giây để giảm tải DB khi lượng truy cập đồng thời tăng cao
 
 export const metadata: Metadata = {
   title: '1Booking Expo Pass | Danh Bạ Số Hóa Doanh Nghiệp & Kết Nối B2B',

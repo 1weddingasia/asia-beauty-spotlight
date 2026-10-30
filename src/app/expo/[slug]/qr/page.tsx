@@ -3,7 +3,7 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { ExpoStandeeClient } from './ExpoStandeeClient';
 import type { Metadata } from 'next';
 
-export const revalidate = 300; // Cache 5 phút cho Standee QR để bàn, tải siêu nhanh khi in ấn/xem lại
+export const revalidate = 60; // ISR: làm mới thông tin Standee QR mỗi 60 giây đồng bộ với trang gian hàng
 
 interface Props {
   params: Promise<{ slug: string }>;

@@ -16,19 +16,15 @@ const ExpoLeadSchema = z.object({
 const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
 const recentSubmissions = new Map<string, number>();
 
-// Tự động dọn dẹp bộ nhớ mỗi 5 phút
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, record] of ipRequestCounts.entries()) {
-    if (record.resetAt < now) ipRequestCounts.delete(ip);
-  }
-  for (const [key, ts] of recentSubmissions.entries()) {
-    if (now - ts > 30000) recentSubmissions.delete(key);
-  }
-}, 5 * 60 * 1000);
-
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
+  // Dọn dẹp lười (lazy cleanup) nếu map quá lớn
+  if (ipRequestCounts.size > 2000) {
+    for (const [k, v] of ipRequestCounts.entries()) {
+      if (v.resetAt < now) ipRequestCounts.delete(k);
+    }
+  }
+
   const record = ipRequestCounts.get(ip);
   if (!record || record.resetAt < now) {
     ipRequestCounts.set(ip, { count: 1, resetAt: now + 60 * 1000 });
@@ -70,17 +66,25 @@ export async function POST(req: Request) {
     // Kiểm tra chống gửi trùng / bấm đúp khi mạng 4G chập chờn (Idempotency)
     const cleanPhone = customer_phone.replace(/\D/g, '');
     const dedupKey = `${business_id}:${cleanPhone}`;
-    const lastSubmitTime = recentSubmissions.get(dedupKey);
     const now = Date.now();
+
+    // Dọn dẹp lười cho recentSubmissions
+    if (recentSubmissions.size > 2000) {
+      for (const [k, ts] of recentSubmissions.entries()) {
+        if (now - ts > 30000) recentSubmissions.delete(k);
+      }
+    }
+
+    const lastSubmitTime = recentSubmissions.get(dedupKey);
     if (lastSubmitTime && now - lastSubmitTime < 15000) {
       // Đã gửi trong vòng 15 giây -> Trả về thành công ngay lập tức mà không ghi đè DB
       return NextResponse.json({
         success: true,
         message: 'Thông tin của bạn đã được ghi nhận thành công!',
         deduplicated: true,
+        lead: null,
       });
     }
-    recentSubmissions.set(dedupKey, now);
 
     const supabase = await createAdminClient();
 
@@ -115,6 +119,9 @@ export async function POST(req: Request) {
       console.error('[Expo Lead Insert Error]:', insertErr);
       return NextResponse.json({ error: 'Lỗi lưu thông tin khách hàng' }, { status: 500 });
     }
+
+    // Chỉ ghi nhận dedup sau khi insert DB thành công (đảm bảo không mất lead nếu insert lỗi)
+    recentSubmissions.set(dedupKey, Date.now());
 
     // 3. Bắn Telegram thông báo tức thời (Fire and Forget với timeout 2.5s không làm nghẽn máy chủ)
     const adminBotToken = process.env.TELEGRAM_BOT_TOKEN_1BOOKING;

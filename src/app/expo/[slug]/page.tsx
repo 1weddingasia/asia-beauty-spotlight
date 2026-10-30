@@ -5,11 +5,10 @@ import type { Metadata } from 'next';
 
 import type { ExpoLanguage } from '@/types/expo';
 
-export const revalidate = 60; // Tải tức thì trong < 15ms khi khách quét mã QR, chịu tải cao kể cả ngàn người quét cùng lúc
+export const revalidate = 60; // ISR: làm mới thông tin gian hàng mỗi 60 giây để giảm tải DB khi lượng quét QR tăng cao
 
 interface Props {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ lang?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -47,13 +46,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ExpoBoothPage({ params, searchParams }: Props) {
+export default async function ExpoBoothPage({ params }: Props) {
   const { slug } = await params;
   if (slug === 'deoproce-korea') {
     redirect('/expo/1booking-expo-pass');
   }
-  const sp = searchParams ? await searchParams : {};
-  const requestedLang = sp.lang && ['vi', 'en', 'ko', 'zh'].includes(sp.lang) ? (sp.lang as ExpoLanguage) : null;
 
   const supabase = await createAdminClient();
 
@@ -90,7 +87,7 @@ export default async function ExpoBoothPage({ params, searchParams }: Props) {
     languages_enabled: (expoProfile?.languages_enabled as ExpoLanguage[]) || ['vi', 'en', 'ko', 'zh'],
     company_name_vi: expoProfile?.company_name_vi || null,
     company_name_en: expoProfile?.company_name_en || null,
-    default_language: requestedLang || (expoProfile?.default_language as ExpoLanguage) || 'vi',
+    default_language: (expoProfile?.default_language as ExpoLanguage) || 'vi',
     is_active: expoProfile?.is_active ?? true,
   };
 

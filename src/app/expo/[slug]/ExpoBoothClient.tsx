@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -13,7 +13,7 @@ import {
   setStoredExpoLanguage,
 } from '@/types/expo';
 import { setAppLanguage, getAppLanguage } from '@/lib/i18n';
-import { Globe, CheckCircle2, Building2, Handshake, Lock, ArrowLeft, Sparkles } from 'lucide-react';
+import { Globe, CheckCircle2, Building2, Handshake, Lock, ArrowLeft, Sparkles, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { CountryFlag } from '../CountryFlag';
 import { ExpoContactModal } from '../ExpoContactModal';
@@ -54,9 +54,11 @@ const LANGUAGE_CONFIG: Array<{ code: ExpoLanguage; label: string; countryName: s
 export function ExpoBoothClient({ business, profile }: Props) {
   const [lang, setLang] = useState<ExpoLanguage>((profile.default_language as ExpoLanguage) || 'vi');
 
-  // Đồng bộ ngôn ngữ từ URL query hoặc localStorage & event toàn cục
+  // Đồng bộ ngôn ngữ từ URL query (?lang=), localStorage & event toàn cục
   useEffect(() => {
-    const detected = (getAppLanguage() || getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi')) as ExpoLanguage;
+    const urlLang = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('lang') : null;
+    const validUrlLang = urlLang && ['vi', 'en', 'ko', 'zh'].includes(urlLang) ? (urlLang as ExpoLanguage) : null;
+    const detected = validUrlLang || (getAppLanguage() || getStoredExpoLanguage((profile.default_language as ExpoLanguage) || 'vi')) as ExpoLanguage;
     if (detected && ['vi', 'en', 'ko', 'zh'].includes(detected)) {
       setLang(detected);
     }
@@ -94,6 +96,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [hasPrefilled, setHasPrefilled] = useState(false);
+
+  // Khóa chặn gửi đúp đồng bộ (Synchronous lock)
+  const isSubmittingRef = useRef(false);
 
   // Tự động điền thông tin khách từ lần quét trước (Khách chỉ cần nhập 1 lần, các gian hàng sau chỉ cần bấm 1 chạm)
   useEffect(() => {
@@ -102,12 +108,30 @@ export function ExpoBoothClient({ business, profile }: Props) {
       const savedPhone = localStorage.getItem('expo_visitor_phone');
       const savedEmail = localStorage.getItem('expo_visitor_email');
       const savedCompany = localStorage.getItem('expo_visitor_company');
-      if (savedName) setName(savedName);
-      if (savedPhone) setPhone(savedPhone);
-      if (savedEmail) setEmail(savedEmail);
-      if (savedCompany) setCompany(savedCompany);
+      if (savedName || savedPhone) {
+        setHasPrefilled(true);
+        if (savedName) setName(savedName);
+        if (savedPhone) setPhone(savedPhone);
+        if (savedEmail) setEmail(savedEmail);
+        if (savedCompany) setCompany(savedCompany);
+      }
     } catch (_) {}
   }, []);
+
+  const handleClearPrefilled = () => {
+    setName('');
+    setPhone('');
+    setEmail('');
+    setCompany('');
+    setInterests('');
+    setHasPrefilled(false);
+    try {
+      localStorage.removeItem('expo_visitor_name');
+      localStorage.removeItem('expo_visitor_phone');
+      localStorage.removeItem('expo_visitor_email');
+      localStorage.removeItem('expo_visitor_company');
+    } catch (_) {}
+  };
 
   // Mô tả theo ngôn ngữ
   const displayDescription = lang === 'vi' 
@@ -116,7 +140,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return; // Chống bấm đúp (double-click lock)
+    if (isSubmittingRef.current || loading) return; // Chống bấm đúp tức thì
 
     if (!name.trim()) {
       toast.error(lang === 'vi' ? 'Vui lòng nhập họ và tên' : 'Please enter your name');
@@ -127,16 +151,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
       return;
     }
 
+    isSubmittingRef.current = true;
     setLoading(true);
-    try {
-      // Lưu thông tin vào bộ nhớ điện thoại để tái sử dụng ngay khi quét các gian hàng khác
-      try {
-        localStorage.setItem('expo_visitor_name', name.trim());
-        localStorage.setItem('expo_visitor_phone', phone.trim());
-        if (email.trim()) localStorage.setItem('expo_visitor_email', email.trim());
-        if (company.trim()) localStorage.setItem('expo_visitor_company', company.trim());
-      } catch (_) {}
 
+    try {
       const res = await fetch('/api/expo/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -156,6 +174,15 @@ export function ExpoBoothClient({ business, profile }: Props) {
         throw new Error(data.error || (lang === 'vi' ? 'Gửi thông tin không thành công' : 'Submission failed'));
       }
 
+      // Chỉ lưu thông tin vào bộ nhớ điện thoại SAU KHI server đã xác nhận lưu thành công
+      try {
+        localStorage.setItem('expo_visitor_name', name.trim());
+        localStorage.setItem('expo_visitor_phone', phone.trim());
+        if (email.trim()) localStorage.setItem('expo_visitor_email', email.trim());
+        if (company.trim()) localStorage.setItem('expo_visitor_company', company.trim());
+        setHasPrefilled(true);
+      } catch (_) {}
+
       setSubmitted(true);
       toast.success(t.successTitle);
     } catch (err: any) {
@@ -165,6 +192,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
         : (err.message || (lang === 'vi' ? 'Đã xảy ra lỗi kết nối, vui lòng thử lại' : 'Connection error, please try again'));
       toast.error(errorMsg);
     } finally {
+      isSubmittingRef.current = false;
       setLoading(false);
     }
   };
@@ -303,6 +331,23 @@ export function ExpoBoothClient({ business, profile }: Props) {
                   {t.formSubtitle}
                 </p>
               </div>
+
+              {hasPrefilled && (
+                <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] text-amber-300">
+                  <span className="flex items-center gap-1.5 min-w-0">
+                    <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
+                    <span className="truncate">{lang === 'vi' ? 'Tự động điền từ lần quét trước' : 'Auto-filled from previous scan'}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleClearPrefilled}
+                    className="inline-flex items-center gap-1 text-slate-400 hover:text-amber-200 underline cursor-pointer ml-2 shrink-0 text-[10px]"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>{lang === 'vi' ? 'Nhập mới' : 'Clear'}</span>
+                  </button>
+                </div>
+              )}
 
               {/* Tên */}
               <div>
