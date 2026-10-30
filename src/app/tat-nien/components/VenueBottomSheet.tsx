@@ -31,6 +31,7 @@ import {
   Loader2,
   CheckCircle2,
   Building2,
+  Send,
   X,
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -164,6 +165,16 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   const displayPhone = venue.phone || venue.page_content?.phone || 'Đang cập nhật';
   const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
+  
+  const shortPriceFormatted = React.useMemo(() => {
+    const min = venue.price_min;
+    const max = venue.price_max;
+    if (!min && !max) return 'Liên hệ';
+    const toK = (n: number) => (n >= 1000000 ? `${(n / 1000000).toFixed(1).replace('.0', '')}tr` : `${Math.round(n / 1000)}k`);
+    if (min && max) return `${toK(min)} - ${toK(max)} đ`;
+    if (min) return `Từ ${toK(min)} đ`;
+    return `${toK(max!)} đ`;
+  }, [venue.price_min, venue.price_max]);
 
   // Look up labels
   const spaceLabels = (venue.spaces_and_amenities || []).map(getSpaceLabel).filter(Boolean);
@@ -266,7 +277,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
               <span className="text-[10px] font-semibold">Giá tham khảo</span>
             </div>
             <div className="text-xs sm:text-sm font-black text-rose-600 leading-tight truncate" title={priceFormatted}>
-              {priceFormatted}
+              {shortPriceFormatted}
             </div>
           </div>
 
@@ -591,7 +602,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
       {/* Fixed Bottom Action Bar */}
       {!showBookingForm && (
-        <div className="shrink-0 p-3 bg-white border-t border-slate-200 flex items-center gap-2 z-20 shadow-md">
+        <div className="shrink-0 px-3 pt-2.5 pb-6 sm:pb-3 bg-white border-t border-slate-200 flex items-center gap-2 z-20 shadow-md">
           {/* Zalo Share */}
           <button
             type="button"

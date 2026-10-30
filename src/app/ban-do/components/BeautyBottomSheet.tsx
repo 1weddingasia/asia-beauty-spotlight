@@ -486,7 +486,7 @@ export default function BeautyBottomSheet({ venue, onClose }: BeautyBottomSheetP
 
       {/* Fixed Bottom Action Bar */}
       {!showBookingForm && (
-        <div className="shrink-0 p-3 bg-white border-t border-slate-200 flex items-center gap-2 z-20 shadow-md">
+        <div className="shrink-0 px-3 pt-2.5 pb-6 sm:pb-3 bg-white border-t border-slate-200 flex items-center gap-2 z-20 shadow-md">
           {/* Zalo Share */}
           <button
             type="button"
