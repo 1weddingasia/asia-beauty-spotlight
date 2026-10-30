@@ -27,7 +27,7 @@ export default async function ExpoCrmPage({ params, searchParams }: Props) {
   // 1. Lấy thông tin gian hàng
   const { data: business } = await supabase
     .from('businesses')
-    .select('id, name, slug, phone, email, address, page_content, is_demo')
+    .select('id, name, slug, phone, email, address, page_content, is_demo, plan_tier')
     .eq('slug', slug)
     .maybeSingle();
 
@@ -54,7 +54,7 @@ export default async function ExpoCrmPage({ params, searchParams }: Props) {
     default_language: requestedLang || (expoProfile?.default_language as ExpoLanguage) || 'vi',
   };
 
-  // 3. Kiểm tra trạng thái kích hoạt bản quyền
+  // 3. Kiểm tra trạng thái kích hoạt bản quyền (bảo đảm có bằng chứng thanh toán: membership gói expo, transaction EXPO, hoặc plan_tier VIP)
   const { data: expoMembership } = await supabase
     .from('memberships')
     .select('id, status, expires_at, plans!inner(plan_type, code)')
@@ -65,7 +65,20 @@ export default async function ExpoCrmPage({ params, searchParams }: Props) {
     .limit(1)
     .maybeSingle();
 
-  const isActivated = Boolean(expoProfile?.is_active || expoMembership || (business as any).plan_tier === 'vip');
+  let hasExpoTx = false;
+  if (!expoMembership && business.slug) {
+    const cleanSlug = business.slug.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    const { data: tx } = await supabase
+      .from('transactions')
+      .select('id')
+      .or(`content.ilike.%EXPO%${cleanSlug}%,content.ilike.%EXPO%${business.slug.toUpperCase()}%`)
+      .order('id', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    hasExpoTx = Boolean(tx);
+  }
+
+  const isActivated = Boolean(expoMembership || hasExpoTx || (business as any).plan_tier === 'vip' || (business as any).plan_tier === 'premium');
 
   return (
     <ExpoCrmClient

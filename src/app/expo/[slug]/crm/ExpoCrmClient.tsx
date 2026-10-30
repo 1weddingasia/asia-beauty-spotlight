@@ -139,6 +139,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
     const maxAttempts = 5;
     const intervalMs = 2800;
     let isSuccess = false;
+    let failedAttempts = 0;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       if (attempt > 1) {
@@ -154,15 +155,20 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ slug: business.slug }),
         });
-        const data = await res.json();
-        if (data.success && (data.activated || data.business?.is_expo_active)) {
-          isSuccess = true;
-          setIsActivated(true);
-          setIsActivateOpen(false);
-          toast.success(t.activateConfirmed || 'Kích hoạt bản quyền thành công!');
-          break;
+        if (!res.ok) {
+          failedAttempts++;
+        } else {
+          const data = await res.json();
+          if (data.success && (data.activated || data.business?.is_expo_active)) {
+            isSuccess = true;
+            setIsActivated(true);
+            setIsActivateOpen(false);
+            toast.success(t.activateConfirmed || 'Kích hoạt bản quyền thành công!');
+            break;
+          }
         }
       } catch (err) {
+        failedAttempts++;
         console.warn('Check payment status attempt failed:', err);
       }
 
@@ -176,10 +182,14 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
     setHasCheckedAtLeastOnce(true);
 
     if (!isSuccess) {
-      setCheckWarningMessage(
-        'Hệ thống chưa ghi nhận biến động số dư từ ngân hàng. Nếu bạn vừa chuyển khoản, vui lòng đợi 1 - 2 phút để ngân hàng chuyển tiếp dữ liệu (hệ thống sẽ tự động kích hoạt ngay khi nhận được tín hiệu), hoặc bạn có thể bấm [Kiểm tra lại].'
-      );
-      toast.info('Chưa thấy giao dịch mới. Vui lòng đợi 1-2 phút hoặc thử lại.');
+      if (failedAttempts === maxAttempts) {
+        toast.error('Lỗi kết nối khi kiểm tra trạng thái thanh toán. Vui lòng kiểm tra lại mạng.');
+      } else {
+        setCheckWarningMessage(
+          'Hệ thống chưa ghi nhận biến động số dư từ ngân hàng. Nếu bạn vừa chuyển khoản, vui lòng đợi 1 - 2 phút để ngân hàng chuyển tiếp dữ liệu (hệ thống sẽ tự động kích hoạt ngay khi nhận được tín hiệu), hoặc bạn có thể bấm [Kiểm tra lại].'
+        );
+        toast.info('Chưa thấy giao dịch mới. Vui lòng đợi 1-2 phút hoặc thử lại.');
+      }
     }
   };
 
@@ -875,7 +885,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
               ) : (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>{hasCheckedAtLeastOnce ? 'Kiểm Tra Lại' : t.activateCheckBtn}</span>
+                  <span>{hasCheckedAtLeastOnce ? (t.activateRecheckBtn || 'Kiểm Tra Lại') : t.activateCheckBtn}</span>
                 </>
               )}
             </button>

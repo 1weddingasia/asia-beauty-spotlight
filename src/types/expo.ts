@@ -449,6 +449,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
   activateSuccessDesc: string;
   activateCheckBtn: string;
   activateChecking: string;
+  activateRecheckBtn: string;
   activateConfirmed: string;
   activateSelected: string;
 }> = {
@@ -552,6 +553,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     activateSuccessDesc: 'Cảm ơn Quý Doanh Nghiệp đã kích hoạt tiện ích 1Booking Pass!',
     activateCheckBtn: 'Tôi Đã Chuyển Khoản',
     activateChecking: 'Đang kiểm tra giao dịch...',
+    activateRecheckBtn: 'Kiểm Tra Lại',
     activateConfirmed: '🎉 Kích hoạt bản quyền thành công!',
     activateSelected: 'Đang chọn',
   },
@@ -655,6 +657,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     activateSuccessDesc: 'Thank you for activating 1Booking Pass!',
     activateCheckBtn: 'I Have Transferred',
     activateChecking: 'Verifying transaction...',
+    activateRecheckBtn: 'Check Again',
     activateConfirmed: '🎉 License activated successfully!',
     activateSelected: 'Selected',
   },
@@ -758,6 +761,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     activateSuccessDesc: '1Booking Pass를 활성화해 주셔서 감사합니다!',
     activateCheckBtn: '송금을 완료했습니다',
     activateChecking: '거래 확인 중...',
+    activateRecheckBtn: '다시 확인',
     activateConfirmed: '🎉 라이선스가 성공적으로 활성화되었습니다!',
     activateSelected: '선택됨',
   },
@@ -861,6 +865,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     activateSuccessDesc: '感谢您激活 1Booking Pass 服务！',
     activateCheckBtn: '我已完成转账',
     activateChecking: '正在查询转账记录...',
+    activateRecheckBtn: '重新检查',
     activateConfirmed: '🎉 授权激活成功！',
     activateSelected: '当前选择',
   },

@@ -496,7 +496,7 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!isAutoActivated) {
+    if (!isAutoActivated && payload.transferType === 'in' && payload.transferAmount >= 50000) {
       try {
         const unmappedAlert = `⚠️ <b>[1BOOKING.ASIA] CÓ GIAO DỊCH MỚI (CHƯA TỰ ĐỘNG MAP)</b>\n━━━━━━━━━━━━━━━━━━━━\n💰 <b>Số tiền:</b> ${payload.transferAmount.toLocaleString('vi-VN')} đ\n📝 <b>Nội dung CK:</b> ${payload.content}\n🏦 <b>Ngân hàng:</b> ${payload.gateway || 'TPBank'} (STK: ${payload.accountNumber || '00003554020'})\n🆔 <b>Mã GD:</b> ${payload.code || payload.id}\n⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}\n━━━━━━━━━━━━━━━━━━━━\n💡 <i>Giao dịch đã được lưu an toàn vào hệ thống. Vui lòng đối soát và kích hoạt thủ công nếu cần.</i>`;
         await sendTelegramAlert(unmappedAlert);
