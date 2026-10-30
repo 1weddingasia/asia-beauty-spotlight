@@ -31,15 +31,14 @@ export default function PartyQuickFilterBar({
   matchedCount,
   onOpenAdvancedModal,
 }: PartyQuickFilterBarProps) {
-  // Đếm số lượng tiêu chí đang được áp dụng
-  const activeCount = [
-    filter.guests > 0,
-    filter.priceMax > 0,
-    filter.spaces.length > 0,
-    filter.cuisines.length > 0,
-    filter.perks.length > 0,
-    filter.onlyVip,
-  ].filter(Boolean).length;
+  // Đếm tổng số lượng tiêu chí đang được áp dụng
+  const activeCount =
+    (filter.guests > 0 ? 1 : 0) +
+    (filter.priceMax > 0 ? 1 : 0) +
+    filter.spaces.length +
+    filter.cuisines.length +
+    filter.perks.length +
+    (filter.onlyVip ? 1 : 0);
 
   // Toggle tiện ích không gian (spaces)
   const toggleSpace = (spaceId: string) => {

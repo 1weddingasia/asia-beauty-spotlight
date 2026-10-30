@@ -112,6 +112,7 @@ export default function PartyFilterWidget({
     filter.priceMax > 0 ||
     filter.spaces.length > 0 ||
     filter.cuisines.length > 0 ||
+    filter.perks.length > 0 ||
     filter.onlyVip;
 
   return (
