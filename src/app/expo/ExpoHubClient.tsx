@@ -94,6 +94,7 @@ const HUB_I18N: Record<HubLang, {
   totalWord: string;
   disclaimer: string;
   btnContactExpo: string;
+  digitalPassBadge: string;
 }> = {
   vi: {
     eventTag: '1BOOKING EXPO PASS',
@@ -130,6 +131,7 @@ const HUB_I18N: Record<HubLang, {
     pageWord: 'Trang',
     totalWord: 'Tổng cộng',
     disclaimer: '1Booking Expo Pass là nền tảng số hóa danh bạ và giải pháp kết nối B2B độc lập, phục vụ kết nối thương mại mọi sự kiện, showroom & văn phòng doanh nghiệp.',
+    digitalPassBadge: 'Hồ Sơ Số',
   },
   en: {
     eventTag: '1BOOKING EXPO PASS',
@@ -166,6 +168,7 @@ const HUB_I18N: Record<HubLang, {
     pageWord: 'Page',
     totalWord: 'Total',
     disclaimer: '1Booking Expo Pass is an independent digitized directory and B2B networking platform serving businesses and partners across events, showrooms and offices.',
+    digitalPassBadge: 'Digital Pass',
   },
   ko: {
     eventTag: '1BOOKING EXPO PASS',
@@ -202,6 +205,7 @@ const HUB_I18N: Record<HubLang, {
     pageWord: '페이지',
     totalWord: '총',
     disclaimer: '1Booking Expo Pass는 국제 전시회 참가기업 및 참관객을 위한 독립적인 디지털 디렉토리 및 B2B 네트워킹 플랫폼입니다.',
+    digitalPassBadge: '디지털 패스',
   },
   zh: {
     eventTag: '1BOOKING EXPO PASS',
@@ -237,7 +241,8 @@ const HUB_I18N: Record<HubLang, {
     resetFilter: '重置',
     pageWord: '第',
     totalWord: '共',
-    disclaimer: '1Booking Expo Pass 是服务于国际博览会参展企业与观众的数字化名录与 B2B 商务对接平台。',
+    disclaimer: '1Booking Expo Pass 是服务于商务对接与企业数字化名录的独立平台。',
+    digitalPassBadge: '数字通行证',
   },
 };
 
@@ -631,7 +636,7 @@ export function ExpoHubClient({ initialBooths }: Props) {
                       <div className="flex items-center gap-1.5">
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-400/15 text-amber-300 border border-amber-400/30">
                           <Sparkles className="w-3 h-3 text-amber-400" />
-                          Digital Pass
+                          {t.digitalPassBadge}
                         </span>
                       </div>
                     </div>
