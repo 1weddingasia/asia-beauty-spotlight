@@ -27,7 +27,7 @@ const PARTY_SVG = (
  */
 export function getShortVenueName(fullName: string): string {
   if (!fullName) return '';
-  let s = fullName
+  const s = fullName
     .replace(/^(Nhà\s+Hàng|Khu\s+Du\s+Lịch|Trung\s+Tâm\s+Hội\s+Nghị\s*(&|\+)?\s*Sảnh\s+Tiệc|Trung\s+Tâm|Ẩm\s+Thực|Hải\s+Sản)\s+/i, '')
     .trim();
 
@@ -45,7 +45,7 @@ export function getShortVenueName(fullName: string): string {
     }
     return mainBrand;
   }
-  return s;
+  return s || fullName.trim();
 }
 
 export function VenuePin({ venue, isSelected, isDimmed, onClick }: VenuePinProps) {
@@ -85,7 +85,14 @@ export function VenuePin({ venue, isSelected, isDimmed, onClick }: VenuePinProps
       >
         <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${isSelected ? 'bg-white/20' : isVip ? 'bg-amber-100' : 'bg-amber-50'}`}>
           {logoUrl ? (
-            <img src={logoUrl} alt={venue.name} className="w-full h-full object-cover" />
+            <img
+              src={logoUrl}
+              alt={venue.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
           ) : isVip ? (
             VIP_STAR_SVG
           ) : (
@@ -150,7 +157,7 @@ export function createPinElement(
 
   // Logo or Star Icon
   const iconContent = logoUrl
-    ? `<img src="${escapeHtml(logoUrl)}" alt="${safeFullName}" class="w-full h-full object-cover rounded-full" />`
+    ? `<img src="${escapeHtml(logoUrl)}" alt="${safeFullName}" class="w-full h-full object-cover rounded-full" onerror="this.style.display='none'" />`
     : isVip
     ? `<svg class="w-3.5 h-3.5 text-amber-600 fill-amber-500 shrink-0" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
     : `<svg class="w-3 h-3 text-amber-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`;

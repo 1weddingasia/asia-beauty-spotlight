@@ -67,7 +67,7 @@ export function BeautyPin({ venue, isSelected, isDimmed, onClick }: BeautyPinPro
             {venue.name}
           </span>
           <span
-            className={`text-[9px] font-semibold mt-0.5 ${
+            className={`venue-pin-price text-[9px] font-semibold mt-0.5 ${
               isSelected ? 'text-yellow-200' : isVip ? 'text-amber-700' : 'text-rose-600'
             }`}
           >
@@ -141,7 +141,7 @@ export function createBeautyPinElement(
           <span class="text-[11px] font-bold tracking-tight max-w-[115px] truncate text-slate-900">
             ${safeName}
           </span>
-          <span class="text-[9px] mt-0.5 font-semibold ${isVip ? 'text-amber-700' : 'text-rose-600'}">
+          <span class="venue-pin-price text-[9px] mt-0.5 font-semibold ${isVip ? 'text-amber-700' : 'text-rose-600'}">
             ${priceDisplay}
           </span>
         </div>
