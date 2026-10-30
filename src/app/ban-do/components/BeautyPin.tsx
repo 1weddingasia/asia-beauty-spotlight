@@ -84,7 +84,7 @@ export function createBeautyPinElement(
   onClick: () => void
 ): HTMLElement {
   const el = document.createElement('div');
-  el.className = 'beauty-marker-container';
+  el.className = 'venue-marker-container';
 
   const isVip = venue.is_vip;
   const highlight = venue.deal_highlight || '';
@@ -98,7 +98,7 @@ export function createBeautyPinElement(
     }">
       ${
         highlight
-          ? `<div class="beauty-deal-badge absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gradient-to-r from-rose-600 to-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-200 shadow-md transition-all duration-200">
+          ? `<div class="venue-deal-badge absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gradient-to-r from-rose-600 to-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-200 shadow-md transition-all duration-200">
               ✨ ${highlight}
              </div>`
           : ''

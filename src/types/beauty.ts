@@ -39,6 +39,17 @@ export interface BeautyServiceItem {
   highlight?: boolean;
 }
 
+export interface BeautyPageContent {
+  banners?: string[];
+  gallery?: string[] | { id?: string; url: string; caption?: string }[];
+  hero_image?: string;
+  phone?: string;
+  menu_url?: string;
+  services?: BeautyServiceItem[];
+  amenities?: string[];
+  tagline?: string;
+}
+
 export interface BeautyVenue {
   id: string;
   name: string;
@@ -59,7 +70,7 @@ export interface BeautyVenue {
   amenities?: string[];
   specialties?: string[];
   services?: BeautyServiceItem[];
-  page_content?: any;
+  page_content?: BeautyPageContent | null;
 }
 
 export interface BeautyFilterState {

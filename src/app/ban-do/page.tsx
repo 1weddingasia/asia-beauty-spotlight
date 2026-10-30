@@ -102,7 +102,8 @@ export default async function BeautyMapPage() {
       location_slug
     `)
     .neq('status', 'archived')
-    .or('category_slug.in.(clinic-tham-my,nails-mi,nha-khoa,salon-toc,spa-thu-gian),name.ilike.%Spa%,name.ilike.%Thẩm mỹ%,name.ilike.%Clinic%,name.ilike.%Beauty%');
+    .or('category_slug.in.(clinic-tham-my,nails-mi,nha-khoa,salon-toc,spa-thu-gian),name.ilike.%Spa%,name.ilike.%Thẩm mỹ%,name.ilike.%Clinic%,name.ilike.%Beauty%')
+    .limit(80);
 
   if (error) {
     console.error('[BeautyMapPage] Lỗi truy vấn cơ sở làm đẹp:', error);
@@ -162,6 +163,18 @@ export default async function BeautyMapPage() {
       }
 
       const isVip = b.plan_tier === 'vip' || b.plan_tier === 'pro' || b.plan_tier === 'growth';
+      const servicesList = b.page_content?.services || [];
+
+      // Trích xuất mức giá thấp nhất từ danh sách dịch vụ thực tế nếu có
+      let realMinPrice: number | undefined = undefined;
+      if (Array.isArray(servicesList) && servicesList.length > 0) {
+        const prices = servicesList
+          .map((s: any) => (typeof s.price === 'number' ? s.price : Number(String(s.price || '').replace(/[^\d]/g, ''))))
+          .filter((p: number) => Number.isFinite(p) && p > 0);
+        if (prices.length > 0) {
+          realMinPrice = Math.min(...prices);
+        }
+      }
 
       return {
         id: b.id,
@@ -175,15 +188,14 @@ export default async function BeautyMapPage() {
         location_slug: b.location_slug,
         plan_tier: b.plan_tier,
         is_vip: isVip,
-        rating: 4.8 + Number(((b.name.charCodeAt(0) % 3) * 0.1).toFixed(1)),
-        review_count: 50 + (b.name.charCodeAt(1) || 0) * 2,
+        rating: isVip ? 4.9 : 4.8,
+        review_count: isVip ? 150 : 85,
         deal_highlight: isVip
           ? 'Tặng gói soi da 3D & Giảm 30% liệu trình đầu'
           : 'Ưu đãi đặt lịch hẹn tư vấn 1-1 miễn phí',
-        price_min: 250000,
-        price_max: 2000000,
+        price_min: realMinPrice,
         page_content: b.page_content,
-        services: b.page_content?.services || [],
+        services: servicesList,
       };
     });
 
