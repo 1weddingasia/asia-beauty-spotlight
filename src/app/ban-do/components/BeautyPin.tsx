@@ -106,8 +106,16 @@ export function createBeautyPinElement(
     ? `<svg class="w-3.5 h-3.5 text-amber-600 fill-amber-500 shrink-0" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>`
     : `<svg class="w-3 h-3 text-rose-500 fill-rose-500 shrink-0" viewBox="0 0 24 24"><path d="M12 0l2.5 8.5L23 11l-8.5 2.5L12 22l-2.5-8.5L1 11l8.5-2.5z"/></svg>`;
 
-  const safeName = venue.name.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const safeHighlight = highlight.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escapeHtml = (s: string) =>
+    s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+  const safeName = escapeHtml(venue.name);
+  const safeHighlight = escapeHtml(highlight);
 
   el.innerHTML = `
     <div class="beauty-pin-inner venue-pin-inner relative group cursor-pointer transition-transform duration-200 select-none ${

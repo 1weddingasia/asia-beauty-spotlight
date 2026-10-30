@@ -157,10 +157,10 @@ export default function BeautyMapView({
         if (pinInner) {
           if (isDimmed) {
             pinInner.classList.add('opacity-30', 'scale-90');
-            pinInner.classList.remove('opacity-100', 'scale-100', 'hover:scale-110');
+            pinInner.classList.remove('opacity-100', 'scale-100', 'hover:scale-105');
           } else {
             pinInner.classList.remove('opacity-30', 'scale-90');
-            pinInner.classList.add('opacity-100', 'scale-100', 'hover:scale-110');
+            pinInner.classList.add('opacity-100', 'scale-100', 'hover:scale-105');
           }
         }
       } else {
@@ -183,11 +183,16 @@ export default function BeautyMapView({
     });
   }, [venues, filteredVenueIds, onSelectVenue]);
 
-  // 3. Highlight marker khi selectedVenue thay đổi
+  // 3. Highlight marker khi selectedVenue thay đổi & toggle class is-selected
   useEffect(() => {
+    Object.values(markersRef.current).forEach((m) => {
+      m.getElement().classList.remove('is-selected');
+    });
+
     if (!selectedVenue) return;
     const marker = markersRef.current[selectedVenue.id];
     if (marker) {
+      marker.getElement().classList.add('is-selected');
       const coords = selectedVenue.map_coordinates;
       if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number' && mapRef.current) {
         mapRef.current.flyTo({

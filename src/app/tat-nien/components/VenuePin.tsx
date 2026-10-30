@@ -102,8 +102,16 @@ export function createPinElement(
     ? `<svg class="w-3.5 h-3.5 text-amber-600 fill-amber-500 shrink-0" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
     : `<svg class="w-3 h-3 text-amber-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`;
 
-  const safeName = venue.name.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const safeHighlight = highlight.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escapeHtml = (s: string) =>
+    s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+  const safeName = escapeHtml(venue.name);
+  const safeHighlight = escapeHtml(highlight);
 
   el.innerHTML = `
     <div class="venue-pin-inner relative group cursor-pointer transition-transform duration-200 select-none ${
