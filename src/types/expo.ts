@@ -397,6 +397,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
   exportEmpty: string;
   exportError: string;
   soundOk: string;
+  soundTest: string;
   // Change PIN modal
   changePinTitle: string;
   boothLabel: string;
@@ -503,6 +504,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     exportEmpty: 'Chưa có dữ liệu khách hàng để xuất',
     exportError: 'Lỗi khi xuất file Excel',
     soundOk: 'Chuông Ting-Ting đang hoạt động tốt!',
+    soundTest: 'Thử Chuông',
     changePinTitle: 'Đổi Mã PIN CRM',
     boothLabel: 'Doanh nghiệp',
     oldPinLabel: 'Mã PIN hiện tại',
@@ -605,6 +607,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     exportEmpty: 'No customer data to export',
     exportError: 'Error exporting Excel file',
     soundOk: 'Ting-Ting chime is working!',
+    soundTest: 'Test Chime',
     changePinTitle: 'Change CRM PIN',
     boothLabel: 'Business',
     oldPinLabel: 'Current PIN',
@@ -707,6 +710,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     exportEmpty: '내보낼 고객 데이터가 없습니다',
     exportError: '엑셀 파일 내보내기 오류',
     soundOk: '알림음이 정상 작동합니다!',
+    soundTest: '알림음 테스트',
     changePinTitle: 'CRM PIN 변경',
     boothLabel: '기업',
     oldPinLabel: '현재 PIN',
@@ -809,6 +813,7 @@ export const CRM_TRANSLATIONS: Record<ExpoLanguage, {
     exportEmpty: '暂无客户数据可导出',
     exportError: '导出Excel文件失败',
     soundOk: '提示音正常运行！',
+    soundTest: '测试提示音',
     changePinTitle: '修改CRM PIN码',
     boothLabel: '企业',
     oldPinLabel: '当前PIN码',

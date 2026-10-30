@@ -833,7 +833,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
             {t.pinTitle}
           </h1>
           <p className="text-xs text-amber-400 font-semibold mb-1">
-            {brandName} • {profile.booth_number}
+            {brandName}
           </p>
           <p className="text-xs text-slate-400 mb-6">
             {t.pinDesc}
@@ -953,42 +953,42 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
             </div>
           </div>
 
-          {/* Row 2: Action Toolbar (Responsive, wrap/scroll cleanly on mobile) */}
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
-            {/* 1. Export Excel Button (Prominent) */}
+          {/* Row 2: Action Toolbar (Hiển thị đầy đủ trực quan thành các hàng trên điện thoại, không cần cuộn ngang) */}
+          <div className="grid grid-cols-3 sm:flex sm:flex-wrap sm:items-center gap-1.5 sm:gap-2">
+            {/* 1. Nút Xuất Excel */}
             <button
               type="button"
               onClick={handleExportExcel}
-              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all cursor-pointer shrink-0"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-bold px-2 py-2 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all cursor-pointer active:scale-95 text-center"
               title={t.exportExcel}
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>{t.exportExcel}</span>
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{t.exportExcel}</span>
             </button>
 
-            {/* 2. Standee QR download link */}
+            {/* 2. Link Tải Standee QR */}
             <Link
               href={`/expo/${business.slug}/qr?lang=${lang}`}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-amber-400/40 transition-colors shrink-0"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold px-2 py-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 hover:border-amber-400/40 transition-colors active:scale-95 text-center"
               title={t.downloadStandee}
             >
-              <Download className="w-3.5 h-3.5 text-amber-400" />
-              <span>{t.downloadStandee}</span>
+              <Download className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">{t.downloadStandee}</span>
             </Link>
 
-            {/* 3. Open Form link */}
+            {/* 3. Link Trang Quét Mã Khách Hàng */}
             <Link
               href={`/expo/${business.slug}?lang=${lang}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors shrink-0"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold px-2 py-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 hover:border-blue-400/40 transition-colors active:scale-95 text-center"
               title={t.scanPage}
             >
-              <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
-              <span>{t.scanPage}</span>
+              <ExternalLink className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+              <span className="truncate">{t.scanPage}</span>
             </Link>
 
-            {/* 4. Change PIN button */}
+            {/* 4. Nút Đổi Mã PIN */}
             <button
               type="button"
               onClick={() => {
@@ -999,13 +999,13 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                 setIsChangePinOpen(true);
               }}
               title={t.changePinTitle}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-400/50 transition-colors cursor-pointer shrink-0"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold px-2 py-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-400/50 transition-colors cursor-pointer active:scale-95 text-center"
             >
-              <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-              <span>{t.changePin}</span>
+              <KeyRound className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">{t.changePin}</span>
             </button>
 
-            {/* 5. Test Sound button */}
+            {/* 5. Nút Thử Chuông Báo */}
             <button
               type="button"
               onClick={() => {
@@ -1013,19 +1013,20 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                 toast.info(t.soundOk);
               }}
               title={t.soundOk}
-              className="p-1.5 sm:p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition-colors shrink-0"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold px-2 py-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-amber-400/40 transition-colors cursor-pointer active:scale-95 text-center"
             >
-              <Volume2 className="w-4 h-4" />
+              <Volume2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">{t.soundTest}</span>
             </button>
 
-            {/* 6. Back to Expo Hub */}
+            {/* 6. Nút Về Danh Bạ */}
             <Link
               href={`/expo?lang=${lang}`}
-              className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-colors shrink-0"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold px-2 py-2 sm:px-3 sm:py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-colors active:scale-95 text-center"
               title={t.backToExpo}
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>{t.backExpo}</span>
+              <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{t.backExpo}</span>
             </Link>
           </div>
         </div>
