@@ -95,6 +95,20 @@ export function ExpoBoothClient({ business, profile }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
 
+  // Tự động điền thông tin khách từ lần quét trước (Khách chỉ cần nhập 1 lần, các gian hàng sau chỉ cần bấm 1 chạm)
+  useEffect(() => {
+    try {
+      const savedName = localStorage.getItem('expo_visitor_name');
+      const savedPhone = localStorage.getItem('expo_visitor_phone');
+      const savedEmail = localStorage.getItem('expo_visitor_email');
+      const savedCompany = localStorage.getItem('expo_visitor_company');
+      if (savedName) setName(savedName);
+      if (savedPhone) setPhone(savedPhone);
+      if (savedEmail) setEmail(savedEmail);
+      if (savedCompany) setCompany(savedCompany);
+    } catch (_) {}
+  }, []);
+
   // Mô tả theo ngôn ngữ
   const displayDescription = lang === 'vi' 
     ? (business.page_content?.description_vi || business.page_content?.description || business.address || t.welcome)
@@ -102,6 +116,8 @@ export function ExpoBoothClient({ business, profile }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return; // Chống bấm đúp (double-click lock)
+
     if (!name.trim()) {
       toast.error(lang === 'vi' ? 'Vui lòng nhập họ và tên' : 'Please enter your name');
       return;
@@ -113,6 +129,14 @@ export function ExpoBoothClient({ business, profile }: Props) {
 
     setLoading(true);
     try {
+      // Lưu thông tin vào bộ nhớ điện thoại để tái sử dụng ngay khi quét các gian hàng khác
+      try {
+        localStorage.setItem('expo_visitor_name', name.trim());
+        localStorage.setItem('expo_visitor_phone', phone.trim());
+        if (email.trim()) localStorage.setItem('expo_visitor_email', email.trim());
+        if (company.trim()) localStorage.setItem('expo_visitor_company', company.trim());
+      } catch (_) {}
+
       const res = await fetch('/api/expo/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -129,13 +153,17 @@ export function ExpoBoothClient({ business, profile }: Props) {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Gửi thông tin không thành công');
+        throw new Error(data.error || (lang === 'vi' ? 'Gửi thông tin không thành công' : 'Submission failed'));
       }
 
       setSubmitted(true);
       toast.success(t.successTitle);
     } catch (err: any) {
-      toast.error(err.message || 'Đã xảy ra lỗi kết nối');
+      const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+      const errorMsg = isOffline
+        ? (lang === 'vi' ? 'Mất kết nối mạng tại hội chợ. Vui lòng bấm thử lại.' : 'Offline at exhibition hall. Please tap retry.')
+        : (err.message || (lang === 'vi' ? 'Đã xảy ra lỗi kết nối, vui lòng thử lại' : 'Connection error, please try again'));
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

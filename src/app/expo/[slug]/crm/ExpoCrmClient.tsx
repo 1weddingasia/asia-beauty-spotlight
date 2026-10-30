@@ -354,10 +354,13 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
       )
       .subscribe();
 
-    // Polling fallback mỗi 4 giây (đề phòng wifi hội chợ chặn websocket)
+    // Polling fallback mỗi 5 giây (chỉ chạy khi người dùng đang mở tab, tiết kiệm tải DB và pin tại hội chợ)
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
+        return;
+      }
       fetchFreshLeads(true);
-    }, 4000);
+    }, 5000);
 
     return () => {
       supabase.removeChannel(channel);

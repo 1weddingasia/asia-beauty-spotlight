@@ -12,8 +12,21 @@ const ExpoLeadSchema = z.object({
   preferred_lang: z.enum(['vi', 'en', 'ko', 'zh']).optional().default('vi'),
 });
 
-// Simple memory limiter
+// Bộ nhớ tạm giới hạn request & chống gửi trùng lặp (Tối ưu cho Wifi đông người tại Triển lãm)
 const ipRequestCounts = new Map<string, { count: number; resetAt: number }>();
+const recentSubmissions = new Map<string, number>();
+
+// Tự động dọn dẹp bộ nhớ mỗi 5 phút
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of ipRequestCounts.entries()) {
+    if (record.resetAt < now) ipRequestCounts.delete(ip);
+  }
+  for (const [key, ts] of recentSubmissions.entries()) {
+    if (now - ts > 30000) recentSubmissions.delete(key);
+  }
+}, 5 * 60 * 1000);
+
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const record = ipRequestCounts.get(ip);
@@ -21,8 +34,9 @@ function checkRateLimit(ip: string): boolean {
     ipRequestCounts.set(ip, { count: 1, resetAt: now + 60 * 1000 });
     return false;
   }
-  if (record.count >= 5) {
-    return true; // Exceeded 5 submissions per minute per IP
+  // Cho phép tối đa 150 request/phút trên cùng 1 IP (đáp ứng hàng trăm khách cùng dùng chung Wifi SECC / 4G NAT)
+  if (record.count >= 150) {
+    return true;
   }
   record.count += 1;
   return false;
@@ -32,7 +46,7 @@ export async function POST(req: Request) {
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
     if (checkRateLimit(ip)) {
-      return NextResponse.json({ error: 'Quá nhiều yêu cầu. Vui lòng thử lại sau 1 phút.' }, { status: 429 });
+      return NextResponse.json({ error: 'Hệ thống đang tiếp nhận quá nhiều yêu cầu. Vui lòng thử lại sau 30 giây.' }, { status: 429 });
     }
 
     const body = await req.json();
@@ -52,6 +66,21 @@ export async function POST(req: Request) {
       interests,
       preferred_lang,
     } = parsed.data;
+
+    // Kiểm tra chống gửi trùng / bấm đúp khi mạng 4G chập chờn (Idempotency)
+    const cleanPhone = customer_phone.replace(/\D/g, '');
+    const dedupKey = `${business_id}:${cleanPhone}`;
+    const lastSubmitTime = recentSubmissions.get(dedupKey);
+    const now = Date.now();
+    if (lastSubmitTime && now - lastSubmitTime < 15000) {
+      // Đã gửi trong vòng 15 giây -> Trả về thành công ngay lập tức mà không ghi đè DB
+      return NextResponse.json({
+        success: true,
+        message: 'Thông tin của bạn đã được ghi nhận thành công!',
+        deduplicated: true,
+      });
+    }
+    recentSubmissions.set(dedupKey, now);
 
     const supabase = await createAdminClient();
 
@@ -87,7 +116,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Lỗi lưu thông tin khách hàng' }, { status: 500 });
     }
 
-    // 3. Bắn Telegram thông báo tức thời (Fire and Forget)
+    // 3. Bắn Telegram thông báo tức thời (Fire and Forget với timeout 2.5s không làm nghẽn máy chủ)
     const adminBotToken = process.env.TELEGRAM_BOT_TOKEN_1BOOKING;
     const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
     if (adminBotToken && adminChatId) {
@@ -104,6 +133,7 @@ export async function POST(req: Request) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chat_id: adminChatId, text: tgMsg, parse_mode: 'HTML' }),
+        signal: AbortSignal.timeout(2500),
       }).catch(e => console.error('[Expo Telegram Error]:', e));
     }
 

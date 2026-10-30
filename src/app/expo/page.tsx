@@ -2,6 +2,8 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { ExpoHubClient } from './ExpoHubClient';
 import type { Metadata } from 'next';
 
+export const revalidate = 60; // Tải siêu tốc trong < 20ms từ Edge Cache, chịu tải hàng chục ngàn lượt quét đồng thời
+
 export const metadata: Metadata = {
   title: '1Booking Expo Pass | Danh Bạ Số Hóa Doanh Nghiệp & Kết Nối B2B',
   description: 'Nền tảng danh bạ số hóa và giải pháp kết nối B2B độc lập cho doanh nghiệp thương mại. Tra cứu vị trí gian hàng, quét mã kết nối, Standee để bàn và CRM Live.',

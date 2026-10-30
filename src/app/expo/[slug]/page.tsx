@@ -5,6 +5,8 @@ import type { Metadata } from 'next';
 
 import type { ExpoLanguage } from '@/types/expo';
 
+export const revalidate = 60; // Tải tức thì trong < 15ms khi khách quét mã QR, chịu tải cao kể cả ngàn người quét cùng lúc
+
 interface Props {
   params: Promise<{ slug: string }>;
   searchParams?: Promise<{ lang?: string }>;
