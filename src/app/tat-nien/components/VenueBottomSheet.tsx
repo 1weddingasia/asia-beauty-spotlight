@@ -656,7 +656,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   return (
     <aside
-      className="fixed top-0 md:top-[96px] bottom-0 left-0 z-40 w-full sm:w-[420px] lg:w-[460px] bg-white shadow-2xl border-r border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-left duration-300"
+      className="hidden md:flex fixed top-[96px] bottom-0 left-0 z-40 w-[420px] lg:w-[460px] bg-white shadow-2xl border-r border-slate-200 flex-col overflow-hidden animate-in slide-in-from-left duration-300"
       aria-label={`Chi tiết sảnh tiệc ${venue.name}`}
     >
       {renderDetailBody()}
