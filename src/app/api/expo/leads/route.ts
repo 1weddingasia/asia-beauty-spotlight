@@ -44,6 +44,7 @@ function checkRateLimit(ip: string): boolean {
 }
 
 export async function POST(req: Request) {
+  let currentDedupKey: string | null = null;
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
     if (checkRateLimit(ip)) {
@@ -71,6 +72,7 @@ export async function POST(req: Request) {
     // Kiểm tra chống gửi trùng / bấm đúp khi mạng 4G chập chờn (Idempotency)
     const cleanPhone = customer_phone.replace(/\D/g, '');
     const dedupKey = `${business_id}:${cleanPhone}`;
+    currentDedupKey = dedupKey;
     const now = Date.now();
 
     const lastSubmitTime = recentSubmissions.get(dedupKey);
@@ -150,6 +152,9 @@ export async function POST(req: Request) {
       lead: newLead,
     });
   } catch (error: any) {
+    if (currentDedupKey) {
+      recentSubmissions.delete(currentDedupKey);
+    }
     console.error('[Expo Lead Route Exception]:', error);
     return NextResponse.json({ error: 'Lỗi hệ thống máy chủ' }, { status: 500 });
   }
