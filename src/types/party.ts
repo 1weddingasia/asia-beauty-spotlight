@@ -163,14 +163,13 @@ export function formatPartyPriceToK(n: number): string {
 }
 
 export function formatShortPartyPrice(min?: number | null, max?: number | null): string {
-  if (!min && !max) return 'Liên hệ';
-  if (min && max) {
+  const hasMin = typeof min === 'number' && min > 0;
+  const hasMax = typeof max === 'number' && max > 0;
+  if (!hasMin && !hasMax) return 'Liên hệ';
+  if (hasMin && hasMax) {
     return `${formatPartyPriceToK(min)} - ${formatPartyPriceToK(max)} đ`;
   }
-  if (min) {
-    return `Từ ${formatPartyPriceToK(min)} đ`;
-  }
-  return `${formatPartyPriceToK(max!)} đ`;
+  return hasMin ? `Từ ${formatPartyPriceToK(min)} đ` : `${formatPartyPriceToK(max as number)} đ`;
 }
 
 export const DEFAULT_PARTY_PROFILE_VALUES = {
