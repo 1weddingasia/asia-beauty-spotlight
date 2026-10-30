@@ -156,7 +156,6 @@ export default function BeautyFilterWidget({
                           : 'bg-white text-slate-700 border-slate-200 hover:border-rose-300 hover:bg-rose-50/50'
                       }`}
                     >
-                      <span>{cat.icon}</span>
                       <span>{cat.name}</span>
                     </button>
                   );
@@ -184,7 +183,7 @@ export default function BeautyFilterWidget({
                       }`}
                     >
                       {isActive ? '✓ ' : '+ '}
-                      {amenity.icon} {amenity.label}
+                      {amenity.label}
                     </button>
                   );
                 })}

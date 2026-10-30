@@ -6,13 +6,13 @@ export interface BeautyCategoryItem {
 }
 
 export const BEAUTY_CATEGORIES: BeautyCategoryItem[] = [
-  { id: 'all', name: 'Tất Cả', slug: 'all', icon: '✨' },
-  { id: 'spa-thu-gian', name: 'Spa & Thư Giãn', slug: 'spa-thu-gian', icon: '💆' },
-  { id: 'clinic-tham-my', name: 'Viện Thẩm Mỹ & Clinic', slug: 'clinic-tham-my', icon: '🏥' },
-  { id: 'chamsoc-da', name: 'Trị Mụn & Trẻ Hóa', slug: 'chamsoc-da', icon: '🌸' },
-  { id: 'nails-mi', name: 'Nails & Mi', slug: 'nails-mi', icon: '💅' },
-  { id: 'salon-toc', name: 'Salon Tóc', slug: 'salon-toc', icon: '✂️' },
-  { id: 'nha-khoa', name: 'Nha Khoa Thẩm Mỹ', slug: 'nha-khoa', icon: '🦷' },
+  { id: 'all', name: 'Tất Cả', slug: 'all', icon: 'sparkles' },
+  { id: 'spa-thu-gian', name: 'Spa & Thư Giãn', slug: 'spa-thu-gian', icon: 'flower' },
+  { id: 'clinic-tham-my', name: 'Viện Thẩm Mỹ & Clinic', slug: 'clinic-tham-my', icon: 'building' },
+  { id: 'chamsoc-da', name: 'Trị Mụn & Trẻ Hóa', slug: 'chamsoc-da', icon: 'droplet' },
+  { id: 'nails-mi', name: 'Nails & Mi', slug: 'nails-mi', icon: 'eye' },
+  { id: 'salon-toc', name: 'Salon Tóc', slug: 'salon-toc', icon: 'scissors' },
+  { id: 'nha-khoa', name: 'Nha Khoa Thẩm Mỹ', slug: 'nha-khoa', icon: 'smile' },
 ];
 
 export interface BeautyAmenityItem {
@@ -22,12 +22,12 @@ export interface BeautyAmenityItem {
 }
 
 export const BEAUTY_AMENITIES: BeautyAmenityItem[] = [
-  { id: 'phong-vip', label: 'Phòng VIP riêng tư', icon: '👑' },
-  { id: 'bac-si', label: 'Bác sĩ Da liễu 1-1', icon: '🩺' },
-  { id: 'fda', label: 'Công nghệ chuẩn FDA', icon: '🛡️' },
-  { id: 'cho-dau-xe', label: 'Bãi đỗ xe ô tô', icon: '🚗' },
-  { id: 'tra-thao-moc', label: 'Trà thảo mộc & Thư giãn', icon: '🍵' },
-  { id: 'cam-ket', label: 'Cam kết bằng văn bản', icon: '📜' },
+  { id: 'phong-vip', label: 'Phòng VIP riêng tư' },
+  { id: 'bac-si', label: 'Bác sĩ Da liễu 1-1' },
+  { id: 'fda', label: 'Công nghệ chuẩn FDA' },
+  { id: 'cho-dau-xe', label: 'Bãi đỗ xe ô tô' },
+  { id: 'tra-thao-moc', label: 'Trà thảo mộc & Thư giãn' },
+  { id: 'cam-ket', label: 'Cam kết bằng văn bản' },
 ];
 
 export interface BeautyServiceItem {

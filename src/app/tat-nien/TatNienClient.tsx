@@ -7,7 +7,6 @@ import { PartyVenue, PartyFilterState, PartyDistrictItem } from '@/types/party';
 import VenueBottomSheet from './components/VenueBottomSheet';
 import PartyFilterWidget from './components/PartyFilterWidget';
 import VenueListView from './components/VenueListView';
-import BlossomBranchDecoration from './components/BlossomBranchDecoration';
 import { Map as MapIcon, List as ListIcon, Sparkles, ChevronLeft, Navigation, MapPin } from 'lucide-react';
 
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -212,9 +211,6 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
     // ⚠️ BẮT BUỘC THEO CHỈ DẪN KỸ THUẬT:
     // Dùng h-[100dvh] để thích nghi với Zalo/Facebook Webview, tuyệt đối không dùng 100vh cứng
     <div className="relative w-full h-[100dvh] overflow-hidden bg-[#FAF7F2] text-slate-900 flex flex-col select-none">
-      {/* 🌸 CÀNH HOA MAI VÀNG & HOA ĐÀO TẾT TRANG TRÍ GÓC XUÂN (Pointer-events-none, không che nút bấm) */}
-      <BlossomBranchDecoration position="top-right" className="opacity-95" />
-
       {/* 1. Header Festive Bar (Warm Luxury Light) */}
       <header className="relative z-20 flex items-center justify-between px-2.5 sm:px-4 py-2 sm:py-2.5 bg-white/95 border-b border-amber-200/80 backdrop-blur-md shadow-xs">
         <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 pr-1">

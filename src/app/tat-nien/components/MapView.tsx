@@ -58,9 +58,9 @@ export default function MapView({
       container: mapContainer.current,
       style: 'https://tiles.openfreemap.org/styles/bright',
       center: startCenter, // [lng, lat]
-      zoom: initialCenter || userLocation ? (isMobile ? 14 : 14.5) : (isMobile ? 12.5 : 13),
-      pitch: isMobile ? 35 : 55, // Góc nghiêng tối ưu hiệu năng đồ họa trên di động
-      bearing: isMobile ? -5 : -15,
+      zoom: userLocation ? (isMobile ? 14 : 14.5) : (isMobile ? 12.8 : 13.2),
+      pitch: isMobile ? 15 : 30, // Góc nghiêng vừa phải giúp ghim phân bổ thoáng đãng
+      bearing: 0,
       attributionControl: false,
       maxTileCacheSize: 50,
     });
@@ -72,7 +72,7 @@ export default function MapView({
     const handleZoom = () => {
       if (!mapContainer.current) return;
       const zoom = map.getZoom();
-      if (zoom < 14.2) {
+      if (zoom < 14.0) {
         mapContainer.current.classList.add('map-zoom-far');
       } else {
         mapContainer.current.classList.remove('map-zoom-far');

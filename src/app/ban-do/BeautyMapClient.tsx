@@ -8,7 +8,19 @@ import { PartyDistrictItem } from '@/types/party';
 import BeautyBottomSheet from './components/BeautyBottomSheet';
 import BeautyFilterWidget from './components/BeautyFilterWidget';
 import BeautyListView from './components/BeautyListView';
-import { Map as MapIcon, List as ListIcon, Sparkles, ChevronLeft, Navigation } from 'lucide-react';
+import {
+  Map as MapIcon,
+  List as ListIcon,
+  Sparkles,
+  ChevronLeft,
+  Navigation,
+  Flower2,
+  Building2,
+  Droplet,
+  Eye,
+  Scissors,
+  Smile,
+} from 'lucide-react';
 
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
@@ -300,13 +312,31 @@ export default function BeautyMapClient({
               key={cat.id}
               type="button"
               onClick={() => setFilter((prev) => ({ ...prev, category: cat.slug }))}
-              className={`px-2.5 py-1 rounded-full text-xs font-bold shrink-0 transition-all active:scale-95 border flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all active:scale-95 border flex items-center gap-1.5 ${
                 isActive
                   ? 'bg-rose-600 text-white border-rose-600 shadow-xs'
                   : 'bg-white text-slate-700 border-slate-200 hover:border-rose-300 hover:text-rose-800 hover:bg-rose-50/40'
               }`}
             >
-              <span>{cat.icon}</span>
+              {(() => {
+                const cls = `w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-rose-500'}`;
+                switch (cat.slug) {
+                  case 'spa-thu-gian':
+                    return <Flower2 className={cls} />;
+                  case 'clinic-tham-my':
+                    return <Building2 className={cls} />;
+                  case 'chamsoc-da':
+                    return <Droplet className={cls} />;
+                  case 'nails-mi':
+                    return <Eye className={cls} />;
+                  case 'salon-toc':
+                    return <Scissors className={cls} />;
+                  case 'nha-khoa':
+                    return <Smile className={cls} />;
+                  default:
+                    return <Sparkles className={cls} />;
+                }
+              })()}
               <span>{cat.name}</span>
             </button>
           );
