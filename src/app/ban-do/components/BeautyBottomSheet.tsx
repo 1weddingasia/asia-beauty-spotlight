@@ -110,7 +110,7 @@ export default function BeautyBottomSheet({ venue, onClose }: BeautyBottomSheetP
           customer_phone: cleanPhone,
           deal_name: `Đặt hẹn tư vấn làm đẹp: ${venue.name}`,
           deal_value: venue.price_min || 500000,
-          booking_time: bookingDate ? `Ngày hẹn: ${bookingDate}` : null,
+          booking_time: bookingDate || null,
           cross_sell_items: `Dịch vụ quan tâm: ${bookingService || 'Tư vấn tổng quát'}. ${bookingDate ? `Ngày hẹn: ${bookingDate}. ` : ''}${bookingNotes.trim() ? `Ghi chú: ${bookingNotes.trim()}` : ''}`,
           party_details: {
             venue_id: venue.id,
