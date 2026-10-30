@@ -39,6 +39,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.co" },
       { protocol: "https", hostname: "**.wixstatic.com" },
       { protocol: "https", hostname: "**.hstatic.net" },
+      { protocol: "http", hostname: "**.hstatic.net" },
     ],
   },
   transpilePackages: ['maplibre-gl'],
