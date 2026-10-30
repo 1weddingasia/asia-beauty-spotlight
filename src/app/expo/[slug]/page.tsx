@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const desc = business.page_content?.description || `Chào mừng quý khách đến với gian hàng ${business.name} tại triển lãm. Quét mã QR để nhận catalogue & ưu đãi.`;
+  const desc = business.page_content?.description || `Hồ sơ số hóa và kết nối trực tiếp với ${business.name}. Quét mã QR nhận diện để xem thông tin sản phẩm và liên hệ đối tác.`;
 
   return {
     title: `${business.name} | 1Booking Expo Pass`,

@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   return {
     title: `Quản Lý Lead Trực Tiếp | ${slug} - 1Booking Expo Pass`,
-    description: 'Trang quản trị thu thập danh sách khách tham quan triển lãm theo thời gian thực.',
+    description: 'Trang quản trị thu thập danh sách khách hàng và đối tác B2B theo thời gian thực.',
   };
 }
 

@@ -22,11 +22,11 @@ const rootDir = path.join(__dirname, '../../');
 const COFFEE_EXCEL_PATH = path.join(rootDir, 'Danh_Sach_Gian_Hang_Coffee_Expo_2026_SECC.xlsx');
 const KBEAUTY_EXCEL_PATH = path.join(rootDir, 'KBeauty_SaigonBeautyShow_SECC_97_Booth.xlsx');
 
-const COFFEE_EVENT_VI = 'Coffee Expo Vietnam 2026 • Triển Lãm Cà Phê Quốc Tế';
-const COFFEE_EVENT_EN = 'Coffee Expo Vietnam 2026 • International Coffee Exhibition';
+const COFFEE_EVENT_VI = '1Booking Expo Pass';
+const COFFEE_EVENT_EN = '1Booking Expo Pass';
 
-const KBEAUTY_EVENT_VI = 'K-Beauty & Saigon Beauty Show 2026 • Triển Lãm Làm Đẹp Quốc Tế';
-const KBEAUTY_EVENT_EN = 'K-Beauty & Saigon Beauty Show 2026 • International Beauty Exhibition';
+const KBEAUTY_EVENT_VI = '1Booking Expo Pass';
+const KBEAUTY_EVENT_EN = '1Booking Expo Pass';
 
 const DEFAULT_PIN = '123456';
 
@@ -119,8 +119,8 @@ async function importCoffeeExpo() {
     const { nameVi, nameEn } = deriveNames(b.rawName);
     const slug = generateSlug(b.rawName, `coffee-booth-${b.boothNumber.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
 
-    const companyDesc = `Gian hàng chính thức của ${b.rawName} tại Triển Lãm Quốc Tế Coffee Expo Vietnam 2026 (SECC, TP.HCM). Lĩnh vực hoạt động: ${b.category}. Quét mã QR nhận diện để nhận thông tin sản phẩm và kết nối đối tác trực tiếp.`;
-    const companyDescEn = `Official digitized expo booth of ${nameEn} at Coffee Expo Vietnam 2026 (SECC, HCMC). Specializing in: ${b.category}. Scan QR code to connect and explore business partnership opportunities.`;
+    const companyDesc = `Hồ sơ số hóa và cổng kết nối đối tác chính thức của ${b.rawName}. Lĩnh vực: ${b.category}. Quét mã QR nhận diện để xem thông tin sản phẩm và liên hệ trực tiếp.`;
+    const companyDescEn = `Official digitized expo booth of ${nameEn}. Specializing in: ${b.category}. Scan QR code to connect and explore business partnership opportunities.`;
 
     const pageContent = {
       name_vi: nameVi,
@@ -129,8 +129,7 @@ async function importCoffeeExpo() {
       booth_number: b.boothNumber,
       event_name: COFFEE_EVENT_VI,
       event_name_en: COFFEE_EVENT_EN,
-      venue: b.venue,
-      event_date: '29 – 31 Tháng 10, 2026',
+      venue: 'TP. Hồ Chí Minh',
       description: companyDesc,
       description_vi: companyDesc,
       description_en: companyDescEn,
@@ -220,7 +219,7 @@ async function importCoffeeExpo() {
   console.log('📝 Đang ghi link số hóa vào file Excel Coffee Expo...');
   const newSheetRows = [];
   newSheetRows.push(rawRows[0] || ['Dữ liệu phân tích gian hàng, số booth và link logo từ hệ thống COEX']);
-  newSheetRows.push(['Triển Lãm Quốc Tế Coffee Expo Vietnam 2026 • SECC Hall A • Nền tảng số hóa: 1booking.asia']);
+  newSheetRows.push(['Danh Bạ Doanh Nghiệp 2026 • Nền tảng số hóa: 1booking.asia']);
   newSheetRows.push([
     'STT',
     'Tên Doanh Nghiệp / Thương Hiệu',
@@ -311,8 +310,8 @@ async function importKBeauty() {
     const { nameVi, nameEn } = deriveNames(b.rawName);
     const slug = b.presetSlug || generateSlug(b.rawName, `kbeauty-booth-${b.boothNumber.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
 
-    const companyDesc = `Gian hàng chính thức của ${b.rawName} tại Triển lãm Quốc tế K-Beauty & Saigon Beauty Show 2026 (SECC, TP.HCM). Lĩnh vực: ${b.category}. Quét mã QR nhận diện để nhận thông tin sản phẩm và kết nối đối tác trực tiếp.`;
-    const companyDescEn = `Official digitized booth of ${nameEn} at K-Beauty & Saigon Beauty Show 2026 (SECC, HCMC). Specializing in: ${b.category}. Scan QR code to connect and explore partnership opportunities.`;
+    const companyDesc = `Hồ sơ số hóa và cổng kết nối đối tác chính thức của ${b.rawName}. Lĩnh vực: ${b.category}. Quét mã QR nhận diện để xem thông tin sản phẩm và liên hệ trực tiếp.`;
+    const companyDescEn = `Official digitized booth of ${nameEn}. Specializing in: ${b.category}. Scan QR code to connect and explore partnership opportunities.`;
 
     const pageContent = {
       name_vi: nameVi,
@@ -321,8 +320,7 @@ async function importKBeauty() {
       booth_number: b.boothNumber,
       event_name: KBEAUTY_EVENT_VI,
       event_name_en: KBEAUTY_EVENT_EN,
-      venue: 'SECC Quận 7, TP. Hồ Chí Minh',
-      event_date: '29 – 31 Tháng 10, 2026',
+      venue: 'TP. Hồ Chí Minh',
       description: companyDesc,
       description_vi: companyDesc,
       description_en: companyDescEn,
@@ -412,7 +410,7 @@ async function importKBeauty() {
   console.log('📝 Đang ghi link số hóa vào file Excel KBeauty...');
   const newSheetRows = [];
   newSheetRows.push(rawRows[0] || ['Danh sách 97 gian hàng chính thức tại Triển lãm Quốc tế Làm đẹp SECC Q.7 (29 - 31/10/2026)']);
-  newSheetRows.push(['Triển Lãm K-Beauty & Saigon Beauty Show 2026 • SECC Q.7 • Nền tảng số hóa: 1booking.asia & 1beauty.asia']);
+  newSheetRows.push(['Danh Bạ Doanh Nghiệp 2026 • Nền tảng số hóa: 1booking.asia & 1beauty.asia']);
   newSheetRows.push([
     'STT',
     'Số Booth',

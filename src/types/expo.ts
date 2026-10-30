@@ -126,16 +126,14 @@ export function getExpoBrandName(
 }
 
 /**
- * Trả về tên sự kiện/triển lãm theo ngôn ngữ
+ * Trả về tên định danh nền tảng chuẩn hóa (1Booking Expo Pass)
+ * Đảm bảo tính độc lập của nền tảng, không sử dụng nhãn hiệu hay tên riêng của các đơn vị triển lãm thứ ba.
  */
 export function getExpoEventName(
-  profile?: { event_name?: string | null; event_name_en?: string | null } | null,
-  lang: ExpoLanguage = 'vi'
+  _profile?: { event_name?: string | null; event_name_en?: string | null } | null,
+  _lang: ExpoLanguage = 'vi'
 ): string {
-  if (lang === 'vi') {
-    return profile?.event_name || '1Booking Expo Pass';
-  }
-  return profile?.event_name_en || profile?.event_name || '1Booking Expo Pass';
+  return '1Booking Expo Pass';
 }
 
 export interface BusinessExpoLead {

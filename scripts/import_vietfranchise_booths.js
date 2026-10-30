@@ -18,8 +18,8 @@ const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
 });
 
 const EXCEL_PATH = 'c:/Users/Dell/Desktop/GITHUB CODE/1BEAUTY.ASIA 19092026/Danh_Sach_Gian_Hang_VietFranchise_SECC_Thuc_Te.xlsx';
-const EVENT_NAME_VI = 'VIETFRANCHISE 2026 - Triển Lãm Quốc Tế Nhượng Quyền Việt Nam';
-const EVENT_NAME_EN = 'VIETFRANCHISE 2026 - Vietnam International Franchise Exhibition';
+const EVENT_NAME_VI = '1Booking Expo Pass';
+const EVENT_NAME_EN = '1Booking Expo Pass';
 
 function generateSlug(rawName, fallback) {
   let s = (rawName || '')
