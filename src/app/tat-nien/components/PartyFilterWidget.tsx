@@ -17,6 +17,9 @@ interface PartyFilterWidgetProps {
   onFilterChange: (newFilter: PartyFilterState) => void;
   totalVenues: number;
   matchedCount: number;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  showTrigger?: boolean;
 }
 
 export default function PartyFilterWidget({
@@ -24,8 +27,13 @@ export default function PartyFilterWidget({
   onFilterChange,
   totalVenues,
   matchedCount,
+  isOpen: controlledIsOpen,
+  onOpenChange: controlledOnOpenChange,
+  showTrigger = true,
 }: PartyFilterWidgetProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const setIsOpen = controlledOnOpenChange || setInternalIsOpen;
   const [note, setNote] = useState('');
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
@@ -110,27 +118,29 @@ export default function PartyFilterWidget({
     <>
       {/* Floating Pill Button Trigger (Warm Luxury Light) */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <button
-            type="button"
-            className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/95 hover:bg-amber-50/80 border-2 border-amber-500/80 text-slate-900 shadow-xl shadow-amber-950/15 backdrop-blur-md transition-all active:scale-95 group select-none"
-          >
-            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-            </div>
-            <div className="text-left leading-none">
-              <div className="text-xs font-black text-slate-900 group-hover:text-amber-800">
-                Tìm Sảnh Tiệc
+        {showTrigger && (
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/95 hover:bg-amber-50/80 border-2 border-amber-500/80 text-slate-900 shadow-xl shadow-amber-950/15 backdrop-blur-md transition-all active:scale-95 group select-none"
+            >
+              <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                <SlidersHorizontal className="w-3.5 h-3.5" />
               </div>
-              <div className="text-[10px] text-slate-500 mt-0.5">
-                {matchedCount}/{totalVenues} quán phù hợp
+              <div className="text-left leading-none">
+                <div className="text-xs font-black text-slate-900 group-hover:text-amber-800">
+                  Tìm Sảnh Tiệc
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">
+                  {matchedCount}/{totalVenues} quán phù hợp
+                </div>
               </div>
-            </div>
-            {hasActiveFilter && (
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-600 animate-ping ml-1" />
-            )}
-          </button>
-        </DialogTrigger>
+              {hasActiveFilter && (
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-600 animate-ping ml-1" />
+              )}
+            </button>
+          </DialogTrigger>
+        )}
 
         <DialogContent className="bg-[#FCFAF7] border border-amber-200 text-slate-900 max-w-lg max-h-[90dvh] overflow-y-auto p-5 rounded-3xl shadow-2xl">
           <DialogHeader className="text-left pb-3 border-b border-amber-100">

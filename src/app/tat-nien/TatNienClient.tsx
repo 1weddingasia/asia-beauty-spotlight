@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { PartyVenue, PartyFilterState, PartyDistrictItem } from '@/types/party';
 import VenueBottomSheet from './components/VenueBottomSheet';
 import PartyFilterWidget from './components/PartyFilterWidget';
+import PartyQuickFilterBar from './components/PartyQuickFilterBar';
 import VenueListView from './components/VenueListView';
 import { Map as MapIcon, List as ListIcon, Sparkles, ChevronLeft, Navigation, MapPin } from 'lucide-react';
 
@@ -54,6 +55,7 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
   const [flyToCenter, setFlyToCenter] = useState<[number, number] | null>(null);
 
   // Bộ lọc Client-side
+  const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false);
   const [filter, setFilter] = useState<PartyFilterState>({
     guests: 0,
     priceMax: 0,
@@ -140,27 +142,38 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
         }
       }
 
-      // 1. Số lượng khách
+      // 1. Số lượng khách (quán có max_guests >= filter.guests)
       if (filter.guests > 0 && v.max_guests < filter.guests) return false;
 
-      // 2. Mức giá
+      // 2. Mức giá trần (giá khởi điểm price_min <= filter.priceMax)
       if (filter.priceMax > 0 && v.price_min > filter.priceMax) return false;
 
       // 3. Chỉ quán VIP
       if (filter.onlyVip && !v.is_vip) return false;
 
-      // 4. Tiện ích & Không gian
+      // 4. Tiện ích & Không gian (phòng VIP, karaoke, ngoài trời, rooftop, sân khấu, màn chiếu LED)
       if (filter.spaces.length > 0) {
-        const hasAllSpaces = filter.spaces.every((s) =>
-          v.spaces_and_amenities.includes(s)
-        );
+        const hasAllSpaces = filter.spaces.every((s) => {
+          if (s === 'phong_vip') {
+            return v.num_vip_rooms > 0 || (v.spaces_and_amenities || []).includes('phong_vip');
+          }
+          return (v.spaces_and_amenities || []).includes(s);
+        });
         if (!hasAllSpaces) return false;
       }
 
-      // 5. Phong cách ẩm thực
+      // 5. Ưu đãi tiệc độc quyền (tặng bia, tặng karaoke, tặng backdrop...)
+      if (filter.perks.length > 0) {
+        const hasAllPerks = filter.perks.every((p) =>
+          (v.party_perks || []).includes(p)
+        );
+        if (!hasAllPerks) return false;
+      }
+
+      // 6. Phong cách ẩm thực
       if (filter.cuisines.length > 0) {
         const hasAnyCuisine = filter.cuisines.some((c) =>
-          v.cuisines.includes(c)
+          (v.cuisines || []).includes(c)
         );
         if (!hasAnyCuisine) return false;
       }
@@ -334,6 +347,15 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
         })}
       </div>
 
+      {/* 1.2 Quick Criteria Filter Bar (Bộ lọc tiêu chí tiệc kết nối trực tiếp database) */}
+      <PartyQuickFilterBar
+        filter={filter}
+        onFilterChange={setFilter}
+        totalVenues={initialVenues.length}
+        matchedCount={filteredVenues.length}
+        onOpenAdvancedModal={() => setIsAdvancedFilterOpen(true)}
+      />
+
       {/* 2. Main Content View Area */}
       <main className="relative flex-1 w-full overflow-hidden">
         {viewMode === 'map' ? (
@@ -356,28 +378,23 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
           </div>
         )}
 
-        {/* 3. Floating Bottom Controls: Filter Widget (ẩn khi mở BottomSheet để không va chạm giao diện mobile) */}
-        <div
-          className={`absolute bottom-5 inset-x-0 z-30 flex justify-center pointer-events-none px-4 transition-all duration-300 ${
-            selectedVenue ? 'opacity-0 translate-y-12 pointer-events-none' : 'opacity-100 translate-y-0'
-          }`}
-        >
-          <div className="pointer-events-auto">
-            <PartyFilterWidget
-              filter={filter}
-              onFilterChange={setFilter}
-              totalVenues={initialVenues.length}
-              matchedCount={filteredVenues.length}
-            />
-          </div>
-        </div>
-      </main>
+        {/* 3. Modal Bộ Lọc Chi Tiết (PartyFilterWidget) */}
+        <PartyFilterWidget
+          filter={filter}
+          onFilterChange={setFilter}
+          totalVenues={initialVenues.length}
+          matchedCount={filteredVenues.length}
+          isOpen={isAdvancedFilterOpen}
+          onOpenChange={setIsAdvancedFilterOpen}
+          showTrigger={false}
+        />
 
-      {/* 4. Bottom Sheet Details when selecting a venue */}
-      <VenueBottomSheet
-        venue={selectedVenue}
-        onClose={() => setSelectedVenue(null)}
-      />
+        {/* 4. Chi tiết điểm tiệc (Side Panel trên Desktop / Drawer trên Mobile) */}
+        <VenueBottomSheet
+          venue={selectedVenue}
+          onClose={() => setSelectedVenue(null)}
+        />
+      </main>
     </div>
   );
 }
