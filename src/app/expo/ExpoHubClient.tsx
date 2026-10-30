@@ -325,8 +325,11 @@ export function ExpoHubClient({ initialBooths }: Props) {
       );
     });
 
-    // 3. Sắp xếp
+    // 3. Sắp xếp (Ưu tiên ghim gian hàng chính thức 1Booking Expo Pass lên đầu)
     return filtered.sort((a, b) => {
+      if (a.slug === '1booking-expo-pass') return -1;
+      if (b.slug === '1booking-expo-pass') return 1;
+
       if (sortBy === 'booth_asc') {
         return a.booth_number.localeCompare(b.booth_number, undefined, { numeric: true, sensitivity: 'base' });
       }

@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { createAdminClient } from '@/utils/supabase/server';
 import { ExpoStandeeClient } from './ExpoStandeeClient';
 import type { Metadata } from 'next';
@@ -8,8 +8,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug: rawSlug } = await params;
-  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
+  const { slug } = await params;
   return {
     title: `Tải Standee QR | ${slug} - 1Booking Expo Pass`,
     description: 'Tải ảnh Standee mã QR để bàn dạng file PNG độ nét cao cho doanh nghiệp.',
@@ -17,8 +16,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ExpoQrStandeePage({ params }: Props) {
-  const { slug: rawSlug } = await params;
-  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
+  const { slug } = await params;
+  if (slug === 'deoproce-korea') {
+    redirect('/expo/1booking-expo-pass/qr');
+  }
   const supabase = await createAdminClient();
 
   // 1. Lấy thông tin gian hàng

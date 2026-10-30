@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { createAdminClient } from '@/utils/supabase/server';
 import { ExpoCrmClient } from './ExpoCrmClient';
 import type { Metadata } from 'next';
@@ -10,8 +10,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug: rawSlug } = await params;
-  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
+  const { slug } = await params;
   return {
     title: `Quản Lý Lead Trực Tiếp | ${slug} - 1Booking Expo Pass`,
     description: 'Trang quản trị thu thập danh sách khách hàng và đối tác B2B theo thời gian thực.',
@@ -19,8 +18,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ExpoCrmPage({ params, searchParams }: Props) {
-  const { slug: rawSlug } = await params;
-  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
+  const { slug } = await params;
+  if (slug === 'deoproce-korea') {
+    redirect('/expo/1booking-expo-pass/crm');
+  }
   const sp = searchParams ? await searchParams : {};
   const requestedLang = sp.lang && ['vi', 'en', 'ko', 'zh'].includes(sp.lang) ? (sp.lang as ExpoLanguage) : null;
 
