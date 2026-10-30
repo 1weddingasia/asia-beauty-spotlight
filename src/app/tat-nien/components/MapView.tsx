@@ -53,13 +53,13 @@ export default function MapView({
       flyToCenter ||
       (userLocation ? [userLocation.lng, userLocation.lat] : [106.67, 10.77]);
 
-    // Nguồn bản đồ OpenFreeMap Dark: Miễn phí 100%, không cần API key, sạch bóng watermark, hiển thị trọn vẹn đường phố Sài Gòn
+    // Nguồn bản đồ OpenFreeMap Bright: Miễn phí 100%, không cần API key, sạch bóng watermark, hiển thị trọn vẹn đường phố Sài Gòn sáng rõ và tươi sáng
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://tiles.openfreemap.org/styles/dark',
+      style: 'https://tiles.openfreemap.org/styles/bright',
       center: startCenter, // [lng, lat]
       zoom: initialCenter || userLocation ? (isMobile ? 14 : 14.5) : (isMobile ? 12.5 : 13),
-      pitch: isMobile ? 35 : 60, // Góc nghiêng tối ưu hiệu năng đồ họa trên di động
+      pitch: isMobile ? 35 : 55, // Góc nghiêng tối ưu hiệu năng đồ họa trên di động
       bearing: isMobile ? -5 : -15,
       attributionControl: false,
       maxTileCacheSize: 50,
@@ -82,25 +82,10 @@ export default function MapView({
     handleZoom();
 
     map.on('load', () => {
-      // 🌟 Tinh chỉnh tone Midnight Slate (Xanh than tiệc đêm sang trọng)
+      // 🌟 Tinh chỉnh tone Warm Luxury Light (Sáng sang trọng ấm cúng)
       try {
         if (map.getLayer('background')) {
-          map.setPaintProperty('background', 'background-color', '#0b1326');
-        }
-        if (map.getLayer('water')) {
-          map.setPaintProperty('water', 'fill-color', '#122644');
-        }
-        if (map.getLayer('waterway')) {
-          map.setPaintProperty('waterway', 'line-color', '#1a3a66');
-        }
-        if (map.getLayer('highway_minor')) {
-          map.setPaintProperty('highway_minor', 'line-color', '#22334e');
-        }
-        if (map.getLayer('highway_major_inner')) {
-          map.setPaintProperty('highway_major_inner', 'line-color', '#33486c');
-        }
-        if (map.getLayer('highway_name_other')) {
-          map.setPaintProperty('highway_name_other', 'text-color', '#94a3b8');
+          map.setPaintProperty('background', 'background-color', '#fbf8f3');
         }
       } catch (err) {
         console.warn('[MapView] Tone layer adjust error:', err);
@@ -124,10 +109,10 @@ export default function MapView({
                 type: 'fill-extrusion',
                 minzoom: 14,
                 paint: {
-                  'fill-extrusion-color': '#162238',
+                  'fill-extrusion-color': '#e7e2d8',
                   'fill-extrusion-height': ['get', 'height'],
                   'fill-extrusion-base': ['get', 'min_height'],
-                  'fill-extrusion-opacity': 0.6,
+                  'fill-extrusion-opacity': 0.65,
                 },
               },
               labelLayerId

@@ -108,42 +108,42 @@ export default function PartyFilterWidget({
 
   return (
     <>
-      {/* Floating Pill Button Trigger */}
+      {/* Floating Pill Button Trigger (Warm Luxury Light) */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <button
             type="button"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-zinc-900/95 hover:bg-zinc-800 border border-amber-500/50 text-white shadow-2xl shadow-black/80 backdrop-blur-md transition-all active:scale-95 group select-none"
+            className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/95 hover:bg-amber-50/80 border-2 border-amber-500/80 text-slate-900 shadow-xl shadow-amber-950/15 backdrop-blur-md transition-all active:scale-95 group select-none"
           >
-            <div className="w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-black transition-colors">
+            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 group-hover:bg-amber-600 group-hover:text-white transition-colors">
               <SlidersHorizontal className="w-3.5 h-3.5" />
             </div>
             <div className="text-left leading-none">
-              <div className="text-xs font-bold text-amber-300">
+              <div className="text-xs font-black text-slate-900 group-hover:text-amber-800">
                 Tìm Sảnh Tiệc
               </div>
-              <div className="text-[10px] text-zinc-400">
+              <div className="text-[10px] text-slate-500 mt-0.5">
                 {matchedCount}/{totalVenues} quán phù hợp
               </div>
             </div>
             {hasActiveFilter && (
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping ml-1" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-600 animate-ping ml-1" />
             )}
           </button>
         </DialogTrigger>
 
-        <DialogContent className="bg-zinc-950 border border-amber-500/30 text-zinc-100 max-w-lg max-h-[90dvh] overflow-y-auto p-5 rounded-3xl shadow-2xl">
-          <DialogHeader className="text-left pb-3 border-b border-zinc-800">
+        <DialogContent className="bg-[#FCFAF7] border border-amber-200 text-slate-900 max-w-lg max-h-[90dvh] overflow-y-auto p-5 rounded-3xl shadow-2xl">
+          <DialogHeader className="text-left pb-3 border-b border-amber-100">
             <div className="flex items-center justify-between">
-              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+              <DialogTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-600" />
                 Bộ Lọc Tìm Sảnh Tiệc Tất Niên
               </DialogTitle>
               {hasActiveFilter && (
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="flex items-center gap-1 text-[11px] text-zinc-400 hover:text-amber-300 transition-colors"
+                  className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-amber-700 font-bold transition-colors"
                 >
                   <RotateCcw className="w-3 h-3" />
                   Đặt lại
@@ -156,10 +156,10 @@ export default function PartyFilterWidget({
             {/* 1. Số lượng khách */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-bold uppercase text-zinc-300 tracking-wider">
+                <label className="text-xs font-black uppercase text-slate-800 tracking-wider">
                   1. Số Lượng Khách Tiệc
                 </label>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
                   {filter.guests > 0 ? `≥ ${filter.guests} khách` : 'Tất cả quy mô'}
                 </span>
               </div>
@@ -187,8 +187,8 @@ export default function PartyFilterWidget({
                     onClick={() => onFilterChange({ ...filter, guests: item.val })}
                     className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
                       filter.guests === item.val
-                        ? 'bg-amber-500 text-black font-bold border-amber-400'
-                        : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-700'
+                        ? 'bg-amber-600 text-white font-bold border-amber-600 shadow-xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:border-amber-300 hover:bg-amber-50/50'
                     }`}
                   >
                     {item.label}
@@ -199,7 +199,7 @@ export default function PartyFilterWidget({
 
             {/* 2. Ngân sách tối đa/người */}
             <div>
-              <label className="block text-xs font-bold uppercase text-zinc-300 tracking-wider mb-2">
+              <label className="block text-xs font-black uppercase text-slate-800 tracking-wider mb-2">
                 2. Ngân Sách Dự Kiến (/người)
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
@@ -215,8 +215,8 @@ export default function PartyFilterWidget({
                     onClick={() => onFilterChange({ ...filter, priceMax: p.val })}
                     className={`text-xs py-2 px-2 rounded-xl border text-center transition-all ${
                       filter.priceMax === p.val
-                        ? 'bg-amber-500 text-black font-bold border-amber-400 shadow-md shadow-amber-950/50'
-                        : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-700'
+                        ? 'bg-amber-600 text-white font-bold border-amber-600 shadow-xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:border-amber-300 hover:bg-amber-50/50'
                     }`}
                   >
                     {p.label}
@@ -227,7 +227,7 @@ export default function PartyFilterWidget({
 
             {/* 3. Không gian & Tiện ích bắt buộc */}
             <div>
-              <label className="block text-xs font-bold uppercase text-zinc-300 tracking-wider mb-2">
+              <label className="block text-xs font-black uppercase text-slate-800 tracking-wider mb-2">
                 3. Tiện Ích & Không Gian Mong Muốn
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -240,8 +240,8 @@ export default function PartyFilterWidget({
                       onClick={() => toggleSpace(space.id)}
                       className={`text-xs px-3 py-1.5 rounded-xl border transition-all ${
                         isActive
-                          ? 'bg-amber-500/20 border-amber-400 text-amber-200 font-bold'
-                          : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
+                          ? 'bg-amber-100 border-amber-400 text-amber-900 font-bold'
+                          : 'bg-white text-slate-700 border-slate-200 hover:border-amber-300 hover:bg-amber-50/50'
                       }`}
                     >
                       {isActive ? '✓ ' : '+ '}
@@ -254,7 +254,7 @@ export default function PartyFilterWidget({
 
             {/* 4. Phong cách ẩm thực */}
             <div>
-              <label className="block text-xs font-bold uppercase text-zinc-300 tracking-wider mb-2">
+              <label className="block text-xs font-black uppercase text-slate-800 tracking-wider mb-2">
                 4. Phong Cách Ẩm Thực
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -267,8 +267,8 @@ export default function PartyFilterWidget({
                       onClick={() => toggleCuisine(c.id)}
                       className={`text-xs px-2.5 py-1.5 rounded-xl border transition-all ${
                         isActive
-                          ? 'bg-rose-950/60 border-rose-500 text-rose-200 font-bold'
-                          : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
+                          ? 'bg-rose-100 border-rose-400 text-rose-900 font-bold'
+                          : 'bg-white text-slate-700 border-slate-200 hover:border-amber-300 hover:bg-amber-50/50'
                       }`}
                     >
                       {isActive ? '✓ ' : ''}
@@ -280,19 +280,19 @@ export default function PartyFilterWidget({
             </div>
 
             {/* 5. Gửi yêu cầu riêng & nổ chuông Telegram */}
-            <div className="pt-3 border-t border-zinc-800/80">
-              <div className="bg-zinc-900/80 rounded-2xl p-4 border border-zinc-800">
-                <div className="text-xs font-bold text-amber-300 mb-1 flex items-center gap-1.5">
-                  <Send className="w-3.5 h-3.5" />
+            <div className="pt-3 border-t border-amber-100">
+              <div className="bg-white rounded-2xl p-4 border border-amber-200/90 shadow-xs">
+                <div className="text-xs font-black text-amber-800 mb-1 flex items-center gap-1.5">
+                  <Send className="w-3.5 h-3.5 text-amber-600" />
                   Bạn Cần Tìm Sảnh Tiệc Theo Yêu Cầu Riêng?
                 </div>
-                <p className="text-[11px] text-zinc-400 mb-3">
-                  Nhập yêu cầu đặc biệt và số điện thoại, hệ thống sẽ gợi ý sảnh tiệc chuẩn gu và bắn thông báo trực tiếp cho đội ngũ hỗ trợ.
+                <p className="text-[11px] text-slate-500 mb-3">
+                  Nhập yêu cầu đặc biệt và số điện thoại, hệ thống sẽ gợi ý sảnh tiệc chuẩn gu và thông báo trực tiếp cho đội ngũ hỗ trợ.
                 </p>
 
                 {isSentSuccess ? (
-                  <div className="bg-emerald-950/80 border border-emerald-500/50 rounded-xl p-3 text-emerald-200 text-xs flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3 text-emerald-800 text-xs flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>
                       Đã gửi yêu cầu thành công! Đội ngũ 1Booking sẽ liên hệ hỗ trợ bạn trong ít phút.
                     </span>
@@ -303,7 +303,7 @@ export default function PartyFilterWidget({
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                       placeholder="VD: Cần phòng tiệc 40 người có karaoke riêng, cho mang rượu vang vào không tính phí..."
-                      className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 transition-colors"
+                      className="w-full bg-[#FAF8F5] border border-slate-300 rounded-xl p-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 transition-colors"
                       rows={2}
                     />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -312,7 +312,7 @@ export default function PartyFilterWidget({
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Tên của bạn (hoặc công ty)"
-                        className="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
+                        className="bg-[#FAF8F5] border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
                       />
                       <input
                         type="tel"
@@ -320,13 +320,13 @@ export default function PartyFilterWidget({
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="Số điện thoại nhận báo giá *"
                         required
-                        className="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
+                        className="bg-[#FAF8F5] border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs shadow-lg shadow-amber-950 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] disabled:opacity-50"
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-white font-black text-xs shadow-sm shadow-amber-900/15 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] disabled:opacity-50"
                     >
                       {isSubmitting ? (
                         <span>Đang gửi thông tin...</span>
@@ -347,7 +347,7 @@ export default function PartyFilterWidget({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="w-full py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-bold text-zinc-200 transition-colors"
+              className="w-full py-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-xs font-black text-amber-900 transition-colors"
             >
               Xem {matchedCount} Nhà Hàng Phù Hợp
             </button>

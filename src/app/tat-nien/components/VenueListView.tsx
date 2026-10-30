@@ -33,13 +33,13 @@ export default function VenueListView({
   if (venues.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-        <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-4 text-2xl">
+        <div className="w-16 h-16 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700 mb-4 text-2xl shadow-xs">
           🔍
         </div>
-        <h3 className="text-lg font-bold text-white mb-1">
+        <h3 className="text-lg font-black text-slate-900 mb-1">
           Chưa tìm thấy quán phù hợp
         </h3>
-        <p className="text-xs text-zinc-400 max-w-sm">
+        <p className="text-xs text-slate-500 max-w-sm">
           Thử giảm số lượng khách hoặc mở rộng mức giá trong bộ lọc để khám phá thêm nhiều sảnh tiệc tất niên hấp dẫn.
         </p>
       </div>
@@ -74,12 +74,12 @@ export default function VenueListView({
         return (
           <div
             key={venue.id}
-            className={`flex flex-col rounded-2xl overflow-hidden bg-zinc-900/90 border transition-all duration-200 hover:border-amber-400/60 hover:shadow-xl hover:shadow-black/60 group text-left ${
-              venue.is_vip ? 'border-amber-500/40' : 'border-zinc-800'
+            className={`flex flex-col rounded-2xl overflow-hidden bg-white border transition-all duration-200 hover:border-amber-400/80 hover:shadow-xl hover:shadow-amber-950/10 group text-left ${
+              venue.is_vip ? 'border-amber-300/90 shadow-md shadow-amber-950/5' : 'border-slate-200/90 shadow-xs'
             }`}
           >
             {/* Image & Badges */}
-            <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-950">
+            <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
               <img
                 src={heroImage}
                 alt={venue.name}
@@ -88,25 +88,25 @@ export default function VenueListView({
                   (e.target as HTMLImageElement).src = '/images/categories/nha-hang-am-thuc.jpg';
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
 
               {/* VIP Badge & Distance */}
               <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
                 <div className="flex flex-wrap gap-1.5">
                   {venue.is_vip && (
-                    <span className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-700 text-black font-extrabold text-[10px] px-2.5 py-0.5 rounded-full shadow-md vip-pin-glow">
+                    <span className="flex items-center gap-1 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-md">
                       <Sparkles className="w-3 h-3" /> VIP VENUE
                     </span>
                   )}
                   {venue.num_vip_rooms > 0 && (
-                    <span className="bg-zinc-950/80 text-amber-300 border border-amber-500/30 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-md">
+                    <span className="bg-white/95 text-amber-900 border border-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md shadow-xs">
                       {venue.num_vip_rooms} Phòng VIP
                     </span>
                   )}
                 </div>
 
                 {distance !== null && (
-                  <span className="bg-blue-950/90 text-blue-300 border border-blue-500/50 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full backdrop-blur-md shadow-md shadow-blue-950">
+                  <span className="bg-blue-600 text-white border border-blue-400 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full backdrop-blur-md shadow-md">
                     📍 {distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)} km`}
                   </span>
                 )}
@@ -114,33 +114,33 @@ export default function VenueListView({
 
               {/* Price badge */}
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-300 bg-black/80 px-2.5 py-1 rounded-lg border border-amber-500/30">
+                <span className="text-xs font-black text-amber-300 bg-black/70 px-2.5 py-1 rounded-lg border border-amber-400/40 backdrop-blur-xs">
                   {priceFormatted}/người
                 </span>
-                <span className="text-[11px] font-semibold text-zinc-300 bg-black/80 px-2 py-1 rounded-lg flex items-center gap-1">
+                <span className="text-[11px] font-semibold text-white bg-black/70 px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-xs">
                   <Users className="w-3 h-3 text-amber-400" />
                   {venue.min_guests} - {venue.max_guests} khách
                 </span>
               </div>
             </div>
 
-            {/* Content */}
+            {/* Content (Warm Luxury Light) */}
             <div className="p-4 flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-base font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-1 mb-1">
+                <h3 className="text-base font-black text-slate-900 group-hover:text-amber-700 transition-colors line-clamp-1 mb-1">
                   {venue.name}
                 </h3>
 
                 {venue.address && (
-                  <p className="flex items-center gap-1 text-xs text-zinc-400 line-clamp-1 mb-2.5">
-                    <MapPin className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                  <p className="flex items-center gap-1 text-xs text-slate-500 line-clamp-1 mb-2.5">
+                    <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                     {venue.address}
                   </p>
                 )}
 
                 {/* Highlight Deal */}
                 {venue.party_deal_highlight && (
-                  <div className="bg-amber-950/40 border border-amber-500/30 rounded-xl px-2.5 py-1.5 text-xs text-amber-200 font-medium mb-3 flex items-center gap-1.5">
+                  <div className="bg-amber-50/90 border border-amber-200 rounded-xl px-2.5 py-1.5 text-xs text-amber-900 font-bold mb-3 flex items-center gap-1.5 shadow-xs">
                     <span className="text-sm">🎁</span>
                     <span className="line-clamp-1">{venue.party_deal_highlight}</span>
                   </div>
@@ -154,7 +154,7 @@ export default function VenueListView({
                       return (
                         <span
                           key={idx}
-                          className="bg-zinc-800 text-zinc-300 text-[10px] px-2 py-0.5 rounded-md"
+                          className="bg-amber-50/60 text-slate-700 border border-amber-200/60 text-[10.5px] px-2 py-0.5 rounded-md font-medium"
                         >
                           ✓ {label}
                         </span>
@@ -165,19 +165,19 @@ export default function VenueListView({
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2 pt-3 border-t border-zinc-800/80 mt-2">
+              <div className="flex items-center gap-2 pt-3 border-t border-slate-100 mt-2">
                 <button
                   type="button"
                   onClick={() => onSelectOnMap(venue)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition-all shrink-0 active:scale-95"
+                  className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-slate-700 hover:text-amber-900 text-xs font-bold transition-all shrink-0 active:scale-95"
                 >
-                  <MapIcon className="w-3.5 h-3.5 text-amber-400" />
+                  <MapIcon className="w-3.5 h-3.5 text-amber-600" />
                   <span>Bản Đồ</span>
                 </button>
 
                 <Link
                   href={`/${venue.slug}/tiec`}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-xs font-extrabold shadow-md transition-all active:scale-[0.98] text-center"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-white text-xs font-black shadow-sm shadow-amber-900/15 transition-all active:scale-[0.98] text-center"
                 >
                   <span>Xem Menu & Đặt Bàn</span>
                   <ExternalLink className="w-3.5 h-3.5" />

@@ -18,35 +18,51 @@ export function VenuePin({ venue, isSelected, isDimmed, onClick }: VenuePinProps
       onClick={onClick}
       className={`relative group cursor-pointer transition-all duration-300 select-none ${
         isDimmed ? 'opacity-30 scale-90' : 'opacity-100 scale-100 hover:scale-110'
-      } ${isSelected ? 'z-50 scale-115' : 'z-20'}`}
+      } ${isSelected ? 'z-50 scale-110' : 'z-20'}`}
       style={{ willChange: 'transform' }}
     >
       {/* Tooltip Deal Highlight on hover */}
       {highlight && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/90 text-amber-300 text-[11px] font-medium px-2 py-0.5 rounded-full border border-amber-500/40 shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gradient-to-r from-amber-600 to-rose-600 text-white text-[10.5px] font-bold px-2.5 py-0.5 rounded-full border border-amber-200 shadow-md pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           🎁 {highlight}
         </div>
       )}
 
-      {/* Main Pin Pill */}
+      {/* Main Pin Pill (Warm Luxury Light) */}
       <div
-        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full shadow-2xl transition-all ${
-          isVip
-            ? 'bg-gradient-to-r from-amber-950 via-zinc-900 to-amber-950 border-2 border-amber-400 text-amber-200 vip-pin-glow'
-            : isSelected
-            ? 'bg-rose-950 border-2 border-rose-400 text-white shadow-rose-900/50'
-            : 'bg-zinc-900/95 border border-zinc-700 text-zinc-100 hover:border-amber-400/80 hover:bg-zinc-800'
+        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full shadow-lg transition-all ${
+          isSelected
+            ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-600 border-2 border-yellow-200 text-white shadow-rose-900/30'
+            : isVip
+            ? 'bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-100 border-2 border-amber-500 text-amber-950 vip-pin-glow shadow-amber-900/20'
+            : 'bg-white/95 border-2 border-amber-500/80 text-slate-900 hover:border-amber-600 hover:bg-amber-50/50 shadow-black/10'
         }`}
       >
         {isVip && (
-          <span className="text-amber-400 text-xs animate-bounce font-bold">★</span>
+          <span className="text-amber-600 text-xs animate-bounce font-black">★</span>
         )}
         <div className="flex flex-col text-left leading-none">
-          <span className="text-xs font-bold tracking-tight line-clamp-1 max-w-[120px]">
+          <span
+            className={`text-xs font-black tracking-tight line-clamp-1 max-w-[125px] ${
+              isSelected ? 'text-white' : isVip ? 'text-amber-950' : 'text-slate-900'
+            }`}
+          >
             {venue.name}
           </span>
-          <span className="text-[10px] text-zinc-400 font-medium">
-            từ <strong className="text-amber-300">{priceFormatted}</strong>/người
+          <span
+            className={`text-[10px] font-medium mt-0.5 ${
+              isSelected ? 'text-rose-100' : isVip ? 'text-amber-800' : 'text-slate-500'
+            }`}
+          >
+            từ{' '}
+            <strong
+              className={`font-bold ${
+                isSelected ? 'text-yellow-200' : isVip ? 'text-red-600' : 'text-amber-700'
+              }`}
+            >
+              {priceFormatted}
+            </strong>
+            /người
           </span>
         </div>
       </div>
@@ -54,7 +70,7 @@ export function VenuePin({ venue, isSelected, isDimmed, onClick }: VenuePinProps
       {/* Pin Pointer Arrow */}
       <div
         className={`w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[7px] mx-auto -mt-[1px] ${
-          isVip ? 'border-t-amber-400' : isSelected ? 'border-t-rose-400' : 'border-t-zinc-700'
+          isSelected ? 'border-t-red-600' : isVip ? 'border-t-amber-500' : 'border-t-amber-600'
         }`}
       />
     </div>
@@ -80,28 +96,30 @@ export function createPinElement(
     }">
       ${
         highlight
-          ? `<div class="venue-deal-badge absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/95 text-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-amber-500/50 shadow-md transition-all duration-200">
+          ? `<div class="venue-deal-badge absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gradient-to-r from-amber-600 to-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200 shadow-md transition-all duration-200">
               🎁 ${highlight}
              </div>`
           : ''
       }
-      <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full shadow-2xl ${
+      <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full shadow-lg ${
         isVip
-          ? 'bg-gradient-to-r from-amber-950 via-zinc-900 to-amber-950 border-2 border-amber-400 text-amber-200 vip-pin-glow'
-          : 'bg-zinc-900/95 border border-zinc-600 text-zinc-100 hover:border-amber-400'
+          ? 'bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-100 border-2 border-amber-500 text-amber-950 shadow-amber-900/20 vip-pin-glow'
+          : 'bg-white/95 border-2 border-amber-500/80 text-slate-900 shadow-black/10 hover:border-amber-600 hover:bg-amber-50'
       }">
-        ${isVip ? `<span class="text-amber-400 text-xs font-bold">★</span>` : ''}
+        ${isVip ? `<span class="text-amber-600 text-xs font-black">★</span>` : ''}
         <div class="flex flex-col text-left leading-none">
-          <span class="text-[11px] font-bold tracking-tight max-w-[130px] truncate text-white">
+          <span class="text-[11px] font-black tracking-tight max-w-[130px] truncate ${
+            isVip ? 'text-amber-950' : 'text-slate-900'
+          }">
             ${venue.name}
           </span>
-          <span class="text-[9px] text-zinc-400 font-medium">
-            từ <strong class="text-amber-300">${priceFormatted}</strong>/người
+          <span class="text-[9.5px] mt-0.5 ${isVip ? 'text-amber-800' : 'text-slate-500'} font-medium">
+            từ <strong class="${isVip ? 'text-red-600' : 'text-amber-700'} font-bold">${priceFormatted}</strong>/người
           </span>
         </div>
       </div>
       <div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[7px] mx-auto -mt-[1px] ${
-        isVip ? 'border-t-amber-400' : 'border-t-zinc-600'
+        isVip ? 'border-t-amber-500' : 'border-t-amber-600'
       }"></div>
     </div>
   `;
