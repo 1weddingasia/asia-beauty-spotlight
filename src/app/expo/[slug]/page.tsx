@@ -11,7 +11,8 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
   const supabase = await createAdminClient();
 
   const { data: business } = await supabase
@@ -41,7 +42,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ExpoBoothPage({ params, searchParams }: Props) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
   const sp = searchParams ? await searchParams : {};
   const requestedLang = sp.lang && ['vi', 'en', 'ko', 'zh'].includes(sp.lang) ? (sp.lang as ExpoLanguage) : null;
 

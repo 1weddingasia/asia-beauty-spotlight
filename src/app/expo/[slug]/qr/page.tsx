@@ -8,7 +8,8 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
   return {
     title: `Tải Standee QR | ${slug} - 1Booking Expo Pass`,
     description: 'Tải ảnh Standee mã QR để bàn dạng file PNG độ nét cao cho doanh nghiệp.',
@@ -16,7 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ExpoQrStandeePage({ params }: Props) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
   const supabase = await createAdminClient();
 
   // 1. Lấy thông tin gian hàng

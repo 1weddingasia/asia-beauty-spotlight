@@ -325,7 +325,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
           />
           <div className="mt-2.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-[10px] text-slate-600 font-mono shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <span className="font-semibold text-slate-800 tracking-wide">1booking.asia</span>
+            <span className="font-semibold text-slate-800 tracking-wide">1booking.asia/expo</span>
             <span className="text-slate-400">•</span>
             <span className="text-slate-500">Quét để kết nối</span>
           </div>
@@ -348,9 +348,9 @@ export function ExpoStandeeClient({ business, profile }: Props) {
 
         {/* Standee Footer - Không từ ngữ gian hàng, dùng vĩnh viễn mọi sự kiện */}
         <div className="mt-auto pt-3 border-t border-slate-200/80 w-full flex items-center justify-center gap-2 text-[10px] text-slate-500 font-medium whitespace-nowrap">
-          <span className="font-bold text-slate-800 tracking-wider uppercase">1Booking</span>
+          <span className="font-bold text-slate-800 tracking-wider uppercase">1Booking Expo Pass</span>
           <span className="text-slate-300">•</span>
-          <span>Nền Tảng Số Hóa Kết Nối Doanh Nghiệp</span>
+          <span className="font-mono text-amber-600 font-bold">1booking.asia/expo</span>
         </div>
       </div>
 

@@ -10,7 +10,8 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
   return {
     title: `Quản Lý Lead Trực Tiếp | ${slug} - 1Booking Expo Pass`,
     description: 'Trang quản trị thu thập danh sách khách hàng và đối tác B2B theo thời gian thực.',
@@ -18,7 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ExpoCrmPage({ params, searchParams }: Props) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug === 'deoproce-korea' ? '1booking-expo-pass' : rawSlug;
   const sp = searchParams ? await searchParams : {};
   const requestedLang = sp.lang && ['vi', 'en', 'ko', 'zh'].includes(sp.lang) ? (sp.lang as ExpoLanguage) : null;
 

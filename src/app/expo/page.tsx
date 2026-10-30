@@ -71,11 +71,18 @@ export default async function ExpoHubPage() {
           event_name_en: p.event_name_en || null,
           booth_number: p.booth_number,
           product_info: b.page_content?.product_info || b.page_content?.description_vi || b.page_content?.description_en || null,
-          is_demo: Boolean(b.is_demo || b.slug === 'deoproce-korea'),
+          is_demo: Boolean(b.is_demo),
         });
       }
     }
   }
+
+  // Đưa gian hàng chính thức 1Booking Expo Pass lên đầu bảng
+  expoList.sort((a, b) => {
+    if (a.slug === '1booking-expo-pass') return -1;
+    if (b.slug === '1booking-expo-pass') return 1;
+    return 0;
+  });
 
   return <ExpoHubClient initialBooths={expoList} />;
 }
