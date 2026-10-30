@@ -14,9 +14,13 @@ export interface LanguageItem {
 export const APP_LANGUAGES: LanguageItem[] = [
   { code: 'vi', label: 'Tiếng Việt', nativeName: 'Tiếng Việt', flag: '🇻🇳' },
   { code: 'en', label: 'English', nativeName: 'English', flag: '🇬🇧' },
-  { code: 'ko', label: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
-  { code: 'zh', label: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
+  { code: 'ko', label: '한국어', nativeName: '한국어', flag: '🇰🇷' },
+  { code: 'zh', label: '中文', nativeName: '中文', flag: '🇨🇳' },
 ];
+
+export function isAppLanguage(lang: any): lang is AppLanguage {
+  return typeof lang === 'string' && ['vi', 'en', 'ko', 'zh'].includes(lang);
+}
 
 /**
  * Đọc ngôn ngữ hiện tại từ URL query param, localStorage, hoặc fallback về 'vi'
@@ -24,16 +28,14 @@ export const APP_LANGUAGES: LanguageItem[] = [
 export function getAppLanguage(fallback: AppLanguage = 'vi'): AppLanguage {
   if (typeof window === 'undefined') return fallback;
   try {
-    const urlParam = new URLSearchParams(window.location.search).get('lang') as AppLanguage;
-    if (urlParam && ['vi', 'en', 'ko', 'zh'].includes(urlParam)) {
-      try {
-        localStorage.setItem(APP_LANG_STORAGE_KEY, urlParam);
-        localStorage.setItem(EXPO_LANG_STORAGE_KEY, urlParam);
-      } catch {}
+    const urlParam = new URLSearchParams(window.location.search).get('lang');
+    if (isAppLanguage(urlParam)) {
+      localStorage.setItem(APP_LANG_STORAGE_KEY, urlParam);
+      localStorage.setItem(EXPO_LANG_STORAGE_KEY, urlParam);
       return urlParam;
     }
-    const cached = (localStorage.getItem(APP_LANG_STORAGE_KEY) || localStorage.getItem(EXPO_LANG_STORAGE_KEY)) as AppLanguage;
-    if (cached && ['vi', 'en', 'ko', 'zh'].includes(cached)) {
+    const cached = localStorage.getItem(APP_LANG_STORAGE_KEY) || localStorage.getItem(EXPO_LANG_STORAGE_KEY);
+    if (isAppLanguage(cached)) {
       return cached;
     }
   } catch {

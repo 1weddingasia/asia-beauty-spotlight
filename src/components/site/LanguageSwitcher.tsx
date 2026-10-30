@@ -19,11 +19,18 @@ export function LanguageSwitcher({
   const { lang, setLang, languages } = useAppLanguage();
 
   if (variant === 'mobile') {
+    const labelMap: Record<AppLanguage, string> = {
+      vi: '🌐 Ngôn ngữ:',
+      en: '🌐 Language:',
+      ko: '🌐 언어 선택:',
+      zh: '🌐 选择语言:',
+    };
+
     return (
-      <div className={`p-2.5 rounded-2xl bg-slate-900/90 border border-slate-800 ${className}`}>
-        <div className="text-[11px] font-bold text-slate-400 mb-2 px-1 flex items-center justify-between">
-          <span>🌐 Ngôn ngữ / Language:</span>
-          <span className="font-mono text-amber-400 font-bold uppercase">{lang}</span>
+      <div className={`p-2.5 rounded-2xl bg-muted/70 border border-border ${className}`}>
+        <div className="text-[11px] font-bold text-muted-foreground mb-2 px-1 flex items-center justify-between">
+          <span>{labelMap[lang] || '🌐 Language:'}</span>
+          <span className="font-mono text-amber-500 font-bold uppercase">{lang}</span>
         </div>
         <div className="grid grid-cols-4 gap-1.5">
           {languages.map((item) => {
@@ -36,9 +43,9 @@ export function LanguageSwitcher({
                 className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 scale-[1.02] ring-1 ring-amber-400'
-                    : 'bg-slate-950/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80'
+                    : 'bg-background/90 text-foreground hover:bg-muted hover:text-amber-500 border border-border/80'
                 }`}
-                title={item.label}
+                title={item.nativeName}
               >
                 <span className="text-base mb-0.5">{item.flag}</span>
                 <span className="text-[10px] uppercase font-mono tracking-wider">{item.code}</span>

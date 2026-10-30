@@ -383,7 +383,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
 
 // ── SiteFooter ────────────────────────────────────────────────────────────────
 export function SiteFooter() {
-  const { t } = useAppLanguage();
+  const { t, lang } = useAppLanguage();
   const [settings, setSettings] = useState<any>(null);
   const [navData, setNavData] = useState<{ categories: any[]; locations: any[] }>({ categories: [], locations: [] });
   const siteConfig = useSiteConfig();
@@ -408,12 +408,16 @@ export function SiteFooter() {
               <span className="text-gradient-gold">{siteConfig.logoDomain}</span>
             </p>
           )}
-          <p className="mt-4 max-w-sm text-sm">{siteConfig.description || t.footer.brandDesc}</p>
+          <p className="mt-4 max-w-sm text-sm">
+            {lang === 'vi' ? (siteConfig.description || t.footer.brandDesc) : t.footer.brandDesc}
+          </p>
           <p className="mt-2 text-xs text-background/40">
             {t.footer.hotline}: {settings?.contact_phone || "0918 731 411"}
           </p>
           <div className="mt-4 pt-3 border-t border-background/10">
-            <p className="text-[10px] uppercase tracking-wider text-background/50 mb-2 font-semibold">Language / Ngôn ngữ</p>
+            <p className="text-[10px] uppercase tracking-wider text-background/50 mb-2 font-semibold">
+              {lang === 'vi' ? 'Ngôn ngữ' : (lang === 'ko' ? '언어' : (lang === 'zh' ? '语言' : 'Language'))}
+            </p>
             <LanguageSwitcher solid={false} />
           </div>
         </div>
@@ -498,7 +502,7 @@ export function SiteFooter() {
             </li>
             <li>
               <Link href="/lien-he" className="transition-colors hover:text-gold">
-                {t.nav.contactSupport}
+                {t.nav.contactSupport}: {settings?.contact_phone || "0918 731 411"}
               </Link>
             </li>
           </ul>
