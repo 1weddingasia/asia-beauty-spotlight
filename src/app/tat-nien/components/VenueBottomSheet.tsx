@@ -166,15 +166,17 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
   const displayPhone = venue.phone || venue.page_content?.phone || 'Đang cập nhật';
   const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
   
-  const shortPriceFormatted = React.useMemo(() => {
-    const min = venue.price_min;
-    const max = venue.price_max;
-    if (!min && !max) return 'Liên hệ';
-    const toK = (n: number) => (n >= 1000000 ? `${(n / 1000000).toFixed(1).replace('.0', '')}tr` : `${Math.round(n / 1000)}k`);
-    if (min && max) return `${toK(min)} - ${toK(max)} đ`;
-    if (min) return `Từ ${toK(min)} đ`;
-    return `${toK(max!)} đ`;
-  }, [venue.price_min, venue.price_max]);
+  // Format giá ngắn gọn không vỡ layout trên màn hình nhỏ (tính toán thuần túy, không vi phạm React Hook)
+  const minP = venue.price_min;
+  const maxP = venue.price_max;
+  const toK = (n: number) => (n >= 1000000 ? `${(n / 1000000).toFixed(1).replace('.0', '')}tr` : `${Math.round(n / 1000)}k`);
+  const shortPriceFormatted = (!minP && !maxP)
+    ? 'Liên hệ'
+    : (minP && maxP)
+    ? `${toK(minP)} - ${toK(maxP)} đ`
+    : minP
+    ? `Từ ${toK(minP)} đ`
+    : `${toK(maxP!)} đ`;
 
   // Look up labels
   const spaceLabels = (venue.spaces_and_amenities || []).map(getSpaceLabel).filter(Boolean);
@@ -545,9 +547,9 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                           {h.capacity ? `Sức chứa: ${h.capacity} khách` : 'Sức chứa: Linh hoạt'}
                         </div>
                       </div>
-                      {h.min_spend ? (
+                      {h.price_min ? (
                         <div className="text-[11px] font-bold text-rose-600">
-                          Tối thiểu {h.min_spend.toLocaleString('vi-VN')} đ
+                          Tối thiểu {h.price_min.toLocaleString('vi-VN')} đ
                         </div>
                       ) : null}
                     </div>
@@ -557,7 +559,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
             )}
 
             {/* Thực đơn tiệc tham khảo */}
-            {venue.party_menus && venue.party_menus.length > 0 && (
+            {venue.set_menus && venue.set_menus.length > 0 && (
               <div className="text-left">
                 <div className="text-[11px] font-black text-slate-800 uppercase tracking-wider mb-1.5 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
@@ -575,7 +577,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                   )}
                 </div>
                 <div className="space-y-2">
-                  {venue.party_menus.map((m, idx) => (
+                  {venue.set_menus.map((m, idx) => (
                     <div
                       key={m.id || idx}
                       className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs shadow-2xs hover:border-slate-300 transition-colors"
@@ -583,7 +585,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-bold text-slate-900 text-xs">{m.name}</span>
                         <span className="font-black text-rose-600 text-xs">
-                          {m.price_per_pax?.toLocaleString('vi-VN')} đ
+                          {m.price?.toLocaleString('vi-VN')} đ{m.pax ? ` / bàn ${m.pax}k` : ''}
                         </span>
                       </div>
                       {m.dishes && m.dishes.length > 0 && (
@@ -655,6 +657,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     return (
       <Drawer open={!!venue} onOpenChange={(open) => !open && onClose()}>
         <DrawerContent className="bg-white border-t border-slate-200 text-slate-900 max-h-[88dvh] rounded-t-3xl overflow-hidden shadow-2xl flex flex-col md:hidden">
+          <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-slate-300 mt-2.5 mb-1" />
           <DrawerHeader className="sr-only">
             <DrawerTitle>{venue.name}</DrawerTitle>
             <DrawerDescription>Hồ sơ đặt tiệc tất niên của {venue.name}</DrawerDescription>

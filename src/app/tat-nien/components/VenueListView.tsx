@@ -60,7 +60,8 @@ export default function VenueListView({
 
         const pMin = typeof venue.price_min === 'number' ? venue.price_min : Number(String(venue.price_min || '').replace(/[^\d]/g, '')) || 250000;
         const pMax = typeof venue.price_max === 'number' ? venue.price_max : Number(String(venue.price_max || '').replace(/[^\d]/g, '')) || 650000;
-        const priceFormatted = `${pMin.toLocaleString('vi-VN')} - ${pMax.toLocaleString('vi-VN')} đ`;
+        const toK = (n: number) => (n >= 1000000 ? `${(n / 1000000).toFixed(1).replace('.0', '')}tr` : `${Math.round(n / 1000)}k`);
+        const priceFormatted = `${toK(pMin)} - ${toK(pMax)} đ`;
 
         const coords = venue.map_coordinates;
         const distance =

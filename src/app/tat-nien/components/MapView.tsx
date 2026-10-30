@@ -213,11 +213,13 @@ export default function MapView({
     if (!selectedVenue || !mapRef.current) return;
     const coords = selectedVenue.map_coordinates;
     if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
       const lngLat: [number, number] = [Number(coords.lng), Number(coords.lat)];
       mapRef.current.flyTo({
         center: lngLat,
-        zoom: 15.8,
-        pitch: 58,
+        zoom: isMobile ? 15.2 : 15.8,
+        pitch: isMobile ? 30 : 55,
+        offset: isMobile ? [0, -110] : [0, 0], // Dịch tâm ghim lên nửa trên màn hình để không bị BottomSheet che khuất
         duration: 900,
         essential: true,
       });
@@ -273,11 +275,8 @@ export default function MapView({
   }, [userLocation]);
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-slate-950">
+    <div className="relative w-full h-full overflow-hidden bg-[#fbf8f3]">
       <div ref={mapContainer} className="w-full h-full" />
-      {/* Lớp phủ gradient viền tinh tế */}
-      <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
     </div>
   );
 }

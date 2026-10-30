@@ -304,13 +304,13 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
       </header>
 
       {/* 1.1 Quick District & Near Me Floating Bar (Warm Luxury Light) */}
-      <div className="relative z-20 bg-white/95 border-b border-amber-100/90 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none overscroll-x-contain touch-pan-x backdrop-blur-md shadow-xs">
+      <div className="relative z-20 bg-white/95 border-b border-amber-100/90 px-2.5 sm:px-3 py-1 sm:py-1.5 flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-none overscroll-x-contain touch-pan-x backdrop-blur-md shadow-xs">
         {/* Nút 📍 Gần tôi */}
         <button
           type="button"
           onClick={handleGetNearMe}
           disabled={isLocating}
-          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all active:scale-95 border ${
+          className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold shrink-0 transition-all active:scale-95 border ${
             userLocation
               ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
               : 'bg-amber-50/90 text-amber-950 border-amber-200/90 hover:bg-amber-100 hover:border-amber-300'
@@ -320,12 +320,12 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
           {isLocating ? (
             <div className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
           ) : (
-            <Navigation className={`w-3.5 h-3.5 ${userLocation ? 'text-white fill-white' : 'text-amber-700'}`} />
+            <Navigation className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${userLocation ? 'text-white fill-white' : 'text-amber-700'}`} />
           )}
-          <span>{userLocation ? 'Gần tôi (Đã bật)' : '📍 Gần tôi'}</span>
+          <span>{userLocation ? 'Gần tôi (Bật)' : '📍 Gần tôi'}</span>
         </button>
 
-        <div className="h-4 w-px bg-amber-200/70 shrink-0 mx-0.5" />
+        <div className="h-3.5 w-px bg-amber-200/70 shrink-0 mx-0.5" />
 
         {/* Danh sách Quận / Huyện từ database thật */}
         {districtsList.map((d) => {
@@ -335,7 +335,7 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
               key={key}
               type="button"
               onClick={() => handleSelectDistrict(key)}
-              className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition-all active:scale-95 border ${
+              className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold shrink-0 transition-all active:scale-95 border ${
                 selectedDistrict === key
                   ? 'bg-amber-600 text-white font-black border-amber-600 shadow-xs'
                   : 'bg-white text-slate-700 border-slate-200 hover:border-amber-300 hover:text-amber-800 hover:bg-amber-50/40'
