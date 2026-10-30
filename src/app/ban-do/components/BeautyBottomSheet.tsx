@@ -15,7 +15,6 @@ import {
   ExternalLink,
   Sparkles,
   MapPin,
-  Award,
   Share2,
   Check,
   CalendarCheck,
@@ -23,9 +22,7 @@ import {
   Loader2,
   CheckCircle2,
   Send,
-  Heart,
   ShieldCheck,
-  Clock,
   X,
 } from 'lucide-react';
 
@@ -108,10 +105,12 @@ export default function BeautyBottomSheet({ venue, onClose }: BeautyBottomSheetP
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          business_id: venue.id,
           customer_name: bookingName.trim(),
           customer_phone: cleanPhone,
           deal_name: `Đặt hẹn tư vấn làm đẹp: ${venue.name}`,
           deal_value: venue.price_min || 500000,
+          booking_time: bookingDate ? `${bookingDate} 10:00:00` : null,
           cross_sell_items: `Dịch vụ quan tâm: ${bookingService || 'Tư vấn tổng quát'}. ${bookingDate ? `Ngày hẹn: ${bookingDate}. ` : ''}${bookingNotes.trim() ? `Ghi chú: ${bookingNotes.trim()}` : ''}`,
           party_details: {
             venue_id: venue.id,

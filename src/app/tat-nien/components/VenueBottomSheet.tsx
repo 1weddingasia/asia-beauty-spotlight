@@ -32,7 +32,6 @@ import {
   CheckCircle2,
   Send,
   Building2,
-  FileText,
   X,
 } from 'lucide-react';
 
@@ -382,11 +381,12 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                        Số lượng khách
+                        Số lượng khách ({venue.min_guests || 1} - {venue.max_guests || 500})
                       </label>
                       <input
                         type="number"
-                        min={1}
+                        min={venue.min_guests || 1}
+                        max={venue.max_guests || 1000}
                         value={bookingGuests}
                         onChange={(e) => setBookingGuests(e.target.value ? Number(e.target.value) : '')}
                         className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-rose-500 transition-colors shadow-xs"
@@ -411,6 +411,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                     </label>
                     <textarea
                       rows={2}
+                      maxLength={400}
                       value={bookingNotes}
                       onChange={(e) => setBookingNotes(e.target.value)}
                       placeholder="VD: Cần phòng VIP 30 khách, có dàn hát karaoke, thực đơn hải sản..."
@@ -528,7 +529,9 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                     >
                       <div>
                         <div className="font-bold text-slate-900 text-xs">{h.name}</div>
-                        <div className="text-[10px] text-slate-500">Sức chứa: {h.capacity} khách</div>
+                        <div className="text-[10px] text-slate-500">
+                          {h.capacity ? `Sức chứa: ${h.capacity} khách` : 'Sức chứa: Linh hoạt'}
+                        </div>
                       </div>
                       {h.min_spend ? (
                         <div className="text-[11px] font-bold text-rose-600">
