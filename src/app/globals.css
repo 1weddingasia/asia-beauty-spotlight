@@ -242,25 +242,25 @@
   z-index: 100 !important;
 }
 
-/* 2. Khi zoom xa (< 14.2), ghim tự động thu gọn thành huy hiệu tròn sang trọng (Compact Icon Pin).
- *    Giúp 50-60 ghim tại Quận 1/3 không bao giờ bị đè chữ nhau như Google Maps / Apple Maps.
- *    Khi hover hoặc click, ghim tự động bung rộng đầy đủ tên và giá! */
-.map-zoom-far .venue-pin-text {
+/* 2. Khi zoom xa (< 14.0), ghim tự động hiển thị tên nhà hàng ngắn gọn và thanh thoát.
+ *    Ẩn dòng giá để ghim nhỏ gọn không đè chữ nhau nhưng vẫn nhận diện được ngay quán!
+ *    Khi hover hoặc click, ghim tự động bung rộng đầy đủ cả dòng giá và ưu đãi! */
+.map-zoom-far .venue-pin-price {
   display: none !important;
 }
-.map-zoom-far .venue-pin-pill {
-  padding: 6px !important;
-  border-radius: 9999px !important;
-  min-width: 32px !important;
-  height: 32px !important;
-  justify-content: center !important;
-}
-.map-zoom-far .venue-marker-container:hover .venue-pin-text,
-.map-zoom-far .venue-marker-container.is-selected .venue-pin-text {
+.map-zoom-far .venue-pin-text {
   display: flex !important;
+}
+.map-zoom-far .venue-pin-pill {
+  padding: 4px 8px !important;
+  border-radius: 9999px !important;
+  height: auto !important;
+}
+.map-zoom-far .venue-marker-container:hover .venue-pin-price,
+.map-zoom-far .venue-marker-container.is-selected .venue-pin-price {
+  display: block !important;
 }
 .map-zoom-far .venue-marker-container:hover .venue-pin-pill,
 .map-zoom-far .venue-marker-container.is-selected .venue-pin-pill {
   padding: 6px 10px !important;
-  height: auto !important;
 }
