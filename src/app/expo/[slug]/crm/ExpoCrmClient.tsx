@@ -474,8 +474,8 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white">{t.changePinTitle}</h3>
-                <p className="text-[11px] text-slate-400">
-                  {t.boothLabel}: {profile.booth_number} • {brandName}
+                <p className="text-[11px] text-slate-400 truncate">
+                  {brandName} • Mini-CRM
                 </p>
               </div>
             </div>
@@ -942,7 +942,7 @@ export function ExpoCrmClient({ business, profile, initialIsActivated = false }:
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-slate-400 truncate">
-                  {t.location}: <span className="text-amber-300 font-mono font-bold">{profile.booth_number}</span> • {eventName}
+                  <span className="text-amber-300 font-medium">Mini-CRM</span> • {lang === 'vi' ? 'Quản lý khách & đối tác kết nối' : 'Partner & Lead Management'}
                 </p>
               </div>
             </div>

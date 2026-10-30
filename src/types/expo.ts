@@ -96,6 +96,60 @@ export function deriveEnglishName(rawName?: string | null): string {
 }
 
 /**
+ * Định dạng tên thương hiệu và tên pháp nhân cho Standee & Hồ sơ số:
+ * Tách biệt tên thương hiệu chính (nổi bật, tránh bị gãy dòng thô) và tên pháp nhân phụ
+ */
+export function formatStandeeBrandName(
+  rawVi?: string | null,
+  rawEn?: string | null
+): {
+  primary: string;
+  secondary: string | null;
+} {
+  const trimmedVi = (rawVi || '').trim();
+  const trimmedEn = (rawEn || '').trim();
+
+  // Trường hợp 1: Có tên thương hiệu trong dấu ngoặc đơn, ví dụ "Công ty Cổ phần Phúc Sinh (K COFFEE)"
+  const parenMatch = trimmedVi.match(/^(.*?)\s*\((.*?)\)$/);
+  if (parenMatch) {
+    const legalName = parenMatch[1].trim();
+    const brandName = parenMatch[2].trim();
+    return {
+      primary: brandName || legalName,
+      secondary: brandName && legalName && legalName !== brandName ? legalName : null,
+    };
+  }
+
+  // Trường hợp 2: Có dấu gạch chéo hoặc sổ dọc "Tên Việt / English Name"
+  if (trimmedVi.includes('/') || trimmedVi.includes('|')) {
+    const parts = trimmedVi.split(/[/|]/, 2);
+    const p0 = parts[0]?.trim();
+    const p1 = parts[1]?.trim();
+    return {
+      primary: p0 || trimmedVi,
+      secondary: p1 && p1.toLowerCase() !== p0.toLowerCase() ? p1 : null,
+    };
+  }
+
+  // Trường hợp 3: Có tên tiếng Anh khác biệt thực sự (không phải bản bỏ dấu của tiếng Việt)
+  if (
+    trimmedEn &&
+    trimmedEn.toLowerCase() !== trimmedVi.toLowerCase() &&
+    stripAccents(trimmedVi).toLowerCase() !== trimmedEn.toLowerCase()
+  ) {
+    return {
+      primary: trimmedVi,
+      secondary: trimmedEn,
+    };
+  }
+
+  return {
+    primary: trimmedVi || 'Doanh Nghiệp',
+    secondary: null,
+  };
+}
+
+/**
  * Trả về tên thương hiệu/gian hàng theo ngôn ngữ đang chọn:
  * - 'vi': Tên tiếng Việt
  * - 'en', 'ko', 'zh': Tên tiếng Anh đối với các ngôn ngữ khác
@@ -176,8 +230,8 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
   viewDirectoryBtn: string;
 }> = {
   vi: {
-    welcome: "Chào mừng quý khách đến gian hàng",
-    booth: "Vị trí",
+    welcome: "Chào mừng quý khách",
+    booth: "Doanh nghiệp",
     event: "Sự kiện",
     formTitle: "Trao Đổi Thông Tin Liên Hệ",
     formSubtitle: "Quý khách vui lòng để lại thông tin để hai bên tiện trao đổi và kết nối công việc",
@@ -194,16 +248,16 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     submitBtn: "🤝 GỬI THÔNG TIN KẾT NỐI",
     submittingBtn: "Đang gửi thông tin...",
     successTitle: "ĐÃ TIẾP NHẬN THÔNG TIN!",
-    successMsg: "Cảm ơn quý khách! Đại diện gian hàng đã ghi nhận thông tin và sẽ liên hệ kết nối trao đổi với quý khách.",
+    successMsg: "Cảm ơn quý khách! Đại diện doanh nghiệp đã ghi nhận thông tin và sẽ liên hệ kết nối trao đổi với quý khách.",
     websiteBtn: "Website Doanh Nghiệp",
-    backToExpo: "Về Danh Bạ Expo",
-    expoDirectory: "Khám phá danh bạ doanh nghiệp triển lãm quốc tế",
-    viewDirectoryBtn: "Xem Tất Cả Gian Hàng Triển Lãm",
+    backToExpo: "Về Danh Bạ",
+    expoDirectory: "Khám phá danh bạ kết nối doanh nghiệp",
+    viewDirectoryBtn: "Xem Danh Bạ Doanh Nghiệp",
   },
   en: {
-    welcome: "Welcome to our booth",
-    booth: "Location",
-    event: "Exhibition",
+    welcome: "Welcome to our portal",
+    booth: "Business",
+    event: "Event",
     formTitle: "Exchange Business Contact",
     formSubtitle: "Please leave your contact details for mutual business networking and follow-up",
     nameLabel: "Your Full Name",
@@ -219,16 +273,16 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     submitBtn: "🤝 SUBMIT CONTACT INFO",
     submittingBtn: "Submitting...",
     successTitle: "CONTACT INFO RECEIVED!",
-    successMsg: "Thank you! Our booth representatives have received your contact details and will connect with you shortly.",
+    successMsg: "Thank you! Our business representatives have received your contact details and will connect with you shortly.",
     websiteBtn: "Official Website",
-    backToExpo: "Back to Expo Hub",
-    expoDirectory: "Explore all exhibitors in the digital directory",
-    viewDirectoryBtn: "Explore All Expo Booths",
+    backToExpo: "Directory",
+    expoDirectory: "Explore all businesses in the digital directory",
+    viewDirectoryBtn: "Explore Business Directory",
   },
   ko: {
-    welcome: "부스 방문을 환영합니다",
-    booth: "위치",
-    event: "전시회",
+    welcome: "비즈니스 페이지 방문을 환영합니다",
+    booth: "기업 정보",
+    event: "행사 / 비즈니스",
     formTitle: "비즈니스 연락처 교환",
     formSubtitle: "행사 후 원활한 소통 및 비즈니스 협력을 위해 연락처를 남겨주시기 바랍니다",
     nameLabel: "성함",
@@ -244,16 +298,16 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     submitBtn: "🤝 연락처 정보 전송",
     submittingBtn: "전송 중...",
     successTitle: "등록이 완료되었습니다!",
-    successMsg: "감사합니다! 부스 담당자가 연락처를 확인하였으며 빠른 시일 내에 연락드리겠습니다.",
+    successMsg: "감사합니다! 담당자가 연락처를 확인하였으며 빠른 시일 내에 연락드리겠습니다.",
     websiteBtn: "공식 홈페이지",
-    backToExpo: "엑스포 명록으로",
-    expoDirectory: "국제 박람회 참가기업 디렉토리 전체 둘러보기",
-    viewDirectoryBtn: "전체 부스 둘러보기",
+    backToExpo: "디렉토리",
+    expoDirectory: "전체 기업 디렉토리 둘러보기",
+    viewDirectoryBtn: "전체 기업 둘러보기",
   },
   zh: {
-    welcome: "欢迎光临展位",
-    booth: "展位",
-    event: "展会名称",
+    welcome: "欢迎访问我们的商务主页",
+    booth: "企业信息",
+    event: "商务活动",
     formTitle: "商务联系与名片交换",
     formSubtitle: "请留下您的联系方式，以便双方展会后进一步沟通与商务洽谈",
     nameLabel: "您的姓名",
@@ -269,11 +323,11 @@ export const EXPO_TRANSLATIONS: Record<ExpoLanguage, {
     submitBtn: "🤝 提交联系信息",
     submittingBtn: "正在提交...",
     successTitle: "信息已成功提交！",
-    successMsg: "非常感谢！展位代表已收到您的联系信息，将尽快与您取得联系并展开交流。",
+    successMsg: "非常感谢！企业代表已收到您的联系信息，将尽快与您取得联系并展开交流。",
     websiteBtn: "官方网站",
-    backToExpo: "返回展会名录",
-    expoDirectory: "浏览国际博览会参展企业名录",
-    viewDirectoryBtn: "浏览全部参展展位",
+    backToExpo: "返回名录",
+    expoDirectory: "浏览企业名录",
+    viewDirectoryBtn: "浏览全部企业",
   },
 };
 

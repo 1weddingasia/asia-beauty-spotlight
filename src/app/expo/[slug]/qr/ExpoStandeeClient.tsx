@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import { Download, ArrowLeft, BarChart3, ExternalLink, Sparkles, Loader2, Printer, Share2, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { getExpoBrandName, getStoredExpoLanguage, type ExpoLanguage } from '@/types/expo';
+import { getExpoBrandName, formatStandeeBrandName, getStoredExpoLanguage, type ExpoLanguage } from '@/types/expo';
 
 interface Props {
   business: {
@@ -40,6 +40,13 @@ export function ExpoStandeeClient({ business, profile }: Props) {
 
   const nameVi = getExpoBrandName(business, profile, 'vi');
   const nameEn = getExpoBrandName(business, profile, 'en');
+  const brand = formatStandeeBrandName(nameVi, nameEn);
+
+  const titleSizeClass = brand.primary.length > 30 
+    ? 'text-lg sm:text-xl' 
+    : brand.primary.length > 18 
+      ? 'text-xl sm:text-2xl' 
+      : 'text-2xl sm:text-3xl';
 
   const boothUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/expo/${business.slug}`
@@ -197,14 +204,14 @@ export function ExpoStandeeClient({ business, profile }: Props) {
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Về Expo</span>
+            <span>Về Danh Bạ</span>
           </Link>
           <Link
             href={`/expo/${business.slug}/crm?lang=${lang}`}
             className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors"
           >
             <BarChart3 className="w-3.5 h-3.5 text-amber-400" />
-            <span>CRM Gian Hàng</span>
+            <span>Quản Trị CRM</span>
           </Link>
           <Link
             href={`/expo/${business.slug}?lang=${lang}`}
@@ -212,7 +219,7 @@ export function ExpoStandeeClient({ business, profile }: Props) {
             className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-300 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
-            <span className="hidden sm:inline">Khách Quét</span>
+            <span className="hidden sm:inline">Trang Quét</span>
           </Link>
         </div>
 
@@ -266,84 +273,83 @@ export function ExpoStandeeClient({ business, profile }: Props) {
       {/* STANDEE BOARD CANVAS (Khung bảng Standee để bàn hoặc in decal/mica) */}
       <div 
         ref={standeeRef}
-        className="w-full max-w-[420px] bg-white text-slate-900 rounded-3xl p-8 shadow-2xl border-4 border-amber-500 flex flex-col items-center text-center relative overflow-hidden print:border-none print:shadow-none print:max-w-full print:w-[148mm] print:h-[210mm] print:p-6 print:m-0 print:rounded-none"
+        className="w-full max-w-[420px] bg-white text-slate-900 rounded-3xl p-7 sm:p-8 shadow-2xl border-4 border-amber-500 flex flex-col items-center text-center relative overflow-hidden print:border-none print:shadow-none print:max-w-full print:w-[148mm] print:h-[210mm] print:p-6 print:m-0 print:rounded-none"
       >
         
         {/* Decorative Top Accent */}
-        <div className="w-20 h-1.5 bg-amber-500 rounded-full mb-4 print:mb-3" />
+        <div className="w-20 h-1.5 bg-amber-500 rounded-full mb-3.5 print:mb-3" />
 
-        {/* Brand Tag */}
-        <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 uppercase tracking-wider mb-2">
+        {/* Brand Tag - Nhận diện chung vĩnh viễn, không gắn riêng hội chợ đơn lẻ */}
+        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200 uppercase tracking-wider mb-4 shadow-2xs">
           <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-          1Booking Expo Pass
+          1Booking Digital Pass
         </div>
 
-        {/* Booth Location Number */}
-        {profile.booth_number && (
-          <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-lg text-sm font-mono font-black bg-amber-500/10 text-amber-700 border border-amber-500/30 uppercase tracking-widest mb-4">
-            <span>{profile.booth_number}</span>
-          </div>
-        )}
-
-        {/* Brand Logo & Name */}
-        <div className="flex flex-col items-center mb-6">
+        {/* Brand Logo & Name - Tách tên Brand chính & tên pháp nhân phụ, chống nhảy dòng thô */}
+        <div className="flex flex-col items-center mb-5 w-full">
           {business.logo_url && !logoFailed ? (
-            <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white p-1 mb-2 border border-slate-200 shadow-sm flex items-center justify-center">
+            <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-white p-2 mb-3 border border-slate-200 shadow-sm flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={business.logo_url}
-                alt={nameVi}
-                crossOrigin="anonymous"
+                alt={brand.primary}
                 onError={() => setLogoFailed(true)}
                 className="w-full h-full object-contain"
               />
             </div>
           ) : (
-            <div className="w-16 h-16 rounded-xl bg-amber-500 text-slate-950 font-black text-xl flex items-center justify-center mb-2 shadow-md">
-              {nameVi.slice(0, 2).toUpperCase()}
+            <div className="w-18 h-18 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-300 text-slate-950 font-black text-2xl flex items-center justify-center mb-3 shadow-md border-2 border-white ring-2 ring-amber-500/20">
+              {brand.primary.replace(/[^a-zA-Z0-9]/g, '').slice(0, 2).toUpperCase() || '1B'}
             </div>
           )}
-          <h2 className="text-2xl font-black text-slate-950 tracking-tight leading-tight">
-            {nameVi}
+
+          <h2 className={`${titleSizeClass} font-black text-slate-950 tracking-tight leading-snug [text-wrap:balance] max-w-[340px] mx-auto`}>
+            {brand.primary}
           </h2>
-          {nameEn && nameEn.toLowerCase() !== nameVi.toLowerCase() && (
-            <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mt-1">
-              {nameEn}
+
+          {brand.secondary && (
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1 [text-wrap:balance] max-w-[320px] mx-auto">
+              {brand.secondary}
             </p>
           )}
         </div>
 
         {/* Large Crisp QR Code Frame */}
-        <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl shadow-inner mb-6 flex flex-col items-center">
+        <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-3xl shadow-inner mb-4 flex flex-col items-center">
           <QRCodeSVG
             value={boothUrl}
-            size={240}
+            size={220}
             level="H"
             includeMargin={true}
           />
-          <span className="text-[10px] text-slate-500 font-mono mt-1 tracking-wider">
-            1booking.asia/expo/{business.slug}
-          </span>
-        </div>
-
-        {/* 4-Language Call To Action */}
-        <div className="space-y-1 w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 mb-4">
-          <p className="text-sm font-black text-slate-950 tracking-tight">
-            QUÉT MÃ ĐỂ KẾT NỐI & TRAO ĐỔI LIÊN HỆ
-          </p>
-          <p className="text-xs font-semibold text-slate-700">
-            SCAN TO CONNECT & EXCHANGE CONTACT INFO
-          </p>
-          <div className="text-[11px] text-slate-600 flex items-center justify-center gap-3 pt-1 border-t border-slate-200 mt-1">
-            <span>비즈니스 연락처 교환 스캔</span>
-            <span>•</span>
-            <span>扫码交换名片与商务咨询</span>
+          <div className="mt-2.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-[10px] text-slate-600 font-mono shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span className="font-semibold text-slate-800 tracking-wide">1booking.asia</span>
+            <span className="text-slate-400">•</span>
+            <span className="text-slate-500">Quét để kết nối</span>
           </div>
         </div>
 
-        {/* Standee Footer */}
-        <div className="mt-auto pt-3 border-t border-slate-200 w-full flex items-center justify-center text-[10px] text-slate-500 font-medium tracking-tight">
-          <span>1Booking - Tiện ích số hóa gian hàng độc lập • Hỗ trợ: 0918 731 411</span>
+        {/* 4-Language Call To Action - Tinh chỉnh câu chữ vừa khít 1 dòng, không bị ngắt dòng thô */}
+        <div className="w-full bg-slate-50/90 border border-slate-200 rounded-2xl py-3 px-4 mb-4 text-center">
+          <p className="text-sm font-black text-slate-950 tracking-tight [text-wrap:balance] uppercase">
+            Quét Mã Để Kết Nối Trực Tiếp
+          </p>
+          <p className="text-xs font-semibold text-slate-700 tracking-normal mt-0.5 [text-wrap:balance]">
+            Scan to Connect & Explore Products
+          </p>
+          <div className="text-[11px] text-slate-500 font-medium flex items-center justify-center gap-2 pt-2 border-t border-slate-200/80 mt-2 whitespace-nowrap">
+            <span>비즈니스 연락처 교환</span>
+            <span className="text-slate-300">•</span>
+            <span>扫码交换名片与咨询</span>
+          </div>
+        </div>
+
+        {/* Standee Footer - Không từ ngữ gian hàng, dùng vĩnh viễn mọi sự kiện */}
+        <div className="mt-auto pt-3 border-t border-slate-200/80 w-full flex items-center justify-center gap-2 text-[10px] text-slate-500 font-medium whitespace-nowrap">
+          <span className="font-bold text-slate-800 tracking-wider uppercase">1Booking</span>
+          <span className="text-slate-300">•</span>
+          <span>Nền Tảng Số Hóa Kết Nối Doanh Nghiệp</span>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import {
   EXPO_TRANSLATIONS,
   ExpoLanguage,
   getExpoBrandName,
+  formatStandeeBrandName,
   getExpoEventName,
   getStoredExpoLanguage,
   setStoredExpoLanguage,
@@ -68,6 +69,10 @@ export function ExpoBoothClient({ business, profile }: Props) {
   const t = EXPO_TRANSLATIONS[lang] || EXPO_TRANSLATIONS.vi;
 
   const brandName = getExpoBrandName(business, profile, lang);
+  const brand = formatStandeeBrandName(
+    getExpoBrandName(business, profile, 'vi'),
+    getExpoBrandName(business, profile, 'en')
+  );
   const eventName = getExpoEventName(profile, lang);
 
   const [name, setName] = useState('');
@@ -178,16 +183,16 @@ export function ExpoBoothClient({ business, profile }: Props) {
 
           {/* Booth Badge & Logo */}
           <div className="flex flex-col items-center text-center mb-6">
-            <div className="mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40 tracking-wider uppercase">
-              <Building2 className="w-3.5 h-3.5" />
-              {profile.booth_number}
+            <div className="mb-3 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-amber-400/15 text-amber-300 border border-amber-400/30 tracking-wider uppercase shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>{lang === 'vi' ? 'Hồ Sơ Doanh Nghiệp Số' : 'Digital Business Pass'}</span>
             </div>
 
             {business.logo_url ? (
               <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-white p-2 shadow-xl ring-2 ring-amber-500/30 mb-3">
                 <Image
                   src={business.logo_url}
-                  alt={brandName}
+                  alt={brand.primary}
                   fill
                   unoptimized
                   className="object-contain"
@@ -196,13 +201,18 @@ export function ExpoBoothClient({ business, profile }: Props) {
               </div>
             ) : (
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-black text-2xl flex items-center justify-center shadow-lg mb-3">
-                {brandName.slice(0, 2).toUpperCase()}
+                {brand.primary.replace(/[^a-zA-Z0-9]/g, '').slice(0, 2).toUpperCase() || '1B'}
               </div>
             )}
 
-            <h1 className="text-2xl font-black tracking-tight text-white mb-1">
-              {brandName}
+            <h1 className="text-2xl font-black tracking-tight text-white mb-1 [text-wrap:balance]">
+              {brand.primary}
             </h1>
+            {brand.secondary && (
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 [text-wrap:balance]">
+                {brand.secondary}
+              </p>
+            )}
             <p className="text-xs text-slate-300 max-w-xs line-clamp-3">
               {displayDescription}
             </p>
@@ -354,7 +364,7 @@ export function ExpoBoothClient({ business, profile }: Props) {
             className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-amber-400 transition-colors py-1 px-3 rounded-full hover:bg-slate-900 border border-transparent hover:border-slate-800"
           >
             <Lock className="w-3 h-3" />
-            <span>Quản Trị Gian Hàng (CRM Live)</span>
+            <span>Quản Trị Mini-CRM (Live)</span>
           </Link>
 
           <button
@@ -363,11 +373,11 @@ export function ExpoBoothClient({ business, profile }: Props) {
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400/90 hover:text-amber-300 transition-colors py-1.5 px-3.5 rounded-full hover:bg-slate-900 border border-amber-500/30 cursor-pointer"
           >
             <Sparkles className="w-3 h-3 text-amber-400" />
-            <span>Liên Hệ 1Booking Expo Pass</span>
+            <span>Liên Hệ 1Booking Digital Pass</span>
           </button>
 
           <p className="text-[10px] text-slate-600">
-            Powered by 1Booking Expo Pass
+            Powered by 1Booking.Asia
           </p>
         </div>
       </main>
