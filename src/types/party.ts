@@ -152,6 +152,27 @@ export function getPerkLabel(idOrCustom: string): string {
   return getLabelById(PARTY_PERKS, idOrCustom);
 }
 
+export function formatPartyPriceToK(n: number): string {
+  if (n >= 1000000) {
+    return `${(n / 1000000).toFixed(1).replace('.0', '')}tr`;
+  }
+  if (n >= 1000) {
+    return `${Math.round(n / 1000)}k`;
+  }
+  return `${Math.round(n)} đ`;
+}
+
+export function formatShortPartyPrice(min?: number | null, max?: number | null): string {
+  if (!min && !max) return 'Liên hệ';
+  if (min && max) {
+    return `${formatPartyPriceToK(min)} - ${formatPartyPriceToK(max)} đ`;
+  }
+  if (min) {
+    return `Từ ${formatPartyPriceToK(min)} đ`;
+  }
+  return `${formatPartyPriceToK(max!)} đ`;
+}
+
 export const DEFAULT_PARTY_PROFILE_VALUES = {
   min_guests: 10,
   max_guests: 200,

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { PartyVenue, getPerkLabel } from '@/types/party';
+import { PartyVenue, getPerkLabel, formatShortPartyPrice } from '@/types/party';
 import { MapPin, Users, Wine, Sparkles, ExternalLink, Map as MapIcon } from 'lucide-react';
 
 interface VenueListViewProps {
@@ -60,8 +60,7 @@ export default function VenueListView({
 
         const pMin = typeof venue.price_min === 'number' ? venue.price_min : Number(String(venue.price_min || '').replace(/[^\d]/g, '')) || 250000;
         const pMax = typeof venue.price_max === 'number' ? venue.price_max : Number(String(venue.price_max || '').replace(/[^\d]/g, '')) || 650000;
-        const toK = (n: number) => (n >= 1000000 ? `${(n / 1000000).toFixed(1).replace('.0', '')}tr` : `${Math.round(n / 1000)}k`);
-        const priceFormatted = `${toK(pMin)} - ${toK(pMax)} đ`;
+        const priceFormatted = formatShortPartyPrice(pMin, pMax);
 
         const coords = venue.map_coordinates;
         const distance =

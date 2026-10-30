@@ -219,7 +219,7 @@ export default function MapView({
         center: lngLat,
         zoom: isMobile ? 15.2 : 15.8,
         pitch: isMobile ? 30 : 55,
-        offset: isMobile ? [0, -110] : [0, 0], // Dịch tâm ghim lên nửa trên màn hình để không bị BottomSheet che khuất
+        offset: isMobile ? [0, -110] : [-80, 0], // Mobile: đẩy lên trên tránh BottomSheet; Desktop: căn giữa vùng trống ngoài Side Panel
         duration: 900,
         essential: true,
       });

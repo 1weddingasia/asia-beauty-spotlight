@@ -14,6 +14,7 @@ import {
   getSpaceLabel,
   getCuisineLabel,
   getPerkLabel,
+  formatShortPartyPrice,
 } from '@/types/party';
 import {
   Users,
@@ -165,18 +166,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   const displayPhone = venue.phone || venue.page_content?.phone || 'Đang cập nhật';
   const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
-  
-  // Format giá ngắn gọn không vỡ layout trên màn hình nhỏ (tính toán thuần túy, không vi phạm React Hook)
-  const minP = venue.price_min;
-  const maxP = venue.price_max;
-  const toK = (n: number) => (n >= 1000000 ? `${(n / 1000000).toFixed(1).replace('.0', '')}tr` : `${Math.round(n / 1000)}k`);
-  const shortPriceFormatted = (!minP && !maxP)
-    ? 'Liên hệ'
-    : (minP && maxP)
-    ? `${toK(minP)} - ${toK(maxP)} đ`
-    : minP
-    ? `Từ ${toK(minP)} đ`
-    : `${toK(maxP!)} đ`;
+  const shortPriceFormatted = formatShortPartyPrice(venue.price_min, venue.price_max);
 
   // Look up labels
   const spaceLabels = (venue.spaces_and_amenities || []).map(getSpaceLabel).filter(Boolean);
@@ -585,7 +575,8 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-bold text-slate-900 text-xs">{m.name}</span>
                         <span className="font-black text-rose-600 text-xs">
-                          {m.price?.toLocaleString('vi-VN')} đ{m.pax ? ` / bàn ${m.pax}k` : ''}
+                          {m.price ? `${m.price.toLocaleString('vi-VN')} đ` : 'Liên hệ'}
+                          {m.pax ? ` / bàn ${m.pax} người` : ''}
                         </span>
                       </div>
                       {m.dishes && m.dishes.length > 0 && (
