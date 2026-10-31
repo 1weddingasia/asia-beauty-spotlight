@@ -228,10 +228,39 @@
 .maplibregl-marker {
   cursor: pointer;
   will-change: transform;
+  width: auto !important;
+  height: auto !important;
 }
 
 /* 🔍 CHỐNG RỐI BẢN ĐỒ & TRÀN CHỮ (Ultra-Clean Map & Zero-Clutter Pin System):
- * 1. Ẩn hoàn toàn deal-badge dài mặc định để tránh 50+ hộp khuyến mãi đè kín bản đồ.
+ * 1. Đảm bảo marker luôn co giãn theo nội dung, không bao giờ bị dãn ngang 100% bản đồ. */
+.venue-marker-container {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: max-content !important;
+  max-width: 200px !important;
+  white-space: nowrap !important;
+  pointer-events: auto !important;
+}
+
+.venue-pin-inner {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: max-content !important;
+  white-space: nowrap !important;
+}
+
+.venue-pin-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: max-content !important;
+  max-width: 190px !important;
+  white-space: nowrap !important;
+}
+
+/* 2. Ẩn hoàn toàn deal-badge dài mặc định để tránh 50+ hộp khuyến mãi đè kín bản đồ.
  *    Deal badge CHỈ xuất hiện khi di chuột (hover) hoặc khi bấm chọn (selected). */
 .venue-deal-badge {
   display: none !important;
@@ -242,7 +271,7 @@
   z-index: 100 !important;
 }
 
-/* 2. Khi zoom xa (< 14.0), ghim tự động hiển thị tên nhà hàng ngắn gọn và thanh thoát.
+/* 3. Khi zoom xa (< 14.0), ghim tự động hiển thị tên nhà hàng ngắn gọn và thanh thoát.
  *    Ẩn dòng giá để ghim nhỏ gọn không đè chữ nhau nhưng vẫn nhận diện được ngay quán!
  *    Khi hover hoặc click, ghim tự động bung rộng đầy đủ cả dòng giá và ưu đãi! */
 .map-zoom-far .venue-pin-price {

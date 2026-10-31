@@ -41,6 +41,7 @@ export default function MapView({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<{ [id: string]: maplibregl.Marker }>({});
   const userMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const [isMapReady, setIsMapReady] = React.useState(false);
 
   // 1. Khởi tạo MapLibre một lần duy nhất
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function MapView({
     handleZoom();
 
     map.on('load', () => {
+      setIsMapReady(true);
       // 🌟 Tinh chỉnh tone Warm Luxury Light (Sáng sang trọng ấm cúng)
       try {
         if (map.getLayer('background')) {
@@ -132,13 +134,14 @@ export default function MapView({
       markersRef.current = {};
       map.remove();
       mapRef.current = null;
+      setIsMapReady(false);
     };
   }, []);
 
   // 2. Đồng bộ Markers khi danh sách quán hoặc bộ lọc thay đổi
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !isMapReady) return;
 
     // Xóa markers cũ không còn trong venues
     const currentVenueIds = new Set(venues.map((v) => v.id));
@@ -189,14 +192,14 @@ export default function MapView({
           });
         });
 
-        const marker = new maplibregl.Marker({ element: el })
+        const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
           .setLngLat(lngLat)
           .addTo(map);
 
         markersRef.current[venue.id] = marker;
       }
     });
-  }, [venues, filteredVenueIds, onSelectVenue]);
+  }, [isMapReady, venues, filteredVenueIds, onSelectVenue]);
 
   // 3. Khi selectedVenue thay đổi -> Fly camera & làm nổi bật marker quán đó
   useEffect(() => {
