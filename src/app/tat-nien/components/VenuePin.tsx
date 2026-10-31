@@ -26,7 +26,13 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
     name.includes('Palace') ||
     name.includes('Adora') ||
     name.includes('Diamond') ||
-    name.includes('Gala')
+    name.includes('Gala') ||
+    name.includes('Metropole') ||
+    name.includes('Asiana') ||
+    name.includes('Capella') ||
+    name.includes('Đệ Nhất') ||
+    name.includes('First Hotel') ||
+    name.includes('Én')
   ) {
     return {
       label: 'Sảnh tiệc lớn',
@@ -35,7 +41,7 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
     };
   }
 
-  // 2. Hải sản & Hầm rượu tiệc
+  // 2. Hải sản & Hầm rượu tiệc / Bia thủ công
   if (
     type === 'seafood_party' ||
     name.includes('Hải Sản') ||
@@ -46,7 +52,9 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
     name.includes('Bến Thuyền') ||
     name.includes('Ngọc Sương') ||
     name.includes('Dìn Ký') ||
-    name.includes('Quá Ngon')
+    name.includes('Quá Ngon') ||
+    name.includes('Phố 79') ||
+    name.includes('Hoa Viên')
   ) {
     return {
       label: 'Hải sản & Tiệc VIP',
@@ -88,9 +96,12 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
  */
 export function getShortVenueName(fullName: string): string {
   if (!fullName) return '';
-  const s = fullName
-    .replace(/^(Nhà\s+Hàng|Khu\s+Du\s+Lịch|Trung\s+Tâm\s+Hội\s+Nghị\s*(&|\+)?\s*Sảnh\s+Tiệc|Trung\s+Tâm|Ẩm\s+Thực|Hải\s+Sản)\s+/i, '')
+  let s = fullName
+    .replace(/^(Nhà\s+Hàng|Khu\s+Du\s+Lịch|Trung\s+Tâm\s+Hội\s+Nghị\s*(&|\+)?\s*(Tiệc\s+Cưới|Sảnh\s+Tiệc)?|Trung\s+Tâm|Ẩm\s+Thực|Làng\s+Ẩm\s+Thực|Hải\s+Sản|Khách\s+Sạn)\s+/i, '')
     .trim();
+
+  // Rút gọn các hậu tố dài
+  s = s.replace(/\s*(&|\+)?\s*Event\s+Space/i, '');
 
   const parts = s.split(/\s*[-–]\s*/);
   if (parts.length > 1) {
