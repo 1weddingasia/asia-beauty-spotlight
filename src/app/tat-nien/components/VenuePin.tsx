@@ -32,6 +32,11 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
     name.includes('Capella') ||
     name.includes('Đệ Nhất') ||
     name.includes('First Hotel') ||
+    name.includes('Hương Phố') ||
+    name.includes('Chateau') ||
+    name.includes('Melisa') ||
+    name.includes('Kalina') ||
+    name.includes('Sun Palace') ||
     name.includes('Én')
   ) {
     return {
@@ -70,6 +75,7 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
     name.includes('Bình Quới') ||
     name.includes('Tân Cảng') ||
     name.includes('Cù Lao') ||
+    name.includes('Bến Xưa') ||
     name.includes('Thoáng Việt') ||
     name.includes('Đông Hồ') ||
     name.includes('Chay Garden')
@@ -97,23 +103,26 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
 export function getShortVenueName(fullName: string): string {
   if (!fullName) return '';
   let s = fullName
-    .replace(/^(Nhà\s+Hàng|Khu\s+Du\s+Lịch|Trung\s+Tâm\s+Hội\s+Nghị\s*(&|\+)?\s*(Tiệc\s+Cưới|Sảnh\s+Tiệc)?|Trung\s+Tâm|Ẩm\s+Thực|Làng\s+Ẩm\s+Thực|Hải\s+Sản|Khách\s+Sạn)\s+/i, '')
+    .replace(/^(Nhà\s+Hàng|Khu\s+Du\s+Lịch|Trung\s+Tâm\s+(Hội\s+Nghị\s*(&|\+)?\s*(Tiệc\s+Cưới|Sảnh\s+Tiệc)?|Tiệc\s+Cưới\s*(&|\+)?\s*(Hội\s+Nghị)?|Sự\s+Kiện)?|Trung\s+Tâm|Ẩm\s+Thực|Làng\s+Ẩm\s+Thực|Hải\s+Sản|Khách\s+Sạn)\s+/i, '')
     .trim();
 
   // Rút gọn các hậu tố dài
-  s = s.replace(/\s*(&|\+)?\s*Event\s+Space/i, '');
+  s = s.replace(/\s*(&|\+)?\s*Event\s+Space/i, '').trim();
 
   const parts = s.split(/\s*[-–]\s*/);
   if (parts.length > 1) {
     const mainBrand = parts[0].trim();
     const branch = parts[1].trim();
 
-    if (mainBrand.includes('Quê Nhà') || mainBrand.includes('Hàng Dương') || mainBrand.includes('Adora')) {
+    if (mainBrand.includes('Quê Nhà') || mainBrand.includes('Hàng Dương') || mainBrand.includes('Adora') || mainBrand.includes('White Palace')) {
       if (branch.includes('Quận 1') || branch.includes('Ngô Đức Kế')) return `${mainBrand} (Q.1)`;
       if (branch.includes('Quận 3') || branch.includes('Phạm Ngọc Thạch')) return `${mainBrand} (Q.3)`;
-      if (branch.includes('Quận 7') || branch.includes('Đường 65')) return `${mainBrand} (Q.7)`;
+      if (branch.includes('Quận 7') || branch.includes('Đường 65') || branch.includes('Nguyễn Văn Linh')) return `${mainBrand} (Q.7)`;
       if (branch.includes('Quận 10') || branch.includes('Thành Thái')) return `${mainBrand} (Q.10)`;
       if (branch.includes('Quận 5') || branch.includes('Grand View')) return `${mainBrand} (Q.5)`;
+      if (branch.includes('Quận 12') || branch.includes('Nguyễn Văn Quá')) return `${mainBrand} (Q.12)`;
+      if (branch.includes('Bình Tân') || branch.includes('Võ Văn Kiệt')) return `${mainBrand} (Bình Tân)`;
+      if (branch.includes('Hoàng Văn Thụ') || branch.includes('Phú Nhuận')) return `${mainBrand} (Phú Nhuận)`;
     }
     return mainBrand;
   }
