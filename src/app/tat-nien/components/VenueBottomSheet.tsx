@@ -251,6 +251,14 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
           </div>
         )}
 
+        {/* Chốt chặn an toàn (Disclaimer) */}
+        <div className="bg-amber-50/90 border border-amber-200/90 rounded-2xl p-3 flex items-start gap-2.5 shadow-2xs text-left">
+          <span className="text-sm shrink-0 mt-0.5">⚠️</span>
+          <div className="text-[11px] sm:text-xs text-slate-700 leading-relaxed">
+            <strong className="text-amber-950 font-bold">Lưu ý:</strong> Chính sách ưu đãi (tặng bia, phòng VIP, karaoke, màn LED, âm thanh...) áp dụng tùy theo quy mô số lượng bàn và thời điểm đặt cọc của từng nhà hàng. Vui lòng liên hệ Hotline/Zalo của quán để nhận xác nhận chính thức cho đoàn.
+          </div>
+        </div>
+
         {/* Quick Metrics Grid (High-contrast Slate & Accent) */}
         <div className="grid grid-cols-3 gap-2">
           <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-center text-left shadow-xs">

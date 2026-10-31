@@ -48,6 +48,14 @@ export default function VenueListView({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 pb-28">
+      {/* Câu chốt chặn an toàn (Disclaimer) */}
+      <div className="col-span-full bg-amber-50/95 border border-amber-200/90 rounded-2xl p-3 sm:p-3.5 flex items-start gap-2.5 shadow-xs">
+        <span className="text-base shrink-0 mt-0.5">⚠️</span>
+        <p className="text-[11.5px] sm:text-xs text-slate-700 leading-relaxed text-left">
+          <strong className="text-amber-950 font-bold">Lưu ý:</strong> Chính sách ưu đãi (tặng bia, phòng VIP, karaoke, màn LED, âm thanh...) áp dụng tùy theo quy mô số lượng bàn và thời điểm đặt cọc của từng nhà hàng. Vui lòng liên hệ Hotline/Zalo của quán để nhận xác nhận chính thức cho đoàn.
+        </p>
+      </div>
+
       {venues.map((venue) => {
         const banners = venue.page_content?.banners || [];
         const gallery = venue.page_content?.gallery || [];

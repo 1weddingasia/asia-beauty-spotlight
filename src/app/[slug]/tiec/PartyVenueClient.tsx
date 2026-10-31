@@ -355,6 +355,14 @@ export default function PartyVenueClient({
           </div>
         )}
 
+        {/* Câu chốt chặn an toàn (Disclaimer) */}
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-3xl p-4 sm:p-5 flex items-start gap-3 backdrop-blur-md">
+          <span className="text-xl shrink-0 mt-0.5">⚠️</span>
+          <div className="text-xs sm:text-sm text-amber-200/90 leading-relaxed">
+            <strong className="text-amber-300 font-bold">Lưu ý:</strong> Chính sách ưu đãi (tặng bia, phòng VIP, karaoke, màn LED, âm thanh...) áp dụng tùy theo quy mô số lượng bàn và thời điểm đặt cọc của từng nhà hàng. Vui lòng liên hệ Hotline/Zalo của quán để nhận xác nhận chính thức cho đoàn.
+          </div>
+        </div>
+
         {/* Giới thiệu không gian tiệc */}
         {partyProfile.party_description && (
           <div className="bg-[#0b1329] border border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-3">
