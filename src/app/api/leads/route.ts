@@ -60,12 +60,14 @@ async function isRateLimited(ip: string): Promise<boolean> {
 
 // Zod schema for input validation and sanitization
 const LeadSchema = z.object({
-  business_id: z.string().uuid("ID doanh nghiệp không hợp lệ"),
-  customer_name: z.string().max(100).optional().default('Khách vãng lai'),
-  customer_phone: z.string().regex(/^(03|05|07|08|09)\d{8}$/, "Số điện thoại không hợp lệ"),
-  deal_name: z.string().max(200).optional().default('Nhận Ưu Đãi Chung'),
-  cross_sell_items: z.string().max(500).optional().nullable(),
-  booking_time: z.string().max(200).optional().nullable()
+  business_id: z.string().uuid("ID doanh nghiệp không hợp lệ").optional().nullable(),
+  customer_name: z.string().max(100, "Tên không được vượt quá 100 ký tự").optional().default('Khách vãng lai'),
+  customer_phone: z.string().regex(/^(03|05|07|08|09)\d{8}$/, "Số điện thoại Việt Nam không hợp lệ (10 chữ số)"),
+  deal_name: z.string().max(200, "Tên ưu đãi quá dài").optional().default('Nhận Ưu Đãi Chung'),
+  deal_value: z.number().optional().nullable(),
+  cross_sell_items: z.string().max(500, "Ghi chú quá dài (tối đa 500 ký tự)").optional().nullable(),
+  booking_time: z.string().max(200, "Thời gian hẹn quá dài").optional().nullable(),
+  party_details: z.any().optional().nullable(),
 });
 
 
@@ -151,15 +153,23 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     
+    // Normalization & Fallbacks
+    if (!body.business_id) {
+      body.business_id = body.venue_id || body.party_details?.venue_id || null;
+    }
+
     // Validate inputs using Zod
     if (body.customer_phone) {
-        body.customer_phone = body.customer_phone.replace(/\D/g, '');
+      body.customer_phone = String(body.customer_phone).replace(/\D/g, '');
     }
     
     const parsedData = LeadSchema.safeParse(body);
     
     if (!parsedData.success) {
-      const errorMessage = parsedData.error.issues?.[0]?.message || 'Dữ liệu không hợp lệ';
+      const issue = parsedData.error.issues?.[0];
+      const errorMessage = issue?.message && issue.message !== 'Required' && !issue.message.startsWith('Invalid input')
+        ? issue.message
+        : `Dữ liệu không hợp lệ (${issue?.path?.join('.') || 'thông tin thiếu'}). Vui lòng kiểm tra lại.`;
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
@@ -168,24 +178,49 @@ export async function POST(req: Request) {
     const supabase = await createAdminClient();
     
     // Fetch business to get name and telegram_chat_id
-    const { data: business } = await supabase
-      .from('businesses')
-      .select('name, category_slug, telegram_chat_id:page_content->>telegram_chat_id, zalo_owner_id:page_content->>zalo_owner_id, industry:page_content->>industry')
-      .eq('id', business_id)
-      .single();
+    let business: {
+      name?: string | null;
+      category_slug?: string | null;
+      telegram_chat_id?: string | null;
+      zalo_owner_id?: string | null;
+      industry?: string | null;
+    } | null = null;
 
-    if (!business) {
-      return NextResponse.json({ error: 'Doanh nghiệp không tồn tại' }, { status: 404 });
+    if (business_id) {
+      const { data } = await supabase
+        .from('businesses')
+        .select('name, category_slug, telegram_chat_id:page_content->>telegram_chat_id, zalo_owner_id:page_content->>zalo_owner_id, industry:page_content->>industry')
+        .eq('id', business_id)
+        .single();
+
+      if (!data) {
+        return NextResponse.json({ error: 'Doanh nghiệp không tồn tại' }, { status: 404 });
+      }
+      business = data;
+    } else {
+      business = {
+        name: 'Hệ Thống 1Booking & 1Beauty',
+        category_slug: 'general',
+        telegram_chat_id: process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID || null,
+        zalo_owner_id: process.env.ZALO_ADMIN_ID || null,
+        industry: 'other'
+      };
     }
 
     // Fetch customer or create if not exists
     let customerId;
-    const { data: existingCustomer } = await supabase
+    let customerQuery = supabase
       .from('business_customers')
       .select('id')
-      .eq('business_id', business_id)
-      .eq('phone', cleanPhone)
-      .single();
+      .eq('phone', cleanPhone);
+
+    if (business_id) {
+      customerQuery = customerQuery.eq('business_id', business_id);
+    } else {
+      customerQuery = customerQuery.is('business_id', null);
+    }
+
+    const { data: existingCustomer } = await customerQuery.maybeSingle();
 
     if (existingCustomer) {
       customerId = existingCustomer.id;
@@ -193,7 +228,7 @@ export async function POST(req: Request) {
       const { data: newCustomer, error: customerError } = await supabase
         .from('business_customers')
         .insert({
-          business_id,
+          business_id: business_id || null,
           phone: cleanPhone,
           name: customer_name || 'Khách vãng lai',
           total_visits: 0,
@@ -210,12 +245,16 @@ export async function POST(req: Request) {
     }
 
     // --- MINI-CRM: Prevent double bookings ---
-    const { data: previousVisits } = await supabase
+    let prevVisitsQuery = supabase
       .from('business_leads')
       .select('id, created_at, deal_name')
-      .eq('business_id', business_id)
-      .eq('customer_id', customerId)
-      .order('created_at', { ascending: false });
+      .eq('customer_id', customerId);
+
+    if (business_id) {
+      prevVisitsQuery = prevVisitsQuery.eq('business_id', business_id);
+    }
+
+    const { data: previousVisits } = await prevVisitsQuery.order('created_at', { ascending: false });
 
     if (previousVisits) {
       const isBooking = !!booking_time;

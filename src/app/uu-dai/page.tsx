@@ -1,12 +1,13 @@
 import { PageShell } from "@/components/site/Layout";
 import Image from "next/image";
-import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight, UtensilsCrossed, Map, BookOpen, HeartPulse, MoreHorizontal, LayoutGrid, Camera, Activity, Gem, Home, ShoppingBag, Swords, Stethoscope, Car, Dumbbell, PawPrint, Wrench, BriefcaseBusiness } from "lucide-react";
+import { Sparkles, Ticket, Search, ChevronLeft, ChevronRight, UtensilsCrossed, Map, BookOpen, HeartPulse, MoreHorizontal, LayoutGrid, Camera, Activity, Gem, Home, ShoppingBag, Swords, Stethoscope, Car, Dumbbell, PawPrint, Wrench, BriefcaseBusiness, Eye, Flame } from "lucide-react";
 import Link from "next/link";
 import { createStaticClient } from "@/utils/supabase/server";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
 import { isOfferActive } from "@/lib/date-utils";
 import { headers } from "next/headers";
 import { getSiteConfig } from "@/config/site-config";
+import { getStableViews, formatViews, getClaimedCount, getLiveViewers } from "@/lib/views-counter";
 
 // Trang này là dynamic vì phụ thuộc vào hostname để phân biệt thương hiệu
 export const dynamic = "force-dynamic";
@@ -182,6 +183,19 @@ export default async function OffersPage({
               <Search className="size-5" />
             </button>
           </form>
+
+          {/* Live View & Urgency Bar */}
+          <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 mx-auto text-xs text-white/95 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 shadow-lg">
+            <span className="flex items-center gap-1.5 font-bold text-amber-300">
+              <Eye className="size-3.5 text-amber-400" />
+              <span>18.640+ lượt xem tháng này</span>
+            </span>
+            <span className="text-white/40 hidden sm:inline">•</span>
+            <span className="flex items-center gap-1.5 text-emerald-300 font-semibold">
+              <span className="inline-block size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>{getLiveViewers('global-offers', 28, 54)} người đang săn deal trực tuyến</span>
+            </span>
+          </div>
         </div>
       </section>
 
@@ -232,50 +246,66 @@ export default async function OffersPage({
         {paginatedOffers.length > 0 ? (
           <>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {paginatedOffers.map((o: any, i: number) => (
-                <Link
-                  key={`${o.business.slug}-${i}`}
-                  href={`/${o.business.slug}`}
-                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8 hover:-translate-y-1"
-                >
-                  <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
-                    <Ticket className="size-32 text-gold" />
-                  </div>
-                  <div className="relative flex-1">
-                    <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase shadow-sm">
-                      {o.badge || o.discount || "Ưu đãi HOT"}
-                    </span>
-                    <h3 className="mt-5 max-w-[280px] font-display text-2xl line-clamp-2">
-                      {o.title}
-                    </h3>
-                    <p className="mt-3 text-sm text-muted-foreground line-clamp-3">
-                      {o.note || o.description}
-                    </p>
-                  </div>
-                  <div className="relative mt-8 border-t border-gold-soft pt-6">
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium uppercase tracking-wider text-ink">
-                      <span className="flex items-center gap-1.5 font-bold">
-                        <Sparkles className="size-3.5 text-gold" />
-                        {o.business.name}
-                      </span>
+              {paginatedOffers.map((o: any, i: number) => {
+                const seed = `${o.business.slug}-${o.title}-${i}`;
+                const cardViews = getStableViews(seed, 820, 3600);
+                const cardClaimed = getClaimedCount(seed, 32, 160);
+
+                return (
+                  <Link
+                    key={`${o.business.slug}-${i}`}
+                    href={`/${o.business.slug}`}
+                    className="group relative flex flex-col overflow-hidden rounded-3xl border border-gold-soft bg-champagne p-6 transition-all hover:border-gold hover:shadow-card md:p-8 hover:-translate-y-1"
+                  >
+                    <div className="absolute top-0 right-0 p-8 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:opacity-20">
+                      <Ticket className="size-32 text-gold" />
                     </div>
-                    {(o.promo_price || o.original_price) && (
-                      <div className="mt-3 flex items-end gap-3">
-                        {o.original_price && (
-                          <span className="text-sm line-through text-muted-foreground">
-                            {o.original_price}
-                          </span>
-                        )}
-                        {o.promo_price && (
-                          <span className="text-2xl font-black text-red-600 leading-none">
-                            {o.promo_price}
-                          </span>
-                        )}
+                    <div className="relative flex-1">
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className="bg-gradient-gold rounded-full px-3 py-1 text-[11px] font-semibold tracking-widest text-ink uppercase shadow-sm">
+                          {o.badge || o.discount || "Ưu đãi HOT"}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-900/90 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-400/40">
+                          <Eye className="size-3 text-amber-700" />
+                          <span>{formatViews(cardViews)} xem</span>
+                        </span>
                       </div>
-                    )}
-                  </div>
-                </Link>
-              ))}
+                      <h3 className="mt-2 max-w-[280px] font-display text-2xl line-clamp-2">
+                        {o.title}
+                      </h3>
+                      <p className="mt-3 text-sm text-muted-foreground line-clamp-3">
+                        {o.note || o.description}
+                      </p>
+                    </div>
+                    <div className="relative mt-8 border-t border-gold-soft pt-6">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-medium uppercase tracking-wider text-ink">
+                        <span className="flex items-center gap-1.5 font-bold">
+                          <Sparkles className="size-3.5 text-gold" />
+                          {o.business.name}
+                        </span>
+                        <span className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold lowercase">
+                          <Flame className="size-3 text-amber-600" />
+                          <span>{cardClaimed} đã nhận</span>
+                        </span>
+                      </div>
+                      {(o.promo_price || o.original_price) && (
+                        <div className="mt-3 flex items-end gap-3">
+                          {o.original_price && (
+                            <span className="text-sm line-through text-muted-foreground">
+                              {o.original_price}
+                            </span>
+                          )}
+                          {o.promo_price && (
+                            <span className="text-2xl font-black text-red-600 leading-none">
+                              {o.promo_price}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Pagination Controls */}

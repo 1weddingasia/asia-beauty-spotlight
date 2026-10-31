@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { MessageCircle } from "lucide-react";
 import { PageShell } from "@/components/site/Layout";
 import { PlatformChatWidget } from "@/components/site/PlatformChatWidget";
 
@@ -96,6 +97,25 @@ export default function ContactPageClient() {
         </form>
 
         <aside className="space-y-6">
+          <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-6 space-y-3">
+            <h3 className="font-display text-lg text-blue-600 font-bold flex items-center gap-2">
+              <MessageCircle className="size-5 fill-blue-500 text-blue-500" />
+              <span>Hỗ trợ nhanh qua Zalo</span>
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Bạn cần giải đáp hoặc kết nối ngay với chuyên viên tư vấn? Hãy nhắn tin trực tiếp qua Zalo để được hỗ trợ tức thì.
+            </p>
+            <a
+              href="https://zalo.me/0918731411"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-[#0068FF] hover:bg-[#0054cc] text-white font-bold text-xs shadow-md transition-all hover:scale-[1.02] active:scale-95"
+            >
+              <MessageCircle className="size-4 fill-white" />
+              <span>Chat Zalo: 0918.731.411</span>
+            </a>
+          </div>
+
           <div className="rounded-xl border border-border bg-card p-6">
             <h3 className="font-display text-xl text-gold">Tại sao chọn 1Beauty?</h3>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">

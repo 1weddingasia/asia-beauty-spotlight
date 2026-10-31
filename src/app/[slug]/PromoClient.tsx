@@ -21,6 +21,8 @@ import { PARTY_SPACES, PARTY_PERKS, type BusinessPartyProfile, isFnBCategory } f
 import { getExpoEventName, type ExpoLanguage } from "@/types/expo";
 import { useAppLanguage } from "@/lib/use-app-language";
 import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
+import { getStableViews, formatViews, getLiveViewers } from "@/lib/views-counter";
+import { resolveZaloContact } from "@/lib/zalo-contact";
 
 const ChatWidget = dynamic(() => import("@/components/site/ChatWidget").then(mod => mod.ChatWidget), {
   ssr: false, // Tắt SSR cho Chat Widget để giảm gánh nặng server và tải nhanh trang
@@ -298,8 +300,14 @@ export default function PromoClient({
   const rawHotline = business.page_content?.phone || business.phone;
   const hotline = rawHotline || "(Chưa công khai)";
   const hotlineDigits = rawHotline ? rawHotline.replace(/[^0-9]/g, '') : '';
-  const zaloNumber = business.zalo || hotlineDigits;
-  const zaloLink = zaloNumber ? (zaloNumber.startsWith('http') ? zaloNumber : `https://zalo.me/${zaloNumber}`) : '#';
+  const zaloContact = resolveZaloContact(business);
+  const zaloLink = zaloContact.venueZaloUrl;
+  const zaloDisplay = zaloContact.venueZaloDisplay;
+
+  // Stable Views & Live Urgency
+  const seedKey = business.slug || business.id || business.name || 'business-page';
+  const bizViews = getStableViews(seedKey, 1400, 5200);
+  const bizLiveViewers = getLiveViewers(seedKey, 14, 42);
   let mapSrc = null;
   if (typeof business.page_content?.map_embed === 'string') {
     const srcMatch = business.page_content.map_embed.match(/src="([^"]+)"/);
@@ -416,6 +424,19 @@ export default function PromoClient({
           <p className="text-champagne/90 text-sm md:text-lg flex items-center gap-2 mb-2 max-w-2xl text-center">
             <MapPin className="size-5 shrink-0" /> {business.address || "Đang cập nhật địa chỉ"}
           </p>
+
+          {/* Live Views & Urgency Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+            <span className="inline-flex items-center gap-1.5 bg-black/60 border border-white/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-full backdrop-blur-md shadow-sm">
+              <Eye className="size-3.5 text-amber-400" />
+              <span>{formatViews(bizViews)} lượt xem</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-md shadow-sm">
+              <span className="inline-block size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>{bizLiveViewers} người đang quan tâm</span>
+            </span>
+          </div>
+
           {/* Category & Location Tags */}
           {((business.categories_list?.length > 0) || (business.locations_list?.length > 0)) && (
             <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
@@ -855,6 +876,20 @@ export default function PromoClient({
                   <Phone className="size-4 md:size-5 text-gold shrink-0" />
                   <span className="text-xs md:text-sm font-medium">{hotline}</span>
                 </div>
+
+                {zaloLink && zaloLink !== '#' && (
+                  <div className="pt-1">
+                    <a
+                      href={zaloLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-3 px-4 rounded-2xl bg-[#0068FF] hover:bg-[#0054cc] text-white font-bold text-xs md:text-sm shadow-md shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <MessageCircle className="size-4 md:size-5 fill-white text-white" />
+                      <span>Trò Chuyện Zalo ({zaloDisplay})</span>
+                    </a>
+                  </div>
+                )}
 
                 {b.page_content?.price_range && (
                   <div className="flex items-center gap-3">
@@ -1315,6 +1350,17 @@ export default function PromoClient({
           >
             <Utensils className="size-4 text-amber-600" />
             <span className="font-black">Menu</span>
+          </a>
+        )}
+        {zaloLink && zaloLink !== '#' && (
+          <a
+            href={zaloLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#0068FF] hover:bg-[#0054cc] text-white font-bold text-xs px-3.5 py-3 rounded-xl flex items-center justify-center gap-1.5 shadow-sm active:scale-95 shrink-0"
+            title="Nhắn tin Zalo ngay"
+          >
+            <MessageCircle className="size-4 fill-white text-white" />
           </a>
         )}
         <button

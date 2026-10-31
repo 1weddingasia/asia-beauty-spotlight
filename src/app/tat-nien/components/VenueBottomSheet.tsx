@@ -35,8 +35,11 @@ import {
   Send,
   X,
   MessageCircle,
+  Eye,
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { getStableViews, formatViews } from '@/lib/views-counter';
+import { resolveZaloContact } from '@/lib/zalo-contact';
 
 interface VenueBottomSheetProps {
   venue: PartyVenue | null;
@@ -147,15 +150,27 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
       const partyDateStr = bookingDate.trim();
       const guestsCount = Number(bookingGuests) || venue.min_guests || 20;
 
+      const bookingInfo = partyDateStr
+        ? `Ngày tổ chức: ${partyDateStr} (${guestsCount} khách)`
+        : `Số lượng: ${guestsCount} khách`;
+
+      const requestNotes = [
+        `Yêu cầu tiệc: ${guestsCount} khách`,
+        partyDateStr ? `Ngày tổ chức: ${partyDateStr}` : '',
+        bookingNotes.trim() ? `Ghi chú: ${bookingNotes.trim()}` : ''
+      ].filter(Boolean).join('. ').slice(0, 480);
+
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          customer_name: bookingName.trim(),
+          business_id: venue.id,
+          customer_name: bookingName.trim().slice(0, 95),
           customer_phone: cleanPhone,
-          deal_name: `Đặt tiệc Tất Niên 2026: ${venue.name} (${guestsCount} khách)`,
+          deal_name: `Đặt tiệc Tất Niên 2026: ${venue.name} (${guestsCount} khách)`.slice(0, 190),
           deal_value: (venue.price_min || 300000) * guestsCount,
-          cross_sell_items: `Yêu cầu tiệc: ${guestsCount} khách. ${partyDateStr ? `Ngày tổ chức: ${partyDateStr}. ` : ''}${bookingNotes.trim() ? `Ghi chú: ${bookingNotes.trim()}` : ''}`,
+          booking_time: bookingInfo,
+          cross_sell_items: requestNotes,
           party_details: {
             venue_id: venue.id,
             venue_name: venue.name,
@@ -196,13 +211,10 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   const displayHeroImage = activeHero || defaultHeroImage;
 
-  const rawPhone = venue.phone || venue.page_content?.phone || '';
-  const cleanPhone = rawPhone.replace(/\D/g, '');
-  const displayPhone = rawPhone || 'Đang cập nhật';
-  const rawZalo = venue.zalo || venue.page_content?.zalo || rawPhone;
-  const cleanZalo = rawZalo.replace(/\D/g, '');
-  const zaloUrl = cleanZalo ? `https://zalo.me/${cleanZalo}` : null;
-  const telUrl = cleanPhone ? `tel:${cleanPhone}` : null;
+  const zaloContact = resolveZaloContact(venue);
+  const venueZaloUrl = zaloContact.venueZaloUrl;
+  const venueZaloDisplay = zaloContact.venueZaloDisplay;
+  const supportZaloUrl = zaloContact.supportZaloUrl;
   const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
   const shortPriceFormatted = formatShortPartyPrice(venue.price_min, venue.price_max);
 
@@ -213,6 +225,7 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   const rawMenuUrl = venue.party_menu_url || venue.page_content?.menu_url || null;
   const venueMenuUrl = rawMenuUrl && /^https?:\/\//.test(rawMenuUrl) ? rawMenuUrl : null;
+  const venueViews = getStableViews(venue.slug || venue.id || venue.name, 1800, 4800);
 
   // Shared inner content for both Desktop Side Panel and Mobile Drawer
   const renderDetailBody = () => (
@@ -247,6 +260,10 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                 {venue.num_vip_rooms} Phòng VIP
               </span>
             )}
+            <span className="bg-black/65 text-amber-300 border border-white/20 text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md shadow-xs flex items-center gap-1">
+              <Eye className="w-3 h-3 text-amber-400" />
+              <span>{formatViews(venueViews)} xem</span>
+            </span>
           </div>
 
           {/* Close button on desktop top-right of image */}
@@ -346,31 +363,22 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
             </div>
           </div>
 
-          {telUrl ? (
-            <a
-              href={telUrl}
-              className="bg-emerald-50/90 hover:bg-emerald-100 border border-emerald-200/90 rounded-2xl p-2.5 flex flex-col justify-center text-left shadow-xs transition-colors group cursor-pointer"
-              title={`Bấm để gọi ngay Hotline: ${displayPhone}`}
-            >
-              <div className="flex items-center gap-1.5 text-emerald-700 mb-1">
-                <Phone className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
-                <span className="text-[10px] font-bold">Hotline (Gọi)</span>
-              </div>
-              <div className="text-xs sm:text-sm font-black text-emerald-950 font-mono tracking-tight truncate group-hover:underline">
-                {displayPhone}
-              </div>
-            </a>
-          ) : (
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-center text-left shadow-xs">
-              <div className="flex items-center gap-1.5 text-slate-500 mb-1">
-                <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-[10px] font-semibold">Hotline</span>
-              </div>
-              <div className="text-xs sm:text-sm font-black text-slate-900 font-mono tracking-tight truncate">
-                {displayPhone}
-              </div>
+          {/* Nút Zalo Nhà Hàng liên kết trực tiếp database */}
+          <a
+            href={venueZaloUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-blue-50/90 hover:bg-blue-100 border border-blue-200/90 rounded-2xl p-2.5 flex flex-col justify-center text-left shadow-xs transition-colors group cursor-pointer"
+            title="Bấm để mở Zalo trò chuyện trực tiếp với nhà hàng"
+          >
+            <div className="flex items-center gap-1.5 text-[#0068FF] mb-1">
+              <MessageCircle className="w-3.5 h-3.5 text-[#0068FF] fill-[#0068FF] group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-bold">Zalo Nhà Hàng</span>
             </div>
-          )}
+            <div className="text-xs sm:text-sm font-black text-[#0047b3] tracking-tight truncate group-hover:underline">
+              Chat Trực Tiếp
+            </div>
+          </a>
         </div>
 
         {/* Form liên hệ đặt tiệc HOẶC Chi tiết quán */}
@@ -391,23 +399,33 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                   </p>
                   <div className="mt-3 p-3 bg-white rounded-xl border border-emerald-200 text-xs text-slate-700 text-left space-y-1 shadow-xs">
                     <div>🏛️ Nhà hàng: <strong className="text-slate-900">{venue.name}</strong></div>
-                    <div>📞 Hotline: <strong className="text-emerald-700 font-mono">{displayPhone}</strong></div>
+                    <div>💬 Zalo: <strong className="text-[#0068FF]">Sẵn sàng trao đổi</strong></div>
                     <div>👤 Khách liên hệ: <strong>{bookingName}</strong> ({bookingPhone})</div>
                     <div>👥 Số lượng: <strong className="text-rose-600">{bookingGuests} khách</strong></div>
                   </div>
                 </div>
-                <div className="flex gap-2 justify-center pt-2">
+                <div className="flex flex-col sm:flex-row gap-2 justify-center pt-2">
+                  <a
+                    href={venueZaloUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-[#0068FF] hover:bg-[#0054cc] text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-1.5"
+                    title="Mở Zalo trao đổi thực đơn & giữ sảnh ngay"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-white shrink-0" />
+                    <span>Mở Zalo Nhà Hàng</span>
+                  </a>
                   <button
                     type="button"
                     onClick={() => setShowBookingForm(false)}
                     className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition-all"
                   >
-                    Quay lại xem thông tin
+                    Quay lại
                   </button>
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm"
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition-all shadow-sm"
                   >
                     Đóng
                   </button>
@@ -513,31 +531,44 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
                   </div>
                 </div>
 
-                <div className="flex gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowBookingForm(false)}
-                    className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition-all shadow-xs"
+                <div className="pt-2 border-t border-slate-200/80 flex flex-col gap-2">
+                  <a
+                    href={venueZaloUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-3 rounded-xl bg-[#0068FF] hover:bg-[#0054cc] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 active:scale-[0.98]"
+                    title="Mở Zalo nhắn tin trực tiếp với nhà hàng"
                   >
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white text-xs font-black shadow-md transition-all active:scale-[0.98] disabled:opacity-50"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        <span>Đang gửi...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Gửi Đến Nhà Hàng</span>
-                      </>
-                    )}
-                  </button>
+                    <MessageCircle className="w-4 h-4 fill-white shrink-0" />
+                    <span>💬 Nhắn Zalo Nhà Hàng</span>
+                  </a>
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowBookingForm(false)}
+                      className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition-all shadow-xs"
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white text-xs font-black shadow-md transition-all active:scale-[0.98] disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Đang gửi...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Gửi Báo Giá & Nhận Zalo</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </form>
             )}
@@ -683,42 +714,42 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
       </div>
 
       {/* Fixed Bottom Action Bar */}
+      {/* Fixed Bottom Action Bar: 2 Nút Zalo (Nhà Hàng + CSKH) + Nút Đặt Báo Giá */}
       {!showBookingForm && (
         <div className="shrink-0 px-2.5 sm:px-3 pt-2.5 pb-6 sm:pb-3 bg-white border-t border-slate-200 flex items-center gap-1.5 sm:gap-2 z-20 shadow-md">
-          {/* Nút Gọi Quán Trực Tiếp (1-tap dial) */}
-          {telUrl && (
-            <a
-              href={telUrl}
-              className="flex items-center justify-center gap-1 px-2.5 sm:px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shrink-0 active:scale-95 shadow-xs"
-              title={`Gọi hotline ${displayPhone}`}
-            >
-              <Phone className="w-3.5 h-3.5 text-white" />
-              <span>Gọi Quán</span>
-            </a>
-          )}
+          {/* Nút 1: Chat Zalo Nhà Hàng */}
+          <a
+            href={venueZaloUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl bg-[#0068FF] hover:bg-[#0054cc] text-white text-xs font-bold transition-all shrink-0 active:scale-95 shadow-xs"
+            title={`Nhắn tin Zalo trực tiếp với nhà hàng (${venueZaloDisplay})`}
+          >
+            <MessageCircle className="w-3.5 h-3.5 fill-white text-white shrink-0" />
+            <span>Zalo Quán</span>
+          </a>
 
-          {/* Nút Chat Zalo Trực Tiếp (1-tap chat) */}
-          {zaloUrl && (
-            <a
-              href={zaloUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1 px-2.5 sm:px-3 py-2.5 rounded-xl bg-[#0068ff] hover:bg-[#0056d6] text-white text-xs font-bold transition-all shrink-0 active:scale-95 shadow-xs"
-              title="Mở Zalo nhắn tin trực tiếp với nhà hàng"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-white" />
-              <span>Chat Zalo</span>
-            </a>
-          )}
+          {/* Nút 2: Chat Zalo Trợ Lý 1Booking */}
+          <a
+            href={supportZaloUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1 px-2.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-black transition-all shrink-0 active:scale-95 shadow-xs"
+            title="Chat Zalo Trợ lý đặt tiệc 1Booking (0918.731.411)"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-black shrink-0" />
+            <span className="hidden sm:inline">Zalo</span>
+            <span>1Booking</span>
+          </a>
 
-          {/* Primary CTA: Form Đặt Tiệc */}
+          {/* Primary CTA: Form Nhận Báo Giá Tiệc */}
           <button
             type="button"
             onClick={() => setShowBookingForm(true)}
             className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 py-2.5 px-2.5 sm:px-3 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-black shadow-md shadow-rose-950/20 transition-all active:scale-[0.98]"
           >
             <CalendarCheck className="w-4 h-4 text-white shrink-0" />
-            <span className="truncate">🎉 Đặt Tiệc</span>
+            <span className="truncate">🎉 Nhận Báo Giá</span>
           </button>
 
           {/* Zalo Share */}

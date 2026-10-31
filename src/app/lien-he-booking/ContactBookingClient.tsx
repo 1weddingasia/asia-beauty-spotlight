@@ -107,6 +107,28 @@ export default function ContactBookingClient() {
               </>
             )}
           </form>
+
+          {/* Quick Zalo Chat Option */}
+          <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 bg-blue-50/50 p-4 rounded-2xl border border-blue-200/50">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-full bg-[#0068FF] flex items-center justify-center text-white shrink-0">
+                <MessageCircle className="size-5 fill-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-ink">Cần hỗ trợ hoặc gửi file qua Zalo?</p>
+                <p className="text-xs text-muted-foreground">Chuyên viên trực 24/7 giải đáp ngay lập tức</p>
+              </div>
+            </div>
+            <a
+              href={CONTACT_ZALO}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-5 py-2.5 rounded-xl bg-[#0068FF] hover:bg-[#0054cc] text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 shrink-0 flex items-center gap-1.5"
+            >
+              <MessageCircle className="size-3.5 fill-white" />
+              <span>Nhắn Zalo Ngay</span>
+            </a>
+          </div>
         </div>
 
 

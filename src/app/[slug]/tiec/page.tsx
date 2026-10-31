@@ -68,6 +68,7 @@ export default async function PartyVenuePage({ params }: { params: Promise<{ slu
       .select(`
         id, name, slug, category_slug, address, phone, description, status, page_content,
         short_description, email, website, socials, zalo, plan_tier, is_featured, is_demo,
+        page_views, random_views,
         business_categories(directory_categories(id, name, slug, icon)),
         business_locations(directory_locations(id, name, slug))
       `)

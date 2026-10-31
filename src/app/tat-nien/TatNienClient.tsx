@@ -236,22 +236,16 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
           </Link>
 
           <div className="text-left min-w-0">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <h1 className="text-xs sm:text-base font-black tracking-tight text-slate-900 flex items-center gap-1 truncate">
-                <span className="text-amber-700">PHỐ TIỆC</span>
-                <span className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 bg-clip-text text-transparent">
-                  TẤT NIÊN
-                </span>
-                <span className="text-rose-600 font-black">
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 flex items-center gap-1.5 truncate">
+                <span>Phố Tiệc Tất Niên</span>
+                <span className="text-amber-800 font-mono text-[11px] font-bold px-1.5 py-0.5 rounded-md bg-amber-100/80 border border-amber-300/70">
                   2026
                 </span>
               </h1>
-              <span className="hidden md:inline-flex items-center gap-1 text-[10px] bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full font-bold shadow-xs">
-                <Sparkles className="w-2.5 h-2.5 text-rose-600" /> TIỆC CUỐI NĂM VIP
-              </span>
             </div>
             <p className="text-[10px] text-slate-500 font-medium hidden sm:block truncate">
-              Bản đồ trực quan khám phá sảnh tiệc VIP, phòng riêng & thực đơn ưu đãi độc quyền
+              Bản đồ khám phá sảnh tiệc VIP, phòng riêng &amp; thực đơn ưu đãi độc quyền
             </p>
           </div>
         </div>
@@ -259,14 +253,14 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
         {/* Controls: Dual View Mode Toggle + B2B Registration */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0 relative z-30">
           {/* Dual View Mode Toggle */}
-          <div className="flex items-center gap-0.5 sm:gap-1 bg-amber-50/90 p-0.5 sm:p-1 rounded-xl border border-amber-200/80 shadow-xs shrink-0">
+          <div className="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-xl border border-slate-200 shadow-xs shrink-0">
             <button
               type="button"
               onClick={() => setViewMode('map')}
-              className={`flex items-center gap-1 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
                 viewMode === 'map'
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-amber-100/50'
+                  ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <MapIcon className="w-3.5 h-3.5" />
@@ -275,10 +269,10 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
             <button
               type="button"
               onClick={() => setViewMode('list')}
-              className={`flex items-center gap-1 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
                 viewMode === 'list'
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-amber-100/50'
+                  ? 'bg-white text-slate-900 shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <ListIcon className="w-3.5 h-3.5" />
@@ -289,10 +283,10 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
           {/* 🏷️ B2B CTA: Đăng ký điểm tiệc */}
           <Link
             href="/tat-nien/dang-ky"
-            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-white text-xs font-black shadow-sm shadow-amber-900/10 transition-all active:scale-95 shrink-0"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold shadow-xs border border-amber-400/40 transition-all active:scale-95 shrink-0"
             title="Dành cho Chủ Nhà Hàng: Đăng ký điểm tiệc để sáng đèn trên bản đồ"
           >
-            <Sparkles className="w-3.5 h-3.5 fill-white shrink-0" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <span className="hidden md:inline">Đăng Ký Điểm Tiệc</span>
             <span className="hidden sm:inline md:hidden text-[11px] whitespace-nowrap">Đăng Điểm Tiệc</span>
             <span className="sm:hidden text-[10.5px] whitespace-nowrap">+ Đăng Tiệc</span>
