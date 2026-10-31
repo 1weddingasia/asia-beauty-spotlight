@@ -145,15 +145,15 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
   }, []);
 
   const logoNode = siteConfig.logoImageUrl ? (
-    <img src={siteConfig.logoImageUrl} alt={siteConfig.brand} className="h-10 md:h-12 w-auto object-contain" />
+    <img src={siteConfig.logoImageUrl} alt={siteConfig.brand} className="h-9 sm:h-10 md:h-12 w-auto object-contain" />
   ) : settings?.logo_url ? (
-    <img src={settings.logo_url} alt={siteConfig.brand} className="h-10 md:h-12 w-auto object-contain" />
+    <img src={settings.logo_url} alt={siteConfig.brand} className="h-9 sm:h-10 md:h-12 w-auto object-contain" />
   ) : (
     <>
-      <span className={`font-display text-2xl ${solid ? "text-foreground" : "text-background"}`}>
+      <span className={`font-display text-xl sm:text-2xl ${solid ? "text-foreground" : "text-background"}`}>
         {siteConfig.logoText}
       </span>
-      <span className="text-gradient-gold font-display text-2xl">{siteConfig.logoDomain}</span>
+      <span className="text-gradient-gold font-display text-xl sm:text-2xl">{siteConfig.logoDomain}</span>
     </>
   );
 
@@ -165,44 +165,44 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
           : "absolute top-0 right-0 left-0 z-50"
       }
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
         <Link href="/" className="flex items-center gap-2">
           {logoNode}
         </Link>
 
         {/* Mobile nav trigger */}
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-2 sm:gap-3 md:hidden">
           {authLoading ? (
-            <div className="size-8 rounded-full border border-gold/30 border-t-gold animate-spin" />
+            <div className="size-7 sm:size-8 rounded-full border border-gold/30 border-t-gold animate-spin" />
           ) : user ? (
             <Link
               href="/dashboard"
               aria-label={t.nav.dashboard}
-              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
+              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
             >
-              <LayoutDashboard className="size-4" aria-hidden="true" />
+              <LayoutDashboard className="size-3.5 sm:size-4" aria-hidden="true" />
               <span className="hidden sm:inline">{t.nav.dashboard}</span>
             </Link>
           ) : (
             <Link
               href="/login"
               aria-label={t.nav.login}
-              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
+              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-full border ${solid ? "border-gold/50 text-gold hover:bg-gold/10" : "border-white/50 text-white hover:bg-white/10"}`}
             >
-              <LogIn className="size-4" aria-hidden="true" />
+              <LogIn className="size-3.5 sm:size-4" aria-hidden="true" />
               <span className="hidden sm:inline">{t.nav.login}</span>
             </Link>
           )}
           <button
             onClick={() => { setOpen(!open); setMobileMenuSection("main"); }}
             aria-label={t.nav.menu}
-            className={solid ? "text-foreground" : "text-background"}
+            className={`p-1 rounded-lg transition-colors ${solid ? "text-foreground hover:bg-muted" : "text-background hover:bg-white/10"}`}
           >
             {open ? <X className="size-6" /> : <Menu className="size-6" />}
           </button>
         </div>
 
-        {/* Desktop nav — Ưu đãi, Phố tiệc, Expo, Danh mục, Địa điểm, Ngôn ngữ, Đăng nhập */}
+        {/* Desktop nav — Ưu đãi, Phố tiệc, Bản Đồ Làm Đẹp, Danh mục, Địa điểm, Ngôn ngữ, Đăng nhập */}
         <div className="hidden items-center gap-5 md:flex">
           <nav className="flex items-center gap-5">
             <Link
@@ -224,13 +224,6 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
             >
               <Sparkles className="size-3.5" />
               <span>Bản Đồ Làm Đẹp</span>
-            </Link>
-            <Link
-              href="/expo"
-              className="text-xs tracking-[0.18em] uppercase font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1 transition-colors"
-            >
-              <Sparkles className="size-3.5" />
-              <span>{t.nav.expo}</span>
             </Link>
             {/* Danh Mục dropdown */}
             <NavDropdown
@@ -277,7 +270,7 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
 
       {/* Mobile Menu */}
       {open && (
-        <div className="border-t border-border bg-background px-4 py-3 md:hidden">
+        <div className="border-t border-border bg-background px-4 py-3 md:hidden max-h-[calc(100dvh-4.5rem)] overflow-y-auto">
           {/* Mobile Language Switcher Selector */}
           <LanguageSwitcher variant="mobile" className="mb-3" />
 
@@ -294,10 +287,6 @@ export function SiteHeader({ solid = false }: { solid?: boolean }) {
               <Link href="/ban-do" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold">
                 <Sparkles className="size-4 text-rose-500" />
                 <span>Bản Đồ Làm Đẹp</span>
-              </Link>
-              <Link href="/expo" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-2.5 px-3 text-sm rounded-lg hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">
-                <Sparkles className="size-4 text-amber-500" />
-                <span>{t.nav.expo}</span>
               </Link>
               <button
                 onClick={() => setMobileMenuSection("categories")}
