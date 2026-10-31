@@ -209,7 +209,7 @@ export default function PartyVenueClient({
       {/* 2. Hero Section: Festive Dark Blue & Gold Banner (Lightened overlay to showcase real venue architecture) */}
       <section className="relative overflow-hidden border-b border-amber-500/30">
         <div className="absolute inset-0 bg-cover bg-center filter brightness-[0.70]" style={{ backgroundImage: `url(${heroImage})` }} />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#070b16] via-[#070b16]/50 to-transparent/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070b16] via-[#070b16]/50 to-transparent pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-amber-500/15 via-transparent to-transparent pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 pt-12 pb-16 relative z-10">

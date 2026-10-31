@@ -72,6 +72,32 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     setBookingNotes('');
   }, [venue]);
 
+  // Thư viện ảnh thật để hiển thị thumbnail chọn ảnh (Hook phải khai báo vô điều kiện trước early return)
+  const galleryImages = React.useMemo(() => {
+    if (!venue) return [];
+    const list: string[] = [];
+    if (venue.party_banner_url) list.push(venue.party_banner_url);
+    if (Array.isArray(venue.party_gallery)) {
+      venue.party_gallery.forEach((img) => {
+        if (typeof img === 'string' && img && !list.includes(img)) list.push(img);
+      });
+    }
+    if (Array.isArray(venue.page_content?.gallery)) {
+      venue.page_content.gallery.forEach((item) => {
+        const url = typeof item === 'string' ? item : (item as any)?.url;
+        if (url && !list.includes(url)) list.push(url);
+      });
+    }
+    if (venue.page_content?.hero_image && !list.includes(venue.page_content.hero_image)) {
+      list.push(venue.page_content.hero_image);
+    }
+    const banners = venue.page_content?.banners || [];
+    if (banners[0] && !list.includes(banners[0])) {
+      list.push(banners[0]);
+    }
+    return list;
+  }, [venue]);
+
   const handleShareZalo = async () => {
     if (!venue) return;
     const shareUrl = `https://1booking.asia/${venue.slug}/tiec`;
@@ -168,31 +194,6 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     venue.page_content?.hero_image ||
     '/images/categories/nha-hang-am-thuc.jpg';
 
-  // Thư viện ảnh thật để hiển thị thumbnail chọn ảnh
-  const galleryImages = React.useMemo(() => {
-    if (!venue) return [];
-    const list: string[] = [];
-    if (venue.party_banner_url) list.push(venue.party_banner_url);
-    if (Array.isArray(venue.party_gallery)) {
-      venue.party_gallery.forEach(img => {
-        if (typeof img === 'string' && img && !list.includes(img)) list.push(img);
-      });
-    }
-    if (Array.isArray(venue.page_content?.gallery)) {
-      venue.page_content.gallery.forEach(item => {
-        const url = typeof item === 'string' ? item : (item as any)?.url;
-        if (url && !list.includes(url)) list.push(url);
-      });
-    }
-    if (venue.page_content?.hero_image && !list.includes(venue.page_content.hero_image)) {
-      list.push(venue.page_content.hero_image);
-    }
-    if (banners[0] && !list.includes(banners[0])) {
-      list.push(banners[0]);
-    }
-    return list;
-  }, [venue, banners]);
-
   const displayHeroImage = activeHero || defaultHeroImage;
 
   const rawPhone = venue.phone || venue.page_content?.phone || '';
@@ -274,17 +275,19 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
         {/* Gallery Thumbnails: Xem ảnh thực tế sảnh tiệc */}
         {galleryImages.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none pt-0.5">
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar pt-0.5">
             {galleryImages.map((img, idx) => {
-              const isSelected = displayHeroImage === img;
+              const isSelected = activeHero ? activeHero === img : (displayHeroImage === img || idx === 0);
               return (
                 <button
-                  key={idx}
+                  key={img}
                   type="button"
+                  aria-label={`Xem ảnh sảnh ${idx + 1}`}
+                  aria-pressed={isSelected}
                   onClick={() => setActiveHero(img)}
                   className={`relative aspect-[16/9] w-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                     isSelected
-                      ? 'border-amber-500 ring-2 ring-amber-400/40 shadow-xs scale-102'
+                      ? 'border-amber-500 ring-2 ring-amber-400/40 shadow-xs scale-[1.02]'
                       : 'border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400'
                   }`}
                   title={`Xem góc ảnh ${idx + 1}`}
