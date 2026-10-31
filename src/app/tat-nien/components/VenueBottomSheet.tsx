@@ -56,8 +56,11 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
   const [submitSuccess, setSubmitSuccess] = React.useState(false);
   const [submitError, setSubmitError] = React.useState('');
 
-  // Reset form when venue changes
+  const [activeHero, setActiveHero] = React.useState<string | null>(null);
+
+  // Reset form & active hero image when venue changes
   React.useEffect(() => {
+    setActiveHero(null);
     setShowBookingForm(false);
     setSubmitSuccess(false);
     setSubmitError('');
@@ -157,13 +160,40 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
   // Banner image resolution
   const banners = venue.page_content?.banners || [];
-  const gallery = venue.page_content?.gallery || [];
-  const heroImage =
+  const rawGallery = venue.page_content?.gallery || [];
+  const defaultHeroImage =
     venue.party_banner_url ||
     banners[0] ||
-    (typeof gallery[0] === 'string' ? gallery[0] : (gallery[0] as any)?.url) ||
+    (typeof rawGallery[0] === 'string' ? rawGallery[0] : (rawGallery[0] as any)?.url) ||
     venue.page_content?.hero_image ||
     '/images/categories/nha-hang-am-thuc.jpg';
+
+  // Thư viện ảnh thật để hiển thị thumbnail chọn ảnh
+  const galleryImages = React.useMemo(() => {
+    if (!venue) return [];
+    const list: string[] = [];
+    if (venue.party_banner_url) list.push(venue.party_banner_url);
+    if (Array.isArray(venue.party_gallery)) {
+      venue.party_gallery.forEach(img => {
+        if (typeof img === 'string' && img && !list.includes(img)) list.push(img);
+      });
+    }
+    if (Array.isArray(venue.page_content?.gallery)) {
+      venue.page_content.gallery.forEach(item => {
+        const url = typeof item === 'string' ? item : (item as any)?.url;
+        if (url && !list.includes(url)) list.push(url);
+      });
+    }
+    if (venue.page_content?.hero_image && !list.includes(venue.page_content.hero_image)) {
+      list.push(venue.page_content.hero_image);
+    }
+    if (banners[0] && !list.includes(banners[0])) {
+      list.push(banners[0]);
+    }
+    return list;
+  }, [venue, banners]);
+
+  const displayHeroImage = activeHero || defaultHeroImage;
 
   const rawPhone = venue.phone || venue.page_content?.phone || '';
   const cleanPhone = rawPhone.replace(/\D/g, '');
@@ -191,20 +221,21 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
         onTouchMove={(e) => e.stopPropagation()}
         className="flex-1 overflow-y-auto px-4 pb-6 pt-3 space-y-4 scrollbar-thin scrollbar-thumb-slate-200"
       >
-        {/* Cover Photo with High-contrast overlay */}
+        {/* Cover Photo with Lightened Overlay */}
         <div className="relative rounded-2xl overflow-hidden border border-slate-200/80 bg-slate-100 aspect-[16/9] shadow-sm group">
           <img
-            src={heroImage}
+            src={displayHeroImage}
             alt={venue.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/images/categories/nha-hang-am-thuc.jpg';
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-black/20" />
+          {/* Subtle bottom vignette: top and center are 100% natural, crisp and bright */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent pointer-events-none" />
 
           {/* Badges on image */}
-          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 pointer-events-none">
             {venue.is_vip && (
               <span className="flex items-center gap-1 bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 text-white font-black text-[11px] px-2.5 py-1 rounded-full shadow-md">
                 <Sparkles className="w-3 h-3" /> VIP VENUE
@@ -227,19 +258,43 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
             <X className="w-4 h-4" />
           </button>
 
-          {/* Title and Address at bottom of image */}
-          <div className="absolute bottom-3 left-3 right-3 text-left">
-            <h2 className="text-xl sm:text-2xl font-black text-white drop-shadow-md leading-tight">
+          {/* Title and Address at bottom of image with high-contrast text shadow */}
+          <div className="absolute bottom-3 left-3 right-3 text-left pointer-events-none">
+            <h2 className="text-xl sm:text-2xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] leading-tight">
               {venue.name}
             </h2>
             {venue.address && (
-              <p className="flex items-center gap-1.5 text-xs text-slate-200 line-clamp-1 mt-1 font-medium">
+              <p className="flex items-center gap-1.5 text-xs text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] line-clamp-1 mt-1 font-medium">
                 <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 {venue.address}
               </p>
             )}
           </div>
         </div>
+
+        {/* Gallery Thumbnails: Xem ảnh thực tế sảnh tiệc */}
+        {galleryImages.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none pt-0.5">
+            {galleryImages.map((img, idx) => {
+              const isSelected = displayHeroImage === img;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveHero(img)}
+                  className={`relative aspect-[16/9] w-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                    isSelected
+                      ? 'border-amber-500 ring-2 ring-amber-400/40 shadow-xs scale-102'
+                      : 'border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400'
+                  }`}
+                  title={`Xem góc ảnh ${idx + 1}`}
+                >
+                  <img src={img} alt={`Ảnh sảnh ${idx + 1}`} className="w-full h-full object-cover" />
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Highlight Festive Deal Banner */}
         {venue.party_deal_highlight && (

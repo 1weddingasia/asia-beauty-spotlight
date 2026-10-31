@@ -87,7 +87,10 @@ export default function VenueListView({
             }`}
           >
             {/* Image & Badges */}
-            <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
+            <div
+              onClick={() => onSelectOnMap(venue)}
+              className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100 cursor-pointer"
+            >
               <img
                 src={heroImage}
                 alt={venue.name}
@@ -96,7 +99,8 @@ export default function VenueListView({
                   (e.target as HTMLImageElement).src = '/images/categories/nha-hang-am-thuc.jpg';
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+              {/* Subtle bottom-only gradient for badge contrast; keeps the restaurant background photo bright and vivid */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
 
               {/* VIP Badge & Distance */}
               <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
@@ -135,7 +139,10 @@ export default function VenueListView({
             {/* Content (Warm Luxury Light) */}
             <div className="p-4 flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-base font-black text-slate-900 group-hover:text-amber-700 transition-colors line-clamp-1 mb-1">
+                <h3
+                  onClick={() => onSelectOnMap(venue)}
+                  className="text-base font-black text-slate-900 group-hover:text-amber-700 transition-colors line-clamp-1 mb-1 cursor-pointer"
+                >
                   {venue.name}
                 </h3>
 
