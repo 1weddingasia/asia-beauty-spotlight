@@ -36,7 +36,8 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
     name.includes('Chateau') ||
     name.includes('Melisa') ||
     name.includes('Kalina') ||
-    name.includes('Sun Palace') ||
+    name.includes('GEM') ||
+    name.includes('Queen Plaza') ||
     name.includes('Én')
   ) {
     return {
@@ -59,7 +60,11 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
     name.includes('Dìn Ký') ||
     name.includes('Quá Ngon') ||
     name.includes('Phố 79') ||
-    name.includes('Hoa Viên')
+    name.includes('Hoa Viên') ||
+    name.includes('Gammer') ||
+    name.includes('Thuyền Buồm') ||
+    name.includes('3 Cua') ||
+    name.includes('Biển Đông')
   ) {
     return {
       label: 'Hải sản & Tiệc VIP',
@@ -76,6 +81,8 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
     name.includes('Tân Cảng') ||
     name.includes('Cù Lao') ||
     name.includes('Bến Xưa') ||
+    name.includes('Tư Trì') ||
+    name.includes('Chạm') ||
     name.includes('Thoáng Việt') ||
     name.includes('Đông Hồ') ||
     name.includes('Chay Garden')
@@ -103,7 +110,7 @@ export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: str
 export function getShortVenueName(fullName: string): string {
   if (!fullName) return '';
   let s = fullName
-    .replace(/^(Nhà\s+Hàng|Khu\s+Du\s+Lịch|Trung\s+Tâm\s+(Hội\s+Nghị\s*(&|\+)?\s*(Tiệc\s+Cưới|Sảnh\s+Tiệc)?|Tiệc\s+Cưới\s*(&|\+)?\s*(Hội\s+Nghị)?|Sự\s+Kiện)?|Trung\s+Tâm|Ẩm\s+Thực|Làng\s+Ẩm\s+Thực|Hải\s+Sản|Khách\s+Sạn)\s+/i, '')
+    .replace(/^(Nhà\s+Hàng|Khu\s+Du\s+Lịch|Trung\s+Tâm\s+(Sự\s+Kiện\s*(&|\+)?\s*Hội\s+Nghị|Yến\s+Tiệc\s*(&|\+)?\s*Hội\s+Nghị|Hội\s+Nghị\s*(&|\+)?\s*(Tiệc\s+Cưới|Sảnh\s+Tiệc)?|Tiệc\s+Cưới\s*(&|\+)?\s*(Hội\s+Nghị)?|Sự\s+Kiện)?|Trung\s+Tâm|Ẩm\s+Thực|Làng\s+Ẩm\s+Thực|Hải\s+Sản|Khách\s+Sạn)\s+/i, '')
     .trim();
 
   // Rút gọn các hậu tố dài
@@ -114,7 +121,7 @@ export function getShortVenueName(fullName: string): string {
     const mainBrand = parts[0].trim();
     const branch = parts[1].trim();
 
-    if (mainBrand.includes('Quê Nhà') || mainBrand.includes('Hàng Dương') || mainBrand.includes('Adora') || mainBrand.includes('White Palace')) {
+    if (mainBrand.includes('Quê Nhà') || mainBrand.includes('Hàng Dương') || mainBrand.includes('Adora') || mainBrand.includes('White Palace') || mainBrand.includes('Asiana Plaza')) {
       if (branch.includes('Quận 1') || branch.includes('Ngô Đức Kế')) return `${mainBrand} (Q.1)`;
       if (branch.includes('Quận 3') || branch.includes('Phạm Ngọc Thạch')) return `${mainBrand} (Q.3)`;
       if (branch.includes('Quận 7') || branch.includes('Đường 65') || branch.includes('Nguyễn Văn Linh')) return `${mainBrand} (Q.7)`;
@@ -122,7 +129,10 @@ export function getShortVenueName(fullName: string): string {
       if (branch.includes('Quận 5') || branch.includes('Grand View')) return `${mainBrand} (Q.5)`;
       if (branch.includes('Quận 12') || branch.includes('Nguyễn Văn Quá')) return `${mainBrand} (Q.12)`;
       if (branch.includes('Bình Tân') || branch.includes('Võ Văn Kiệt')) return `${mainBrand} (Bình Tân)`;
-      if (branch.includes('Hoàng Văn Thụ') || branch.includes('Phú Nhuận')) return `${mainBrand} (Phú Nhuận)`;
+      if (branch.includes('Tân Bình') || branch.includes('Hoàng Văn Thụ')) return `${mainBrand} (Tân Bình)`;
+      if (branch.includes('Phú Nhuận')) return `${mainBrand} (Phú Nhuận)`;
+      if (branch.includes('Tân Phú')) return `${mainBrand} (Tân Phú)`;
+      if (branch.includes('Bình Thạnh')) return `${mainBrand} (Bình Thạnh)`;
     }
     return mainBrand;
   }
