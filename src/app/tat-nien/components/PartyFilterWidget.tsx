@@ -133,7 +133,7 @@ export default function PartyFilterWidget({
                   Tìm Sảnh Tiệc
                 </div>
                 <div className="text-[10px] text-slate-500 mt-0.5">
-                  {matchedCount}/{totalVenues} quán phù hợp
+                  Bộ lọc tiêu chí tiệc
                 </div>
               </div>
               {hasActiveFilter && (
@@ -360,7 +360,7 @@ export default function PartyFilterWidget({
               onClick={() => setIsOpen(false)}
               className="w-full py-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-xs font-black text-amber-900 transition-colors"
             >
-              Xem {matchedCount} Nhà Hàng Phù Hợp
+              Áp Dụng Bộ Lọc
             </button>
           </div>
         </DialogContent>

@@ -261,17 +261,6 @@ export default function PartyQuickFilterBar({
           <span>Đặt lại</span>
         </button>
       )}
-
-      {/* 10. Đếm số lượng quán phù hợp */}
-      <div className="shrink-0 text-[10.5px] sm:text-[11px] font-bold text-slate-500 pl-1 whitespace-nowrap">
-        {matchedCount === totalVenues ? (
-          <span>{totalVenues} điểm tiệc</span>
-        ) : (
-          <span className="text-amber-700 font-black">
-            {matchedCount}/{totalVenues} điểm tiệc
-          </span>
-        )}
-      </div>
     </div>
   );
 }

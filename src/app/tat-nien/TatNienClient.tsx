@@ -282,10 +282,7 @@ export default function TatNienClient({ initialVenues, initialDistricts }: TatNi
               }`}
             >
               <ListIcon className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Danh Sách ({filteredVenues.length})</span>
-              <span className="sm:hidden text-[10px] font-extrabold bg-amber-100 text-amber-900 px-1 rounded-full">
-                {filteredVenues.length}
-              </span>
+              <span>Danh Sách</span>
             </button>
           </div>
 
