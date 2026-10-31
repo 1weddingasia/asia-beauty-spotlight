@@ -34,6 +34,7 @@ import {
   Building2,
   Send,
   X,
+  MessageCircle,
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -164,7 +165,13 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
     venue.page_content?.hero_image ||
     '/images/categories/nha-hang-am-thuc.jpg';
 
-  const displayPhone = venue.phone || venue.page_content?.phone || 'Đang cập nhật';
+  const rawPhone = venue.phone || venue.page_content?.phone || '';
+  const cleanPhone = rawPhone.replace(/\D/g, '');
+  const displayPhone = rawPhone || 'Đang cập nhật';
+  const rawZalo = venue.zalo || venue.page_content?.zalo || rawPhone;
+  const cleanZalo = rawZalo.replace(/\D/g, '');
+  const zaloUrl = cleanZalo ? `https://zalo.me/${cleanZalo}` : null;
+  const telUrl = cleanPhone ? `tel:${cleanPhone}` : null;
   const priceFormatted = `${venue.price_min?.toLocaleString('vi-VN')} - ${venue.price_max?.toLocaleString('vi-VN')} đ`;
   const shortPriceFormatted = formatShortPartyPrice(venue.price_min, venue.price_max);
 
@@ -281,15 +288,31 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
             </div>
           </div>
 
-          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-center text-left shadow-xs">
-            <div className="flex items-center gap-1.5 text-slate-500 mb-1">
-              <Phone className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="text-[10px] font-semibold">Hotline</span>
+          {telUrl ? (
+            <a
+              href={telUrl}
+              className="bg-emerald-50/90 hover:bg-emerald-100 border border-emerald-200/90 rounded-2xl p-2.5 flex flex-col justify-center text-left shadow-xs transition-colors group cursor-pointer"
+              title={`Bấm để gọi ngay Hotline: ${displayPhone}`}
+            >
+              <div className="flex items-center gap-1.5 text-emerald-700 mb-1">
+                <Phone className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                <span className="text-[10px] font-bold">Hotline (Gọi)</span>
+              </div>
+              <div className="text-xs sm:text-sm font-black text-emerald-950 font-mono tracking-tight truncate group-hover:underline">
+                {displayPhone}
+              </div>
+            </a>
+          ) : (
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-center text-left shadow-xs">
+              <div className="flex items-center gap-1.5 text-slate-500 mb-1">
+                <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-[10px] font-semibold">Hotline</span>
+              </div>
+              <div className="text-xs sm:text-sm font-black text-slate-900 font-mono tracking-tight truncate">
+                {displayPhone}
+              </div>
             </div>
-            <div className="text-xs sm:text-sm font-black text-slate-900 font-mono tracking-tight truncate">
-              {displayPhone}
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Form liên hệ đặt tiệc HOẶC Chi tiết quán */}
@@ -603,39 +626,59 @@ export default function VenueBottomSheet({ venue, onClose }: VenueBottomSheetPro
 
       {/* Fixed Bottom Action Bar */}
       {!showBookingForm && (
-        <div className="shrink-0 px-3 pt-2.5 pb-6 sm:pb-3 bg-white border-t border-slate-200 flex items-center gap-2 z-20 shadow-md">
+        <div className="shrink-0 px-2.5 sm:px-3 pt-2.5 pb-6 sm:pb-3 bg-white border-t border-slate-200 flex items-center gap-1.5 sm:gap-2 z-20 shadow-md">
+          {/* Nút Gọi Quán Trực Tiếp (1-tap dial) */}
+          {telUrl && (
+            <a
+              href={telUrl}
+              className="flex items-center justify-center gap-1 px-2.5 sm:px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shrink-0 active:scale-95 shadow-xs"
+              title={`Gọi hotline ${displayPhone}`}
+            >
+              <Phone className="w-3.5 h-3.5 text-white" />
+              <span>Gọi Quán</span>
+            </a>
+          )}
+
+          {/* Nút Chat Zalo Trực Tiếp (1-tap chat) */}
+          {zaloUrl && (
+            <a
+              href={zaloUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1 px-2.5 sm:px-3 py-2.5 rounded-xl bg-[#0068ff] hover:bg-[#0056d6] text-white text-xs font-bold transition-all shrink-0 active:scale-95 shadow-xs"
+              title="Mở Zalo nhắn tin trực tiếp với nhà hàng"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-white" />
+              <span>Chat Zalo</span>
+            </a>
+          )}
+
+          {/* Primary CTA: Form Đặt Tiệc */}
+          <button
+            type="button"
+            onClick={() => setShowBookingForm(true)}
+            className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 py-2.5 px-2.5 sm:px-3 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-black shadow-md shadow-rose-950/20 transition-all active:scale-[0.98]"
+          >
+            <CalendarCheck className="w-4 h-4 text-white shrink-0" />
+            <span className="truncate">🎉 Đặt Tiệc</span>
+          </button>
+
           {/* Zalo Share */}
           <button
             type="button"
             onClick={handleShareZalo}
-            className={`flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
+            className={`flex items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-all shrink-0 active:scale-95 ${
               copiedShare
                 ? 'bg-emerald-50 border-emerald-500 text-emerald-800'
-                : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700'
+                : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
             }`}
-            title="Gửi thông tin vào nhóm Zalo để bình chọn"
+            title="Gửi thông tin quán vào nhóm Zalo để bình chọn"
           >
             {copiedShare ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Đã chép</span>
-              </>
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
             ) : (
-              <>
-                <Share2 className="w-3.5 h-3.5 text-blue-600" />
-                <span>Zalo</span>
-              </>
+              <Share2 className="w-3.5 h-3.5 text-slate-600" />
             )}
-          </button>
-
-          {/* Primary CTA */}
-          <button
-            type="button"
-            onClick={() => setShowBookingForm(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-black shadow-md shadow-rose-950/20 transition-all active:scale-[0.98]"
-          >
-            <CalendarCheck className="w-4 h-4 text-white" />
-            <span>🎉 Nhận Báo Giá &amp; Đặt Tiệc</span>
           </button>
 
           {/* Direct Profile Link */}

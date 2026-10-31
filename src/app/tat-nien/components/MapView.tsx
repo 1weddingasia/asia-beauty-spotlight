@@ -64,6 +64,7 @@ export default function MapView({
       bearing: 0,
       attributionControl: false,
       maxTileCacheSize: 50,
+      cooperativeGestures: true,
     });
 
     // Thêm điều khiển zoom / la bàn ở góc phải trên
