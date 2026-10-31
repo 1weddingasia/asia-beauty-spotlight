@@ -17,7 +17,7 @@ interface VenuePinProps {
  * - 🍲 Ẩm thực cổ truyền & Cơm Niêu (Quê Nhà, Cơm Niêu Sài Gòn, Làng Nướng Nam Bộ, Hai Lúa)
  */
 export function getVenueIconData(venue: PartyVenue): { svg: string; bgClass: string; label: string } {
-  const type = (venue.page_content as Record<string, unknown> | undefined)?.venue_type as string || '';
+  const type = venue.page_content?.venue_type || '';
   const name = venue.name || '';
 
   // 1. Sảnh tiệc / Trung tâm hội nghị 5 sao

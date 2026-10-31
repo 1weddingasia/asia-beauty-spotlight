@@ -67,6 +67,10 @@ export interface PartyVenue {
     zalo?: string;
     telegram_chat_id?: string;
     menu_url?: string | null;
+    website?: string | null;
+    website_url?: string | null;
+    venue_type?: string | null;
+    [key: string]: any;
   };
   plan_tier: string | null;
   status: string;
